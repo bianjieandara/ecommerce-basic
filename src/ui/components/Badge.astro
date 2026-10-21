@@ -1,0 +1,22 @@
+---
+// Small status label (sale, new, out of stock...). The tone uses colour and text, never colour alone.
+interface Props {
+  tone?: 'neutral' | 'success' | 'warning' | 'danger';
+  class?: string;
+}
+
+const { tone = 'neutral', class: className = '' } = Astro.props;
+
+const tones: Record<NonNullable<Props['tone']>, string> = {
+  neutral: 'bg-surface text-text',
+  success: 'bg-emerald-100 text-emerald-900',
+  warning: 'bg-amber-100 text-amber-900',
+  danger: 'bg-accent text-on-primary',
+};
+---
+
+<span
+  class={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${tones[tone]} ${className}`}
+>
+  <slot />
+</span>

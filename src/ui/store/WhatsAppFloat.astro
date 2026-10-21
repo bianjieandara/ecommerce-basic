@@ -1,0 +1,28 @@
+---
+// Floating WhatsApp button, above the mobile tab bar. Shown only when the store enables it in contact settings.
+import Icon from '@/ui/components/Icon.astro';
+import { t } from '@/ui/i18n';
+import { whatsappLink } from '@/ui/lib/whatsapp';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  number: string;
+  message: string;
+  locale: Locale;
+}
+
+const { number, message, locale } = Astro.props;
+const href = whatsappLink(number, message);
+---
+
+{href && (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener"
+    class="fixed bottom-20 right-4 z-30 inline-flex min-h-14 min-w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg md:bottom-6"
+    aria-label={t(locale, 'contact.whatsApp')}
+  >
+    <Icon name="chat" size={26} />
+  </a>
+)}

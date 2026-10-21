@@ -1,0 +1,48 @@
+---
+// Server-rendered SVG bar chart (no client JavaScript). Values are also listed for screen readers.
+interface Point {
+  label: string;
+  value: number;
+}
+
+interface Props {
+  title: string;
+  points: Point[];
+  format?: (value: number) => string;
+  class?: string;
+}
+
+const { title, points, format = (value: number) => String(value), class: className = '' } = Astro.props;
+const width = 320;
+const height = 140;
+const max = Math.max(1, ...points.map((point) => point.value));
+const slot = points.length > 0 ? width / points.length : width;
+const barWidth = Math.max(4, slot * 0.6);
+---
+
+<figure class={`w-full ${className}`}>
+  <svg viewBox={`0 0 ${width} ${height}`} class="h-auto w-full" role="img" aria-label={title}>
+    {points.map((point, index) => {
+      const barHeight = (point.value / max) * (height - 20);
+      return (
+        <rect
+          x={index * slot + (slot - barWidth) / 2}
+          y={height - barHeight - 4}
+          width={barWidth}
+          height={barHeight}
+          rx="3"
+          fill="var(--brand-primary)"
+        >
+          <title>{`${point.label}: ${format(point.value)}`}</title>
+        </rect>
+      );
+    })}
+  </svg>
+  <figcaption class="sr-only">
+    <ul>
+      {points.map((point) => (
+        <li>{`${point.label}: ${format(point.value)}`}</li>
+      ))}
+    </ul>
+  </figcaption>
+</figure>

@@ -1,0 +1,56 @@
+---
+// Server-rendered SVG line chart with no client JavaScript. The data is also printed as a list for screen readers.
+// Used by the dashboard (14-day revenue) and reports; `compact` gives the sparkline variant.
+interface Point {
+  label: string;
+  value: number;
+}
+
+interface Props {
+  title: string;
+  points: Point[];
+  /** Formats a value for the accessible list and the chart label. */
+  format?: (value: number) => string;
+  compact?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  points,
+  format = (value: number) => String(value),
+  compact = false,
+  class: className = '',
+} = Astro.props;
+const width = 320;
+const height = compact ? 48 : 160;
+const max = Math.max(1, ...points.map((point) => point.value));
+const step = points.length > 1 ? width / (points.length - 1) : 0;
+const coords = points.map((point, index) => ({
+  x: index * step,
+  y: height - (point.value / max) * (height - 8) - 4,
+}));
+const path = coords
+  .map((coord, index) => `${index === 0 ? 'M' : 'L'}${coord.x.toFixed(1)},${coord.y.toFixed(1)}`)
+  .join(' ');
+---
+
+<figure class={`w-full ${className}`}>
+  <svg viewBox={`0 0 ${width} ${height}`} class="h-auto w-full" role="img" aria-label={title}>
+    <path d={path} fill="none" stroke="var(--brand-primary)" stroke-width="2" stroke-linejoin="round" />
+    {coords.map((coord, index) => (
+      <circle cx={coord.x} cy={coord.y} r="3" fill="var(--brand-primary)">
+        <title>{`${points[index]?.label}: ${format(points[index]?.value ?? 0)}`}</title>
+      </circle>
+    ))}
+  </svg>
+  {!compact && (
+    <figcaption class="sr-only">
+      <ul>
+        {points.map((point) => (
+          <li>{`${point.label}: ${format(point.value)}`}</li>
+        ))}
+      </ul>
+    </figcaption>
+  )}
+</figure>

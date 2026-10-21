@@ -1,0 +1,64 @@
+---
+// Storefront layout: BaseLayout plus header, footer, mobile tab bar, WhatsApp button and the toast region.
+import BaseLayout from './BaseLayout.astro';
+import Header from '../store/Header.astro';
+import Footer from '../store/Footer.astro';
+import MobileTabBar from '../store/MobileTabBar.astro';
+import WhatsAppFloat from '../store/WhatsAppFloat.astro';
+import Toaster from '../components/Toaster';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  title: string;
+  description?: string;
+  locale: Locale;
+  storeName: string;
+  alternates?: Partial<Record<Locale, string>>;
+  canonical?: string;
+  noindex?: boolean;
+  themeCss?: string;
+  webAnalyticsToken?: string;
+  contact?: {
+    email: string;
+    address: string;
+    whatsappNumber: string;
+    whatsappMessage: string;
+    showWhatsappFloat: boolean;
+  };
+}
+
+const {
+  title,
+  description,
+  locale,
+  storeName,
+  alternates,
+  canonical,
+  noindex,
+  themeCss,
+  webAnalyticsToken,
+  contact = { email: '', address: '', whatsappNumber: '', whatsappMessage: '', showWhatsappFloat: false },
+} = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  alternates={alternates}
+  canonical={canonical}
+  noindex={noindex}
+  themeCss={themeCss}
+  webAnalyticsToken={webAnalyticsToken}
+>
+  <Header storeName={storeName} locale={locale} alternates={alternates} />
+  <main class="mx-auto min-h-[60dvh] max-w-6xl px-4 py-6">
+    <slot />
+  </main>
+  <Footer storeName={storeName} locale={locale} email={contact.email} address={contact.address} />
+  <MobileTabBar locale={locale} />
+  {contact.showWhatsappFloat && (
+    <WhatsAppFloat number={contact.whatsappNumber} message={contact.whatsappMessage} locale={locale} />
+  )}
+  <Toaster client:idle />
+</BaseLayout>

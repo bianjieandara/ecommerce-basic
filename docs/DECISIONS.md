@@ -86,3 +86,18 @@ an external API behaves differently from the plan, or a plan item is changed.
   It runs for real in Stage 11.
 - **Known gap:** `D1FailedJobRepository.record` reads the time with `new Date()` instead of the Clock port. Fix in Stage 16 with the
   failed-jobs admin page.
+
+## 2026-10-21 — Stage 6
+
+- **Verified:** `npm run check` and `npm run build` exit 0. The UI kit page (since removed) rendered every primitive, the chart SVGs,
+  the drawer, the toast region, the hreflang links and the theme variables.
+- **Not yet verified:** the 360 px layout (no horizontal scroll) and the carousel/drawer behaviour in a browser. Check on a phone or
+  with Chrome DevTools device mode before Stage 7 is signed off.
+- **Components are split by file, with two merges:** `Field` wraps any control, and `Input` renders input, select or textarea. The
+  empty state, skeleton, badge and rating are separate files. The plan listed separate Checkbox, Select and Textarea files; the
+  merged `Input` keeps the same attributes.
+- **No Admin layout yet.** `AdminLayout` and `AuthLayout` belong to Stage 13, as the plan says.
+- **Toaster is the only island in this stage** (`client:idle`). Charts are server-rendered SVG with a text list for screen readers.
+- **Fonts:** all three @fontsource stylesheets are imported. The browser downloads a font file only when text uses it, so the
+  unused presets cost nothing on the wire.
+- **Cart badge** (`data-cart-count`) exists in the header but has no data until Stage 8 fills it from the cart store.

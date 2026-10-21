@@ -1,0 +1,40 @@
+---
+// Bottom tab bar for phones (hidden from md up). Thumb-reachable, with 44px targets and labels for every item.
+import Icon from '@/ui/components/Icon.astro';
+import { t } from '@/ui/i18n';
+import { routes } from '@/ui/lib/routes';
+import type { Locale } from '@/domain/shared/locale';
+import type { IconName } from '@/ui/components/icons';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const items: { href: string; label: string; icon: IconName }[] = [
+  { href: routes.home(locale), label: t(locale, 'nav.home'), icon: 'home' },
+  { href: routes.shop(locale), label: t(locale, 'nav.shop'), icon: 'grid' },
+  { href: `${routes.shop(locale)}?q=`, label: t(locale, 'nav.search'), icon: 'search' },
+  { href: routes.cart(locale), label: t(locale, 'nav.cart'), icon: 'cart' },
+  { href: routes.contact(locale), label: t(locale, 'nav.contact'), icon: 'chat' },
+];
+---
+
+<nav
+  aria-label="Mobile"
+  class="fixed inset-x-0 bottom-0 z-30 border-t border-text/10 bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+>
+  <ul class="grid grid-cols-5">
+    {items.map((item) => (
+      <li>
+        <a
+          href={item.href}
+          class="flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium"
+        >
+          <Icon name={item.icon} size={22} />
+          <span>{item.label}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

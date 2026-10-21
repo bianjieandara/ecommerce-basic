@@ -1,0 +1,52 @@
+---
+// Button or link styled as a button. Touch target is at least 44px high. Use `href` to render an anchor.
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  size?: 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit';
+  disabled?: boolean;
+  block?: boolean;
+  class?: string;
+  'aria-label'?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled = false,
+  block = false,
+  class: className = '',
+} = Astro.props;
+
+const variants: Record<NonNullable<Props['variant']>, string> = {
+  primary: 'bg-primary text-on-primary hover:opacity-90',
+  secondary: 'border border-primary text-primary bg-background hover:bg-primary-soft',
+  ghost: 'text-primary hover:bg-surface',
+  danger: 'bg-accent text-on-primary hover:opacity-90',
+};
+const sizes: Record<NonNullable<Props['size']>, string> = {
+  md: 'min-h-11 px-4 text-sm',
+  lg: 'min-h-12 px-6 text-base',
+};
+const classes = [
+  'inline-flex items-center justify-center gap-2 rounded-brand font-semibold transition active:scale-[0.98]',
+  'disabled:cursor-not-allowed disabled:opacity-50',
+  variants[variant],
+  sizes[size],
+  block ? 'w-full' : '',
+  className,
+].join(' ');
+---
+
+{href ? (
+  <a href={href} class={classes} aria-disabled={disabled ? 'true' : undefined}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class={classes} disabled={disabled}>
+    <slot />
+  </button>
+)}

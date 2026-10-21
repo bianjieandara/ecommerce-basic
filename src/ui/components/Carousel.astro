@@ -1,0 +1,62 @@
+---
+// Carousel shell: a scroll-snap track with prev/next buttons and dots. Slides are passed in the default slot as
+// direct children of the track. Behaviour lives in ui/scripts/carousel.ts (initialized by BaseLayout).
+interface Props {
+  /** Accessible name of the region, for example "Featured products". */
+  label: string;
+  /** Autoplay delay in milliseconds; 0 disables autoplay. */
+  autoplay?: number;
+  /** Slides per view on small screens, as a CSS basis (for example "85%"). */
+  slideBasis?: string;
+  class?: string;
+}
+
+const { label, autoplay = 6000, slideBasis = '85%', class: className = '' } = Astro.props;
+---
+
+<section
+  data-carousel
+  data-autoplay={autoplay}
+  aria-roledescription="carousel"
+  aria-label={label}
+  class={`relative ${className}`}
+>
+  <div
+    data-carousel-track
+    class="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    style={`--slide-basis:${slideBasis}`}
+  >
+    <slot />
+  </div>
+  <div class="mt-3 flex items-center justify-between gap-2">
+    <button
+      type="button"
+      data-carousel-prev
+      class="min-h-11 min-w-11 rounded-full border border-text/20"
+      aria-label="Previous"
+    >
+      ‹
+    </button>
+    <div data-carousel-dots class="flex items-center gap-1"></div>
+    <button
+      type="button"
+      data-carousel-next
+      class="min-h-11 min-w-11 rounded-full border border-text/20"
+      aria-label="Next"
+    >
+      ›
+    </button>
+  </div>
+</section>
+
+<style>
+  [data-carousel-track] > * {
+    flex: 0 0 var(--slide-basis);
+    scroll-snap-align: start;
+  }
+  @media (min-width: 768px) {
+    [data-carousel-track] > * {
+      flex-basis: calc((100% - 2 * 1rem) / 3);
+    }
+  }
+</style>

@@ -1,0 +1,15 @@
+---
+// Loading placeholder with a shimmer. Use while a region loads on the client; keep its size equal to the final content.
+interface Props {
+  lines?: number;
+  class?: string;
+}
+
+const { lines = 3, class: className = '' } = Astro.props;
+---
+
+<div class={`flex flex-col gap-2 ${className}`} aria-hidden="true">
+  {Array.from({ length: lines }, (_, index) => (
+    <div class={`skeleton h-4 rounded ${index === lines - 1 ? 'w-2/3' : 'w-full'}`}></div>
+  ))}
+</div>

@@ -1,0 +1,56 @@
+/* Global styles: Tailwind v4, design tokens and base rules. Store colours and fonts come from settings (see theme-css.ts)
+   and override these defaults through the --brand-* custom properties set on :root. */
+@import 'tailwindcss';
+@import '@fontsource-variable/inter/index.css';
+@import '@fontsource-variable/manrope/index.css';
+@import '@fontsource-variable/playfair-display/index.css';
+@import './animations.css';
+
+@theme {
+  --color-primary: var(--brand-primary);
+  --color-on-primary: var(--brand-on-primary);
+  --color-accent: var(--brand-accent);
+  --color-background: var(--brand-background);
+  --color-surface: var(--brand-surface);
+  --color-text: var(--brand-text);
+  --radius-brand: var(--brand-radius);
+  --font-sans: var(--brand-font), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --brand-primary: #111111;
+  --brand-on-primary: #ffffff;
+  --brand-accent: #d62828;
+  --brand-background: #ffffff;
+  --brand-surface: #f5f5f5;
+  --brand-text: #111111;
+  --brand-radius: 0.5rem;
+  --brand-font: 'Inter Variable';
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--brand-background);
+  color: var(--brand-text);
+  font-family: var(--brand-font), ui-sans-serif, system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

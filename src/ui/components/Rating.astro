@@ -1,0 +1,21 @@
+---
+// Star rating. The number is always printed too, so the value is readable without colour or icons.
+import Icon from './Icon.astro';
+
+interface Props {
+  value: number;
+  max?: number;
+  class?: string;
+}
+
+const { value, max = 5, class: className = '' } = Astro.props;
+const rounded = Math.round(value * 2) / 2;
+const stars = Array.from({ length: max }, (_, index) => index + 1);
+---
+
+<p class={`inline-flex items-center gap-1 text-sm ${className}`} aria-label={`${value.toFixed(1)} / ${max}`}>
+  {stars.map((star) => (
+    <Icon name="star" size={16} class={star <= rounded ? 'text-accent' : 'text-text/20'} />
+  ))}
+  <span class="ml-1 font-medium">{value.toFixed(1)}</span>
+</p>

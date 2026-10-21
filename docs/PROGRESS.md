@@ -8,7 +8,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [x] Stage 3 — Database schema and seed data
 - [x] Stage 4 — Domain model and application ports
 - [x] Stage 5 — Infrastructure adapters, jobs, composition, HTTP helpers
-- [ ] Stage 6 — Design system and layouts
+- [x] Stage 6 — Design system and layouts
 - [ ] Stage 7 — Public storefront: home, catalog with filters, product
 - [ ] Stage 8 — Cart
 - [ ] Stage 9 — Notifications: engine, email templates, multichannel service

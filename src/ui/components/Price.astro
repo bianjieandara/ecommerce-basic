@@ -1,0 +1,38 @@
+---
+// Price display: current amount, optional strikethrough compare-at amount, and an optional "on sale" marker.
+import { formatMoney } from '@/ui/lib/format';
+import type { Locale } from '@/domain/shared/locale';
+import { money, type Money } from '@/domain/shared/money';
+import type { CurrencyCode } from '@/domain/shared/currency';
+
+interface Props {
+  amountMinor: number;
+  compareAtMinor?: number | null;
+  currency: CurrencyCode;
+  locale: Locale;
+  country: string;
+  /** Optional "from" prefix for products with several prices. */
+  from?: boolean;
+  class?: string;
+}
+
+const {
+  amountMinor,
+  compareAtMinor = null,
+  currency,
+  locale,
+  country,
+  from = false,
+  class: className = '',
+} = Astro.props;
+const current: Money = money(amountMinor, currency);
+const onSale = compareAtMinor !== null && compareAtMinor > amountMinor;
+---
+
+<p class={`flex flex-wrap items-baseline gap-2 ${className}`}>
+  {from && <span class="text-sm text-text/70">{locale === 'es' ? 'Desde' : 'From'}</span>}
+  <span class="font-semibold text-text">{formatMoney(current, locale, country)}</span>
+  {onSale && compareAtMinor !== null && (
+    <s class="text-sm text-text/60">{formatMoney(money(compareAtMinor, currency), locale, country)}</s>
+  )}
+</p>

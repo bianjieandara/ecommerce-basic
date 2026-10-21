@@ -1,0 +1,44 @@
+---
+// Store footer: contact summary, legal links and copyright. Bottom padding leaves room for the mobile tab bar.
+import { t } from '@/ui/i18n';
+import { routes } from '@/ui/lib/routes';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  storeName: string;
+  locale: Locale;
+  email?: string;
+  address?: string;
+}
+
+const { storeName, locale, email = '', address = '' } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 border-t border-text/10 bg-surface pb-24 md:pb-10">
+  <div class="mx-auto grid max-w-6xl gap-6 px-4 py-10 md:grid-cols-3">
+    <div>
+      <p class="font-semibold">{storeName}</p>
+      {address && <p class="mt-2 text-sm text-text/70">{address}</p>}
+      {email && (
+        <a href={`mailto:${email}`} class="mt-2 block text-sm underline">
+          {email}
+        </a>
+      )}
+    </div>
+    <nav aria-label={t(locale, 'footer.legal')} class="flex flex-col gap-2 text-sm">
+      <a href={routes.page(locale, 'privacy')} class="underline-offset-4 hover:underline">
+        {t(locale, 'footer.privacy')}
+      </a>
+      <a href={routes.page(locale, 'terms')} class="underline-offset-4 hover:underline">
+        {t(locale, 'footer.terms')}
+      </a>
+      <a href={routes.page(locale, 'shipping-returns')} class="underline-offset-4 hover:underline">
+        {t(locale, 'footer.shippingReturns')}
+      </a>
+    </nav>
+    <p class="text-sm text-text/60 md:text-right">
+      © {year} {storeName}. {t(locale, 'footer.rights')}
+    </p>
+  </div>
+</footer>

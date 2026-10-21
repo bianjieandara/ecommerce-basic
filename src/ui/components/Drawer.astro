@@ -1,0 +1,41 @@
+---
+// Native <dialog> panel that slides in from the right (desktop) or the bottom (mobile).
+// Open it with a button that has data-dialog-open="<id>"; close controls use data-dialog-close.
+interface Props {
+  id: string;
+  /** Accessible title shown in the header. */
+  title: string;
+  class?: string;
+}
+
+const { id, title, class: className = '' } = Astro.props;
+---
+
+<dialog
+  id={id}
+  data-dialog
+  aria-labelledby={`${id}-title`}
+  class={`m-0 h-[85dvh] w-full max-w-none rounded-t-2xl bg-background p-0 text-text backdrop:bg-text/40 open:animate-slide-up md:h-dvh md:max-w-md md:rounded-none md:open:animate-none ${className}`}
+>
+  <div class="flex h-full flex-col">
+    <header class="flex items-center justify-between border-b border-text/10 px-4 py-3">
+      <h2 id={`${id}-title`} class="text-lg font-semibold">
+        {title}
+      </h2>
+      <button
+        type="button"
+        data-dialog-close
+        class="min-h-11 min-w-11 rounded-full text-xl"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    </header>
+    <div class="flex-1 overflow-y-auto px-4 py-4">
+      <slot />
+    </div>
+    <footer class="border-t border-text/10 px-4 py-3">
+      <slot name="footer" />
+    </footer>
+  </div>
+</dialog>

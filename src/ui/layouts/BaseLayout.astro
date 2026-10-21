@@ -1,0 +1,69 @@
+---
+// Base HTML document: language, metadata, theme variables, global CSS and the shared interaction scripts.
+// Every page uses this (directly, or through StoreLayout). Theme CSS comes from settings via themeToCss.
+import '@/ui/styles/global.css';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  title: string;
+  description?: string;
+  locale: Locale;
+  /** Other-language URLs of this page, for hreflang. */
+  alternates?: Partial<Record<Locale, string>>;
+  canonical?: string;
+  noindex?: boolean;
+  /** Theme CSS (:root block) built from settings. Empty uses the defaults in global.css. */
+  themeCss?: string;
+  /** Web Analytics token (Cloudflare Web Analytics). Empty means no beacon. */
+  webAnalyticsToken?: string;
+}
+
+const {
+  title,
+  description = '',
+  locale,
+  alternates = {},
+  canonical,
+  noindex = false,
+  themeCss = '',
+  webAnalyticsToken = '',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {(Object.entries(alternates) as [Locale, string][]).map(([code, href]) => (
+      <link rel="alternate" hreflang={code} href={href} />
+    ))}
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta name="theme-color" content="#111111" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {themeCss && <style set:html={themeCss} />}
+    {webAnalyticsToken && (
+      <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: webAnalyticsToken })}
+      />
+    )}
+  </head>
+  <body class="antialiased">
+    <slot />
+    <script>
+      import { initCarousels } from '@/ui/scripts/carousel';
+      import { initDialogs } from '@/ui/scripts/dialog';
+      import { initReveal } from '@/ui/scripts/reveal';
+      initCarousels();
+      initDialogs();
+      initReveal();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+---
+// Responsive image from stored variants. Fixed width and height prevent layout shift; `eager` is for the first hero image only.
+import type { MediaVariant } from '@/domain/media/media-asset';
+import { buildSrcSet, mediaUrl } from '@/ui/lib/media-url';
+
+interface Props {
+  alt: string;
+  variants: MediaVariant[] | null;
+  width: number;
+  height: number;
+  /** Responsive sizes attribute, for example "(min-width: 768px) 25vw, 50vw". */
+  sizes: string;
+  eager?: boolean;
+  class?: string;
+}
+
+const { alt, variants, width, height, sizes, eager = false, class: className = '' } = Astro.props;
+const largest = variants ? [...variants].sort((a, b) => b.width - a.width)[0] : undefined;
+const src = largest ? mediaUrl(largest.key) : '/images/placeholder.svg';
+const srcset = variants && variants.length > 0 ? buildSrcSet(variants) : undefined;
+---
+
+<img
+  src={src}
+  srcset={srcset}
+  sizes={srcset ? sizes : undefined}
+  alt={alt}
+  width={width}
+  height={height}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+  fetchpriority={eager ? 'high' : undefined}
+  class={`h-auto w-full object-cover ${className}`}
+/>

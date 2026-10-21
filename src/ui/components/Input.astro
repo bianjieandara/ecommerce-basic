@@ -1,0 +1,75 @@
+---
+// Native text-like control (input, select or textarea) with the store's focus and size rules.
+// Mobile keyboards are chosen with `type`, `inputmode` and `autocomplete`.
+interface Props {
+  id: string;
+  name: string;
+  as?: 'input' | 'select' | 'textarea';
+  type?: 'text' | 'email' | 'tel' | 'password' | 'number' | 'url' | 'search' | 'date';
+  value?: string;
+  placeholder?: string;
+  autocomplete?: string;
+  inputmode?: 'text' | 'email' | 'tel' | 'numeric' | 'decimal' | 'search';
+  required?: boolean;
+  disabled?: boolean;
+  describedBy?: string;
+  class?: string;
+}
+
+const {
+  id,
+  name,
+  as: element = 'input',
+  type = 'text',
+  value,
+  placeholder,
+  autocomplete,
+  inputmode,
+  required = false,
+  disabled = false,
+  describedBy,
+  class: className = '',
+} = Astro.props;
+
+const classes = `min-h-11 w-full rounded-brand border border-text/20 bg-background px-3 py-2 text-base text-text placeholder:text-text/40 disabled:opacity-50 ${className}`;
+---
+
+{element === 'textarea' ? (
+  <textarea
+    id={id}
+    name={name}
+    placeholder={placeholder}
+    autocomplete={autocomplete}
+    required={required}
+    disabled={disabled}
+    aria-describedby={describedBy}
+    class={`${classes} min-h-24`}
+  >
+      {value}
+    </textarea>
+) : element === 'select' ? (
+  <select
+    id={id}
+    name={name}
+    required={required}
+    disabled={disabled}
+    aria-describedby={describedBy}
+    class={classes}
+  >
+    <slot />
+  </select>
+) : (
+  <input
+    id={id}
+    name={name}
+    type={type}
+    value={value}
+    placeholder={placeholder}
+    autocomplete={autocomplete}
+    inputmode={inputmode}
+    required={required}
+    disabled={disabled}
+    aria-describedby={describedBy}
+    class={classes}
+  />
+)}
