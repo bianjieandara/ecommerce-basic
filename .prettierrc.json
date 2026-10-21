@@ -1,0 +1,6 @@
+{
+  "printWidth": 110,
+  "singleQuote": true,
+  "semi": true,
+  "plugins": ["prettier-plugin-astro", "prettier-plugin-tailwindcss"]
+}
