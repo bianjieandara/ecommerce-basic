@@ -1,0 +1,18 @@
+---
+// Admin dashboard. Its sections arrive in the later stages; for now it confirms that sign-in works.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const store = await loadStoreContext(Astro.locals.app);
+const lang = admin.locale;
+---
+
+<AdminLayout title={t(lang, 'admin.dashboard.title')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.dashboard.title')}</h1>
+  <p class="text-sm">{t(lang, 'admin.dashboard.signedInAs', { name: admin.name })}</p>
+  <p class="text-text/60 text-sm">{t(lang, 'admin.dashboard.placeholder')}</p>
+</AdminLayout>

@@ -1,0 +1,9 @@
+---
+// Invitation links point here. They are reset links in everything but the path, so this page only forwards the token.
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+
+const target = new URL(ADMIN_PATHS.resetPassword, Astro.url);
+const token = Astro.url.searchParams.get('token');
+if (token) target.searchParams.set('token', token);
+return Astro.redirect(`${target.pathname}${target.search}`);
+---

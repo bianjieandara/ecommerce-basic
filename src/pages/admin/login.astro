@@ -1,0 +1,37 @@
+---
+// Sign-in. Before the first owner exists it sends people to setup. A signed-in admin goes straight to where they were headed.
+import AuthForm from '@/ui/admin/AuthForm.tsx';
+import AuthLayout from '@/ui/layouts/AuthLayout.astro';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { safeAdminPath } from '@/http/admin-session';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const app = Astro.locals.app;
+if ((await app.adminUsers.count()) === 0) return Astro.redirect(ADMIN_PATHS.setup);
+const next = safeAdminPath(Astro.url.searchParams.get('next'));
+if (Astro.locals.admin) return Astro.redirect(next);
+
+const store = await loadStoreContext(app);
+const lang = store.general.defaultLocale;
+const errors = { ...pickNamespace(lang, 'errors'), UNAUTHORIZED: t(lang, 'admin.login.invalid') };
+---
+
+<AuthLayout title={t(lang, 'admin.login.title')} locale={lang} storeName={store.general.storeName}>
+  <AuthForm
+    client:load
+    mode="login"
+    locale={lang}
+    siteKey={app.config.turnstileSiteKey}
+    next={next}
+    labels={{
+      email: t(lang, 'admin.common.email'),
+      password: t(lang, 'admin.common.password'),
+      submit: t(lang, 'admin.login.submit'),
+      submitting: t(lang, 'admin.common.submitting'),
+      forgot: t(lang, 'admin.login.forgot'),
+    }}
+    errors={errors}
+  />
+</AuthLayout>
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

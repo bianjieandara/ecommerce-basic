@@ -1,0 +1,35 @@
+---
+// First-owner setup. It works once: after an owner exists this page points to sign-in, and the endpoint refuses as well.
+import AuthForm from '@/ui/admin/AuthForm.tsx';
+import AuthLayout from '@/ui/layouts/AuthLayout.astro';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const app = Astro.locals.app;
+if ((await app.adminUsers.count()) > 0) return Astro.redirect(ADMIN_PATHS.login);
+
+const store = await loadStoreContext(app);
+const lang = store.general.defaultLocale;
+const errors = { ...pickNamespace(lang, 'errors'), UNAUTHORIZED: t(lang, 'admin.setup.invalidToken') };
+---
+
+<AuthLayout title={t(lang, 'admin.setup.title')} locale={lang} storeName={store.general.storeName}>
+  <p class="text-sm">{t(lang, 'admin.setup.text')}</p>
+  <AuthForm
+    client:load
+    mode="setup"
+    locale={lang}
+    siteKey={app.config.turnstileSiteKey}
+    next={ADMIN_PATHS.dashboard}
+    labels={{
+      setupToken: t(lang, 'admin.setup.setupToken'),
+      name: t(lang, 'admin.setup.name'),
+      email: t(lang, 'admin.common.email'),
+      password: t(lang, 'admin.common.newPassword'),
+      submit: t(lang, 'admin.setup.submit'),
+      submitting: t(lang, 'admin.common.submitting'),
+    }}
+    errors={errors}
+  />
+</AuthLayout>

@@ -218,6 +218,52 @@ export const en = {
     page: 'Page {n}',
     label: 'Pagination',
   },
+  admin: {
+    common: {
+      email: 'Email',
+      password: 'Password',
+      newPassword: 'New password (12 characters or more)',
+      submitting: 'Working...',
+      signIn: 'Go to sign in',
+      requestNew: 'Request a new link',
+    },
+    nav: {
+      dashboard: 'Dashboard',
+      signOut: 'Sign out',
+    },
+    setup: {
+      title: 'Create the store owner',
+      text: 'This one-time step creates the owner account. Use the setup token from your deployment.',
+      setupToken: 'Setup token',
+      name: 'Your name',
+      submit: 'Create owner and sign in',
+      invalidToken: 'That setup token is not valid.',
+    },
+    login: {
+      title: 'Sign in',
+      submit: 'Sign in',
+      forgot: 'Forgot your password?',
+      invalid: 'Invalid email or password.',
+    },
+    forgot: {
+      title: 'Reset your password',
+      text: 'Enter your email. If an account exists, we send a link valid for 30 minutes.',
+      submit: 'Send link',
+      done: 'If an account exists for that email, a link is on its way. Check your inbox.',
+    },
+    reset: {
+      title: 'Choose a new password',
+      submit: 'Save password',
+      done: 'Your password is saved. Sign in with the new password.',
+      invalidLink: 'This link is not valid or has expired.',
+      missingToken: 'This link is incomplete.',
+    },
+    dashboard: {
+      title: 'Dashboard',
+      signedInAs: 'Signed in as {name}.',
+      placeholder: 'Orders, products and reports arrive in the next stages.',
+    },
+  },
   product_page: {
     variants: 'Options',
     gallery: 'Product images',

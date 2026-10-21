@@ -21,6 +21,17 @@ import type { PaymentGateway, PaymentMethod } from '@/application/ports/payments
 import { QuoteCart } from '@/application/cart/quote-cart';
 import { SubmitContactMessage } from '@/application/content/submit-contact-message';
 import { ReviewsService } from '@/application/content/reviews-service';
+import { InviteAdmin } from '@/application/identity/invite-admin';
+import { Login } from '@/application/identity/login';
+import { RequestPasswordReset, ResetPassword } from '@/application/identity/password-reset';
+import { SessionService } from '@/application/identity/sessions';
+import { SetupFirstOwner } from '@/application/identity/setup-first-owner';
+import type { AdminUserRepository } from '@/application/ports/identity';
+import {
+  D1AdminUserRepository,
+  D1PasswordResetRepository,
+  D1SessionRepository,
+} from '@/infrastructure/d1/identity-repositories';
 import { CapturePayment } from '@/application/ordering/capture-payment';
 import { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
@@ -109,6 +120,14 @@ export interface Container {
   submitContact: SubmitContactMessage;
   /** Google reviews: the job refreshes them, pages read them from KV. */
   reviews: ReviewsService;
+  /** Admin accounts and sessions. */
+  adminUsers: AdminUserRepository;
+  sessions: SessionService;
+  setupOwner: SetupFirstOwner;
+  login: Login;
+  requestPasswordReset: RequestPasswordReset;
+  resetPassword: ResetPassword;
+  inviteAdmin: InviteAdmin;
   platform: {
     clock: Clock;
     ids: IdGenerator;
@@ -175,6 +194,50 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     sender: email,
     clock,
     attachments: new InvoiceAttachments(invoices, media),
+  });
+
+  const adminUsers = new D1AdminUserRepository(env.DB);
+  const sessions = new SessionService({ sessions: new D1SessionRepository(env.DB), hasher, ids, clock });
+  const passwordResets = new D1PasswordResetRepository(env.DB);
+  const passwords = new Pbkdf2PasswordHasher();
+  const rateLimiter = new CloudflareRateLimiter({ auth: env.RL_AUTH, forms: env.RL_FORMS, api: env.RL_API });
+  const setupOwner = new SetupFirstOwner({
+    users: adminUsers,
+    passwords,
+    sessions,
+    ids,
+    clock,
+    setupToken: readSecret('SETUP_TOKEN'),
+  });
+  const login = new Login({ users: adminUsers, passwords, sessions, botVerifier, rateLimiter, clock });
+  const requestPasswordReset = new RequestPasswordReset({
+    users: adminUsers,
+    resets: passwordResets,
+    hasher,
+    ids,
+    clock,
+    notifications,
+    botVerifier,
+    rateLimiter,
+    siteUrl,
+  });
+  const resetPassword = new ResetPassword({
+    users: adminUsers,
+    resets: passwordResets,
+    passwords,
+    hasher,
+    sessions,
+    clock,
+  });
+  const inviteAdmin = new InviteAdmin({
+    users: adminUsers,
+    resets: passwordResets,
+    passwords,
+    hasher,
+    ids,
+    clock,
+    notifications,
+    siteUrl,
   });
 
   const contactMessages = new D1ContactMessageRepository(env.DB);
@@ -294,15 +357,22 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     voidInvoice: new VoidInvoice({ invoices, orders, clock }),
     submitContact,
     reviews,
+    adminUsers,
+    sessions,
+    setupOwner,
+    login,
+    requestPasswordReset,
+    resetPassword,
+    inviteAdmin,
     platform: {
       clock,
       ids,
       hasher,
-      passwords: new Pbkdf2PasswordHasher(),
+      passwords,
       cache,
       pageCache: new KvPageCacheVersion(env.CACHE),
       botVerifier,
-      rateLimiter: new CloudflareRateLimiter({ auth: env.RL_AUTH, forms: env.RL_FORMS, api: env.RL_API }),
+      rateLimiter,
       email,
       background,
       pdf,

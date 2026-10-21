@@ -26,12 +26,17 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
   return async (context) => {
     const requestId = context.locals.requestId;
     try {
+      // Endpoints without an input schema never read the body, so a plain form post (sign-out) works too.
       const raw =
         options.method === 'GET'
           ? Object.fromEntries(context.url.searchParams)
-          : await readJson(context.request);
+          : options.input
+            ? await readJson(context.request)
+            : undefined;
       const input = options.input ? parse(options.input, raw) : (undefined as z.infer<S>);
       const data = await options.handler({ input, context });
+      // A handler that needs more than JSON (for example a session cookie) returns its own Response.
+      if (data instanceof Response) return data;
       return Response.json({ ok: true, data }, { headers: { 'Cache-Control': 'no-store' } });
     } catch (error) {
       return errorResponse(error, requestId);

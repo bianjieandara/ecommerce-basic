@@ -219,6 +219,52 @@ export const es: Dictionary = {
     page: 'Página {n}',
     label: 'Paginación',
   },
+  admin: {
+    common: {
+      email: 'Correo electrónico',
+      password: 'Contraseña',
+      newPassword: 'Nueva contraseña (12 caracteres o más)',
+      submitting: 'Procesando...',
+      signIn: 'Ir a iniciar sesión',
+      requestNew: 'Pedir un enlace nuevo',
+    },
+    nav: {
+      dashboard: 'Panel',
+      signOut: 'Cerrar sesión',
+    },
+    setup: {
+      title: 'Crear el propietario de la tienda',
+      text: 'Este paso se hace una sola vez y crea la cuenta del propietario. Usa el token de configuración de tu despliegue.',
+      setupToken: 'Token de configuración',
+      name: 'Tu nombre',
+      submit: 'Crear propietario e iniciar sesión',
+      invalidToken: 'El token de configuración no es válido.',
+    },
+    login: {
+      title: 'Iniciar sesión',
+      submit: 'Entrar',
+      forgot: '¿Olvidaste tu contraseña?',
+      invalid: 'Correo o contraseña no válidos.',
+    },
+    forgot: {
+      title: 'Restablecer contraseña',
+      text: 'Escribe tu correo. Si existe una cuenta, enviaremos un enlace válido durante 30 minutos.',
+      submit: 'Enviar enlace',
+      done: 'Si existe una cuenta con ese correo, el enlace va en camino. Revisa tu bandeja de entrada.',
+    },
+    reset: {
+      title: 'Elige una nueva contraseña',
+      submit: 'Guardar contraseña',
+      done: 'Tu contraseña está guardada. Inicia sesión con la nueva contraseña.',
+      invalidLink: 'Este enlace no es válido o ya venció.',
+      missingToken: 'Este enlace está incompleto.',
+    },
+    dashboard: {
+      title: 'Panel',
+      signedInAs: 'Sesión iniciada como {name}.',
+      placeholder: 'Pedidos, productos e informes llegan en las siguientes etapas.',
+    },
+  },
   product_page: {
     variants: 'Opciones',
     gallery: 'Imágenes del producto',

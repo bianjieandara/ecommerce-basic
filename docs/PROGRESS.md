@@ -15,7 +15,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [ ] Stage 10 — Checkout, payments, orders
 - [ ] Stage 11 — Invoicing
 - [x] Stage 12 — Content pages, contact, reviews
-- [ ] Stage 13 — Admin foundation and authentication
+- [x] Stage 13 — Admin foundation and authentication
 - [ ] Stage 14 — Admin catalog and media
 - [ ] Stage 15 — Inventory module
 - [ ] Stage 16 — Admin orders, invoices, messages, dashboard, ops

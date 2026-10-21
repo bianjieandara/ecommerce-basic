@@ -34,9 +34,16 @@ export const PATHS = {
   media: (key: string) => `/media/${key}`,
 } as const;
 
-/** Admin paths that appear in notification links. The admin UI is not localized. */
+/**
+ * Admin pages. Notifications link to some of them, and the middleware guards all of them. The admin UI follows each
+ * admin's own locale (the `admin` dictionary), so these paths carry no language prefix.
+ */
 export const ADMIN_PATHS = {
-  reports: '/admin/reports',
+  dashboard: '/admin',
+  setup: '/admin/setup',
+  login: '/admin/login',
+  forgotPassword: '/admin/forgot-password',
   resetPassword: '/admin/reset-password',
   acceptInvite: '/admin/accept-invite',
+  reports: '/admin/reports',
 } as const;

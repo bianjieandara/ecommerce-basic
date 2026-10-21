@@ -1,0 +1,31 @@
+---
+// Admin shell: store name, sign-out and the page content. Every admin page uses it; the pages check the session themselves.
+import BaseLayout from './BaseLayout.astro';
+import type { Locale } from '@/domain/shared/locale';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+
+interface Props {
+  title: string;
+  locale: Locale;
+  storeName: string;
+}
+
+const { title, locale, storeName } = Astro.props;
+---
+
+<BaseLayout title={`${title} · ${storeName}`} locale={locale} noindex>
+  <header class="border-text/10 flex items-center justify-between gap-4 border-b px-4 py-3">
+    <a href={ADMIN_PATHS.dashboard} class="font-semibold">
+      {storeName}
+    </a>
+    <form method="post" action="/api/admin/logout">
+      <button type="submit" class="min-h-11 px-3 text-sm underline">
+        {t(locale, 'admin.nav.signOut')}
+      </button>
+    </form>
+  </header>
+  <main class="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+    <slot />
+  </main>
+</BaseLayout>

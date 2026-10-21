@@ -45,10 +45,13 @@ export class CloudflareEmailSender implements EmailSender {
   }
 }
 
-/** Local development sender: logs the message instead of sending it. */
+/**
+ * Local development sender: logs the message instead of sending it. The text body is logged too, so the links in reset
+ * and invitation emails can be followed while developing.
+ */
 export class ConsoleEmailSender implements EmailSender {
-  async send(message: { to: string; subject: string }): Promise<{ messageId: string }> {
-    console.log(`[email:dev] to=${message.to} subject=${message.subject}`);
+  async send(message: { to: string; subject: string; text?: string }): Promise<{ messageId: string }> {
+    console.log(`[email:dev] to=${message.to} subject=${message.subject}\n${message.text ?? ''}`);
     return { messageId: `dev-${Date.now()}` };
   }
 }

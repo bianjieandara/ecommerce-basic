@@ -266,3 +266,27 @@ environment, so the document was not viewed.
   (Stage 17) create the row. For tests, insert it with `json_object`: double quotes in a PowerShell `--command` string get mangled.
 - **Not verified:** a real Places API call (no key or Place ID here), the map click in a browser, the scheduled review refresh, and
   Turnstile in a browser.
+
+## 2026-10-21 — Stage 13 (admin foundation and authentication)
+
+- **Verified locally** (`npm run dev`, curl, and one browser session on the sign-in, sign-out and reset-request forms):
+  - Guards: `/admin` redirects to `/admin/login?next=…`; `POST /api/admin/*` answers 401 JSON. Admin responses are `no-store` and `noindex`.
+  - Setup: a wrong `SETUP_TOKEN` gets 401; the right one creates the owner and sets the session cookie. Setup redirects to sign-in once an owner exists.
+  - Sign-in: a wrong password gets 401, the right one 200. The sixth attempt within a minute for the same IP and email gets 429. The Turnstile widget produced a token in the browser and the sign-in went through.
+  - Sign-out: the form post answers 303 and clears the cookie, and the old cookie is dead on the server.
+  - Reset: the emailed link works once (a second use gets 409), resetting ends every session of the account, and the new password signs in.
+  - Invitations: an owner's invite sends a link that forwards to the reset page. The invitee sets a password and signs in. An editor gets 403 on invite.
+  - Sessions with less than 7 days left are extended to 14 days on use (checked in D1).
+  - `next` stays inside `/admin`: a signed-in visit with `next=https://…` lands on `/admin`.
+- **Passwords and tokens.** PBKDF2-SHA256, 100,000 iterations (the Workers maximum), 16-byte salt. New passwords need 12 characters or more. Session tokens are 32 random bytes in an HttpOnly cookie (`__Host-admin_session` on HTTPS, `admin_session` locally); D1 stores only their SHA-256. Reset links are valid for 30 minutes and invitations for 7 days (set in code; expiry itself was not tested). Both are single use.
+- **Limits.** Sign-in is limited per IP and email (`RL_AUTH`) and needs Turnstile. Reset requests are limited per IP and need Turnstile, and they answer the same for known and unknown emails. First-owner setup is limited per IP, because `SETUP_TOKEN` is the only gate. The reset endpoint has no limit: the link carries 256 random bits and works once.
+- **Owner-only invites** are enforced by `InviteAdmin` (`users.manage`), so the rule holds for any caller, not only for this endpoint.
+- **Sign-out** is a plain form post that answers 303, so it works without JavaScript. `defineEndpoint` skips the body when an endpoint has no input schema, which makes that possible.
+- **Language.** The admin UI follows each admin's own locale (the `admin` dictionary). Pages before sign-in use the store's default language.
+- **Dev email.** The console sender now logs the text body, and the text part of every email keeps link addresses as `label (url)`. A plain-text reader could not reset a password without that, and the dev log could not show reset or invitation links. The console sender runs only with `EMAIL_TRANSPORT=console`.
+- **Deferred from this stage** (plan items that need a list or a screen):
+  - `ListToolbar`, `DataTable`, `StickySaveBar`, `ConfirmDialog` and `StatusBadge` come with the first admin list (Stage 14). The URL round trip for filters is not built yet.
+  - Mobile bottom tabs and the `lg` sidebar. `AdminLayout` is a header with sign-out for now.
+  - `ChangeOwnPassword` and `UpdateProfile` need a profile screen. The phone field waits for WhatsApp alerts (Stage 18).
+  - An `auth` option on `defineEndpoint`. The middleware guards the routes instead.
+- **Not verified:** email delivery through Cloudflare Email Service (the console sender was used), the admin screens at 360px, and the Turnstile widget on the storefront forms, which render their widget from inside the island the way the admin form first did and need a browser check.
