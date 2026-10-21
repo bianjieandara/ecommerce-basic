@@ -1,10 +1,10 @@
-﻿# Progress
+# Progress
 
 Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) pass.
 
 - [x] Stage 0 — Repository bootstrap and tooling
 - [x] Stage 1 — Cloudflare resources, bindings, per-client config, custom entrypoint
-- [ ] Stage 2 — Shared kernel, i18n and formatting
+- [x] Stage 2 — Shared kernel, i18n and formatting
 - [ ] Stage 3 — Database schema and seed data
 - [ ] Stage 4 — Domain model and application ports
 - [ ] Stage 5 — Infrastructure adapters, jobs, composition, HTTP helpers

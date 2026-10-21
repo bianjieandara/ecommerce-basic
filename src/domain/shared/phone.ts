@@ -1,0 +1,31 @@
+// Phone normalization for WhatsApp and contact fields. Output is digits only (E.164 without "+"),
+// which is the format WhatsApp Cloud API and wa.me links expect.
+
+/** Shortest and longest plausible international numbers (digits only). */
+const MIN_DIGITS = 8;
+const MAX_DIGITS = 15;
+
+/**
+ * Converts a typed phone number to digits with the country code.
+ * Rules: "+" or "00" means the number already has a country code; otherwise the default country code is added
+ * unless the digits already start with it and are longer than a national number (10 digits).
+ * @param raw Text typed by the customer or admin.
+ * @param defaultCountryCode Country calling code without "+", for example "57".
+ * @returns Digits with country code, or null when the length is not plausible.
+ */
+export function normalizePhone(raw: string, defaultCountryCode: string): string | null {
+  const trimmed = raw.trim();
+  const hasPlus = trimmed.startsWith('+');
+  let digits = trimmed.replace(/\D/g, '');
+
+  if (hasPlus) {
+    // Already international: keep as typed.
+  } else if (digits.startsWith('00')) {
+    digits = digits.slice(2);
+  } else if (!(digits.startsWith(defaultCountryCode) && digits.length > 10)) {
+    digits = defaultCountryCode + digits.replace(/^0+/, '');
+  }
+
+  if (digits.length < MIN_DIGITS || digits.length > MAX_DIGITS) return null;
+  return digits;
+}

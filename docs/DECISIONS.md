@@ -30,3 +30,15 @@ an external API behaves differently from the plan, or a plan item is changed.
 - **Resource creation is idempotent.** D1 and KV are found by name before creating; queues treat "is already taken" as success.
 - **`.dev.vars` is copied from `.dev.vars.example`** for local runs; it is gitignored.
 - **`wrangler.base.jsonc` and `clients/*/client.jsonc` use trailing commas**, which Wrangler accepts.
+
+## 2026-10-21 — Stage 2
+
+- **Money, tax and totals are integer maths in the domain layer.** `computeLineTax` rounds half up with integers; `computeOrderTotals`
+  is the one function used by quotes, checkout, gateways and invoices.
+- **Catalog options are passed in, not read from settings.** `parseCatalogQuery` and `catalogQueryToSearchParams` take the currency
+  exponent and default sort. The domain never reads settings, so the same function runs in pages, the count API and tests.
+- **Dictionaries are typed against `en`.** `es.ts` uses `Dictionary = typeof en`, so a missing Spanish key fails `npm run check`.
+- **Missing translation keys render as the key** (visible gap, no crash).
+- **Intl formatting lives in `domain/shared/format.ts`** and the UI re-exports it. Verified: a USD price in `es-CO` renders as `US$ 12,50`.
+- **Pages must send a charset.** The dev server sends `text/html` without `charset`. The Stage 6 base layout adds
+  `<meta charset="utf-8">` and the server keeps UTF-8 output.
