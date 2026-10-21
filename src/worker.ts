@@ -1,18 +1,18 @@
-// Worker entrypoint. HTTP goes to the Astro handler from @astrojs/cloudflare; queue batches and cron ticks
-// arrive here too. Stage 1 only logs them; Stage 5 routes them to the application layer (see docs/JOBS.md).
+// Worker entrypoint. HTTP goes to the Astro handler from @astrojs/cloudflare. Queue batches and cron ticks
+// build a container and hand the work to the application layer (see docs/JOBS.md).
 import { handle } from '@astrojs/cloudflare/handler';
+import { createContainer } from '@/composition/create-container';
 
 export default {
   fetch: handle,
 
-  /** Receives job messages. Stage 1 acknowledges them without work; Stage 5 dispatches them. */
-  async queue(batch: MessageBatch<unknown>): Promise<void> {
-    console.log(`[queue] ${batch.queue}: ${batch.messages.length} message(s)`);
-    batch.ackAll();
+  /** Consumes job messages (main queue and dead-letter queue). */
+  async queue(batch: MessageBatch<unknown>, env: Env, ctx: ExecutionContext): Promise<void> {
+    await createContainer(env, ctx).jobs.consumeBatch(batch);
   },
 
-  /** Receives the single per-client cron tick. Stage 5 runs the scheduler here. */
-  async scheduled(controller: ScheduledController): Promise<void> {
-    console.log(`[cron] ${controller.cron} at ${new Date(controller.scheduledTime).toISOString()}`);
+  /** Runs the single per-client cron tick: schedules periodic jobs. */
+  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    await createContainer(env, ctx).scheduler.onTick();
   },
 } satisfies ExportedHandler<Env>;

@@ -57,4 +57,6 @@ export interface FailedJobRepository {
   list(page: number, pageSize: number): Promise<{ items: FailedJob[]; total: number }>;
   get(id: string): Promise<FailedJob | null>;
   resolve(id: string, resolution: 'retried' | 'discarded', nowIso: string): Promise<void>;
+  /** Deletes resolved jobs resolved before the cutoff. Unresolved jobs are never deleted. */
+  purgeResolvedBefore(cutoffIso: string): Promise<void>;
 }

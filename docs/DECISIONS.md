@@ -66,3 +66,23 @@ an external API behaves differently from the plan, or a plan item is changed.
 - **Legal texts are templates.** Placeholders are filled by `fillPlaceholders`. They must be reviewed by the client's lawyer before go-live.
 - **Job payload schemas (zod) are deferred to Stage 5**, with the job dispatcher that uses them.
 - **Verified:** `npm run check` and `npm run build` exit 0; ESLint reports no layer-boundary violations.
+
+## 2026-10-21 — Stage 5
+
+- **Container instead of `createApp`.** `composition/create-container.ts` returns one object with settings, the job queue,
+  the dispatcher, the scheduler, platform adapters and a health check. Routes read it from `Astro.locals.app`.
+- **Custom entrypoint calls the container.** `src/worker.ts` forwards queue batches to `jobs.consumeBatch` and cron ticks to
+  `scheduler.onTick`. Verified locally: a valid job is acknowledged (`job.done`), an invalid job lands in `failed_jobs`, and a
+  cron tick enqueues the periodic jobs.
+- **Not yet exercised:** the `RetryableError` retry path and the dead-letter batch. The code is written; a test needs a handler
+  that fails on purpose, and no such route exists outside development.
+- **Only two repositories exist:** settings and failed jobs. Products, orders, invoices and the rest come with their stages (7, 10,
+  11, 14 to 17). The plan lists them under this stage; writing them now would guess at queries the later stages define.
+- **`JOBS_MODE=inline` is not implemented.** Local development uses the real queue through `astro dev`, which the adapter
+  supports, so an inline fallback is not needed.
+- **`defineEndpoint` supports public GET and POST only.** Admin auth, rate limits and bot checks arrive in Stages 13 and 23.
+  Responses are `{ ok: true, data }`, so `/api/health` returns `{ ok, data: { ok, d1 } }`.
+- **Pdf renderer is typed but unverified.** `BrowserRunPdfRenderer` uses `format: 'a4'` (lowercase, required by the generated types).
+  It runs for real in Stage 11.
+- **Known gap:** `D1FailedJobRepository.record` reads the time with `new Date()` instead of the Clock port. Fix in Stage 16 with the
+  failed-jobs admin page.
