@@ -1,4 +1,10 @@
-// Temporary root endpoint for Stage 0. Replaced by a locale redirect in Stage 7.
-export function GET(): Response {
-  return new Response('ok', { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-}
+// Root URL: sends the visitor to their language (cookie, then browser preference, then the store default).
+import type { APIRoute } from 'astro';
+import { loadStoreContext, resolveLocale } from '@/http/store-context';
+import { PATHS } from '@/domain/shared/paths';
+
+export const GET: APIRoute = async ({ request, locals }) => {
+  const store = await loadStoreContext(locals.app);
+  const locale = resolveLocale(request, store.general.defaultLocale);
+  return new Response(null, { status: 302, headers: { Location: PATHS.home(locale) } });
+};

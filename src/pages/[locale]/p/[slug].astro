@@ -1,0 +1,46 @@
+---
+// Content pages: about, contact, privacy, terms and shipping/returns, plus custom pages. Rendered from their sections.
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import SectionRenderer from '@/ui/widgets/SectionRenderer.astro';
+import { isLocale } from '@/domain/shared/locale';
+import { PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { loadPageContent, loadSectionData } from '@/http/page-content';
+import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
+import { themeToCss } from '@/ui/lib/theme-css';
+
+const { locale, slug } = Astro.params;
+if (!isLocale(locale ?? '') || !slug || slug === 'home') return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const page = await loadPageContent(app, slug, lang);
+if (!page) return new Response('Not found', { status: 404 });
+
+const view = storeViewFor(store, lang);
+const contact = contactFor(store, lang);
+const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(store), store.catalog.newDays);
+---
+
+<StoreLayout
+  title={buildTitle(store, lang, page.title)}
+  description={page.title}
+  locale={lang}
+  storeName={store.general.storeName}
+  alternates={{ es: PATHS.page('es', slug), en: PATHS.page('en', slug) }}
+  canonical={new URL(PATHS.page(lang, slug), Astro.url.origin).toString()}
+  themeCss={themeToCss(store.theme)}
+  webAnalyticsToken={store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  <div class="flex flex-col gap-10">
+    <h1 class="text-2xl font-semibold">{page.title}</h1>
+    <SectionRenderer
+      sections={page.sections}
+      data={data}
+      view={view}
+      whatsapp={{ number: contact.whatsappNumber, message: contact.whatsappMessage }}
+    />
+  </div>
+</StoreLayout>

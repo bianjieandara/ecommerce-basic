@@ -1,0 +1,22 @@
+---
+// Benefit row: shipping, returns, secure payment and support, each with an icon and short text.
+import Icon from '@/ui/components/Icon.astro';
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import type { IconName } from '@/ui/components/icons';
+import type { WidgetProps } from './types';
+
+const { section, view } = Astro.props as WidgetProps;
+const config = section.config as { items?: { icon: IconName; text: LocalizedText }[] };
+const items = config.items ?? [];
+---
+
+{items.length > 0 && (
+  <ul class="grid grid-cols-2 gap-4 md:grid-cols-4" data-reveal>
+    {items.map((item) => (
+      <li class="flex items-center gap-3 rounded-brand bg-surface p-3 text-sm">
+        <Icon name={item.icon} size={22} />
+        <span>{pickText(item.text, view.locale, 'es')}</span>
+      </li>
+    ))}
+  </ul>
+)}

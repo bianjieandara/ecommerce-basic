@@ -1,0 +1,87 @@
+---
+// Previous/next and numbered links. Every link keeps the current filters, so paging never loses them.
+import { t } from '@/ui/i18n';
+import {
+  catalogQueryToSearchParams,
+  type CatalogOptions,
+  type CatalogQuery,
+} from '@/domain/catalog/catalog-query';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  locale: Locale;
+  basePath: string;
+  query: CatalogQuery;
+  options: CatalogOptions;
+  totalPages: number;
+}
+
+const { locale, basePath, query, options, totalPages } = Astro.props;
+const page = query.page;
+
+/**
+ * Builds the URL of one page, keeping every other filter.
+ * @param target Page number.
+ * @returns Relative URL with the query string.
+ */
+function hrefFor(target: number): string {
+  const params = catalogQueryToSearchParams({ ...query, page: target }, options);
+  const search = params.toString();
+  return search ? `${basePath}?${search}` : basePath;
+}
+
+const pages = Array.from({ length: totalPages }, (_, index) => index + 1).filter(
+  (number) => number === 1 || number === totalPages || Math.abs(number - page) <= 1,
+);
+---
+
+{totalPages > 1 && (
+  <nav aria-label={t(locale, 'pagination.label')} class="flex items-center justify-between gap-2 pt-4">
+    {page > 1 ? (
+      <a
+        href={hrefFor(page - 1)}
+        rel="prev"
+        class="min-h-11 rounded-brand border border-text/20 px-4 leading-[2.75rem]"
+      >
+        {t(locale, 'pagination.previous')}
+      </a>
+    ) : (
+      <span class="min-h-11 px-4 leading-[2.75rem] text-text/40">{t(locale, 'pagination.previous')}</span>
+    )}
+    <ol class="flex items-center gap-1 text-sm">
+      {pages.map((number, index) => (
+        <>
+          {index > 0 && pages[index - 1] !== number - 1 && (
+            <li aria-hidden="true" class="px-1">
+              …
+            </li>
+          )}
+          <li>
+            <a
+              href={hrefFor(number)}
+              aria-current={number === page ? 'page' : undefined}
+              aria-label={t(locale, 'pagination.page', { n: number })}
+              class:list={[
+                'flex min-h-11 min-w-11 items-center justify-center rounded-brand',
+                number === page ? 'bg-primary font-semibold text-on-primary' : 'hover:bg-surface',
+              ]}
+            >
+              {number}
+            </a>
+          </li>
+        </>
+      ))}
+    </ol>
+    {page < totalPages ? (
+      <a
+        href={hrefFor(page + 1)}
+        rel="next"
+        class="min-h-11 rounded-brand border border-text/20 px-4 leading-[2.75rem]"
+      >
+        {t(locale, 'pagination.next')}
+      </a>
+    ) : (
+      <span class="min-h-11 px-4 leading-[2.75rem] text-text/40">{t(locale, 'pagination.next')}</span>
+    )}
+  </nav>
+)}

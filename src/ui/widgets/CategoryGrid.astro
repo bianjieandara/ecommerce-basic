@@ -1,0 +1,30 @@
+---
+// Category tiles. Shows the chosen categories, or every active category when none is chosen.
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { routes } from '@/ui/lib/routes';
+import type { WidgetProps } from './types';
+
+const { section, data, view } = Astro.props as WidgetProps;
+const config = section.config as { title?: LocalizedText; categoryIds?: string[] };
+const chosen = config.categoryIds ?? [];
+const categories =
+  chosen.length > 0 ? data.categories.filter((category) => chosen.includes(category.id)) : data.categories;
+---
+
+{categories.length > 0 && (
+  <section class="flex flex-col gap-4" data-reveal>
+    <h2 class="text-xl font-semibold">{pickText(config.title, view.locale, 'es')}</h2>
+    <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+      {categories.map((category) => (
+        <li>
+          <a
+            href={routes.category(view.locale, category.slug)}
+            class="flex min-h-24 items-end rounded-brand bg-surface p-4 font-semibold hover:bg-primary-soft"
+          >
+            {category.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

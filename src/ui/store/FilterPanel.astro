@@ -1,0 +1,152 @@
+---
+// Filter form for the catalog. A plain GET form: it works without JavaScript and its URL is the canonical one.
+// Used twice per page (desktop sidebar and mobile drawer); `idPrefix` keeps the element ids unique.
+import { t } from '@/ui/i18n';
+import { routes, withQuery } from '@/ui/lib/routes';
+import type { CatalogOptions, CatalogQuery } from '@/domain/catalog/catalog-query';
+import type { CategoryDto, FacetsDto } from '@/application/dto/catalog-dto';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  idPrefix: string;
+  basePath: string;
+  query: CatalogQuery;
+  options: CatalogOptions;
+  facets: FacetsDto;
+  categories: CategoryDto[];
+  locale: Locale;
+  resultCount: number;
+  /** Shown on the index page only: the category list links to category pages. */
+  showCategoryLinks: boolean;
+}
+
+const { idPrefix, basePath, query, options, facets, categories, locale, resultCount, showCategoryLinks } =
+  Astro.props;
+const major = (minor: number | null) => (minor === null ? '' : String(minor / 10 ** options.exponent));
+const sortValue = query.sort;
+const flags = [
+  {
+    name: 'stock',
+    label: t(locale, 'filters.inStock'),
+    checked: query.inStock,
+    count: facets.counts.inStock,
+  },
+  { name: 'sale', label: t(locale, 'filters.onSale'), checked: query.onSale, count: facets.counts.onSale },
+  { name: 'new', label: t(locale, 'filters.newArrivals'), checked: query.isNew, count: facets.counts.isNew },
+];
+---
+
+<form method="get" action={basePath} class="flex flex-col gap-6" aria-label={t(locale, 'filters.title')}>
+  {query.q && <input type="hidden" name="q" value={query.q} />}
+  {sortValue !== options.defaultSort && <input type="hidden" name="sort" value={sortValue} />}
+
+  {showCategoryLinks && categories.length > 0 && (
+    <fieldset class="flex flex-col gap-2">
+      <legend class="mb-2 text-sm font-semibold">{t(locale, 'filters.category')}</legend>
+      <ul class="flex flex-col gap-1 text-sm">
+        {categories.map((category) => {
+          const found = facets.categories.find((item) => item.slug === category.slug);
+          return (
+            <li>
+              <a
+                href={routes.category(locale, category.slug)}
+                class="flex min-h-11 items-center justify-between hover:underline"
+              >
+                <span>{category.name}</span>
+                <span class="text-text/60">({found?.count ?? 0})</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </fieldset>
+  )}
+
+  {facets.attributes.map((facet) => (
+    <fieldset class="flex flex-col gap-2">
+      <legend class="mb-2 text-sm font-semibold">{facet.label}</legend>
+      <div class="flex flex-wrap gap-2">
+        {facet.values.map((value) => {
+          const id = `${idPrefix}-v-${value.id}`;
+          const disabled = value.count === 0 && !value.selected;
+          return (
+            <label
+              for={id}
+              class:list={[
+                'flex min-h-11 cursor-pointer items-center gap-2 rounded-brand border px-3 text-sm',
+                value.selected ? 'border-primary bg-primary-soft' : 'border-text/20',
+                disabled ? 'opacity-40' : '',
+              ]}
+            >
+              <input
+                type="checkbox"
+                id={id}
+                name="v"
+                value={value.id}
+                checked={value.selected}
+                disabled={disabled}
+                class="h-4 w-4"
+              />
+              {value.colorHex && (
+                <span
+                  class="h-4 w-4 rounded-full border border-text/20"
+                  style={`background:${value.colorHex}`}
+                  aria-hidden="true"
+                ></span>
+              )}
+              <span>{value.label}</span>
+              <span class="text-text/50">({value.count})</span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  ))}
+
+  <fieldset class="flex flex-col gap-2">
+    <legend class="mb-2 text-sm font-semibold">{t(locale, 'filters.price')}</legend>
+    <div class="grid grid-cols-2 gap-2">
+      <label class="flex flex-col gap-1 text-xs">
+        {t(locale, 'filters.min')}
+        <input
+          type="number"
+          name="min"
+          min="0"
+          step="any"
+          value={major(query.minPriceMinor)}
+          class="min-h-11 rounded-brand border border-text/20 px-2"
+        />
+      </label>
+      <label class="flex flex-col gap-1 text-xs">
+        {t(locale, 'filters.max')}
+        <input
+          type="number"
+          name="max"
+          min="0"
+          step="any"
+          value={major(query.maxPriceMinor)}
+          class="min-h-11 rounded-brand border border-text/20 px-2"
+        />
+      </label>
+    </div>
+  </fieldset>
+
+  <fieldset class="flex flex-col gap-2">
+    {flags.map((flag) => (
+      <label class="flex min-h-11 items-center gap-2 text-sm">
+        <input type="checkbox" name={flag.name} value="1" checked={flag.checked} class="h-4 w-4" />
+        <span>{flag.label}</span>
+        <span class="text-text/50">({flag.count})</span>
+      </label>
+    ))}
+  </fieldset>
+
+  <div class="flex flex-col gap-2">
+    <button type="submit" class="min-h-11 rounded-brand bg-primary px-4 font-semibold text-on-primary">
+      {t(locale, 'filters.showResults', { count: resultCount })}
+    </button>
+    <a href={withQuery(basePath, { q: query.q ?? undefined })} class="min-h-11 text-center text-sm underline">
+      {t(locale, 'shop.clearFilters')}
+    </a>
+  </div>
+</form>

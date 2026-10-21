@@ -1,0 +1,161 @@
+---
+// Catalog layout shared by the shop index and category pages: search, sort, filters (sidebar on desktop, drawer on
+// phones), the product grid and pagination. Data is loaded by the page, so this component only renders.
+import Button from '@/ui/components/Button.astro';
+import Drawer from '@/ui/components/Drawer.astro';
+import EmptyState from '@/ui/components/EmptyState.astro';
+import Icon from '@/ui/components/Icon.astro';
+import FilterPanel from './FilterPanel.astro';
+import Pagination from './Pagination.astro';
+import ProductCard from './ProductCard.astro';
+import { t } from '@/ui/i18n';
+import type { CatalogOptions, CatalogQuery } from '@/domain/catalog/catalog-query';
+import { CATALOG_SORTS } from '@/domain/catalog/catalog-query';
+import type { CategoryDto, FacetsDto, ProductCardDto } from '@/application/dto/catalog-dto';
+import type { Paginated } from '@/domain/shared/pagination';
+import type { StoreView } from '@/ui/lib/store-view';
+
+interface Props {
+  title: string;
+  basePath: string;
+  query: CatalogQuery;
+  options: CatalogOptions;
+  listing: Paginated<ProductCardDto>;
+  facets: FacetsDto;
+  categories: CategoryDto[];
+  view: StoreView;
+  showCategoryLinks: boolean;
+}
+
+const { title, basePath, query, options, listing, facets, categories, view, showCategoryLinks } = Astro.props;
+const locale = view.locale;
+const activeFilters = [
+  query.inStock,
+  query.onSale,
+  query.isNew,
+  query.valueIds.length > 0,
+  query.minPriceMinor !== null || query.maxPriceMinor !== null,
+].filter(Boolean).length;
+---
+
+<section class="flex flex-col gap-6">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-2xl font-semibold">{title}</h1>
+    <form method="get" action={basePath} role="search" class="flex gap-2">
+      <label class="sr-only" for="catalog-search">
+        {t(locale, 'shop.searchPlaceholder')}
+      </label>
+      <input
+        id="catalog-search"
+        type="search"
+        name="q"
+        value={query.q ?? ''}
+        placeholder={t(locale, 'shop.searchPlaceholder')}
+        class="min-h-11 flex-1 rounded-brand border border-text/20 px-3"
+      />
+      {query.sort !== options.defaultSort && <input type="hidden" name="sort" value={query.sort} />}
+      <button
+        type="submit"
+        class="min-h-11 rounded-brand bg-primary px-4 text-on-primary"
+        aria-label={t(locale, 'nav.search')}
+      >
+        <Icon name="search" />
+      </button>
+    </form>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p class="text-sm text-text/70" aria-live="polite">
+        {t(locale, 'shop.results', { count: listing.total })}
+      </p>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          data-dialog-open="catalog-filters"
+          class="min-h-11 rounded-brand border border-text/20 px-4 text-sm font-medium md:hidden"
+        >
+          {t(locale, 'filters.activeCount', { count: activeFilters })}
+        </button>
+        <form method="get" action={basePath} class="flex items-center gap-2">
+          {query.q && <input type="hidden" name="q" value={query.q} />}
+          <label class="text-sm" for="catalog-sort">
+            {t(locale, 'shop.sortBy')}
+          </label>
+          <select
+            id="catalog-sort"
+            name="sort"
+            onchange="this.form.requestSubmit()"
+            class="min-h-11 rounded-brand border border-text/20 px-2 text-sm"
+          >
+            {CATALOG_SORTS.map((sort) => (
+              <option value={sort} selected={sort === query.sort}>
+                {t(locale, `sort.${sort}`)}
+              </option>
+            ))}
+          </select>
+          <noscript>
+            <Button type="submit" variant="secondary">
+              {t(locale, 'common.search')}
+            </Button>
+          </noscript>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid gap-8 md:grid-cols-[14rem_1fr]">
+    <aside class="hidden md:block" aria-label={t(locale, 'filters.title')}>
+      <FilterPanel
+        idPrefix="desktop"
+        basePath={basePath}
+        query={query}
+        options={options}
+        facets={facets}
+        categories={categories}
+        locale={locale}
+        resultCount={listing.total}
+        showCategoryLinks={showCategoryLinks}
+      />
+    </aside>
+
+    <div class="flex min-w-0 flex-col gap-6">
+      {listing.items.length === 0 ? (
+        <EmptyState title={t(locale, 'shop.emptyTitle')} text={t(locale, 'shop.emptyText')}>
+          <a
+            href={basePath}
+            class="mt-2 min-h-11 rounded-brand border border-text/20 px-4 leading-[2.75rem] text-sm"
+          >
+            {t(locale, 'shop.clearFilters')}
+          </a>
+        </EmptyState>
+      ) : (
+        <ul class="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4">
+          {listing.items.map((product) => (
+            <li>
+              <ProductCard product={product} view={view} />
+            </li>
+          ))}
+        </ul>
+      )}
+      <Pagination
+        locale={locale}
+        basePath={basePath}
+        query={query}
+        options={options}
+        totalPages={listing.totalPages}
+      />
+    </div>
+  </div>
+
+  <Drawer id="catalog-filters" title={t(locale, 'filters.title')}>
+    <FilterPanel
+      idPrefix="mobile"
+      basePath={basePath}
+      query={query}
+      options={options}
+      facets={facets}
+      categories={categories}
+      locale={locale}
+      resultCount={listing.total}
+      showCategoryLinks={showCategoryLinks}
+    />
+  </Drawer>
+</section>

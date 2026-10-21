@@ -1,0 +1,33 @@
+---
+// Featured block: a row of products (carousel) or a grid. Products are loaded by the page, not here.
+import Carousel from '@/ui/components/Carousel.astro';
+import ProductCard from '@/ui/store/ProductCard.astro';
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import type { WidgetProps } from './types';
+
+const { section, data, view } = Astro.props as WidgetProps;
+const config = section.config as { title?: LocalizedText; layout?: 'carousel' | 'grid' };
+const products = data.productsBySection[section.id] ?? [];
+const title = pickText(config.title, view.locale, 'es');
+---
+
+{products.length > 0 && (
+  <section class="flex flex-col gap-4" data-reveal>
+    <h2 class="text-xl font-semibold">{title}</h2>
+    {config.layout === 'grid' ? (
+      <ul class="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {products.map((product) => (
+          <li>
+            <ProductCard product={product} view={view} />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <Carousel label={title} autoplay={0} slideBasis="62%">
+        {products.map((product) => (
+          <ProductCard product={product} view={view} />
+        ))}
+      </Carousel>
+    )}
+  </section>
+)}

@@ -1,0 +1,104 @@
+// Page content for public pages: stored sections (or the code default) and the data each widget needs.
+// Widgets never query data themselves; this module loads it once per page.
+import type { Container } from '@/composition/create-container';
+import type { WidgetInstance } from '@/application/content/widgets/registry';
+import { DEFAULT_SYSTEM_PAGES } from '@/application/content/defaults/system-pages';
+import type { CategoryDto, ProductCardDto } from '@/application/dto/catalog-dto';
+import { parseCatalogQuery, type CatalogOptions } from '@/domain/catalog/catalog-query';
+import type { Locale } from '@/domain/shared/locale';
+import { pickText } from '@/domain/shared/localized-text';
+
+/** Title and sections of a page, ready to render. */
+export interface PageContent {
+  title: string;
+  sections: WidgetInstance[];
+}
+
+/** Data loaded for the widgets of one page, keyed by section id. */
+export interface SectionData {
+  productsBySection: Record<string, ProductCardDto[]>;
+  categories: CategoryDto[];
+}
+
+/** Largest number of products a featured block may show. */
+const MAX_FEATURED = 24;
+
+/**
+ * Loads a page by slug: the stored version when published, otherwise the code default for system pages.
+ * @param app Request container.
+ * @param slug Page slug.
+ * @param locale Page language.
+ * @returns The page, or null when it does not exist or is unpublished.
+ */
+export async function loadPageContent(
+  app: Container,
+  slug: string,
+  locale: Locale,
+): Promise<PageContent | null> {
+  const stored = await app.pages.findBySlug(slug);
+  if (stored) {
+    if (!stored.isPublished) return null;
+    return { title: pickText(stored.title, locale, 'es'), sections: stored.sections };
+  }
+  const fallback = DEFAULT_SYSTEM_PAGES.find((page) => page.slug === slug);
+  if (!fallback) return null;
+  return {
+    title: pickText(fallback.title, locale, 'es'),
+    sections: fallback.sections.map((section, index) => ({
+      id: `${slug}-${index}`,
+      type: section.type,
+      enabled: section.enabled,
+      config: section.config,
+    })),
+  };
+}
+
+/**
+ * Loads the products and categories that the enabled widgets on a page need.
+ * @param app Request container.
+ * @param sections Page sections.
+ * @param locale Page language.
+ * @param options Catalog parsing options (currency exponent, default sort).
+ * @param newDays "New" badge window from settings.
+ * @returns Data keyed by section id.
+ */
+export async function loadSectionData(
+  app: Container,
+  sections: WidgetInstance[],
+  locale: Locale,
+  options: CatalogOptions,
+  newDays: number,
+): Promise<SectionData> {
+  const service = app.catalog({ newDays });
+  const enabled = sections.filter((section) => section.enabled);
+  const needsCategories = enabled.some(
+    (section) => section.type === 'category_grid' || section.type === 'featured_products',
+  );
+  const categories = needsCategories ? await service.listCategories(locale) : [];
+
+  const productsBySection: Record<string, ProductCardDto[]> = {};
+  for (const section of enabled) {
+    if (section.type !== 'featured_products') continue;
+    const config = section.config as {
+      source?: string;
+      limit?: number;
+      categoryIds?: string[];
+      productIds?: string[];
+    };
+    const limit = Math.min(MAX_FEATURED, Math.max(1, config.limit ?? 8));
+    if (config.source === 'manual') {
+      productsBySection[section.id] = await service.listProductsByIds(locale, config.productIds ?? []);
+      continue;
+    }
+    const sort =
+      config.source === 'newest' ? 'newest' : config.source === 'best_sellers' ? 'best_sellers' : 'featured';
+    const params = new URLSearchParams({ sort });
+    if (config.source === 'category') {
+      const slug = categories.find((category) => category.id === config.categoryIds?.[0])?.slug;
+      if (slug) params.set('category', slug);
+    }
+    const query = parseCatalogQuery(params, locale, options);
+    productsBySection[section.id] = (await service.listProducts(query, limit)).items;
+  }
+  return { productsBySection, categories };
+}

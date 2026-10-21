@@ -15,9 +15,14 @@ import type {
   PageCacheVersion,
   RateLimiter,
 } from '@/application/ports/platform';
-import type { SettingsRepository } from '@/application/ports/content';
+import type { CatalogQueryService } from '@/application/ports/catalog';
+import type { MediaStorage } from '@/application/ports/media';
+import type { PageRepository, SettingsRepository } from '@/application/ports/content';
+import { D1CatalogQueryService } from '@/infrastructure/d1/catalog-query-service';
 import { D1FailedJobRepository } from '@/infrastructure/d1/failed-job-repository';
+import { D1PageRepository } from '@/infrastructure/d1/page-repository';
 import { D1SettingsRepository } from '@/infrastructure/d1/settings-repository';
+import { R2MediaStorage } from '@/infrastructure/r2/r2-media-storage';
 import { readSecret } from '@/infrastructure/cloudflare/env';
 import { CloudflareJobQueue } from '@/infrastructure/queues/cloudflare-job-queue';
 import { KvCacheStore, KvPageCacheVersion } from '@/infrastructure/kv/kv-adapters';
@@ -35,6 +40,10 @@ import type { LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoic
 /** Everything the application can use for one request or one job run. */
 export interface Container {
   settings: SettingsRepository;
+  pages: PageRepository;
+  media: MediaStorage;
+  /** Storefront read model. `newDays` comes from the catalog settings ("new" badge window). */
+  catalog: (options: { newDays: number }) => CatalogQueryService;
   failedJobs: FailedJobRepository;
   jobQueue: JobQueue;
   jobs: JobDispatcher;
@@ -92,6 +101,9 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
 
   return {
     settings: new D1SettingsRepository(env.DB),
+    pages: new D1PageRepository(env.DB),
+    media: new R2MediaStorage(env.MEDIA),
+    catalog: ({ newDays }) => new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() }),
     failedJobs,
     jobQueue,
     jobs: new JobDispatcher({ failedJobs, handlers, log: logEvent }),

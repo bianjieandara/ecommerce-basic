@@ -32,7 +32,18 @@ export const DEFAULT_SYSTEM_PAGES: DefaultPage[] = [
         enabled: true,
         config: { title: { es: 'Compra por categoría', en: 'Shop by category' }, categoryIds: [] },
       },
-      { type: 'trust_badges', enabled: true, config: { items: [] } },
+      {
+        type: 'trust_badges',
+        enabled: true,
+        config: {
+          items: [
+            { icon: 'truck', text: { es: 'Envíos a todo el país', en: 'Shipping across the country' } },
+            { icon: 'return', text: { es: 'Cambios en 10 días', en: 'Exchanges within 10 days' } },
+            { icon: 'lock', text: { es: 'Pago seguro', en: 'Secure payment' } },
+            { icon: 'chat', text: { es: 'Atención por WhatsApp', en: 'Support on WhatsApp' } },
+          ],
+        },
+      },
       {
         type: 'testimonials',
         enabled: true,
@@ -43,7 +54,15 @@ export const DEFAULT_SYSTEM_PAGES: DefaultPage[] = [
           limit: 6,
         },
       },
-      { type: 'whatsapp_cta', enabled: true, config: {} },
+      {
+        type: 'whatsapp_cta',
+        enabled: true,
+        config: {
+          title: { es: '¿Tienes dudas?', en: 'Have questions?' },
+          text: { es: 'Escríbenos y te respondemos rápido.', en: 'Message us and we will reply quickly.' },
+          buttonLabel: { es: 'Escribir por WhatsApp', en: 'Chat on WhatsApp' },
+        },
+      },
     ],
   },
   {

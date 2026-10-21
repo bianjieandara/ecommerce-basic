@@ -1,0 +1,16 @@
+---
+// Markdown text block. Raw HTML in the source is escaped by the renderer, so content cannot inject markup.
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { renderMarkdown } from '@/ui/lib/markdown';
+import type { WidgetProps } from './types';
+
+const { section, view } = Astro.props as WidgetProps;
+const config = section.config as { body?: LocalizedText };
+const html = renderMarkdown(pickText(config.body, view.locale, 'es'));
+---
+
+<div
+  data-reveal
+  class="max-w-prose text-base leading-relaxed [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold [&_h2]:mb-2 [&_h2]:mt-6 [&_h2]:text-xl [&_h2]:font-semibold [&_li]:ml-5 [&_li]:list-disc [&_p]:my-3"
+  set:html={html}
+/>

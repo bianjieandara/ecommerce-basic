@@ -1,0 +1,40 @@
+---
+// Renders a page's sections in order. Disabled sections and types without a renderer are skipped.
+// Client extensions add renderers in the UI layer (see docs/CUSTOMIZATION.md); this map holds the core types.
+import type { WidgetInstance } from '@/application/content/widgets/registry';
+import type { SectionData } from '@/http/page-content';
+import type { StoreView } from '@/ui/lib/store-view';
+import type { WhatsAppContact } from './types';
+import CategoryGrid from './CategoryGrid.astro';
+import FeaturedProducts from './FeaturedProducts.astro';
+import HeroCarousel from './HeroCarousel.astro';
+import RichText from './RichText.astro';
+import TrustBadges from './TrustBadges.astro';
+import WhatsAppCta from './WhatsAppCta.astro';
+
+interface Props {
+  sections: WidgetInstance[];
+  data: SectionData;
+  view: StoreView;
+  whatsapp: WhatsAppContact;
+}
+
+const { sections, data, view, whatsapp } = Astro.props;
+
+/** Renderer per widget type. Types not listed here render nothing. */
+const renderers: Record<string, typeof HeroCarousel> = {
+  hero_carousel: HeroCarousel,
+  featured_products: FeaturedProducts,
+  category_grid: CategoryGrid,
+  rich_text: RichText,
+  trust_badges: TrustBadges,
+  whatsapp_cta: WhatsAppCta,
+};
+---
+
+{sections
+  .filter((section) => section.enabled)
+  .map((section) => {
+    const Renderer = renderers[section.type];
+    return Renderer ? <Renderer section={section} data={data} view={view} whatsapp={whatsapp} /> : null;
+  })}

@@ -1,0 +1,51 @@
+---
+// Category page: the catalog filtered to one category. Same URL rules as the shop index.
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import CatalogView from '@/ui/store/CatalogView.astro';
+import { isLocale } from '@/domain/shared/locale';
+import { loadCatalogPage } from '@/http/catalog-request';
+import { loadStoreContext } from '@/http/store-context';
+import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { themeToCss } from '@/ui/lib/theme-css';
+
+const { locale, category: categorySlug } = Astro.params;
+if (!isLocale(locale ?? '') || !categorySlug) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const category = await app.catalog({ newDays: store.catalog.newDays }).getCategoryBySlug(lang, categorySlug);
+if (!category) return new Response('Not found', { status: 404 });
+
+const load = await loadCatalogPage(app, Astro.url, lang, categorySlug);
+if ('redirectTo' in load) return Astro.redirect(load.redirectTo, 301);
+
+const view = storeViewFor(load.store, lang);
+const contact = contactFor(load.store, lang);
+const categories = await app.catalog({ newDays: load.store.catalog.newDays }).listCategories(lang);
+---
+
+<StoreLayout
+  title={buildTitle(load.store, lang, category.name)}
+  description={category.description}
+  locale={lang}
+  storeName={load.store.general.storeName}
+  alternates={{}}
+  canonical={new URL(load.basePath, Astro.url.origin).toString()}
+  noindex={!load.indexable}
+  themeCss={themeToCss(load.store.theme)}
+  webAnalyticsToken={load.store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  <CatalogView
+    title={category.name}
+    basePath={load.basePath}
+    query={load.query}
+    options={load.options}
+    listing={load.listing}
+    facets={load.facets}
+    categories={categories}
+    view={view}
+    showCategoryLinks={false}
+  />
+</StoreLayout>

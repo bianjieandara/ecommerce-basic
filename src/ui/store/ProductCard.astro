@@ -1,0 +1,56 @@
+---
+// Product tile for grids and carousels: image, status badges, name and price range.
+import Badge from '@/ui/components/Badge.astro';
+import Price from '@/ui/components/Price.astro';
+import { t } from '@/ui/i18n';
+import { mediaUrl } from '@/ui/lib/media-url';
+import { routes } from '@/ui/lib/routes';
+import type { ProductCardDto } from '@/application/dto/catalog-dto';
+import type { StoreView } from '@/ui/lib/store-view';
+
+interface Props {
+  product: ProductCardDto;
+  view: StoreView;
+}
+
+const { product, view } = Astro.props;
+const href = routes.product(view.locale, product.slug);
+---
+
+<article class="group flex min-w-0 flex-col gap-2">
+  <a href={href} class="block overflow-hidden rounded-brand bg-surface">
+    {product.imageKey ? (
+      <img
+        src={mediaUrl(product.imageKey)}
+        alt=""
+        width="480"
+        height="480"
+        loading="lazy"
+        decoding="async"
+        class="aspect-square w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+      />
+    ) : (
+      <span class="flex aspect-square w-full items-center justify-center text-xs text-text/50">
+        {t(view.locale, 'product_page.noImage')}
+      </span>
+    )}
+  </a>
+  <div class="flex flex-wrap gap-1">
+    {product.isOnSale && <Badge tone="danger">{t(view.locale, 'product.onSale')}</Badge>}
+    {product.isNew && <Badge tone="success">{t(view.locale, 'product.new')}</Badge>}
+    {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}
+  </div>
+  <h3 class="text-sm font-medium leading-snug">
+    <a href={href} class="hover:underline">
+      {product.name}
+    </a>
+  </h3>
+  <Price
+    amountMinor={product.minPriceMinor}
+    compareAtMinor={product.compareAtPriceMinor}
+    currency={view.currency}
+    locale={view.locale}
+    country={view.country}
+    from={product.maxPriceMinor !== product.minPriceMinor}
+  />
+</article>

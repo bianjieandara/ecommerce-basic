@@ -1,0 +1,25 @@
+---
+// Call-to-action block that opens a WhatsApp chat with a prefilled message.
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { whatsappLink } from '@/ui/lib/whatsapp';
+import type { WidgetProps } from './types';
+
+const { section, view, whatsapp } = Astro.props as WidgetProps;
+const config = section.config as { title?: LocalizedText; text?: LocalizedText; buttonLabel?: LocalizedText };
+const href = whatsappLink(whatsapp.number, whatsapp.message);
+---
+
+{href && (
+  <section class="flex flex-col gap-3 rounded-brand bg-surface p-6" data-reveal>
+    <h2 class="text-xl font-semibold">{pickText(config.title, view.locale, 'es')}</h2>
+    <p class="text-sm text-text/80">{pickText(config.text, view.locale, 'es')}</p>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener"
+      class="inline-flex min-h-12 w-fit items-center rounded-brand bg-emerald-600 px-6 font-semibold text-white"
+    >
+      {pickText(config.buttonLabel, view.locale, 'es')}
+    </a>
+  </section>
+)}

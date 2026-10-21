@@ -60,6 +60,7 @@ export const es: Dictionary = {
     notifyWhenBack: 'Avisarme cuando vuelva',
     onSale: 'Oferta',
     new: 'Nuevo',
+    whatsappMessage: 'Hola, me interesa {name}{option}. ¿Está disponible?',
   },
   cart: {
     title: 'Tu carrito',
@@ -131,5 +132,26 @@ export const es: Dictionary = {
     CONFLICT: 'Este cambio entra en conflicto con datos existentes.',
     INVALID_STATE: 'Esta acción no está permitida en el estado actual.',
     generic: 'Algo salió mal. Inténtalo de nuevo.',
+  },
+  sort: {
+    featured: 'Destacados',
+    newest: 'Novedades',
+    price_asc: 'Precio: menor a mayor',
+    price_desc: 'Precio: mayor a menor',
+    best_sellers: 'Más vendidos',
+    relevance: 'Relevancia',
+  },
+  pagination: {
+    previous: 'Anterior',
+    next: 'Siguiente',
+    page: 'Página {n}',
+    label: 'Paginación',
+  },
+  product_page: {
+    variants: 'Opciones',
+    gallery: 'Imágenes del producto',
+    noImage: 'Sin imagen todavía',
+    inStockNow: 'Disponible ahora',
+    soldOut: 'Agotado en esta opción',
   },
 };

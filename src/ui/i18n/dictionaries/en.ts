@@ -59,6 +59,7 @@ export const en = {
     notifyWhenBack: 'Notify me when it is back',
     onSale: 'Sale',
     new: 'New',
+    whatsappMessage: 'Hi, I am interested in {name}{option}. Is it available?',
   },
   cart: {
     title: 'Your cart',
@@ -130,5 +131,26 @@ export const en = {
     CONFLICT: 'This change conflicts with existing data.',
     INVALID_STATE: 'This action is not allowed for the current status.',
     generic: 'Something went wrong. Please try again.',
+  },
+  sort: {
+    featured: 'Featured',
+    newest: 'Newest',
+    price_asc: 'Price: low to high',
+    price_desc: 'Price: high to low',
+    best_sellers: 'Best sellers',
+    relevance: 'Relevance',
+  },
+  pagination: {
+    previous: 'Previous',
+    next: 'Next',
+    page: 'Page {n}',
+    label: 'Pagination',
+  },
+  product_page: {
+    variants: 'Options',
+    gallery: 'Product images',
+    noImage: 'No image yet',
+    inStockNow: 'Available now',
+    soldOut: 'Sold out for this option',
   },
 };

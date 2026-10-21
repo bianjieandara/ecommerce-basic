@@ -1,0 +1,180 @@
+---
+// Product page: gallery, price for the chosen option, option links (no JavaScript needed), description and WhatsApp.
+// The chosen option is the ?v= parameter; the first available option is used when it is missing.
+import Price from '@/ui/components/Price.astro';
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import { isLocale } from '@/domain/shared/locale';
+import { PATHS, withQuery } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+import { renderMarkdown } from '@/ui/lib/markdown';
+import { mediaUrl } from '@/ui/lib/media-url';
+import { whatsappLink } from '@/ui/lib/whatsapp';
+import { loadStoreContext } from '@/http/store-context';
+import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { themeToCss } from '@/ui/lib/theme-css';
+
+const { locale, slug } = Astro.params;
+if (!isLocale(locale ?? '') || !slug) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const product = await app.catalog({ newDays: store.catalog.newDays }).getProductBySlug(lang, slug);
+if (!product) return new Response('Not found', { status: 404 });
+
+const view = storeViewFor(store, lang);
+const contact = contactFor(store, lang);
+const requested = Astro.url.searchParams.get('v');
+const selected =
+  product.variants.find((variant) => variant.id === requested) ??
+  product.variants.find((variant) => variant.isActive && (!variant.trackInventory || variant.stock > 0)) ??
+  product.variants[0] ??
+  null;
+
+const price = selected?.priceMinor ?? product.basePriceMinor;
+const compareAt = selected?.compareAtPriceMinor ?? product.compareAtPriceMinor;
+const inStock = selected !== null && selected.isActive && (!selected.trackInventory || selected.stock > 0);
+const hasOptions = product.variants.some((variant) => variant.variantLabel !== '');
+const option = selected && selected.variantLabel ? ` (${selected.variantLabel})` : '';
+const whatsappHref = whatsappLink(
+  contact.whatsappNumber,
+  t(lang, 'product.whatsappMessage', { name: product.name, option }),
+);
+const taxLabel = view.pricesIncludeTax ? t(lang, 'product.taxIncluded') : t(lang, 'product.taxExtra');
+const alternates = Object.fromEntries(
+  (Object.entries(product.alternateSlugs) as [keyof typeof product.alternateSlugs, string][]).map(
+    ([code, altSlug]) => [code, PATHS.product(code, altSlug)],
+  ),
+);
+const description = renderMarkdown(product.descriptionMd);
+const mainImage = product.images[0];
+const category = product.categories[0];
+---
+
+<StoreLayout
+  title={buildTitle(store, lang, product.seoTitle || product.name)}
+  description={product.seoDescription || product.shortDescription}
+  locale={lang}
+  storeName={store.general.storeName}
+  alternates={alternates}
+  canonical={new URL(PATHS.product(lang, slug), Astro.url.origin).toString()}
+  themeCss={themeToCss(store.theme)}
+  webAnalyticsToken={store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  <article class="grid gap-8 md:grid-cols-2">
+    <div class="flex flex-col gap-3">
+      {mainImage ? (
+        <img
+          src={mediaUrl(mainImage.key)}
+          alt={mainImage.alt || product.name}
+          width="960"
+          height="960"
+          fetchpriority="high"
+          class="aspect-square w-full rounded-brand bg-surface object-cover"
+        />
+      ) : (
+        <div class="flex aspect-square w-full items-center justify-center rounded-brand bg-surface text-sm text-text/50">
+          {t(lang, 'product_page.noImage')}
+        </div>
+      )}
+      {product.images.length > 1 && (
+        <ul class="grid grid-cols-4 gap-2" aria-label={t(lang, 'product_page.gallery')}>
+          {product.images.slice(1).map((image) => (
+            <li>
+              <img
+                src={mediaUrl(image.key)}
+                alt={image.alt || product.name}
+                width="240"
+                height="240"
+                loading="lazy"
+                class="aspect-square w-full rounded-brand object-cover"
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+
+    <div class="flex flex-col gap-5">
+      <nav aria-label="breadcrumb" class="text-sm text-text/60">
+        <a href={PATHS.shop(lang)} class="underline">
+          {t(lang, 'nav.shop')}
+        </a>
+        {category && (
+          <>
+            {' / '}
+            <a href={PATHS.category(lang, category.slug)} class="underline">
+              {category.name}
+            </a>
+          </>
+        )}
+      </nav>
+
+      <header class="flex flex-col gap-2">
+        <h1 class="text-2xl font-semibold">{product.name}</h1>
+        <p class="text-text/80">{product.shortDescription}</p>
+      </header>
+
+      <div class="flex flex-wrap items-baseline gap-3">
+        <Price
+          amountMinor={price}
+          compareAtMinor={compareAt}
+          currency={view.currency}
+          locale={lang}
+          country={view.country}
+        />
+        <span class="text-sm text-text/60">{taxLabel}</span>
+      </div>
+
+      <p class={`text-sm font-medium ${inStock ? 'text-emerald-800' : 'text-accent'}`}>
+        {inStock ? t(lang, 'product.inStock') : t(lang, 'product.outOfStock')}
+      </p>
+
+      {hasOptions && (
+        <section aria-label={t(lang, 'product_page.variants')} class="flex flex-col gap-2">
+          <h2 class="text-sm font-semibold">{t(lang, 'product_page.variants')}</h2>
+          <ul class="flex flex-wrap gap-2">
+            {product.variants.map((variant) => {
+              const available = variant.isActive && (!variant.trackInventory || variant.stock > 0);
+              return (
+                <li>
+                  <a
+                    href={withQuery(PATHS.product(lang, slug), { v: variant.id })}
+                    aria-current={selected?.id === variant.id ? 'true' : undefined}
+                    class:list={[
+                      'flex min-h-11 items-center rounded-brand border px-4 text-sm',
+                      selected?.id === variant.id
+                        ? 'border-primary bg-primary-soft font-semibold'
+                        : 'border-text/20',
+                      available ? '' : 'opacity-50 line-through',
+                    ]}
+                  >
+                    {variant.variantLabel}
+                    {!available && <span class="sr-only">{t(lang, 'product_page.soldOut')}</span>}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
+      {whatsappHref && (
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex min-h-12 items-center justify-center rounded-brand bg-emerald-600 px-6 font-semibold text-white"
+        >
+          {t(lang, 'product.askWhatsApp')}
+        </a>
+      )}
+
+      <section class="flex flex-col gap-2 border-t border-text/10 pt-5">
+        <h2 class="text-sm font-semibold">{t(lang, 'product.description')}</h2>
+        <div class="max-w-prose leading-relaxed [&_p]:my-3" set:html={description} />
+      </section>
+    </div>
+  </article>
+</StoreLayout>

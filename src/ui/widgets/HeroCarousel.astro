@@ -1,0 +1,42 @@
+---
+// Hero carousel: slides with a title, subtitle and optional button. Images come later with the media library (Stage 14).
+import Button from '@/ui/components/Button.astro';
+import Carousel from '@/ui/components/Carousel.astro';
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { t } from '@/ui/i18n';
+import type { WidgetProps } from './types';
+
+interface Slide {
+  title: LocalizedText;
+  subtitle: LocalizedText;
+  cta?: { href: string; label: LocalizedText } | null;
+}
+
+const { section, view } = Astro.props as WidgetProps;
+const config = section.config as { slides?: Slide[]; autoplaySeconds?: number };
+const slides = config.slides ?? [];
+---
+
+{slides.length > 0 && (
+  <div data-reveal>
+    <Carousel
+      label={t(view.locale, 'nav.home')}
+      autoplay={(config.autoplaySeconds ?? 6) * 1000}
+      slideBasis="100%"
+    >
+      {slides.map((slide) => (
+        <div class="flex min-h-64 flex-col justify-end gap-3 rounded-brand bg-primary p-6 text-on-primary">
+          <h2 class="text-2xl font-semibold">{pickText(slide.title, view.locale, 'es')}</h2>
+          <p class="text-sm opacity-90">{pickText(slide.subtitle, view.locale, 'es')}</p>
+          {slide.cta && (
+            <div>
+              <Button href={slide.cta.href} variant="secondary">
+                {pickText(slide.cta.label, view.locale, 'es')}
+              </Button>
+            </div>
+          )}
+        </div>
+      ))}
+    </Carousel>
+  </div>
+)}
