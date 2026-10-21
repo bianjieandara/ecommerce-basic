@@ -101,3 +101,11 @@ an external API behaves differently from the plan, or a plan item is changed.
 - **Fonts:** all three @fontsource stylesheets are imported. The browser downloads a font file only when text uses it, so the
   unused presets cost nothing on the wire.
 - **Cart badge** (`data-cart-count`) exists in the header but has no data until Stage 8 fills it from the cart store.
+
+## 2026-10-21 — Cloudflare account for eBAQ
+
+- **Hosting account is `bianjieandara@gmail.com` (`ec9019b98b852dc29c0d43042d3ad8bf`).** R2 was not enabled on the first account
+  (`ebaq.solutions@gmail.com`, `35dacd…`), so `demo` was re-provisioned here: D1 `demo-db`, KV `demo-cache`, queues `demo-jobs` and
+  `demo-jobs-dlq`, R2 `demo-media`. `clients/demo/client.jsonc` pins `accountId`.
+- **Resources left in the first account (`35dacd…`) are unused.** Delete them in its dashboard when convenient.
+- **The dress-rental `.env` token was not used.** Verification returned 401 (invalid token) and the account ID does not match.
