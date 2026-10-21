@@ -1,0 +1,33 @@
+{
+  "slug": "demo",
+  "workerName": "demo-store",
+  "accountId": null,
+  "d1": {
+    "name": "demo-db",
+    "id": "f93b6842-a35c-4f23-995a-4fd98f8d5ba2",
+  },
+  "r2": {
+    "bucket": "demo-media",
+  },
+  "kv": {
+    "id": "7cea0bf4989d40c39fc29f0e7e932c1b",
+  },
+  "queue": {
+    "name": "demo-jobs",
+    "dlq": "demo-jobs-dlq",
+  },
+  "analyticsDataset": "demo_events",
+  "rateLimitNamespaceBase": 1000,
+  "cron": "*/15 * * * *",
+  "customDomains": [],
+  "vars": {
+    "PUBLIC_SITE_URL": "http://localhost:4321",
+    "EMAIL_FROM": "Store <orders@example.com>",
+    "PAYPAL_ENV": "sandbox",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "PUBLIC_MEDIA_BASE_URL": "",
+    "WHATSAPP_PHONE_NUMBER_ID": "",
+    "WHATSAPP_WABA_ID": "",
+    "META_GRAPH_VERSION": "",
+  },
+}

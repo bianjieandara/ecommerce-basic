@@ -1,0 +1,60 @@
+{
+  // Shared Worker configuration for every client. scripts/use-client.mjs replaces the __PLACEHOLDERS__
+  // and merges clients/<slug>/client.jsonc into the generated root wrangler.jsonc (gitignored).
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ebaq-store",
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-10-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "upload_source_maps": true,
+  "observability": { "enabled": true },
+  "assets": { "directory": "./dist/client", "binding": "ASSETS" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "__D1_NAME__",
+      "database_id": "__D1_ID__",
+      "migrations_dir": "db/migrations",
+    },
+  ],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "__R2_BUCKET__" }],
+  "kv_namespaces": [{ "binding": "CACHE", "id": "__KV_ID__" }],
+  "queues": {
+    "producers": [{ "binding": "JOBS", "queue": "__QUEUE__" }],
+    "consumers": [
+      {
+        "queue": "__QUEUE__",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "retry_delay": 30,
+        "max_concurrency": 5,
+        "dead_letter_queue": "__DLQ__",
+      },
+      { "queue": "__DLQ__", "max_batch_size": 10, "max_retries": 1 },
+    ],
+  },
+  // Exactly one cron expression per client; the scheduler dispatches the work (see docs/JOBS.md).
+  "triggers": { "crons": ["__CRON__"] },
+  "send_email": [{ "name": "EMAIL" }],
+  "browser": { "binding": "BROWSER", "remote": true },
+  "analytics_engine_datasets": [{ "binding": "EVENTS", "dataset": "__AE_DATASET__" }],
+  "analytics": { "binding": "ANALYTICS_SQL", "remote": true },
+  "ratelimits": [
+    { "name": "RL_AUTH", "namespace_id": "__RL_AUTH__", "simple": { "limit": 5, "period": 60 } },
+    { "name": "RL_FORMS", "namespace_id": "__RL_FORMS__", "simple": { "limit": 10, "period": 60 } },
+    { "name": "RL_API", "namespace_id": "__RL_API__", "simple": { "limit": 60, "period": 10 } },
+  ],
+  "vars": {
+    "CLIENT_SLUG": "demo",
+    "PUBLIC_SITE_URL": "http://localhost:4321",
+    "PUBLIC_MEDIA_BASE_URL": "",
+    "EMAIL_FROM": "Store <orders@example.com>",
+    "PAYPAL_ENV": "sandbox",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "JOBS_MODE": "queue",
+    "WHATSAPP_PHONE_NUMBER_ID": "",
+    "WHATSAPP_WABA_ID": "",
+    "META_GRAPH_VERSION": "",
+  },
+}

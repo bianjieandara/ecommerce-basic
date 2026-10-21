@@ -13,7 +13,14 @@
     "check": "astro check && eslint . && prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "predev": "node scripts/use-client.mjs",
+    "prebuild": "node scripts/use-client.mjs",
+    "precf-typegen": "node scripts/use-client.mjs",
+    "client:new": "node scripts/new-client.mjs",
+    "client:secrets": "node scripts/client-secrets.mjs",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:seed:local": "wrangler d1 execute DB --local --file=db/seed/dev.sql"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.2",
