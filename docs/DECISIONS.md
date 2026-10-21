@@ -51,3 +51,18 @@ an external API behaves differently from the plan, or a plan item is changed.
   `Remove-Item -Recurse .wrangler/state`, then migrate and seed again.
 - **Verified counts:** 12 products, 20 variants (10 apparel, 10 simple), 24 translations, 24 search rows, 16 "initial" ledger rows
   (the 4 variants with zero stock produce none). FTS prefix search `camiseta*` returns the product.
+
+## 2026-10-21 — Stage 4
+
+- **Ports are written for the stages that use them.** Written now: platform, jobs, payments, catalog, inventory, ordering, invoicing,
+  notifications, content, identity, media. Deferred: `whatsapp` (Stage 18), `marketing`, `analytics` (Stage 19), `reports` (Stage 20),
+  and the admin list query types (Stages 14 to 16). The plan listed them all here; writing them now would only guess at shapes.
+- **`fieldsToSchema(fields, { defaultLocale })`** takes the default language. Required localized fields apply only to that language,
+  as the plan states.
+- **Widget definitions live in one file** (`application/content/widgets/registry.ts`) instead of one file per type. They are typed
+  the same way. Client extensions are merged in the UI layer (Stage 7), so `application` never imports `@client`.
+- **Settings field descriptors per group are deferred to Stage 17**, when the settings forms are built. The zod schemas with defaults
+  exist now and are what validates stored values.
+- **Legal texts are templates.** Placeholders are filled by `fillPlaceholders`. They must be reviewed by the client's lawyer before go-live.
+- **Job payload schemas (zod) are deferred to Stage 5**, with the job dispatcher that uses them.
+- **Verified:** `npm run check` and `npm run build` exit 0; ESLint reports no layer-boundary violations.
