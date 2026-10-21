@@ -5,7 +5,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [x] Stage 0 — Repository bootstrap and tooling
 - [x] Stage 1 — Cloudflare resources, bindings, per-client config, custom entrypoint
 - [x] Stage 2 — Shared kernel, i18n and formatting
-- [ ] Stage 3 — Database schema and seed data
+- [x] Stage 3 — Database schema and seed data
 - [ ] Stage 4 — Domain model and application ports
 - [ ] Stage 5 — Infrastructure adapters, jobs, composition, HTTP helpers
 - [ ] Stage 6 — Design system and layouts

@@ -42,3 +42,12 @@ an external API behaves differently from the plan, or a plan item is changed.
 - **Intl formatting lives in `domain/shared/format.ts`** and the UI re-exports it. Verified: a USD price in `es-CO` renders as `US$ 12,50`.
 - **Pages must send a charset.** The dev server sends `text/html` without `charset`. The Stage 6 base layout adds
   `<meta charset="utf-8">` and the server keeps UTF-8 output.
+
+## 2026-10-21 — Stage 3
+
+- **Schema is the plan's final version** (`0001_initial.sql`): `notification_log` replaces the earlier `email_log`, and
+  `whatsapp_templates`, `failed_jobs` and `daily_metrics` are included from the start.
+- **Seed is idempotent only on a fresh database.** Re-running `db:seed:local` inserts duplicates. Reset with
+  `Remove-Item -Recurse .wrangler/state`, then migrate and seed again.
+- **Verified counts:** 12 products, 20 variants (10 apparel, 10 simple), 24 translations, 24 search rows, 16 "initial" ledger rows
+  (the 4 variants with zero stock produce none). FTS prefix search `camiseta*` returns the product.
