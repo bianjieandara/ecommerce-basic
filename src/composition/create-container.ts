@@ -24,14 +24,21 @@ import { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
 import { GetOrderStatus } from '@/application/ordering/get-order-status';
 import { PlaceOrder } from '@/application/ordering/place-order';
+import { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
+import { IssueInvoice } from '@/application/invoicing/issue-invoice';
+import { IssueLegalInvoice } from '@/application/invoicing/issue-legal-invoice';
+import { RenderInvoicePdf } from '@/application/invoicing/render-invoice-pdf';
+import { VoidInvoice } from '@/application/invoicing/void-invoice';
 import type { MediaStorage } from '@/application/ports/media';
 import type { PageRepository, SettingsRepository } from '@/application/ports/content';
+import type { LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoicing';
 import { EmailTemplateService } from '@/application/notifications/email-template-service';
 import { NotificationService } from '@/application/notifications/notification-service';
 import { SendNotificationEmail } from '@/application/notifications/send-notification-email';
 import { D1CatalogQueryService } from '@/infrastructure/d1/catalog-query-service';
 import { D1EmailTemplateRepository } from '@/infrastructure/d1/email-template-repository';
 import { D1FailedJobRepository } from '@/infrastructure/d1/failed-job-repository';
+import { D1InvoiceRepository } from '@/infrastructure/d1/invoice-repository';
 import { D1NotificationLogRepository } from '@/infrastructure/d1/notification-log-repository';
 import { D1OrderRepository } from '@/infrastructure/d1/order-repository';
 import { D1PageRepository } from '@/infrastructure/d1/page-repository';
@@ -43,6 +50,8 @@ import { readSecret } from '@/infrastructure/cloudflare/env';
 import { CloudflareJobQueue } from '@/infrastructure/queues/cloudflare-job-queue';
 import { KvCacheStore, KvPageCacheVersion } from '@/infrastructure/kv/kv-adapters';
 import { CloudflareEmailSender, ConsoleEmailSender } from '@/infrastructure/email/email-adapters';
+import { InvoiceAttachments } from '@/infrastructure/invoicing/invoice-attachments';
+import { BrowserRunPdfRenderer, NoopLegalInvoiceIssuer } from '@/infrastructure/invoicing/invoicing-adapters';
 import {
   BankTransferGateway,
   CashOnDeliveryGateway,
@@ -57,8 +66,6 @@ import {
 } from '@/infrastructure/security/security-adapters';
 import { CryptoIdGenerator, SystemClock, WebCryptoHasher } from '@/infrastructure/system/system-adapters';
 import { logEvent } from '@/infrastructure/system/logger';
-import { NoopLegalInvoiceIssuer, NullPdfRenderer } from '@/infrastructure/invoicing/invoicing-adapters';
-import type { LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoicing';
 
 /** Everything the application can use for one request or one job run. */
 export interface Container {
@@ -89,6 +96,11 @@ export interface Container {
   capturePayment: CapturePayment;
   orderStatus: GetOrderStatus;
   expireStaleOrders: ExpireStaleOrders;
+  /** Issues the invoice of a paid order (automatically or by the admin). */
+  issueInvoice: IssueInvoice;
+  /** Customer PDF download. */
+  invoicePdf: GetInvoicePdf;
+  voidInvoice: VoidInvoice;
   platform: {
     clock: Clock;
     ids: IdGenerator;
@@ -120,11 +132,13 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   const ids = new CryptoIdGenerator();
   const hasher = new WebCryptoHasher();
   const cache = new KvCacheStore(env.CACHE);
+  const media = new R2MediaStorage(env.MEDIA);
   const settings = new D1SettingsRepository(env.DB);
   const failedJobs = new D1FailedJobRepository(env.DB);
   const notificationLog = new D1NotificationLogRepository(env.DB);
   const emailTemplateRepository = new D1EmailTemplateRepository(env.DB);
   const orders = new D1OrderRepository(env.DB);
+  const invoices = new D1InvoiceRepository(env.DB);
   const paymentEvents = new D1PaymentEventLog(env.DB);
   const jobQueue = new CloudflareJobQueue(
     env.JOBS,
@@ -152,9 +166,24 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     logs: notificationLog,
     sender: email,
     clock,
+    attachments: new InvoiceAttachments(invoices, media),
   });
+
+  const legal = new NoopLegalInvoiceIssuer();
+  const pdf = new BrowserRunPdfRenderer(env.BROWSER);
+  const pdfDeps = { invoices, settings, pdf, media, clock };
+  const issueInvoice = new IssueInvoice({ orders, invoices, settings, jobs: jobQueue, legal, clock, ids });
+  const renderInvoicePdf = new RenderInvoicePdf({ ...pdfDeps, orders, notifications, siteUrl });
+  const issueLegalInvoice = new IssueLegalInvoice({ invoices, legal, clock });
   const expireStaleOrders = new ExpireStaleOrders({ orders, notifications, settings, clock, siteUrl });
-  const handlers = buildJobHandlers({ failedJobs, clock, sendNotificationEmail, expireStaleOrders });
+  const handlers = buildJobHandlers({
+    failedJobs,
+    clock,
+    sendNotificationEmail,
+    expireStaleOrders,
+    renderInvoicePdf,
+    issueLegalInvoice,
+  });
 
   const stripe = new StripeGateway(readSecret('STRIPE_SECRET_KEY'), readSecret('STRIPE_WEBHOOK_SECRET'));
   const paypal = new PayPalGateway(
@@ -178,6 +207,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     events: paymentEvents,
     notifications,
     settings,
+    issueInvoice,
     clock,
     siteUrl,
   });
@@ -198,6 +228,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     notifications,
     siteUrl,
   });
+  const orderStatus = new GetOrderStatus({ orders, invoices, hasher });
 
   const background: BackgroundTasks = {
     run(task) {
@@ -214,7 +245,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     pages: new D1PageRepository(env.DB),
     shipping: new D1ShippingMethodRepository(env.DB),
     quoteCart,
-    media: new R2MediaStorage(env.MEDIA),
+    media,
     catalog: ({ newDays }) => new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() }),
     failedJobs,
     jobQueue,
@@ -232,8 +263,11 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     placeOrder,
     confirmPayment,
     capturePayment: new CapturePayment({ orders, gateways, confirmPayment }),
-    orderStatus: new GetOrderStatus({ orders, hasher }),
+    orderStatus,
     expireStaleOrders,
+    issueInvoice,
+    invoicePdf: new GetInvoicePdf({ ...pdfDeps, orderStatus, invoices, media }),
+    voidInvoice: new VoidInvoice({ invoices, orders, clock }),
     platform: {
       clock,
       ids,
@@ -245,8 +279,8 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
       rateLimiter: new CloudflareRateLimiter({ auth: env.RL_AUTH, forms: env.RL_FORMS, api: env.RL_API }),
       email,
       background,
-      pdf: new NullPdfRenderer(),
-      legalInvoices: new NoopLegalInvoiceIssuer(),
+      pdf,
+      legalInvoices: legal,
     },
     health: {
       async checkDatabase() {

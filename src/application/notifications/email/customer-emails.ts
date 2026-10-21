@@ -194,19 +194,15 @@ We received your order **{{order.number}}** for a total of **{{order.total}}**. 
     label: 'Invoice issued',
     description: 'Sent when the invoice for a paid order is issued.',
     variables: ['customer.firstName', 'order.number', 'invoice.number'],
-    blocks: ['invoiceButton'],
+    blocks: [],
     defaults: {
       es: {
         subject: 'Tu factura {{invoice.number}} del pedido {{order.number}}',
-        body: `Hola {{customer.firstName}}, tu factura **{{invoice.number}}** del pedido **{{order.number}}** ya está lista. Puedes descargarla con el botón.
-
-{{block:invoiceButton}}`,
+        body: `Hola {{customer.firstName}}, tu factura **{{invoice.number}}** del pedido **{{order.number}}** ya está lista y va adjunta en PDF.`,
       },
       en: {
         subject: 'Your invoice {{invoice.number}} for order {{order.number}}',
-        body: `Hi {{customer.firstName}}, your invoice **{{invoice.number}}** for order **{{order.number}}** is ready. You can download it with the button below.
-
-{{block:invoiceButton}}`,
+        body: `Hi {{customer.firstName}}, your invoice **{{invoice.number}}** for order **{{order.number}}** is ready and is attached to this email as a PDF.`,
       },
     },
   },

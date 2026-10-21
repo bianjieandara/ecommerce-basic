@@ -82,12 +82,16 @@ export interface NewInvoice extends Omit<
 
 /** Persistence for invoices and their series counters. */
 export interface InvoiceRepository {
-  /** Assigns the next number in the series and inserts the invoice in one batch. CONFLICT when the order already has one. */
+  /**
+   * Assigns the next number in the series and inserts the invoice in one batch, so a series never skips a number.
+   * Throws CONFLICT when the order already has an invoice.
+   */
   issue(draft: NewInvoice): Promise<Invoice>;
   findById(id: string): Promise<Invoice | null>;
   findByOrderId(orderId: string): Promise<Invoice | null>;
-  setPdfKey(id: string, key: string): Promise<void>;
-  setLegalResult(id: string, result: LegalResult): Promise<void>;
+  setPdfKey(id: string, key: string, nowIso: string): Promise<void>;
+  setLegalResult(id: string, result: LegalResult, nowIso: string): Promise<void>;
+  /** Voids an issued invoice and clears its PDF, so the next download is rendered with the void mark. */
   void(id: string, reason: string, nowIso: string): Promise<void>;
 }
 

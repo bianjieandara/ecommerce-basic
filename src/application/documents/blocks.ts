@@ -99,9 +99,6 @@ const bankInstructions: BlockRenderer = ({ order }) =>
 const orderButton: BlockRenderer = ({ locale, store, order }) =>
   button(EMAIL_LABELS[locale].viewOrder, order.url, store.primaryColor);
 
-const invoiceButton: BlockRenderer = ({ locale, store, invoice }) =>
-  button(EMAIL_LABELS[locale].downloadInvoice, invoice.url, store.primaryColor);
-
 const resetButton: BlockRenderer = ({ locale, store, admin }) =>
   button(EMAIL_LABELS[locale].resetPassword, admin.resetUrl, store.primaryColor);
 
@@ -160,7 +157,6 @@ export const EMAIL_BLOCKS = {
   shippingAddress,
   bankInstructions,
   orderButton,
-  invoiceButton,
   resetButton,
   inviteButton,
   productButton,

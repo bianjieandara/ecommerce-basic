@@ -1,5 +1,6 @@
 // Notification ports. Templates (code defaults plus admin overrides) and the log of every message sent.
 import type { LocalizedText } from '@/domain/shared/localized-text';
+import type { EmailAttachment } from './platform';
 
 /** Every message the system can send, as one list. Zod schemas and admin screens read it. */
 export const NOTIFICATION_KEYS = [
@@ -74,4 +75,12 @@ export interface NotificationLogRepository {
     nowIso: string,
   ): Promise<void>;
   list(page: number, pageSize: number): Promise<{ items: NotificationLogEntry[]; total: number }>;
+}
+
+/** A file attached to a notification. The queue holds only this reference; the bytes are read when the email is sent. */
+export type EmailAttachmentRef = { kind: 'invoice_pdf'; invoiceId: string };
+
+/** Turns attachment references into files, at send time. */
+export interface AttachmentLoader {
+  load(refs: EmailAttachmentRef[]): Promise<EmailAttachment[]>;
 }

@@ -214,3 +214,38 @@ Stage 10 is not ticked: its "Done when" needs live Stripe and PayPal sandboxes, 
   - A way to resume payment after leaving the provider page; today the order waits until its hold expires.
   - Refund events (Stage 16 admin refunds) and the handling of late payments on expired orders.
   - A failed notification stays `failed` while retries run, and the dead-letter queue does not update its log row (Stage 16).
+
+## 2026-10-21 — Stage 11 (invoicing) — built, layout check pending
+
+Stage 11 is not ticked. Every functional criterion passed locally. Two checks remain for a person: open a generated PDF to confirm
+the layout and the VOID mark, and open an `invoice_issued` email to confirm the attachment. No PDF rasteriser is available in this
+environment, so the document was not viewed.
+
+- **Verified locally** (`astro dev`, local D1, Browser Run remote): a paid order issues `FV-000001` automatically. The totals match the
+  order (1 200 with 192 tax inside the price). The PDF renders at 44 776 bytes, starts with `%PDF-`, and is stored at
+  `invoices/<id>.pdf`. The `invoice_issued` email is sent. Two later paid orders get `FV-000002` and `FV-000003`, consecutive. A repeated
+  payment event issues nothing more. The order page shows the invoice link, and the download returns the PDF with the access key.
+  Voiding `FV-000003` sets `void`, records the reason, and clears the PDF. The next download renders again (45 486 bytes).
+- **Numbering.** The series counter and the invoice row are one D1 batch, so a failed insert rolls the counter back and the series
+  never skips a number. A second invoice for an order fails with CONFLICT, and the racing caller gets the existing invoice.
+- **Snapshot.** The seller comes from the invoicing settings (legal name falls back to the store name). The buyer comes from the order.
+  Lines come from the order items. The tax breakdown uses each line's rate. Shipping tax left over is shown at the default rate.
+- **Automatic issuing and retries.** `ConfirmPayment` issues the invoice after the paid transition, for any paid event (issuing is
+  idempotent). The event is now recorded last. If issuing fails, the webhook returns an error, the provider retries, and nothing is
+  recorded as handled.
+- **Email attachment.** Notifications queue a reference (`invoice_pdf`), not the bytes. `SendNotificationEmail` reads the PDF from R2 when
+  the email is sent. A missing file means the email goes out without it. The `invoice_issued` copy now says the PDF is attached, and the
+  button block is removed, since the customer has no link.
+- **Legal hook.** `IssueLegalInvoice` is wired as the `invoice.legal_issue` job. The default `NoopLegalInvoiceIssuer` returns
+  `not_applicable`; a certified provider replaces that adapter per country.
+- **Void.** Only issued invoices of cancelled or refunded orders can be voided. The stored PDF is cleared, so the next download carries
+  the void mark. There is no admin screen yet (Stage 16).
+- **Shared rendering.** `storePdf` serves both the queued job and the customer download, so the two cannot drift apart.
+- **Deviations from the plan.** The customer gets the PDF itself from `/api/orders/<n>/invoice.pdf`; the plan's HTML invoice page is not
+  built, because the HTML is only ever printed. The `invoiceButton` block is gone.
+- **Open:**
+  - Open a generated PDF to check the layout and the VOID mark, and an `invoice_issued` email to check the attachment.
+  - Admin issue, void, and resend screens (Stage 16).
+  - A permanent failure while issuing (not a retry) keeps failing the webhook until it is fixed. A dedicated issuing job would avoid that.
+  - A late payment on an expired order still issues nothing, as in Stage 10.
+  - Certified e-invoicing providers (DIAN and the rest) stay in the backlog.

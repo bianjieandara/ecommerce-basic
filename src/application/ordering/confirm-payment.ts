@@ -1,8 +1,9 @@
-// ConfirmPayment: applies one payment event from a provider (webhook, return page or capture). Each provider event is
-// processed once, and an event for an order that has already moved on changes nothing.
-import { canTransition } from '@/domain/ordering/order-status';
+// ConfirmPayment: applies one payment event from a provider (webhook, return page or capture). Every change is guarded by
+// the order's current status, so a repeated or late event never changes anything that is not already true.
+import { canTransition, isPaidOrLater } from '@/domain/ordering/order-status';
 import { DomainError } from '@/domain/shared/errors';
 import type { Order } from '../dto/order-dto';
+import type { IssueInvoice } from '../invoicing/issue-invoice';
 import type { SettingsRepository } from '../ports/content';
 import type { OrderRepository } from '../ports/ordering';
 import type { Clock } from '../ports/platform';
@@ -16,6 +17,7 @@ export interface ConfirmPaymentDeps {
   events: PaymentEventLog;
   notifications: NotificationService;
   settings: SettingsRepository;
+  issueInvoice: IssueInvoice;
   clock: Clock;
   siteUrl: string;
 }
@@ -29,15 +31,15 @@ export interface ConfirmationResult {
 
 /** Applies payment events to orders. */
 export class ConfirmPayment {
-  /** @param deps Repositories, the event log and notifications. */
+  /** @param deps Repositories, the event log, notifications and invoicing. */
   constructor(private readonly deps: ConfirmPaymentDeps) {}
 
   /**
    * Applies one payment event.
    * @param confirmation Normalized event from a gateway.
    * @returns Whether the event was new and which order it touched.
-   * @throws DomainError VALIDATION_FAILED when the amount or currency differs from the order. The event is not
-   * recorded, so the provider retries it.
+   * @throws DomainError VALIDATION_FAILED when the amount or currency differs from the order. Nothing is applied and the
+   * event is not recorded, so the provider retries it.
    */
   async execute(confirmation: PaymentConfirmation): Promise<ConfirmationResult> {
     const order = await this.deps.orders.findByPaymentReference(
@@ -49,10 +51,20 @@ export class ConfirmPayment {
       throw new DomainError('VALIDATION_FAILED', 'Payment amount or currency does not match the order');
     }
     const nowIso = this.deps.clock.now().toISOString();
-    if (!(await this.deps.events.recordIfNew(confirmation.provider, confirmation.eventId, nowIso))) {
-      return { handled: false, orderNumber: order.number };
-    }
+    await this.apply(order, confirmation, nowIso);
+    // Recorded last: if a step above failed, the provider retries the event and it is applied again. Every step is
+    // idempotent, so a retry is safe.
+    const isNew = await this.deps.events.recordIfNew(confirmation.provider, confirmation.eventId, nowIso);
+    return { handled: isNew, orderNumber: order.number };
+  }
 
+  /**
+   * Applies the outcome of an event to the order, guarded by its current status.
+   * @param order Order as loaded.
+   * @param confirmation The event.
+   * @param nowIso Time of the change.
+   */
+  private async apply(order: Order, confirmation: PaymentConfirmation, nowIso: string): Promise<void> {
     const actor = confirmation.provider;
     switch (confirmation.outcome) {
       case 'succeeded': {
@@ -64,7 +76,8 @@ export class ConfirmPayment {
           { paidAt: nowIso },
         );
         if (paid) await this.notifyCustomer(order, 'payment_confirmed');
-        break;
+        if (paid || isPaidOrLater(order.status)) await this.deps.issueInvoice.executeIfAutomatic(order.id);
+        return;
       }
       case 'failed':
       case 'expired': {
@@ -76,7 +89,7 @@ export class ConfirmPayment {
           at: nowIso,
         });
         if (cancelled) await this.notifyCustomer(order, 'order_cancelled');
-        break;
+        return;
       }
       case 'refunded': {
         if (canTransition(order.status, 'refunded')) {
@@ -87,10 +100,9 @@ export class ConfirmPayment {
           });
           if (refunded) await this.notifyCustomer(order, 'order_refunded');
         }
-        break;
+        return;
       }
     }
-    return { handled: true, orderNumber: order.number };
   }
 
   /**

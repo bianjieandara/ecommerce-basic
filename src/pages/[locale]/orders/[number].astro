@@ -89,6 +89,17 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
         </a>
       )}
 
+      {found.invoiceNumber && (
+        <p class="text-sm">
+          <a
+            href={`/api/orders/${found.order.number}/invoice.pdf?key=${encodeURIComponent(key)}`}
+            class="underline"
+          >
+            {t(lang, 'order.downloadInvoice')} · {found.invoiceNumber}
+          </a>
+        </p>
+      )}
+
       <section class="flex flex-col gap-3" aria-labelledby="order-items">
         <h2 id="order-items" class="text-lg font-semibold">
           {t(lang, 'order.items')}

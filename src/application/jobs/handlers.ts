@@ -1,11 +1,18 @@
 // Job handler registry for the handlers implemented so far. Each handler validates its payload with the schema from
 // job-types.ts and calls application logic only; it never touches Cloudflare bindings directly.
+import type { IssueLegalInvoice } from '../invoicing/issue-legal-invoice';
+import type { RenderInvoicePdf } from '../invoicing/render-invoice-pdf';
 import type { ExpireStaleOrders } from '../ordering/expire-orders';
 import type { SendNotificationEmail } from '../notifications/send-notification-email';
 import type { FailedJobRepository, JobType } from '../ports/jobs';
 import type { Clock } from '../ports/platform';
 import type { JobHandler } from './dispatcher';
-import { expireStaleOrdersPayload, maintenancePurgePayload, notifyEmailPayload } from './job-types';
+import {
+  expireStaleOrdersPayload,
+  invoiceJobPayload,
+  maintenancePurgePayload,
+  notifyEmailPayload,
+} from './job-types';
 
 /** Dependencies the implemented handlers need. */
 export interface JobHandlerDeps {
@@ -13,6 +20,8 @@ export interface JobHandlerDeps {
   clock: Clock;
   sendNotificationEmail: SendNotificationEmail;
   expireStaleOrders: ExpireStaleOrders;
+  renderInvoicePdf: RenderInvoicePdf;
+  issueLegalInvoice: IssueLegalInvoice;
 }
 
 /** Milliseconds in one day. */
@@ -36,6 +45,12 @@ export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, 
     'orders.expire_stale': async (payload) => {
       expireStaleOrdersPayload.parse(payload);
       await deps.expireStaleOrders.execute();
+    },
+    'invoice.render_pdf': async (payload) => {
+      await deps.renderInvoicePdf.execute(invoiceJobPayload.parse(payload).invoiceId);
+    },
+    'invoice.legal_issue': async (payload) => {
+      await deps.issueLegalInvoice.execute(invoiceJobPayload.parse(payload).invoiceId);
     },
   };
 }

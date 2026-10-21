@@ -5,7 +5,7 @@ import { emailAddress } from '../jobs/job-types';
 import type { SettingsRepository } from '../ports/content';
 import type { JobQueue } from '../ports/jobs';
 import type { Clock, IdGenerator } from '../ports/platform';
-import type { NotificationKey, NotificationLogRepository } from '../ports/notifications';
+import type { EmailAttachmentRef, NotificationKey, NotificationLogRepository } from '../ports/notifications';
 import {
   emptyContext,
   loadStoreSection,
@@ -28,6 +28,8 @@ export interface NotifyInput {
   recipient: NotificationRecipient;
   orderId?: string | null;
   context?: NotificationSections;
+  /** Files to attach when the email is sent (read at that time, not when queued). */
+  attachments?: EmailAttachmentRef[];
 }
 
 /** Dependencies of the notification service. */
@@ -87,7 +89,14 @@ export class NotificationService {
 
     await this.deps.jobs.enqueue(
       'notify.email',
-      { idempotencyKey, key: input.key, locale: recipient.locale, to: address, context },
+      {
+        idempotencyKey,
+        key: input.key,
+        locale: recipient.locale,
+        to: address,
+        context,
+        attachments: input.attachments ?? [],
+      },
       { idempotencyKey },
     );
     return { logIds: [logId] };
