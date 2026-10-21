@@ -20,8 +20,13 @@ import type { ShippingMethodRepository } from '@/application/ports/ordering';
 import { QuoteCart } from '@/application/cart/quote-cart';
 import type { MediaStorage } from '@/application/ports/media';
 import type { PageRepository, SettingsRepository } from '@/application/ports/content';
+import { EmailTemplateService } from '@/application/notifications/email-template-service';
+import { NotificationService } from '@/application/notifications/notification-service';
+import { SendNotificationEmail } from '@/application/notifications/send-notification-email';
 import { D1CatalogQueryService } from '@/infrastructure/d1/catalog-query-service';
+import { D1EmailTemplateRepository } from '@/infrastructure/d1/email-template-repository';
 import { D1FailedJobRepository } from '@/infrastructure/d1/failed-job-repository';
+import { D1NotificationLogRepository } from '@/infrastructure/d1/notification-log-repository';
 import { D1PageRepository } from '@/infrastructure/d1/page-repository';
 import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-repository';
 import { D1SettingsRepository } from '@/infrastructure/d1/settings-repository';
@@ -45,8 +50,7 @@ export interface Container {
   settings: SettingsRepository;
   pages: PageRepository;
   shipping: ShippingMethodRepository;
-  /** Cart quoting (server-side prices). 
-ewDays comes from the catalog settings. */
+  /** Cart quoting (server-side prices). newDays comes from the catalog settings. */
   quoteCart: (options: { newDays: number }) => QuoteCart;
   media: MediaStorage;
   /** Storefront read model. `newDays` comes from the catalog settings ("new" badge window). */
@@ -55,6 +59,10 @@ ewDays comes from the catalog settings. */
   jobQueue: JobQueue;
   jobs: JobDispatcher;
   scheduler: JobScheduler;
+  /** Queues notifications. Nothing is sent inline; the notify.* jobs deliver them. */
+  notifications: NotificationService;
+  /** Email template editing and previews. */
+  emailTemplates: EmailTemplateService;
   platform: {
     clock: Clock;
     ids: IdGenerator;
@@ -85,17 +93,28 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   const clock = new SystemClock();
   const ids = new CryptoIdGenerator();
   const cache = new KvCacheStore(env.CACHE);
+  const settings = new D1SettingsRepository(env.DB);
   const failedJobs = new D1FailedJobRepository(env.DB);
+  const notificationLog = new D1NotificationLogRepository(env.DB);
+  const emailTemplateRepository = new D1EmailTemplateRepository(env.DB);
   const jobQueue = new CloudflareJobQueue(
     env.JOBS,
     () => ids.newId(),
     () => clock.now().toISOString(),
   );
-  const handlers = buildJobHandlers({ failedJobs, clock });
 
-  const email: EmailSender = env.EMAIL
-    ? new CloudflareEmailSender(env.EMAIL, env.EMAIL_FROM)
-    : new ConsoleEmailSender();
+  // EMAIL_TRANSPORT=console (set in .dev.vars for local work) logs each email instead of sending it.
+  const email: EmailSender =
+    env.EMAIL && env.EMAIL_TRANSPORT !== 'console'
+      ? new CloudflareEmailSender(env.EMAIL, env.EMAIL_FROM)
+      : new ConsoleEmailSender();
+  const sendNotificationEmail = new SendNotificationEmail({
+    templates: emailTemplateRepository,
+    logs: notificationLog,
+    sender: email,
+    clock,
+  });
+  const handlers = buildJobHandlers({ failedJobs, clock, sendNotificationEmail });
 
   const background: BackgroundTasks = {
     run(task) {
@@ -107,7 +126,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   };
 
   return {
-    settings: new D1SettingsRepository(env.DB),
+    settings,
     pages: new D1PageRepository(env.DB),
     shipping: new D1ShippingMethodRepository(env.DB),
     quoteCart: ({ newDays }) => {
@@ -121,6 +140,20 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     jobQueue,
     jobs: new JobDispatcher({ failedJobs, handlers, log: logEvent }),
     scheduler: new JobScheduler({ jobs: jobQueue, cache, clock }),
+    notifications: new NotificationService({
+      settings,
+      logs: notificationLog,
+      jobs: jobQueue,
+      clock,
+      ids,
+      siteUrl: env.PUBLIC_SITE_URL,
+    }),
+    emailTemplates: new EmailTemplateService({
+      templates: emailTemplateRepository,
+      settings,
+      clock,
+      siteUrl: env.PUBLIC_SITE_URL,
+    }),
     platform: {
       clock,
       ids,

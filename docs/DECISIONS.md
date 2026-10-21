@@ -127,3 +127,45 @@ an external API behaves differently from the plan, or a plan item is changed.
 - **Default home content** now includes trust badges and a WhatsApp block, so the home page is complete without admin edits.
 - **Widget renderers still missing:** `promo_banner`, `testimonials`, `image_gallery` and `faq` render nothing. Images in the hero and
   category grid are not shown until the media lookup by id exists (Stage 14).
+
+## 2026-10-21 — Stage 9
+
+- **Queue first, send later.** `NotificationService.notify()` only writes a `notification_log` row and enqueues `notify.email`.
+  The row key is `<key>:<reference>:email:<address>` with `ON CONFLICT DO NOTHING`, so repeating a reference queues nothing.
+  A missing or malformed address is logged as `skipped` before anything is queued. Checked: same reference twice gives one row.
+- **Delivery.** `SendNotificationEmail` renders the admin override or the code default, sends through the `EmailSender` port and
+  records `sent` (with subject and provider id). A send error is logged as `failed` and rethrown, so the queue retries it.
+  When retries run out the job lands in `failed_jobs`, but its log row stays `failed`/`queued` until Stage 16 links the two.
+- **Transport.** `EMAIL_TRANSPORT` (wrangler vars, default `cloudflare`) picks the `EMAIL` binding. `.dev.vars` sets `console`,
+  which logs instead of sending. Production must never set `console`.
+- **Template syntax.** `{{path}}` inserts an escaped value (braces are escaped too, so data cannot form placeholders),
+  `{{#if path}}…{{else}}…{{/if}}` for optional text (one level, no nesting) and `{{block:name}}` for whitelisted blocks.
+  **Deviation:** the plan wrote `{{> name}}`, but micromark encodes `>` in text, so that tag would never match after Markdown.
+  Markdown is rendered first with raw HTML off; values are inserted afterwards, so customer text is never read as Markdown.
+- **Validation.** `validateTemplate` rejects unknown variables and blocks, unbalanced or nested conditionals, unknown tokens,
+  multi-line subjects over 200 characters and bodies over 20 000. Saves check both languages; previews check drafts
+  (`/dev/emails/<key>?subject=…&body=…` answers 422 with the problems). Checked: unknown variable, unknown block, `{{> x}}`, nesting.
+- **Blocks.** Thirteen blocks: `orderItems`, `orderTotals`, `shippingAddress`, `bankInstructions`, `orderButton`,
+  `invoiceButton`, `resetButton`, `inviteButton`, `productButton`, `reportButton`, `contactMessage`, `lowStockTable`, `kpiTable`.
+  Each button is its own block so its label comes from `documents/email-labels.ts` in the recipient's language.
+  The plan's `trackingInfo` and `whatsappButton` are not needed: the shipped email uses a conditional and WhatsApp comes in Stage 18.
+- **Definitions.** Sixteen, one per `NotificationKey`, grouped as customer, store and admin under `notifications/email/`. A missing key
+  fails type-checking (`email/index.ts`). Each lists the variables and blocks it may use; `store.*` is allowed everywhere.
+- **Context.** Producers pass already-formatted text, so templates contain no formatting. `NotificationService` adds the store
+  section from settings. `sampleSections()` gives every variable a realistic value for previews and test sends.
+- **Email shell.** Table layout, inline styles, 600 px wide, preheader, plain-text version from `htmlToText`. No logo yet
+  (`logoUrl: null`); it needs the media lookup (Stage 14).
+- **Channels.** Email only. WhatsApp joins `NotificationService` in Stage 18 (template approval and opt-in).
+- **Deferred.** `documents/csv.ts` lands with the first CSV export (Stage 15). `documents/invoice-document.ts` is Stage 11.
+  Send-test and the log list use case come with the admin screens (Stage 17); the repository `list()` already exists.
+- **Shared code.** `renderMarkdown` now lives in `application/documents/markdown.ts`; `ui/lib/markdown.ts` re-exports it, so content
+  pages and email templates use the same settings.
+- **Fixed on the way.** A comment in `create-container.ts` had lost the `n` of `newDays` (a `\n` had been written); repaired.
+- **Dev-only routes.** `/dev/emails/<key>?locale=` renders a preview; `/dev/notify?key=…` queues a sample (`reference` and `to` are
+  optional). Both return 404 unless `import.meta.env.DEV`.
+- **Verified in `astro dev`.** All 16 emails render in `es` and `en` (32 of 32) with no leftover syntax. `/dev/notify` produces a
+  `queued` row, the queue consumer sends it and the row becomes `sent` with the console message id. `npm run check` has 0 errors and
+  `npm run build` passes.
+- **Not exercised.** A failing send and its retry path: the console transport never fails. That path is code-reviewed only.
+- **Still open from earlier stages.** `D1FailedJobRepository.record` uses `new Date()` instead of the clock port. Stage 7's live counter,
+  suggestions, related products and category language alternates remain unbuilt.

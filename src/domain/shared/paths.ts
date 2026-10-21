@@ -33,3 +33,10 @@ export const PATHS = {
   contact: (locale: Locale) => `/${locale}/contact`,
   media: (key: string) => `/media/${key}`,
 } as const;
+
+/** Admin paths that appear in notification links. The admin UI is not localized. */
+export const ADMIN_PATHS = {
+  reports: '/admin/reports',
+  resetPassword: '/admin/reset-password',
+  acceptInvite: '/admin/accept-invite',
+} as const;

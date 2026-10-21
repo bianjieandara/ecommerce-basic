@@ -1,24 +1,28 @@
 // Notification ports. Templates (code defaults plus admin overrides) and the log of every message sent.
 import type { LocalizedText } from '@/domain/shared/localized-text';
 
-/** Every message the system can send. Each key has an email template and optionally a WhatsApp template. */
-export type NotificationKey =
-  | 'order_received'
-  | 'order_alert_store'
-  | 'payment_confirmed'
-  | 'order_processing'
-  | 'order_shipped'
-  | 'order_delivered'
-  | 'order_cancelled'
-  | 'order_refunded'
-  | 'invoice_issued'
-  | 'contact_message_store'
-  | 'contact_autoreply'
-  | 'low_stock_store'
-  | 'back_in_stock'
-  | 'weekly_report_store'
-  | 'admin_password_reset'
-  | 'admin_invite';
+/** Every message the system can send, as one list. Zod schemas and admin screens read it. */
+export const NOTIFICATION_KEYS = [
+  'order_received',
+  'order_alert_store',
+  'payment_confirmed',
+  'order_processing',
+  'order_shipped',
+  'order_delivered',
+  'order_cancelled',
+  'order_refunded',
+  'invoice_issued',
+  'contact_message_store',
+  'contact_autoreply',
+  'low_stock_store',
+  'back_in_stock',
+  'weekly_report_store',
+  'admin_password_reset',
+  'admin_invite',
+] as const;
+
+/** One notification key. Each key has an email definition and, later, an optional WhatsApp template. */
+export type NotificationKey = (typeof NOTIFICATION_KEYS)[number];
 
 /** Admin override of an email template. Missing rows fall back to the code default. */
 export interface EmailTemplateOverride {
@@ -60,7 +64,7 @@ export interface NotificationLogRepository {
       id: string;
     },
   ): Promise<{ inserted: boolean }>;
-  markSent(idempotencyKey: string, providerMessageId: string, nowIso: string): Promise<void>;
+  markSent(idempotencyKey: string, providerMessageId: string, subject: string, nowIso: string): Promise<void>;
   markFailed(idempotencyKey: string, error: string, nowIso: string): Promise<void>;
   markSkipped(idempotencyKey: string, reason: string, nowIso: string): Promise<void>;
   updateByProviderId(

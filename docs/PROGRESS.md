@@ -11,7 +11,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [x] Stage 6 — Design system and layouts
 - [ ] Stage 7 — Public storefront: home, catalog with filters, product
 - [ ] Stage 8 — Cart
-- [ ] Stage 9 — Notifications: engine, email templates, multichannel service
+- [x] Stage 9 — Notifications: engine, email templates, multichannel service
 - [ ] Stage 10 — Checkout, payments, orders
 - [ ] Stage 11 — Invoicing
 - [ ] Stage 12 — Content pages, contact, reviews
