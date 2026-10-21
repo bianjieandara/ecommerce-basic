@@ -587,12 +587,13 @@ export class D1CatalogQueryService implements CatalogQueryService {
       is_active: number;
       base_price_minor: number;
       tax_rate_bp: number | null;
+      cost_minor: number | null;
       name: string;
       status: string;
     }>(
       this.db,
       `SELECT v.id, v.product_id, v.sku, v.price_minor, v.compare_at_price_minor, v.stock, v.track_inventory,
-              v.image_media_id, v.is_active, p.base_price_minor, p.tax_rate_bp, p.status, t.name
+              v.image_media_id, v.is_active, v.cost_minor, p.base_price_minor, p.tax_rate_bp, p.status, t.name
        FROM product_variants v
        JOIN products p ON p.id = v.product_id
        JOIN product_translations t ON t.product_id = p.id AND t.locale = ?
@@ -609,6 +610,7 @@ export class D1CatalogQueryService implements CatalogQueryService {
       priceMinor: row.price_minor ?? row.base_price_minor,
       compareAtPriceMinor: row.compare_at_price_minor,
       taxRateBp: row.tax_rate_bp,
+      costMinor: row.cost_minor,
       stock: row.stock,
       trackInventory: row.track_inventory === 1,
       imageKey: null,

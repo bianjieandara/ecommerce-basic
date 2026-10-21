@@ -3,6 +3,7 @@
 import { defineEndpoint } from '@/http/define-endpoint';
 import { loadStoreContext } from '@/http/store-context';
 import { quoteCartInput } from '@/application/cart/quote-cart';
+import { availablePaymentMethods } from '@/application/ordering/payment-methods';
 
 export const POST = defineEndpoint({
   method: 'POST',
@@ -10,10 +11,14 @@ export const POST = defineEndpoint({
   handler: async ({ input, context }) => {
     const app = context.locals.app;
     const store = await loadStoreContext(app);
+    const checkout = await app.settings.get('checkout');
     return app.quoteCart({ newDays: store.catalog.newDays }).execute(input, {
       tax: store.tax,
-      checkout: await app.settings.get('checkout'),
-      defaultLocale: store.general.defaultLocale,
+      paymentMethods: availablePaymentMethods(
+        app.gateways,
+        { checkout, contact: store.contact },
+        store.general.currency,
+      ),
     });
   },
 });

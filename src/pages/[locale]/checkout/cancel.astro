@@ -1,0 +1,48 @@
+---
+// Payment cancelled. The order stays pending until its payment window closes, so the page links back to the order.
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import { isLocale } from '@/domain/shared/locale';
+import { PATHS, withQuery } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+import { loadStoreContext } from '@/http/store-context';
+import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { themeToCss } from '@/ui/lib/theme-css';
+
+const { locale } = Astro.params;
+if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+
+const store = await loadStoreContext(Astro.locals.app);
+const view = storeViewFor(store, lang);
+const contact = contactFor(store, lang);
+const title = t(lang, 'checkout.cancelTitle');
+const number = Number(Astro.url.searchParams.get('order'));
+const key = Astro.url.searchParams.get('key') ?? '';
+const orderHref =
+  Number.isInteger(number) && number > 0 ? withQuery(PATHS.order(lang, number), { key }) : PATHS.cart(lang);
+---
+
+<StoreLayout
+  title={buildTitle(store, lang, title)}
+  locale={lang}
+  storeName={store.general.storeName}
+  currency={view.currency}
+  country={view.country}
+  alternates={{ es: PATHS.checkoutCancel('es'), en: PATHS.checkoutCancel('en') }}
+  canonical={new URL(PATHS.checkoutCancel(lang), Astro.url.origin).toString()}
+  noindex={true}
+  themeCss={themeToCss(store.theme)}
+  webAnalyticsToken={store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  <div class="flex flex-col gap-4">
+    <h1 class="text-2xl font-semibold">{title}</h1>
+    <p>{t(lang, 'checkout.cancelBody')}</p>
+    <a
+      href={orderHref}
+      class="rounded-brand bg-primary text-on-primary inline-flex min-h-12 w-fit items-center px-5 font-semibold"
+    >
+      {t(lang, 'order.viewOrder')}
+    </a>
+  </div>
+</StoreLayout>

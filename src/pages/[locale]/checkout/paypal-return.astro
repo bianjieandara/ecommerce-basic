@@ -1,0 +1,24 @@
+---
+// PayPal return: the customer approved the payment on PayPal. The store captures it here, then shows the order page.
+// The order is only captured when the access key matches and the PayPal order id is the one stored with the order.
+import { isLocale } from '@/domain/shared/locale';
+import { PATHS, withQuery } from '@/domain/shared/paths';
+
+const { locale } = Astro.params;
+if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+const number = Number(Astro.url.searchParams.get('order'));
+const key = Astro.url.searchParams.get('key') ?? '';
+const token = Astro.url.searchParams.get('token') ?? '';
+const app = Astro.locals.app;
+const found = Number.isInteger(number) && number > 0 ? await app.orderStatus.execute(number, key) : null;
+if (!found || token === '') return new Response('Not found', { status: 404 });
+
+try {
+  await app.capturePayment.execute(found.order.id, token);
+} catch (error) {
+  // The order page shows what the store knows. A capture that completes later is confirmed by the PayPal webhook.
+  console.warn('paypal.capture_failed', error instanceof Error ? error.message : String(error));
+}
+return Astro.redirect(withQuery(PATHS.order(lang, number), { key }), 303);
+---

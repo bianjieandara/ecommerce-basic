@@ -94,6 +94,7 @@ export interface QuoteVariantDto {
   priceMinor: number;
   compareAtPriceMinor: number | null;
   taxRateBp: number | null;
+  costMinor: number | null;
   stock: number;
   trackInventory: boolean;
   imageKey: string | null;

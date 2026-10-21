@@ -1,6 +1,7 @@
 // Security adapters: password hashing (PBKDF2), Turnstile verification and rate limiting.
 import type { PasswordHasher } from '@/application/ports/identity';
 import type { BotVerifier, RateLimitBucket, RateLimiter } from '@/application/ports/platform';
+import { workersFetch } from '../system/http-fetch';
 import { toBase64Url } from '../system/system-adapters';
 
 /** PBKDF2 iterations. 100 000 is the maximum the Workers runtime allows. */
@@ -81,7 +82,7 @@ export class TurnstileVerifier implements BotVerifier {
    */
   constructor(
     private readonly secret: string | null,
-    private readonly fetcher: typeof fetch = fetch,
+    private readonly fetcher: typeof fetch = workersFetch,
   ) {}
 
   async verify(token: string | null, ip: string | null): Promise<boolean> {

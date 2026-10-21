@@ -1,0 +1,12 @@
+---
+// Payment return page. The order page shows the real status, so this page only forwards the customer there.
+import { isLocale } from '@/domain/shared/locale';
+import { PATHS, withQuery } from '@/domain/shared/paths';
+
+const { locale } = Astro.params;
+if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+const number = Number(Astro.url.searchParams.get('order'));
+if (!Number.isInteger(number) || number <= 0) return new Response('Not found', { status: 404 });
+const key = Astro.url.searchParams.get('key') ?? '';
+return Astro.redirect(withQuery(PATHS.order(locale as 'es' | 'en', number), { key }), 303);
+---

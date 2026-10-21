@@ -169,3 +169,48 @@ an external API behaves differently from the plan, or a plan item is changed.
 - **Not exercised.** A failing send and its retry path: the console transport never fails. That path is code-reviewed only.
 - **Still open from earlier stages.** `D1FailedJobRepository.record` uses `new Date()` instead of the clock port. Stage 7's live counter,
   suggestions, related products and category language alternates remain unbuilt.
+
+## 2026-10-21 — Stage 10 (checkout, orders, payments) — partial
+
+Stage 10 is not ticked: its "Done when" needs live Stripe and PayPal sandboxes, and no keys are available here.
+
+- **Verified locally** (`astro dev`, local D1): a bank-transfer order with flat shipping stores 2 000 + 800 shipping, with 319 tax
+  already inside the price. Stock goes 30 → 28 with a `sale` ledger row (`stock_after` 28). Both notifications are queued, then sent.
+  A sold-out line returns `PRODUCT_UNAVAILABLE` (409). An unconfigured method returns `PAYMENT_METHOD_UNAVAILABLE` (422).
+  WhatsApp pickup builds the `wa.me` link with the order number. The scheduled tick cancels an expired order and restores stock
+  (`cancel_restore` +2, `stock_after` 30, `stock_released` 1). A correctly signed Stripe `checkout.session.completed` marks the
+  order paid and sends one confirmation. The repeat is acknowledged with no second effect, and a bad signature gets 400.
+  The order page shows in `es` and `en` with its key and returns 404 without it. Checkout and order pages send `no-store`.
+- **Not verified:** Stripe and PayPal against their real APIs (session creation, order creation, capture, and webhook verification
+  with live keys). The checkout form in a browser: the browser tool cannot load localhost, so only the HTML and the API are checked.
+- **Bug found and fixed.** `TurnstileVerifier` stored the global `fetch` as a field and called it as a method. The Workers runtime
+  throws "Illegal invocation" for that, and the verifier's `catch` turned it into a silent `false`, so every checkout failed with
+  `BOT_CHECK_FAILED`. The fix is `infrastructure/system/http-fetch.ts`, used by the verifier and by both payment adapters. Do not
+  store `fetch` as a field anywhere.
+- **Stock and money in one batch.** `stock-ledger.ts` builds each stock update together with its ledger row. Placement is one batch
+  that counter, order, items, stock and ledger all share, so a CHECK failure rolls the whole order back as `OUT_OF_STOCK`.
+  Cancellation guards every statement on `status` and `stock_released`, then flips the order to `cancelled` last, so the guards see
+  the starting state. A repeated cancel changes nothing.
+- **Guarded transitions.** `transition(id, from, to)` and `cancelAndReleaseStock(id, from)` apply only while the order is still in
+  `from`. So the expiry job cannot cancel a paid order, and a late webhook cannot revive a cancelled one. Late payments for expired
+  orders are logged as events only; the store handles them by hand (admin, Stage 16).
+- **Access key.** 32 random bytes, shown once in the order link. Only the SHA-256 is stored, compared in constant time. Later
+  messages carry no order link because the key is not stored; `orderSections` leaves the button out when the link is empty.
+- **Webhooks.** Stripe signatures use HMAC-SHA256 over the raw body, with a 300-second window. PayPal events are checked through
+  its verify API. Each provider event id is recorded once (`payment_events`). An amount or currency mismatch throws before the event is
+  recorded, so the provider retries it.
+- **Stripe without the SDK.** Two REST endpoints and one signature check are small enough to write directly. The plan named the SDK;
+  this is a deliberate deviation. The bank-debit events (`async_payment_*`) are handled; refund events are not yet.
+- **PayPal currencies.** Only USD and EUR orders can use PayPal. The settlement-currency and exchange-rate settings are stored but not
+  used, because a converted capture would not match the order's currency check. Designing that conversion is a later decision.
+- **Quote and checkout share totals.** `QuoteCart` takes the chosen shipping method, so the cart summary matches the order.
+  It also returns only the methods the gateways accept (`availablePaymentMethods`). Order items snapshot SKU, cost and tax rate.
+- **Limit.** An order holds at most 30 lines: each line writes up to three rows, and a D1 batch takes 100 statements.
+- **Shared code.** The WhatsApp link builder moved to `application/documents/whatsapp.ts`; `ui/lib/whatsapp.ts` re-exports it.
+  `ui/i18n` gained `checkout.*` and `order.*` keys in both languages.
+- **Open:**
+  - Live Stripe and PayPal runs, and webhook endpoints registered with each provider.
+  - A browser pass over the checkout form and the WhatsApp button.
+  - A way to resume payment after leaving the provider page; today the order waits until its hold expires.
+  - Refund events (Stage 16 admin refunds) and the handling of late payments on expired orders.
+  - A failed notification stays `failed` while retries run, and the dead-letter queue does not update its log row (Stage 16).

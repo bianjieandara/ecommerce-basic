@@ -45,6 +45,7 @@ export interface Order {
   customer: CustomerDetails;
   shippingMethodName: string;
   shippingAddress: Record<string, string>;
+  note: string;
   items: OrderItem[];
   expiresAt: string | null;
   paidAt: string | null;
@@ -52,7 +53,7 @@ export interface Order {
   updatedAt: string;
 }
 
-/** The short view of an order that payment gateways and notifications need. */
+/** The short view of an order that payment gateways need. */
 export interface OrderSummary {
   id: string;
   number: number;
@@ -63,5 +64,6 @@ export interface OrderSummary {
   taxMinor: number;
   pricesIncludeTax: boolean;
   customerEmail: string;
+  expiresAt: string | null;
   items: { name: string; quantity: number; unitPriceMinor: number; taxRateBp: number }[];
 }

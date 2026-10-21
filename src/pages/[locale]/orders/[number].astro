@@ -1,0 +1,156 @@
+---
+// Order status page. The link from the confirmation carries the access key. Without a matching key nothing is shown.
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import { formatMoney } from '@/domain/shared/format';
+import { isLocale } from '@/domain/shared/locale';
+import { pickText } from '@/domain/shared/localized-text';
+import { money } from '@/domain/shared/money';
+import { PATHS } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+import { renderMarkdown } from '@/ui/lib/markdown';
+import { whatsappLink } from '@/ui/lib/whatsapp';
+import { loadStoreContext } from '@/http/store-context';
+import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { themeToCss } from '@/ui/lib/theme-css';
+
+// Order data is personal and changes with payments, so it is never cached.
+Astro.response.headers.set('Cache-Control', 'no-store');
+const { locale, number: rawNumber } = Astro.params;
+if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+const app = Astro.locals.app;
+const number = Number(rawNumber);
+const key = Astro.url.searchParams.get('key') ?? '';
+const found = Number.isInteger(number) && number > 0 ? await app.orderStatus.execute(number, key) : null;
+if (!found) Astro.response.status = 404;
+
+const store = await loadStoreContext(app);
+const view = storeViewFor(store, lang);
+const contact = contactFor(store, lang);
+const checkout = await app.settings.get('checkout');
+const title = found
+  ? t(lang, 'order.number', { number: String(found.order.number) })
+  : t(lang, 'order.viewOrder');
+const price = (amountMinor: number) => formatMoney(money(amountMinor, view.currency), lang, view.country);
+
+const EVENT_TYPES = [
+  'placed',
+  'payment_confirmed',
+  'payment_failed',
+  'payment_expired',
+  'payment_start_failed',
+  'expired',
+  'cancelled',
+  'refunded',
+] as const;
+const isEventType = (value: string): value is (typeof EVENT_TYPES)[number] =>
+  (EVENT_TYPES as readonly string[]).includes(value);
+const pending = found?.order.status === 'pending_payment';
+const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsappMessage} #${number}`) : '';
+---
+
+<StoreLayout
+  title={buildTitle(store, lang, title)}
+  locale={lang}
+  storeName={store.general.storeName}
+  currency={view.currency}
+  country={view.country}
+  alternates={{ es: PATHS.shop('es'), en: PATHS.shop('en') }}
+  canonical={new URL(PATHS.shop(lang), Astro.url.origin).toString()}
+  noindex={true}
+  themeCss={themeToCss(store.theme)}
+  webAnalyticsToken={store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  {found ? (
+    <article class="flex flex-col gap-8">
+      <header class="flex flex-col gap-2">
+        <h1 class="text-2xl font-semibold">{title}</h1>
+        <p class="text-sm">
+          {t(lang, 'order.status')}: <strong>{t(lang, `order.statuses.${found.order.status}`)}</strong>
+        </p>
+      </header>
+
+      {pending && found.order.paymentMethod === 'bank_transfer' && (
+        <div class="rounded-brand bg-surface flex flex-col gap-2 p-4 text-sm">
+          <p>{t(lang, 'order.bankHelp')}</p>
+          <div set:html={renderMarkdown(pickText(checkout.bankTransferInstructions, lang, 'es'))} />
+        </div>
+      )}
+      {pending && found.order.paymentMethod === 'cash_on_delivery' && (
+        <p class="text-sm">{t(lang, 'order.codHelp')}</p>
+      )}
+      {pending && found.order.paymentMethod === 'whatsapp' && storeChat && (
+        <a
+          href={storeChat}
+          class="rounded-brand bg-primary text-on-primary inline-flex min-h-12 w-fit items-center px-5 font-semibold"
+        >
+          {t(lang, 'order.whatsappAction')}
+        </a>
+      )}
+
+      <section class="flex flex-col gap-3" aria-labelledby="order-items">
+        <h2 id="order-items" class="text-lg font-semibold">
+          {t(lang, 'order.items')}
+        </h2>
+        <ul class="flex flex-col gap-3 text-sm">
+          {found.order.items.map((item) => (
+            <li class="border-text/10 flex justify-between gap-3 border-b pb-3">
+              <span>
+                {item.quantity} × {item.productName}
+                {item.variantLabel && <span class="text-text/60"> · {item.variantLabel}</span>}
+              </span>
+              <span>{price(item.lineTotalMinor)}</span>
+            </li>
+          ))}
+        </ul>
+        <dl class="flex flex-col gap-2 text-sm">
+          <div class="flex justify-between">
+            <dt>{t(lang, 'cart.subtotal')}</dt>
+            <dd>{price(found.order.subtotalMinor)}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>{t(lang, 'cart.tax')}</dt>
+            <dd>{price(found.order.taxMinor)}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>{t(lang, 'order.shipping')}</dt>
+            <dd>{price(found.order.shippingMinor)}</dd>
+          </div>
+          <div class="border-text/10 flex justify-between border-t pt-2 text-base font-semibold">
+            <dt>{t(lang, 'order.total')}</dt>
+            <dd>{price(found.order.totalMinor)}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="flex flex-col gap-2 text-sm" aria-labelledby="order-payment">
+        <h2 id="order-payment" class="text-lg font-semibold">
+          {t(lang, 'order.paymentMethod')}
+        </h2>
+        <p>{t(lang, `checkout.methods.${found.order.paymentMethod}`)}</p>
+        {Object.values(found.order.shippingAddress).some(Boolean) && (
+          <>
+            <h3 class="pt-2 font-semibold">{t(lang, 'order.address')}</h3>
+            <p>{Object.values(found.order.shippingAddress).filter(Boolean).join(', ')}</p>
+          </>
+        )}
+      </section>
+
+      <section class="flex flex-col gap-2 text-sm" aria-labelledby="order-history">
+        <h2 id="order-history" class="text-lg font-semibold">
+          {t(lang, 'order.history')}
+        </h2>
+        <ol class="flex flex-col gap-2">
+          {found.events.map((event) => (
+            <li class="border-text/10 border-l-2 pl-3">
+              {isEventType(event.type) ? t(lang, `order.events.${event.type}`) : event.type}
+            </li>
+          ))}
+        </ol>
+      </section>
+    </article>
+  ) : (
+    <p class="text-lg">{t(lang, 'order.notFound')}</p>
+  )}
+</StoreLayout>

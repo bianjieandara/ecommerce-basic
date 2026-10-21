@@ -1,0 +1,100 @@
+---
+// Checkout page. The cart lives in the browser, so the form island asks the server to price it and places the order.
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import CheckoutForm from '@/ui/store/CheckoutForm.tsx';
+import { isLocale } from '@/domain/shared/locale';
+import { pickText } from '@/domain/shared/localized-text';
+import { PATHS } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+import { loadStoreContext } from '@/http/store-context';
+import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { themeToCss } from '@/ui/lib/theme-css';
+
+// The checkout form carries the customer's own data, so the page is never cached.
+Astro.response.headers.set('Cache-Control', 'no-store');
+const { locale } = Astro.params;
+if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const view = storeViewFor(store, lang);
+const contact = contactFor(store, lang);
+const title = t(lang, 'checkout.title');
+const labels = {
+  contact: t(lang, 'checkout.contact'),
+  delivery: t(lang, 'checkout.delivery'),
+  payment: t(lang, 'checkout.payment'),
+  summary: t(lang, 'checkout.summary'),
+  name: t(lang, 'checkout.name'),
+  email: t(lang, 'checkout.email'),
+  phone: t(lang, 'checkout.phone'),
+  address: t(lang, 'checkout.address'),
+  address2: t(lang, 'checkout.address2'),
+  city: t(lang, 'checkout.city'),
+  region: t(lang, 'checkout.region'),
+  postalCode: t(lang, 'checkout.postalCode'),
+  countryCode: t(lang, 'checkout.countryCode'),
+  note: t(lang, 'checkout.note'),
+  whatsappOptIn: t(lang, 'checkout.whatsappOptIn'),
+  placeOrder: t(lang, 'checkout.placeOrder'),
+  placing: t(lang, 'checkout.placing'),
+  subtotal: t(lang, 'cart.subtotal'),
+  tax: t(lang, 'cart.tax'),
+  shipping: t(lang, 'order.shipping'),
+  total: t(lang, 'cart.total'),
+  shippingPending: t(lang, 'checkout.shippingPending'),
+  empty: t(lang, 'cart.empty'),
+  continueShopping: t(lang, 'common.continueShopping'),
+  quoteError: t(lang, 'checkout.quoteError'),
+  formError: t(lang, 'checkout.formError'),
+  methods: {
+    stripe: t(lang, 'checkout.methods.stripe'),
+    paypal: t(lang, 'checkout.methods.paypal'),
+    whatsapp: t(lang, 'checkout.methods.whatsapp'),
+    bank_transfer: t(lang, 'checkout.methods.bank_transfer'),
+    cash_on_delivery: t(lang, 'checkout.methods.cash_on_delivery'),
+  },
+  errors: {
+    generic: t(lang, 'errors.generic'),
+    NOT_FOUND: t(lang, 'errors.NOT_FOUND'),
+    VALIDATION_FAILED: t(lang, 'errors.VALIDATION_FAILED'),
+    OUT_OF_STOCK: t(lang, 'errors.OUT_OF_STOCK'),
+    PRODUCT_UNAVAILABLE: t(lang, 'errors.PRODUCT_UNAVAILABLE'),
+    PAYMENT_METHOD_UNAVAILABLE: t(lang, 'errors.PAYMENT_METHOD_UNAVAILABLE'),
+    PAYMENT_PROVIDER_ERROR: t(lang, 'errors.PAYMENT_PROVIDER_ERROR'),
+    RATE_LIMITED: t(lang, 'errors.RATE_LIMITED'),
+    BOT_CHECK_FAILED: t(lang, 'errors.BOT_CHECK_FAILED'),
+    CONFLICT: t(lang, 'errors.CONFLICT'),
+    INVALID_STATE: t(lang, 'errors.INVALID_STATE'),
+  },
+};
+---
+
+<StoreLayout
+  title={buildTitle(store, lang, title)}
+  locale={lang}
+  storeName={store.general.storeName}
+  currency={view.currency}
+  country={view.country}
+  alternates={{ es: PATHS.checkout('es'), en: PATHS.checkout('en') }}
+  canonical={new URL(PATHS.checkout(lang), Astro.url.origin).toString()}
+  noindex={true}
+  themeCss={themeToCss(store.theme)}
+  webAnalyticsToken={store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  <h1 class="mb-6 text-2xl font-semibold">{title}</h1>
+  <CheckoutForm
+    client:only="preact"
+    locale={lang}
+    currency={view.currency}
+    country={view.country}
+    taxLabel={`(${pickText(store.tax.label, lang, 'es')})`}
+    siteKey={app.config.turnstileSiteKey}
+    cartHref={PATHS.cart(lang)}
+    continueHref={PATHS.shop(lang)}
+    labels={labels}
+  />
+</StoreLayout>
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

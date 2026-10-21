@@ -5,11 +5,10 @@ import { clampQuantity, MAX_LINE_QUANTITY } from '@/domain/ordering/cart-line';
 import { computeOrderTotals, type OrderTotals } from '@/domain/ordering/totals';
 import { resolveRateBp } from '@/domain/ordering/tax';
 import { shippingCostMinor } from '@/domain/ordering/shipping';
-import type { Locale } from '@/domain/shared/locale';
 import type { CatalogQueryService } from '../ports/catalog';
 import type { ShippingMethodRepository } from '../ports/ordering';
 import type { PaymentMethod } from '../ports/payments';
-import type { CheckoutSettings, TaxSettings } from '../dto/settings-dto';
+import type { TaxSettings } from '../dto/settings-dto';
 
 /** Largest number of distinct lines a cart may send for quoting. */
 export const MAX_CART_LINES = 50;
@@ -26,22 +25,28 @@ export const quoteCartInput = z.object({
       }),
     )
     .max(MAX_CART_LINES),
+  /** Shipping method the customer picked. Its cost is added to the totals. The cart page omits it. */
+  shippingMethodId: z.string().min(1).max(64).optional(),
 });
 
 /** One requested line, as parsed from the input. */
 export type QuoteItem = z.infer<typeof quoteCartInput>['items'][number];
 
-/** One line of the quote, ready for the cart UI. */
+/** One line of the quote, ready for the cart UI and for order snapshots. */
 export interface QuotedLine {
   variantId: string;
   productId: string;
   slug: string;
   name: string;
   variantLabel: string;
+  sku: string | null;
   quantity: number;
   unitPriceMinor: number;
   compareAtPriceMinor: number | null;
   lineTotalMinor: number;
+  taxRateBp: number;
+  costMinor: number | null;
+  stockTracked: boolean;
   available: boolean;
   flags: { unavailable: boolean; priceChanged: boolean; quantityAdjusted: boolean };
 }
@@ -57,8 +62,8 @@ export interface CartQuote {
 /** Store settings the quote depends on. */
 export interface QuoteSettings {
   tax: TaxSettings;
-  checkout: CheckoutSettings;
-  defaultLocale: Locale;
+  /** Methods the customer may choose now: enabled, configured and able to charge in the store currency. */
+  paymentMethods: PaymentMethod[];
 }
 
 /**
@@ -78,8 +83,8 @@ export class QuoteCart {
 
   /**
    * Quotes a cart.
-   * @param input Locale and requested lines.
-   * @param settings Tax and checkout settings of the store.
+   * @param input Locale, requested lines and the chosen shipping method (optional).
+   * @param settings Tax settings and the payment methods the customer may use.
    * @returns Lines, totals, shipping choices and enabled payment methods.
    */
   async execute(input: z.infer<typeof quoteCartInput>, settings: QuoteSettings): Promise<CartQuote> {
@@ -105,10 +110,14 @@ export class QuoteCart {
         slug: '',
         name: variant.productName,
         variantLabel: variant.variantLabel,
+        sku: variant.sku,
         quantity: clamped.quantity,
         unitPriceMinor: variant.priceMinor,
         compareAtPriceMinor: variant.compareAtPriceMinor,
         lineTotalMinor: variant.priceMinor * clamped.quantity,
+        taxRateBp: resolveRateBp(variant.taxRateBp, settings.tax.defaultRateBp),
+        costMinor: variant.costMinor,
+        stockTracked: variant.trackInventory,
         available: !unavailable,
         flags: {
           unavailable,
@@ -119,14 +128,8 @@ export class QuoteCart {
     }
 
     const priced = lines.filter((line) => line.available);
-    const totals = computeOrderTotals(
-      priced.map((line) => ({
-        amountMinor: line.lineTotalMinor,
-        taxRateBp: resolveRateBp(
-          variants.find((variant) => variant.id === line.variantId)?.taxRateBp ?? null,
-          settings.tax.defaultRateBp,
-        ),
-      })),
+    const itemTotals = computeOrderTotals(
+      priced.map((line) => ({ amountMinor: line.lineTotalMinor, taxRateBp: line.taxRateBp })),
       null,
       settings.tax,
     );
@@ -138,16 +141,20 @@ export class QuoteCart {
       kind: method.kind,
       costMinor: shippingCostMinor(
         { kind: method.kind, priceMinor: method.priceMinor, freeOverMinor: method.freeOverMinor },
-        totals.subtotalMinor,
+        itemTotals.subtotalMinor,
       ),
     }));
 
-    return {
-      lines,
-      totals,
-      shippingOptions,
-      paymentMethods: settings.checkout.enabledMethods,
-    };
+    const chosen = shippingOptions.find((option) => option.id === input.shippingMethodId);
+    const totals = chosen
+      ? computeOrderTotals(
+          priced.map((line) => ({ amountMinor: line.lineTotalMinor, taxRateBp: line.taxRateBp })),
+          { amountMinor: chosen.costMinor },
+          settings.tax,
+        )
+      : itemTotals;
+
+    return { lines, totals, shippingOptions, paymentMethods: settings.paymentMethods };
   }
 }
 
@@ -164,10 +171,14 @@ function unavailableLine(variantId: string, item: QuoteItem): QuotedLine {
     slug: '',
     name: '',
     variantLabel: '',
+    sku: null,
     quantity: 0,
     unitPriceMinor: item.unitPriceMinor ?? 0,
     compareAtPriceMinor: null,
     lineTotalMinor: 0,
+    taxRateBp: 0,
+    costMinor: null,
+    stockTracked: false,
     available: false,
     flags: { unavailable: true, priceChanged: false, quantityAdjusted: false },
   };

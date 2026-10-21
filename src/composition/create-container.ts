@@ -17,7 +17,13 @@ import type {
 } from '@/application/ports/platform';
 import type { CatalogQueryService } from '@/application/ports/catalog';
 import type { ShippingMethodRepository } from '@/application/ports/ordering';
+import type { PaymentGateway, PaymentMethod } from '@/application/ports/payments';
 import { QuoteCart } from '@/application/cart/quote-cart';
+import { CapturePayment } from '@/application/ordering/capture-payment';
+import { ConfirmPayment } from '@/application/ordering/confirm-payment';
+import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
+import { GetOrderStatus } from '@/application/ordering/get-order-status';
+import { PlaceOrder } from '@/application/ordering/place-order';
 import type { MediaStorage } from '@/application/ports/media';
 import type { PageRepository, SettingsRepository } from '@/application/ports/content';
 import { EmailTemplateService } from '@/application/notifications/email-template-service';
@@ -27,7 +33,9 @@ import { D1CatalogQueryService } from '@/infrastructure/d1/catalog-query-service
 import { D1EmailTemplateRepository } from '@/infrastructure/d1/email-template-repository';
 import { D1FailedJobRepository } from '@/infrastructure/d1/failed-job-repository';
 import { D1NotificationLogRepository } from '@/infrastructure/d1/notification-log-repository';
+import { D1OrderRepository } from '@/infrastructure/d1/order-repository';
 import { D1PageRepository } from '@/infrastructure/d1/page-repository';
+import { D1PaymentEventLog } from '@/infrastructure/d1/payment-event-log';
 import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-repository';
 import { D1SettingsRepository } from '@/infrastructure/d1/settings-repository';
 import { R2MediaStorage } from '@/infrastructure/r2/r2-media-storage';
@@ -35,6 +43,13 @@ import { readSecret } from '@/infrastructure/cloudflare/env';
 import { CloudflareJobQueue } from '@/infrastructure/queues/cloudflare-job-queue';
 import { KvCacheStore, KvPageCacheVersion } from '@/infrastructure/kv/kv-adapters';
 import { CloudflareEmailSender, ConsoleEmailSender } from '@/infrastructure/email/email-adapters';
+import {
+  BankTransferGateway,
+  CashOnDeliveryGateway,
+  WhatsAppGateway,
+} from '@/infrastructure/payments/manual-gateways';
+import { PayPalGateway } from '@/infrastructure/payments/paypal-gateway';
+import { StripeGateway } from '@/infrastructure/payments/stripe-gateway';
 import {
   CloudflareRateLimiter,
   Pbkdf2PasswordHasher,
@@ -47,6 +62,8 @@ import type { LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoic
 
 /** Everything the application can use for one request or one job run. */
 export interface Container {
+  /** Public configuration that pages read. */
+  config: { siteUrl: string; turnstileSiteKey: string };
   settings: SettingsRepository;
   pages: PageRepository;
   shipping: ShippingMethodRepository;
@@ -63,6 +80,15 @@ export interface Container {
   notifications: NotificationService;
   /** Email template editing and previews. */
   emailTemplates: EmailTemplateService;
+  /** One payment gateway per method. */
+  gateways: Record<PaymentMethod, PaymentGateway>;
+  /** Provider adapters that also verify webhooks. */
+  providers: { stripe: StripeGateway; paypal: PayPalGateway };
+  placeOrder: PlaceOrder;
+  confirmPayment: ConfirmPayment;
+  capturePayment: CapturePayment;
+  orderStatus: GetOrderStatus;
+  expireStaleOrders: ExpireStaleOrders;
   platform: {
     clock: Clock;
     ids: IdGenerator;
@@ -92,29 +118,86 @@ export interface Container {
 export function createContainer(env: Env, ctx: ExecutionContext | null): Container {
   const clock = new SystemClock();
   const ids = new CryptoIdGenerator();
+  const hasher = new WebCryptoHasher();
   const cache = new KvCacheStore(env.CACHE);
   const settings = new D1SettingsRepository(env.DB);
   const failedJobs = new D1FailedJobRepository(env.DB);
   const notificationLog = new D1NotificationLogRepository(env.DB);
   const emailTemplateRepository = new D1EmailTemplateRepository(env.DB);
+  const orders = new D1OrderRepository(env.DB);
+  const paymentEvents = new D1PaymentEventLog(env.DB);
   const jobQueue = new CloudflareJobQueue(
     env.JOBS,
     () => ids.newId(),
     () => clock.now().toISOString(),
   );
+  const botVerifier = new TurnstileVerifier(readSecret('TURNSTILE_SECRET_KEY'));
+  const siteUrl = env.PUBLIC_SITE_URL;
 
   // EMAIL_TRANSPORT=console (set in .dev.vars for local work) logs each email instead of sending it.
   const email: EmailSender =
     env.EMAIL && env.EMAIL_TRANSPORT !== 'console'
       ? new CloudflareEmailSender(env.EMAIL, env.EMAIL_FROM)
       : new ConsoleEmailSender();
+  const notifications = new NotificationService({
+    settings,
+    logs: notificationLog,
+    jobs: jobQueue,
+    clock,
+    ids,
+    siteUrl,
+  });
   const sendNotificationEmail = new SendNotificationEmail({
     templates: emailTemplateRepository,
     logs: notificationLog,
     sender: email,
     clock,
   });
-  const handlers = buildJobHandlers({ failedJobs, clock, sendNotificationEmail });
+  const expireStaleOrders = new ExpireStaleOrders({ orders, notifications, settings, clock, siteUrl });
+  const handlers = buildJobHandlers({ failedJobs, clock, sendNotificationEmail, expireStaleOrders });
+
+  const stripe = new StripeGateway(readSecret('STRIPE_SECRET_KEY'), readSecret('STRIPE_WEBHOOK_SECRET'));
+  const paypal = new PayPalGateway(
+    {
+      clientId: readSecret('PAYPAL_CLIENT_ID'),
+      clientSecret: readSecret('PAYPAL_CLIENT_SECRET'),
+      webhookId: readSecret('PAYPAL_WEBHOOK_ID'),
+      environment: String(env.PAYPAL_ENV) === 'live' ? 'live' : 'sandbox',
+    },
+    cache,
+  );
+  const gateways: Record<PaymentMethod, PaymentGateway> = {
+    stripe,
+    paypal,
+    whatsapp: new WhatsAppGateway(),
+    bank_transfer: new BankTransferGateway(),
+    cash_on_delivery: new CashOnDeliveryGateway(),
+  };
+  const confirmPayment = new ConfirmPayment({
+    orders,
+    events: paymentEvents,
+    notifications,
+    settings,
+    clock,
+    siteUrl,
+  });
+  const quoteCart = ({ newDays }: { newDays: number }) =>
+    new QuoteCart({
+      catalog: new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() }),
+      shipping: new D1ShippingMethodRepository(env.DB),
+    });
+  const placeOrder = new PlaceOrder({
+    settings,
+    quoteCart,
+    orders,
+    gateways,
+    botVerifier,
+    hasher,
+    ids,
+    clock,
+    notifications,
+    siteUrl,
+  });
 
   const background: BackgroundTasks = {
     run(task) {
@@ -126,42 +209,39 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   };
 
   return {
+    config: { siteUrl, turnstileSiteKey: env.TURNSTILE_SITE_KEY },
     settings,
     pages: new D1PageRepository(env.DB),
     shipping: new D1ShippingMethodRepository(env.DB),
-    quoteCart: ({ newDays }) => {
-      const shipping = new D1ShippingMethodRepository(env.DB);
-      const catalog = new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() });
-      return new QuoteCart({ catalog, shipping });
-    },
+    quoteCart,
     media: new R2MediaStorage(env.MEDIA),
     catalog: ({ newDays }) => new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() }),
     failedJobs,
     jobQueue,
     jobs: new JobDispatcher({ failedJobs, handlers, log: logEvent }),
     scheduler: new JobScheduler({ jobs: jobQueue, cache, clock }),
-    notifications: new NotificationService({
-      settings,
-      logs: notificationLog,
-      jobs: jobQueue,
-      clock,
-      ids,
-      siteUrl: env.PUBLIC_SITE_URL,
-    }),
+    notifications,
     emailTemplates: new EmailTemplateService({
       templates: emailTemplateRepository,
       settings,
       clock,
-      siteUrl: env.PUBLIC_SITE_URL,
+      siteUrl,
     }),
+    gateways,
+    providers: { stripe, paypal },
+    placeOrder,
+    confirmPayment,
+    capturePayment: new CapturePayment({ orders, gateways, confirmPayment }),
+    orderStatus: new GetOrderStatus({ orders, hasher }),
+    expireStaleOrders,
     platform: {
       clock,
       ids,
-      hasher: new WebCryptoHasher(),
+      hasher,
       passwords: new Pbkdf2PasswordHasher(),
       cache,
       pageCache: new KvPageCacheVersion(env.CACHE),
-      botVerifier: new TurnstileVerifier(readSecret('TURNSTILE_SECRET_KEY')),
+      botVerifier,
       rateLimiter: new CloudflareRateLimiter({ auth: env.RL_AUTH, forms: env.RL_FORMS, api: env.RL_API }),
       email,
       background,
