@@ -7,6 +7,10 @@ import MobileTabBar from '../store/MobileTabBar.astro';
 import WhatsAppFloat from '../store/WhatsAppFloat.astro';
 import Toaster from '../components/Toaster';
 import type { Locale } from '@/domain/shared/locale';
+import type { CurrencyCode } from '@/domain/shared/currency';
+import { t } from '@/ui/i18n';
+import { routes } from '@/ui/lib/routes';
+import CartDrawer from '../store/CartDrawer.tsx';
 
 interface Props {
   title: string;
@@ -18,6 +22,8 @@ interface Props {
   noindex?: boolean;
   themeCss?: string;
   webAnalyticsToken?: string;
+  currency?: CurrencyCode;
+  country?: string;
   contact?: {
     email: string;
     address: string;
@@ -38,6 +44,8 @@ const {
   themeCss,
   webAnalyticsToken,
   contact = { email: '', address: '', whatsappNumber: '', whatsappMessage: '', showWhatsappFloat: false },
+  currency = 'USD',
+  country = 'CO',
 } = Astro.props;
 ---
 
@@ -60,5 +68,20 @@ const {
   {contact.showWhatsappFloat && (
     <WhatsAppFloat number={contact.whatsappNumber} message={contact.whatsappMessage} locale={locale} />
   )}
+  <CartDrawer
+    client:idle
+    locale={locale}
+    currency={currency}
+    country={country}
+    cartHref={routes.cart(locale)}
+    labels={{
+      title: t(locale, 'cart.title'),
+      empty: t(locale, 'cart.empty'),
+      subtotal: t(locale, 'cart.subtotal'),
+      remove: t(locale, 'cart.remove'),
+      viewCart: t(locale, 'common.viewCart'),
+      close: t(locale, 'common.close'),
+    }}
+  />
   <Toaster client:idle />
 </BaseLayout>

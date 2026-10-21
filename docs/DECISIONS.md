@@ -109,3 +109,21 @@ an external API behaves differently from the plan, or a plan item is changed.
   `demo-jobs-dlq`, R2 `demo-media`. `clients/demo/client.jsonc` pins `accountId`.
 - **Resources left in the first account (`35dacd…`) are unused.** Delete them in its dashboard when convenient.
 - **The dress-rental `.env` token was not used.** Verification returned 401 (invalid token) and the account ID does not match.
+
+## 2026-10-21 — Stages 7 and 8 (in progress)
+
+- **Stage 7 status: partial.** Built and checked over HTTP in dev: `/` (302 to the language), `/es/` home sections, `/es/shop`
+  (filters, sort, pagination, counts), `/es/shop/<category>`, `/es/products/<slug>` with `?v=` option links, `/es/p/<slug>`
+  content pages, `/media/<key>`. Canonical redirects return 301 (`?category=` moves to the path, unknown params are dropped),
+  filtered URLs are `noindex`, unknown slugs return 404.
+  **Not built yet:** the live result counter (`GET /api/catalog/count`), search suggestions, related products, and category
+  pages' language switch (the category slug differs per language; it needs a lookup by category id).
+- **Stage 8 status: implemented, browser behaviour not verified.** `POST /api/cart/quote` re-prices a cart on the server. Checked:
+  2 units of a 2 500 product give subtotal 5 000, tax 798 included, total 5 000; out-of-stock and unknown variants are flagged
+  unavailable; a quantity of 100 returns 422. The cart lives in `localStorage` (`cart:v1`); `AddToCart`, `CartBadge`, `CartDrawer`
+  and `CartPage` are Preact islands. **Not verified in a browser:** add, change, remove, reload persistence, price-change notice.
+  The browser tool could not load localhost (error page on both `localhost` and `127.0.0.1`), although the server answers.
+- **Shipping in the cart is an estimate.** Shipping options come from the quote, but the chosen method is decided at checkout (Stage 10).
+- **Default home content** now includes trust badges and a WhatsApp block, so the home page is complete without admin edits.
+- **Widget renderers still missing:** `promo_banner`, `testimonials`, `image_gallery` and `faq` render nothing. Images in the hero and
+  category grid are not shown until the media lookup by id exists (Stage 14).

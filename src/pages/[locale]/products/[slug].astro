@@ -2,6 +2,7 @@
 // Product page: gallery, price for the chosen option, option links (no JavaScript needed), description and WhatsApp.
 // The chosen option is the ?v= parameter; the first available option is used when it is missing.
 import Price from '@/ui/components/Price.astro';
+import AddToCart from '@/ui/store/AddToCart.tsx';
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import { isLocale } from '@/domain/shared/locale';
 import { PATHS, withQuery } from '@/domain/shared/paths';
@@ -56,6 +57,8 @@ const category = product.categories[0];
   description={product.seoDescription || product.shortDescription}
   locale={lang}
   storeName={store.general.storeName}
+  currency={view.currency}
+  country={view.country}
   alternates={alternates}
   canonical={new URL(PATHS.product(lang, slug), Astro.url.origin).toString()}
   themeCss={themeToCss(store.theme)}
@@ -171,6 +174,26 @@ const category = product.categories[0];
         </a>
       )}
 
+      {selected && (
+        <AddToCart
+          client:idle
+          productId={product.id}
+          productName={product.name}
+          productPath={PATHS.product(lang, slug)}
+          variantId={selected.id}
+          variantLabel={selected.variantLabel}
+          priceMinor={price}
+          compareAtPriceMinor={compareAt}
+          stock={selected.stock}
+          trackInventory={selected.trackInventory}
+          labels={{
+            add: t(lang, 'common.addToCart'),
+            added: t(lang, 'cart.added'),
+            quantity: t(lang, 'product.quantity'),
+            soldOut: t(lang, 'product.outOfStock'),
+          }}
+        />
+      )}
       <section class="flex flex-col gap-2 border-t border-text/10 pt-5">
         <h2 class="text-sm font-semibold">{t(lang, 'product.description')}</h2>
         <div class="max-w-prose leading-relaxed [&_p]:my-3" set:html={description} />

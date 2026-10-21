@@ -71,6 +71,11 @@ export const es: Dictionary = {
     quantityAdjusted: 'La cantidad de {name} se ajustó al stock disponible.',
     unavailable: '{name} ya no está disponible y se quitó del carrito.',
     added: 'Añadido a tu carrito',
+    tax: 'Impuesto',
+    total: 'Total',
+    shippingNote: 'El envío se calcula al pagar.',
+    quantity: 'Cantidad',
+    loadError: 'No pudimos actualizar los precios del carrito. Inténtalo de nuevo.',
   },
   checkout: {
     title: 'Pagar',

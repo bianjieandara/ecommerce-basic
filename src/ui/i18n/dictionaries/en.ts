@@ -70,6 +70,11 @@ export const en = {
     quantityAdjusted: 'The quantity of {name} was adjusted to what is in stock.',
     unavailable: '{name} is no longer available and was removed.',
     added: 'Added to your cart',
+    tax: 'Tax',
+    total: 'Total',
+    shippingNote: 'Shipping is calculated at checkout.',
+    quantity: 'Quantity',
+    loadError: 'We could not update the cart prices. Please try again.',
   },
   checkout: {
     title: 'Checkout',

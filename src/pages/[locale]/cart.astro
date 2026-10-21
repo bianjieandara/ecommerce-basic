@@ -1,0 +1,62 @@
+---
+// Cart page. The cart lives in the browser; the page only renders it and asks the server for the quoted totals.
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import CartPage from '@/ui/store/CartPage.tsx';
+import { isLocale } from '@/domain/shared/locale';
+import { pickText } from '@/domain/shared/localized-text';
+import { PATHS } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+import { loadStoreContext } from '@/http/store-context';
+import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { themeToCss } from '@/ui/lib/theme-css';
+
+const { locale } = Astro.params;
+if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+
+const store = await loadStoreContext(Astro.locals.app);
+const view = storeViewFor(store, lang);
+const contact = contactFor(store, lang);
+const title = t(lang, 'cart.title');
+---
+
+<StoreLayout
+  title={buildTitle(store, lang, title)}
+  locale={lang}
+  storeName={store.general.storeName}
+  currency={view.currency}
+  country={view.country}
+  alternates={{ es: PATHS.cart('es'), en: PATHS.cart('en') }}
+  canonical={new URL(PATHS.cart(lang), Astro.url.origin).toString()}
+  noindex={true}
+  themeCss={themeToCss(store.theme)}
+  webAnalyticsToken={store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  <h1 class="mb-6 text-2xl font-semibold">{title}</h1>
+  <CartPage
+    client:only="preact"
+    locale={lang}
+    currency={view.currency}
+    country={view.country}
+    checkoutHref={PATHS.checkout(lang)}
+    continueHref={PATHS.shop(lang)}
+    taxLabel={`(${pickText(store.tax.label, lang, 'es')})`}
+    labels={{
+      title,
+      empty: t(lang, 'cart.empty'),
+      subtotal: t(lang, 'cart.subtotal'),
+      tax: t(lang, 'cart.tax'),
+      total: t(lang, 'cart.total'),
+      checkout: t(lang, 'common.checkout'),
+      continueShopping: t(lang, 'common.continueShopping'),
+      remove: t(lang, 'cart.remove'),
+      quantity: t(lang, 'cart.quantity'),
+      priceUpdated: t(lang, 'cart.priceUpdated'),
+      quantityAdjusted: t(lang, 'cart.quantityAdjusted'),
+      unavailable: t(lang, 'cart.unavailable'),
+      shippingNote: t(lang, 'cart.shippingNote'),
+      loadError: t(lang, 'cart.loadError'),
+    }}
+  />
+</StoreLayout>

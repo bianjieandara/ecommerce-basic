@@ -16,11 +16,14 @@ import type {
   RateLimiter,
 } from '@/application/ports/platform';
 import type { CatalogQueryService } from '@/application/ports/catalog';
+import type { ShippingMethodRepository } from '@/application/ports/ordering';
+import { QuoteCart } from '@/application/cart/quote-cart';
 import type { MediaStorage } from '@/application/ports/media';
 import type { PageRepository, SettingsRepository } from '@/application/ports/content';
 import { D1CatalogQueryService } from '@/infrastructure/d1/catalog-query-service';
 import { D1FailedJobRepository } from '@/infrastructure/d1/failed-job-repository';
 import { D1PageRepository } from '@/infrastructure/d1/page-repository';
+import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-repository';
 import { D1SettingsRepository } from '@/infrastructure/d1/settings-repository';
 import { R2MediaStorage } from '@/infrastructure/r2/r2-media-storage';
 import { readSecret } from '@/infrastructure/cloudflare/env';
@@ -41,6 +44,10 @@ import type { LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoic
 export interface Container {
   settings: SettingsRepository;
   pages: PageRepository;
+  shipping: ShippingMethodRepository;
+  /** Cart quoting (server-side prices). 
+ewDays comes from the catalog settings. */
+  quoteCart: (options: { newDays: number }) => QuoteCart;
   media: MediaStorage;
   /** Storefront read model. `newDays` comes from the catalog settings ("new" badge window). */
   catalog: (options: { newDays: number }) => CatalogQueryService;
@@ -102,6 +109,12 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   return {
     settings: new D1SettingsRepository(env.DB),
     pages: new D1PageRepository(env.DB),
+    shipping: new D1ShippingMethodRepository(env.DB),
+    quoteCart: ({ newDays }) => {
+      const shipping = new D1ShippingMethodRepository(env.DB);
+      const catalog = new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() });
+      return new QuoteCart({ catalog, shipping });
+    },
     media: new R2MediaStorage(env.MEDIA),
     catalog: ({ newDays }) => new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() }),
     failedJobs,
