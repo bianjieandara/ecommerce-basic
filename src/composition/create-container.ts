@@ -19,6 +19,8 @@ import type { CatalogQueryService } from '@/application/ports/catalog';
 import type { ShippingMethodRepository } from '@/application/ports/ordering';
 import type { PaymentGateway, PaymentMethod } from '@/application/ports/payments';
 import { QuoteCart } from '@/application/cart/quote-cart';
+import { SubmitContactMessage } from '@/application/content/submit-contact-message';
+import { ReviewsService } from '@/application/content/reviews-service';
 import { CapturePayment } from '@/application/ordering/capture-payment';
 import { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
@@ -47,6 +49,8 @@ import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-reposit
 import { D1SettingsRepository } from '@/infrastructure/d1/settings-repository';
 import { R2MediaStorage } from '@/infrastructure/r2/r2-media-storage';
 import { readSecret } from '@/infrastructure/cloudflare/env';
+import { D1ContactMessageRepository } from '@/infrastructure/d1/contact-message-repository';
+import { GooglePlacesReviews } from '@/infrastructure/google/places-reviews-provider';
 import { CloudflareJobQueue } from '@/infrastructure/queues/cloudflare-job-queue';
 import { KvCacheStore, KvPageCacheVersion } from '@/infrastructure/kv/kv-adapters';
 import { CloudflareEmailSender, ConsoleEmailSender } from '@/infrastructure/email/email-adapters';
@@ -101,6 +105,10 @@ export interface Container {
   /** Customer PDF download. */
   invoicePdf: GetInvoicePdf;
   voidInvoice: VoidInvoice;
+  /** Contact form: stores the message and queues the store alert and the auto-reply. */
+  submitContact: SubmitContactMessage;
+  /** Google reviews: the job refreshes them, pages read them from KV. */
+  reviews: ReviewsService;
   platform: {
     clock: Clock;
     ids: IdGenerator;
@@ -169,6 +177,21 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     attachments: new InvoiceAttachments(invoices, media),
   });
 
+  const contactMessages = new D1ContactMessageRepository(env.DB);
+  const submitContact = new SubmitContactMessage({
+    messages: contactMessages,
+    settings,
+    notifications,
+    botVerifier,
+    clock,
+    ids,
+  });
+  const reviews = new ReviewsService({
+    provider: new GooglePlacesReviews(readSecret('GOOGLE_PLACES_API_KEY')),
+    cache,
+    settings,
+  });
+
   const legal = new NoopLegalInvoiceIssuer();
   const pdf = new BrowserRunPdfRenderer(env.BROWSER);
   const pdfDeps = { invoices, settings, pdf, media, clock };
@@ -183,6 +206,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     expireStaleOrders,
     renderInvoicePdf,
     issueLegalInvoice,
+    reviews,
   });
 
   const stripe = new StripeGateway(readSecret('STRIPE_SECRET_KEY'), readSecret('STRIPE_WEBHOOK_SECRET'));
@@ -268,6 +292,8 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     issueInvoice,
     invoicePdf: new GetInvoicePdf({ ...pdfDeps, orderStatus, invoices, media }),
     voidInvoice: new VoidInvoice({ invoices, orders, clock }),
+    submitContact,
+    reviews,
     platform: {
       clock,
       ids,

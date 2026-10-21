@@ -1,0 +1,181 @@
+---
+// Contact page: the editable intro, the ways to reach the store, the map (loaded only on request), the form and the Google
+// reviews from the cache. The page never calls Google.
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import SectionRenderer from '@/ui/widgets/SectionRenderer.astro';
+import MapFacade from '@/ui/components/MapFacade.astro';
+import ContactForm from '@/ui/store/ContactForm.tsx';
+import { isLocale } from '@/domain/shared/locale';
+import { pickText } from '@/domain/shared/localized-text';
+import { PATHS } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+import { whatsappLink } from '@/ui/lib/whatsapp';
+import { themeToCss } from '@/ui/lib/theme-css';
+import { loadStoreContext } from '@/http/store-context';
+import { loadPageContent, loadSectionData } from '@/http/page-content';
+import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
+
+const { locale } = Astro.params;
+if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const view = storeViewFor(store, lang);
+const contact = contactFor(store, lang);
+const page = await loadPageContent(app, 'contact', lang);
+const data = page
+  ? await loadSectionData(app, page.sections, lang, catalogOptionsFor(store), store.catalog.newDays)
+  : { productsBySection: {}, categories: [] };
+const reviews = await app.reviews.forPage(lang);
+const title = t(lang, 'contact.title');
+const whatsappHref = whatsappLink(
+  store.contact.whatsappNumber,
+  pickText(store.contact.whatsappMessage, lang, 'es'),
+);
+const hours = pickText(store.contact.openingHours, lang, 'es');
+const socialLinks = Object.entries(store.contact.social).filter(
+  (entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1] !== '',
+);
+const formLabels = {
+  name: t(lang, 'contact.formName'),
+  email: t(lang, 'contact.email'),
+  phone: t(lang, 'contact.formPhone'),
+  message: t(lang, 'contact.formMessage'),
+  send: t(lang, 'contact.send'),
+  sending: t(lang, 'contact.sending'),
+  sentTitle: t(lang, 'contact.sentTitle'),
+  sentText: t(lang, 'contact.sentText'),
+  error: t(lang, 'errors.generic'),
+  invalid: t(lang, 'errors.VALIDATION_FAILED'),
+  rateLimited: t(lang, 'errors.RATE_LIMITED'),
+};
+---
+
+<StoreLayout
+  title={buildTitle(store, lang, title)}
+  locale={lang}
+  storeName={store.general.storeName}
+  currency={view.currency}
+  country={view.country}
+  alternates={{ es: PATHS.contact('es'), en: PATHS.contact('en') }}
+  canonical={new URL(PATHS.contact(lang), Astro.url.origin).toString()}
+  themeCss={themeToCss(store.theme)}
+  webAnalyticsToken={store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  <div class="grid gap-10 md:grid-cols-2">
+    <section class="flex flex-col gap-6">
+      <h1 class="text-2xl font-semibold">{title}</h1>
+      {page && (
+        <SectionRenderer
+          sections={page.sections}
+          data={data}
+          view={view}
+          whatsapp={{ number: contact.whatsappNumber, message: contact.whatsappMessage }}
+        />
+      )}
+      <dl class="flex flex-col gap-4 text-sm">
+        {store.contact.email && (
+          <div>
+            <dt class="font-semibold">{t(lang, 'contact.email')}</dt>
+            <dd>
+              <a href={`mailto:${store.contact.email}`} class="underline">
+                {store.contact.email}
+              </a>
+            </dd>
+          </div>
+        )}
+        {store.contact.phone && (
+          <div>
+            <dt class="font-semibold">{t(lang, 'contact.call')}</dt>
+            <dd>
+              <a href={`tel:${store.contact.phone}`} class="underline">
+                {store.contact.phone}
+              </a>
+            </dd>
+          </div>
+        )}
+        {whatsappHref && (
+          <div>
+            <dt class="font-semibold">{t(lang, 'contact.whatsApp')}</dt>
+            <dd>
+              <a href={whatsappHref} rel="noopener" class="underline">
+                {store.contact.whatsappNumber}
+              </a>
+            </dd>
+          </div>
+        )}
+        {store.contact.address && (
+          <div>
+            <dt class="font-semibold">{t(lang, 'contact.address')}</dt>
+            <dd>{store.contact.address}</dd>
+          </div>
+        )}
+        {hours && (
+          <div>
+            <dt class="font-semibold">{t(lang, 'contact.hours')}</dt>
+            <dd>{hours}</dd>
+          </div>
+        )}
+      </dl>
+      {socialLinks.length > 0 && (
+        <ul class="flex flex-wrap gap-4 text-sm">
+          {socialLinks.map(([name, url]) => (
+            <li>
+              <a href={url} rel="noopener" class="underline">
+                {name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+      <MapFacade
+        src={store.contact.mapsEmbedUrl}
+        title={title}
+        hint={t(lang, 'contact.mapHint')}
+        openLabel={t(lang, 'contact.showMap')}
+      />
+    </section>
+
+    <section class="flex flex-col gap-8">
+      <div class="flex flex-col gap-4">
+        <h2 class="text-lg font-semibold">{t(lang, 'contact.formTitle')}</h2>
+        <ContactForm client:visible locale={lang} siteKey={app.config.turnstileSiteKey} labels={formLabels} />
+      </div>
+      {reviews && (
+        <section class="flex flex-col gap-4" aria-labelledby="reviews-title">
+          <h2 id="reviews-title" class="text-lg font-semibold">
+            {t(lang, 'contact.reviewsTitle')}
+          </h2>
+          {reviews.rating !== null && (
+            <p class="text-sm">
+              {t(lang, 'contact.reviewsSummary', {
+                rating: reviews.rating.toFixed(1),
+                count: String(reviews.ratingCount),
+              })}
+            </p>
+          )}
+          <ul class="flex flex-col gap-3">
+            {reviews.reviews.map((review) => (
+              <li class="rounded-brand bg-surface flex flex-col gap-1 p-4 text-sm">
+                <p class="font-semibold">
+                  {review.author} · {review.rating}/5
+                </p>
+                <p>{review.text}</p>
+                <p class="text-text/60 text-xs">{review.relativeTime}</p>
+              </li>
+            ))}
+          </ul>
+          <p class="text-text/60 text-xs">{t(lang, 'contact.googleAttribution')}</p>
+          {reviews.mapsUri && (
+            <a href={reviews.mapsUri} rel="noopener" class="text-sm underline">
+              {t(lang, 'contact.writeReview')}
+            </a>
+          )}
+        </section>
+      )}
+    </section>
+  </div>
+</StoreLayout>
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

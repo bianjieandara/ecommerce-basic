@@ -2,6 +2,7 @@
 // job-types.ts and calls application logic only; it never touches Cloudflare bindings directly.
 import type { IssueLegalInvoice } from '../invoicing/issue-legal-invoice';
 import type { RenderInvoicePdf } from '../invoicing/render-invoice-pdf';
+import type { ReviewsService } from '../content/reviews-service';
 import type { ExpireStaleOrders } from '../ordering/expire-orders';
 import type { SendNotificationEmail } from '../notifications/send-notification-email';
 import type { FailedJobRepository, JobType } from '../ports/jobs';
@@ -22,6 +23,7 @@ export interface JobHandlerDeps {
   expireStaleOrders: ExpireStaleOrders;
   renderInvoicePdf: RenderInvoicePdf;
   issueLegalInvoice: IssueLegalInvoice;
+  reviews: ReviewsService;
 }
 
 /** Milliseconds in one day. */
@@ -48,6 +50,9 @@ export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, 
     },
     'invoice.render_pdf': async (payload) => {
       await deps.renderInvoicePdf.execute(invoiceJobPayload.parse(payload).invoiceId);
+    },
+    'reviews.refresh': async () => {
+      await deps.reviews.refresh();
     },
     'invoice.legal_issue': async (payload) => {
       await deps.issueLegalInvoice.execute(invoiceJobPayload.parse(payload).invoiceId);

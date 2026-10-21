@@ -1,0 +1,39 @@
+---
+// Map placeholder. Nothing is requested from Google until the visitor asks for the map.
+interface Props {
+  src: string;
+  title: string;
+  hint: string;
+  openLabel: string;
+}
+
+const { src, title, hint, openLabel } = Astro.props;
+---
+
+{src && (
+  <div
+    class="rounded-brand bg-surface flex min-h-56 flex-col items-center justify-center gap-3 p-4 text-center"
+    data-map-facade
+    data-src={src}
+    data-title={title}
+  >
+    <p class="text-text/70 text-sm">{hint}</p>
+    <button type="button" class="rounded-brand border-text/20 min-h-11 border px-4" data-map-open>
+      {openLabel}
+    </button>
+  </div>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-map-facade]').forEach((facade) => {
+    facade.querySelector('[data-map-open]')?.addEventListener('click', () => {
+      const frame = document.createElement('iframe');
+      frame.src = facade.dataset.src ?? '';
+      frame.title = facade.dataset.title ?? '';
+      frame.className = 'h-80 w-full rounded-brand';
+      frame.loading = 'lazy';
+      frame.referrerPolicy = 'no-referrer-when-downgrade';
+      facade.replaceChildren(frame);
+    });
+  });
+</script>

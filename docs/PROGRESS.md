@@ -14,7 +14,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [x] Stage 9 — Notifications: engine, email templates, multichannel service
 - [ ] Stage 10 — Checkout, payments, orders
 - [ ] Stage 11 — Invoicing
-- [ ] Stage 12 — Content pages, contact, reviews
+- [x] Stage 12 — Content pages, contact, reviews
 - [ ] Stage 13 — Admin foundation and authentication
 - [ ] Stage 14 — Admin catalog and media
 - [ ] Stage 15 — Inventory module

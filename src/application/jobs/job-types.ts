@@ -53,7 +53,6 @@ export const PENDING_JOB_TYPES: readonly JobType[] = [
   'marketing.meta_capi',
   'inventory.low_stock_alert',
   'inventory.back_in_stock',
-  'reviews.refresh',
   'reports.weekly_summary',
   'analytics.daily_rollup',
 ];

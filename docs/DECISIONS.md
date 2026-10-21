@@ -249,3 +249,20 @@ environment, so the document was not viewed.
   - A permanent failure while issuing (not a retry) keeps failing the webhook until it is fixed. A dedicated issuing job would avoid that.
   - A late payment on an expired order still issues nothing, as in Stage 10.
   - Certified e-invoicing providers (DIAN and the rest) stay in the backlog.
+
+## 2026-10-21 — Stage 12 (content pages, contact, reviews)
+
+- **Verified locally** (`astro dev`): the contact page renders in `es` and `en`: intro from the editable `contact` page, the contact
+  details, the form, and the Turnstile widget. A valid message is stored in `contact_messages`. The store alert goes to the store email
+  and the auto-reply to the sender; both are sent. A filled honeypot answers success and stores nothing. Invalid input answers 422.
+- **Map.** The embed URL sits only in a data attribute. No iframe loads before the visitor clicks "Show map", and the facade disappears
+  when the URL is empty. The click itself was not exercised in a browser.
+- **Reviews.** A snapshot in KV renders: rating, a review, attribution, and the write-review link, when `showGoogleReviews` is on. When the
+  flag is off, or the cache is empty, nothing renders. The `reviews.refresh` job fetches nothing without `GOOGLE_PLACES_API_KEY`
+  and a Place ID.
+- **Content pages.** `/<locale>/p/{about,privacy,terms,shipping-returns}` return 200 in both languages. Deviation: the plan named
+  `/<locale>/about` and similar; those are served by the existing content route, so no extra routes were added.
+- **Settings.** The seed has no `integrations` row, so the settings repository returns defaults. Not a bug. The admin settings screens
+  (Stage 17) create the row. For tests, insert it with `json_object`: double quotes in a PowerShell `--command` string get mangled.
+- **Not verified:** a real Places API call (no key or Place ID here), the map click in a browser, the scheduled review refresh, and
+  Turnstile in a browser.
