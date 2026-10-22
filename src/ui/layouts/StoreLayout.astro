@@ -11,7 +11,9 @@ import type { JsonLd } from '@/ui/lib/structured-data';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import { t } from '@/ui/i18n';
 import { routes } from '@/ui/lib/routes';
+import { isMarketingToolEnabled } from '@/domain/consent/consent';
 import CartDrawer from '../store/CartDrawer.tsx';
+import ConsentBanner from '../store/ConsentBanner.tsx';
 
 interface Props {
   title: string;
@@ -58,6 +60,17 @@ const {
   currency = 'USD',
   country = 'CO',
 } = Astro.props;
+
+// The marketing group is not in the page's store context. The settings table is read once per request, and the pages
+// have already read it, so this costs no extra query. Nothing here depends on the visitor's cookies: the page cache keys
+// on the path only, so the HTML must be the same for every visitor. The banner reads its choice in the browser.
+const marketing = await Astro.locals.app.settings.get('marketing');
+const marketingToolEnabled = isMarketingToolEnabled(marketing.metaPixelId, marketing.metaCapiEnabled);
+const consentLabels = {
+  text: t(locale, 'consent.text'),
+  accept: t(locale, 'consent.accept'),
+  refuse: t(locale, 'consent.reject'),
+};
 ---
 
 <BaseLayout
@@ -75,6 +88,8 @@ const {
   themeCss={themeCss}
   fontPreset={fontPreset}
   webAnalyticsToken={webAnalyticsToken}
+  metaPixelId={marketing.metaPixelId}
+  currency={currency}
 >
   <Header storeName={storeName} locale={locale} alternates={alternates} />
   <main class="mx-auto min-h-[60dvh] max-w-6xl px-4 py-6">
@@ -101,4 +116,10 @@ const {
     }}
   />
   <Toaster client:idle />
+  <ConsentBanner
+    client:idle
+    mode={marketing.consentBannerMode}
+    marketingToolEnabled={marketingToolEnabled}
+    labels={consentLabels}
+  />
 </BaseLayout>

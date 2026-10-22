@@ -4,6 +4,7 @@ import type { Container } from '@/composition/create-container';
 import type { WidgetInstance } from '@/application/content/widgets/registry';
 import { DEFAULT_SYSTEM_PAGES } from '@/application/content/defaults/system-pages';
 import type { CategoryDto, ProductCardDto } from '@/application/dto/catalog-dto';
+import type { Testimonial } from '@/application/ports/content';
 import { parseCatalogQuery, type CatalogOptions } from '@/domain/catalog/catalog-query';
 import type { Locale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
@@ -18,6 +19,11 @@ export interface PageContent {
 export interface SectionData {
   productsBySection: Record<string, ProductCardDto[]>;
   categories: CategoryDto[];
+  /**
+   * Visible testimonials in the admin's order, shared by every testimonials section on the page.
+   * Optional because a page with no stored or default content has no sections to load them for.
+   */
+  testimonials?: Testimonial[];
 }
 
 /** Largest number of products a featured block may show. */
@@ -74,7 +80,16 @@ export async function loadSectionData(
   const needsCategories = enabled.some(
     (section) => section.type === 'category_grid' || section.type === 'featured_products',
   );
-  const categories = needsCategories ? await service.listCategories(locale) : [];
+  // Testimonials are loaded only when a section shows manual ones; the widget applies its own count.
+  const wantsTestimonials = enabled.some(
+    (section) =>
+      section.type === 'testimonials' &&
+      (section.config as { includeManual?: boolean }).includeManual !== false,
+  );
+  const [categories, testimonials] = await Promise.all([
+    needsCategories ? service.listCategories(locale) : Promise.resolve<CategoryDto[]>([]),
+    wantsTestimonials ? app.testimonials.listVisible() : Promise.resolve<Testimonial[]>([]),
+  ]);
 
   const productsBySection: Record<string, ProductCardDto[]> = {};
   for (const section of enabled) {
@@ -100,5 +115,5 @@ export async function loadSectionData(
     const query = parseCatalogQuery(params, locale, options);
     productsBySection[section.id] = (await service.listProducts(query, limit)).items;
   }
-  return { productsBySection, categories };
+  return { productsBySection, categories, testimonials };
 }

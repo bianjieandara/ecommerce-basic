@@ -38,19 +38,6 @@ export interface CheckoutLabels {
 }
 
 /**
- * Reads the attribution saved from the landing page (filled in Stage 19). Returns an empty object when none exists.
- * @returns Attribution fields.
- */
-export function readAttribution(): Record<string, string> {
-  try {
-    const parsed = JSON.parse(sessionStorage.getItem('attribution') ?? '{}') as unknown;
-    return parsed && typeof parsed === 'object' ? (parsed as Record<string, string>) : {};
-  } catch {
-    return {};
-  }
-}
-
-/**
  * Sends the customer to the next step. Online methods go to the provider page. WhatsApp opens the chat in a new tab and
  * this tab shows the order. The manual methods go straight to the order page.
  * @param order Result of the checkout request.

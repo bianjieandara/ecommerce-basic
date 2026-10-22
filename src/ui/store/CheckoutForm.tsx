@@ -10,11 +10,12 @@ import type { CurrencyCode } from '@/domain/shared/currency';
 import { formatMoney } from '@/domain/shared/format';
 import type { Locale } from '@/domain/shared/locale';
 import { money } from '@/domain/shared/money';
+import { readAttribution } from '@/ui/lib/attribution';
 import { useTurnstile } from '@/ui/lib/turnstile';
 import { cartLines } from '../stores/cart';
 import { CheckoutAddressFields } from './CheckoutAddressFields';
 import { CheckoutSummary } from './CheckoutSummary';
-import { goToNextStep, readAttribution, type CheckoutLabels } from './checkout-support';
+import { goToNextStep, type CheckoutLabels } from './checkout-support';
 
 export type { CheckoutLabels } from './checkout-support';
 
@@ -201,7 +202,10 @@ export default function CheckoutForm(props: CheckoutFormProps) {
             {labels.delivery}
           </h2>
           {quote?.shippingOptions.map((option) => (
-            <label class="rounded-brand border-text/20 flex min-h-11 items-center justify-between gap-3 border p-3 text-sm">
+            <label
+              key={option.id}
+              class="rounded-brand border-text/20 flex min-h-11 items-center justify-between gap-3 border p-3 text-sm"
+            >
               <span class="flex items-center gap-2">
                 <input
                   type="radio"
@@ -245,7 +249,10 @@ export default function CheckoutForm(props: CheckoutFormProps) {
             {labels.payment}
           </h2>
           {quote?.paymentMethods.map((option) => (
-            <label class="rounded-brand border-text/20 flex min-h-11 items-center gap-2 border p-3 text-sm">
+            <label
+              key={option}
+              class="rounded-brand border-text/20 flex min-h-11 items-center gap-2 border p-3 text-sm"
+            >
               <input
                 type="radio"
                 name="payment"

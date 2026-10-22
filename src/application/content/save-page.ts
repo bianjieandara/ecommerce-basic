@@ -3,7 +3,7 @@
 import { can } from '@/domain/identity/role';
 import { DomainError } from '@/domain/shared/errors';
 import type { Page } from '@/domain/content/page';
-import { fieldsToSchema } from '../forms/fields-to-schema';
+import { fieldsToSchema, issueCode, type FieldIssue } from '../forms/fields-to-schema';
 import type { PageRepository, SettingsRepository } from '../ports/content';
 import type { AdminUser } from '../ports/identity';
 import type { Clock } from '../ports/platform';
@@ -38,23 +38,31 @@ export class SavePage {
     const page = await findEditablePage(this.deps.pages, id, this.deps.clock.now().toISOString());
     if (!page) throw new DomainError('NOT_FOUND', 'Page not found');
     const { defaultLocale } = await this.deps.settings.get('general');
-    const issues: { path: string; message: string }[] = [];
-    if (!input.title[defaultLocale]) issues.push({ path: `title.${defaultLocale}`, message: 'Required' });
+    const issues: FieldIssue[] = [];
+    if (!input.title[defaultLocale]) {
+      issues.push({ path: `title.${defaultLocale}`, code: 'REQUIRED', message: 'Required' });
+    }
 
     const sections: Page['sections'] = [];
     const seenIds = new Set<string>();
     input.sections.forEach((section, index) => {
       const definition = findWidgetDefinition(section.type);
       if (!definition) {
-        issues.push({ path: `sections.${index}.type`, message: 'Unknown block' });
+        issues.push({ path: `sections.${index}.type`, code: 'UNKNOWN_BLOCK', message: 'Unknown block' });
         return;
       }
-      if (seenIds.has(section.id)) issues.push({ path: `sections.${index}.id`, message: 'Duplicate block' });
+      if (seenIds.has(section.id)) {
+        issues.push({ path: `sections.${index}.id`, code: 'DUPLICATE_BLOCK', message: 'Duplicate block' });
+      }
       seenIds.add(section.id);
       const parsed = fieldsToSchema(definition.fields, { defaultLocale }).safeParse(section.config);
       if (!parsed.success) {
         for (const issue of parsed.error.issues) {
-          issues.push({ path: `sections.${index}.config.${issue.path.join('.')}`, message: issue.message });
+          issues.push({
+            path: `sections.${index}.config.${issue.path.join('.')}`,
+            code: issueCode(issue),
+            message: issue.message,
+          });
         }
         return;
       }

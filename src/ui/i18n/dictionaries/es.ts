@@ -3,6 +3,7 @@ import type { Dictionary } from '../index';
 
 export const es: Dictionary = {
   common: {
+    ratingLabel: '{count} de 5 estrellas',
     addToCart: 'Añadir al carrito',
     checkout: 'Pagar',
     viewCart: 'Ver carrito',

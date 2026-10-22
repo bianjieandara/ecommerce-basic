@@ -55,6 +55,8 @@ export interface Order {
   attribution?: Record<string, string>;
   /** Billing details the buyer gave at checkout, for the invoice. Absent when none were given. */
   billing?: Record<string, string>;
+  /** Whether the buyer agreed to marketing when ordering. Purchase events are sent to Meta only when this is true. */
+  marketingConsent: boolean;
   createdAt: string;
   updatedAt: string;
 }

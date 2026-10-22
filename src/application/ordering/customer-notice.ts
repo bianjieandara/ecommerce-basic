@@ -30,7 +30,12 @@ export async function notifyOrderCustomer(
     key,
     reference: order.id,
     orderId: order.id,
-    recipient: { email: order.customer.email, locale: order.locale },
+    recipient: {
+      email: order.customer.email,
+      phone: order.customer.phone,
+      whatsappOptIn: order.customer.whatsappOptIn,
+      locale: order.locale,
+    },
     context: orderSections(order, order.locale, {
       siteUrl: deps.siteUrl,
       presentation: await loadOrderPresentation(deps.settings),

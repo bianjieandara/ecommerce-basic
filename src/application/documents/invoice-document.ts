@@ -2,9 +2,9 @@
 // HTML. The snapshot saved with the invoice is printed as it is; nothing is read again from the catalog.
 import { formatInvoiceNumber } from '@/domain/invoicing/invoice';
 import { formatDate, formatMoney } from '@/domain/shared/format';
-import type { Locale } from '@/domain/shared/locale';
 import { money } from '@/domain/shared/money';
 import type { Invoice } from '../ports/invoicing';
+import { INVOICE_LABELS } from './invoice-labels';
 import { escapeHtml } from './html';
 
 /** Store values the invoice shows. */
@@ -16,69 +16,6 @@ export interface InvoiceDocumentOptions {
   footerNotes: string;
 }
 
-/** Fixed wording of the invoice, per language. */
-const LABELS: Record<
-  Locale,
-  {
-    title: string;
-    issued: string;
-    seller: string;
-    buyer: string;
-    taxId: string;
-    description: string;
-    quantity: string;
-    unitPrice: string;
-    amount: string;
-    rate: string;
-    base: string;
-    tax: string;
-    subtotal: string;
-    shipping: string;
-    total: string;
-    legal: string;
-    void: string;
-  }
-> = {
-  es: {
-    title: 'Factura',
-    issued: 'Fecha de emisión',
-    seller: 'Vendedor',
-    buyer: 'Cliente',
-    taxId: 'Identificación',
-    description: 'Descripción',
-    quantity: 'Cant.',
-    unitPrice: 'Precio unitario',
-    amount: 'Importe',
-    rate: 'Tasa',
-    base: 'Base',
-    tax: 'Impuesto',
-    subtotal: 'Subtotal',
-    shipping: 'Envío',
-    total: 'Total',
-    legal: 'Referencia legal',
-    void: 'ANULADA',
-  },
-  en: {
-    title: 'Invoice',
-    issued: 'Issued',
-    seller: 'Seller',
-    buyer: 'Customer',
-    taxId: 'Tax ID',
-    description: 'Description',
-    quantity: 'Qty',
-    unitPrice: 'Unit price',
-    amount: 'Amount',
-    rate: 'Rate',
-    base: 'Base',
-    tax: 'Tax',
-    subtotal: 'Subtotal',
-    shipping: 'Shipping',
-    total: 'Total',
-    legal: 'Legal reference',
-    void: 'VOID',
-  },
-};
-
 /**
  * Renders the invoice as one A4 page.
  * @param invoice Stored invoice snapshot.
@@ -86,7 +23,7 @@ const LABELS: Record<
  * @returns A complete HTML document.
  */
 export function renderInvoiceHtml(invoice: Invoice, options: InvoiceDocumentOptions): string {
-  const L = LABELS[invoice.locale];
+  const L = INVOICE_LABELS[invoice.locale];
   const price = (amountMinor: number) =>
     formatMoney(money(amountMinor, invoice.currency), invoice.locale, options.country);
   const text = (value: string) => escapeHtml(value);

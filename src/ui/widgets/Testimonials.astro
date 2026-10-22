@@ -1,0 +1,39 @@
+---
+// Testimonials widget: customer quotes as a swipeable row on phones and a three-column grid from md up.
+// Plain scroll-snap items, not the Carousel component: the carousel's buttons and autoplay would show on desktop too.
+import Icon from '@/ui/components/Icon.astro';
+import { t } from '@/ui/i18n';
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import type { WidgetProps } from './types';
+
+const { section, data, view } = Astro.props as WidgetProps;
+const config = section.config as { title?: LocalizedText; includeManual?: boolean; limit?: number };
+const items = config.includeManual === false ? [] : (data.testimonials ?? []).slice(0, config.limit ?? 6);
+const title = pickText(config.title, view.locale, 'es');
+const STAR_COUNT = 5;
+---
+
+{items.length > 0 && (
+  <section class="flex flex-col gap-4" data-reveal>
+    <h2 class="text-xl font-semibold">{title}</h2>
+    <ul class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] md:grid md:grid-cols-3 md:overflow-visible [&::-webkit-scrollbar]:hidden">
+      {items.map((item) => (
+        <li class="flex w-[80%] shrink-0 snap-start md:w-auto">
+          <figure class="flex w-full flex-col gap-3 rounded-brand bg-surface p-5">
+            <p
+              class="flex gap-0.5"
+              role="img"
+              aria-label={t(view.locale, 'common.ratingLabel', { count: item.rating })}
+            >
+              {Array.from({ length: STAR_COUNT }, (_, index) => (
+                <Icon name="star" size={18} class={index < item.rating ? 'text-accent' : 'text-text/20'} />
+              ))}
+            </p>
+            <blockquote class="text-sm leading-relaxed">{item.body}</blockquote>
+            <figcaption class="mt-auto text-sm font-medium">{item.authorName}</figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

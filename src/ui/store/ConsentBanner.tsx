@@ -1,12 +1,16 @@
 // Marketing consent banner (Preact island). Asks once, stores the answer in the consent cookie and hides itself.
-// Renders nothing on the server when the layout says no, and nothing in the browser once a choice exists.
+// The decision is made from the settings alone during server rendering, so cached HTML carries no visitor state;
+// the browser reads the consent cookie on mount and hides the banner when a choice exists.
 import { useEffect, useState } from 'preact/hooks';
 import {
+  bannerRequired,
   consentCookieString,
   consentCookieValue,
   parseConsent,
   serializeConsent,
+  type ConsentBannerMode,
 } from '@/domain/consent/consent';
+import { CONSENT_CHANGE_EVENT } from '@/ui/lib/track';
 
 /** Copy for the banner, passed from the layout so the island holds no user-visible text. */
 export interface ConsentBannerLabels {
@@ -15,33 +19,40 @@ export interface ConsentBannerLabels {
   refuse: string;
 }
 
-/** Props of the consent banner. */
+/** Props of the consent banner. Only settings go in: the visitor's cookie is read in the browser. */
 export interface ConsentBannerProps {
   labels: ConsentBannerLabels;
-  /** Server decision from `bannerRequired` for this request's cookies. The browser cookie is checked again on mount. */
-  showInitially: boolean;
+  /** The `consentBannerMode` setting. */
+  mode: ConsentBannerMode;
+  /** Whether a marketing tool is configured (see `isMarketingToolEnabled`). */
+  marketingToolEnabled: boolean;
 }
 
 /**
  * Marketing consent banner. Both buttons have equal weight: a refusal must be as easy as an acceptance.
  * Motion is limited to a slide-in that only runs when the visitor has not asked for reduced motion.
  */
-export default function ConsentBanner({ labels, showInitially }: ConsentBannerProps) {
-  const [open, setOpen] = useState(showInitially);
+export default function ConsentBanner({ labels, mode, marketingToolEnabled }: ConsentBannerProps) {
+  // Server render and first paint use "no choice yet": the same HTML is cached for every visitor of a page.
+  const [open, setOpen] = useState(() => bannerRequired(mode, marketingToolEnabled, parseConsent(null)));
   const [entered, setEntered] = useState(false);
 
   useEffect(() => {
-    if (parseConsent(consentCookieValue(document.cookie)).marketing !== null) {
+    const consent = parseConsent(consentCookieValue(document.cookie));
+    if (!bannerRequired(mode, marketingToolEnabled, consent)) {
       setOpen(false);
       return;
     }
+    setOpen(true);
     const frame = requestAnimationFrame(() => setEntered(true));
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [mode, marketingToolEnabled]);
 
   /** Stores the choice for a year and hides the banner. A browser that refuses cookies still hides it for this page view. */
   function choose(marketing: boolean) {
     document.cookie = consentCookieString(serializeConsent(marketing), location.protocol === 'https:');
+    // Lets the tracking module load the Pixel now, without a reload, when the visitor grants marketing.
+    window.dispatchEvent(new Event(CONSENT_CHANGE_EVENT));
     setOpen(false);
   }
 

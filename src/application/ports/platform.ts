@@ -73,3 +73,6 @@ export interface BackgroundTasks {
 
 /** Store locale codes, re-exported so ports do not need the domain import path. */
 export type { Locale };
+
+/** Writes one structured log line. Use cases that must not fail a request log through it; the adapter is logEvent. */
+export type LogEvent = (event: string, data?: Record<string, unknown>) => void;

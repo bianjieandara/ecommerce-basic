@@ -11,6 +11,7 @@ import type { JobQueue } from '../ports/jobs';
 import type { OrderRepository } from '../ports/ordering';
 import type { PaymentConfirmation, PaymentEventLog } from '../ports/payments';
 import type { Clock } from '../ports/platform';
+import type { ReportPurchase } from '../marketing/report-purchase';
 import { notifyOrderCustomer } from './customer-notice';
 import type { OrderLinks } from './order-links';
 
@@ -23,6 +24,8 @@ export interface ConfirmPaymentDeps {
   jobs: JobQueue;
   links: OrderLinks;
   evaluateStock: EvaluateStockChanges;
+  /** Queues the Meta Purchase event once the order is paid. Never throws. */
+  purchase: ReportPurchase;
   clock: Clock;
   siteUrl: string;
 }
@@ -154,6 +157,8 @@ export class ConfirmPayment {
     );
     const followUp = async (): Promise<void> => {
       if (paid && notify) await this.notifyCustomer(order, 'payment_confirmed');
+      // Only the call that moved the order reports the purchase, so a repeated event never queues a second one.
+      if (paid) await this.deps.purchase.execute(order);
       // Issuing runs as a job, not here: a failure that keeps happening would otherwise fail the webhook until the provider gives
       // up on the endpoint, and no payment would be confirmed at all. The job is idempotent and retried.
       if (paid || isPaidOrLater(order.status)) {

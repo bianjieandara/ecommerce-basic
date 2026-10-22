@@ -3,6 +3,7 @@ import { savePageInput } from '@/application/content/page-schemas';
 import { requireAdmin } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 
+/** POST: saves a page's texts, publication and sections. */
 export const POST = defineEndpoint({
   method: 'POST',
   input: savePageInput,

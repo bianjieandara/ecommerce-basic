@@ -1,14 +1,14 @@
 // Form definitions of the store groups: general, contact, theme, catalog and inventory. Each key is a field of the group's zod
 // schema in settings-schemas.ts. Labels are bilingual, as in the widget and email definitions, so the form and the page
 // builder read one definition each.
-import { CURRENCIES } from '@/domain/shared/currency';
+import { CURRENCY_CODES } from '@/domain/shared/currency';
 import { bilingual } from '@/domain/shared/localized-text';
 import { option, type GroupFields } from './settings-field-types';
 
 /** The store groups defined here. */
 type StoreGroup = 'general' | 'contact' | 'theme' | 'catalog' | 'inventory';
 
-const CURRENCY_OPTIONS = Object.keys(CURRENCIES).map((code) => option(code, code, code));
+const CURRENCY_OPTIONS = CURRENCY_CODES.map((code) => option(code, code, code));
 
 /** Form definitions of the store groups, checked against their schemas. */
 export const storeFieldDefinitions = {

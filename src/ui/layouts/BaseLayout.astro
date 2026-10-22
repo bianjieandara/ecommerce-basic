@@ -3,6 +3,7 @@
 // Every page uses this (directly, or through StoreLayout). Theme CSS comes from settings via themeToCss.
 import '@/ui/styles/global.css';
 import { DEFAULT_LOCALE, type Locale } from '@/domain/shared/locale';
+import type { CurrencyCode } from '@/domain/shared/currency';
 import type { JsonLd } from '@/ui/lib/structured-data';
 import SeoHead from './SeoHead.astro';
 // The Latin subset of each preset, as hashed asset URLs. Preloading the one the store uses stops the text from changing
@@ -35,6 +36,10 @@ interface Props {
   fontPreset?: keyof typeof FONT_FILES;
   /** Web Analytics token (Cloudflare Web Analytics). Empty means no beacon. */
   webAnalyticsToken?: string;
+  /** Meta Pixel id from the marketing settings. Empty means no Pixel; it loads only after marketing consent. */
+  metaPixelId?: string;
+  /** Store currency, sent to the Pixel with the value of each event. */
+  currency?: CurrencyCode;
 }
 
 const {
@@ -52,6 +57,8 @@ const {
   themeCss = '',
   fontPreset,
   webAnalyticsToken = '',
+  metaPixelId = '',
+  currency = 'USD',
 } = Astro.props;
 ---
 
@@ -89,15 +96,17 @@ const {
       />
     )}
   </head>
-  <body class="antialiased">
+  <body class="antialiased" data-meta-pixel-id={metaPixelId} data-currency={currency}>
     <slot />
     <script>
       import { initCarousels } from '@/ui/scripts/carousel';
       import { initDialogs } from '@/ui/scripts/dialog';
       import { initReveal } from '@/ui/scripts/reveal';
+      import { initTracking } from '@/ui/lib/track';
       initCarousels();
       initDialogs();
       initReveal();
+      initTracking();
     </script>
   </body>
 </html>

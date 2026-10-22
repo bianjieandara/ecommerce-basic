@@ -28,8 +28,14 @@ export const createPageInput = z.object({
     .string()
     .min(2)
     .max(80)
-    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Use lowercase letters, digits and dashes'),
-  title: localizedInput.refine((value) => value.es !== '' || value.en !== '', { message: 'Required' }),
+    .refine((value) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(value), {
+      message: 'Use lowercase letters, digits and dashes',
+      params: { code: 'SLUG_FORMAT' },
+    }),
+  title: localizedInput.refine((value) => value.es !== '' || value.en !== '', {
+    message: 'Required',
+    params: { code: 'REQUIRED' },
+  }),
 });
 
 /** A page as the page builder saves it. */

@@ -3,6 +3,7 @@
 import { t } from '@/ui/i18n';
 import { routes } from '@/ui/lib/routes';
 import type { Locale } from '@/domain/shared/locale';
+import ConsentSettingsLink from './ConsentSettingsLink.tsx';
 
 interface Props {
   storeName: string;
@@ -33,6 +34,7 @@ const year = new Date().getFullYear();
       >
         {t(locale, 'footer.privacy')}
       </a>
+      <ConsentSettingsLink client:idle label={t(locale, 'consent.settings')} />
       <a
         href={routes.page(locale, 'terms')}
         class="inline-flex min-h-11 items-center underline-offset-4 hover:underline"

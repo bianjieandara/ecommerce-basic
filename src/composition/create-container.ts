@@ -41,6 +41,12 @@ import { InvoiceAttachments } from '@/infrastructure/invoicing/invoice-attachmen
 import { CloudflareRateLimiter, TurnstileVerifier } from '@/infrastructure/security/security-adapters';
 import { CryptoIdGenerator, SystemClock, WebCryptoHasher } from '@/infrastructure/system/system-adapters';
 import { logEvent } from '@/infrastructure/system/logger';
+import { AnalyticsEngineSink } from '@/infrastructure/analytics/analytics-engine-sink';
+import { TrackEvent } from '@/application/marketing/track-event';
+import { handleMetaCapi } from '@/application/marketing/handle-meta-capi';
+import { MetaConversionsSink } from '@/infrastructure/meta/meta-conversions-sink';
+import { MetaGraphClient } from '@/infrastructure/meta/graph-client';
+import { readCapiSettings } from '@/infrastructure/meta/meta-config';
 import { createCatalogAdmin, createMediaLibrary } from './admin-catalog';
 import { createContentAdmin } from './admin-content';
 import { createInventory } from './inventory';
@@ -175,11 +181,19 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     traffic: new PendingTrafficBreakdowns(), // Stage 19 replaces this with the Analytics Engine reader
     clock,
   });
+  const analytics = new AnalyticsEngineSink(env.EVENTS, env.CLIENT_SLUG);
+  const trackEvent = new TrackEvent({ analytics, jobs: jobQueue, settings, clock, log: logEvent });
+  const metaCapi = handleMetaCapi({
+    sink: new MetaConversionsSink(new MetaGraphClient(readCapiSettings()), hasher, siteUrl),
+    settings,
+    log: logEvent,
+  });
   const handlers = buildJobHandlers({
     failedJobs,
     clock,
     sendNotificationEmail,
     notifyWhatsapp: whatsapp.notifyWhatsapp,
+    metaCapi,
     expireStaleOrders: orderingServices.expireStaleOrders,
     issueInvoice: orderingServices.issueInvoice,
     renderInvoicePdf,
@@ -246,6 +260,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     catalogAdmin,
     contentAdmin: createContentAdmin(env, { settings, clock, ids, notifications, emailTemplates }),
     translate: new TranslateText({ translator: new WorkersAiTranslator(env.AI) }),
+    trackEvent,
     whatsapp: whatsapp.services,
     mediaLibrary,
     inventory,
@@ -256,6 +271,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
       passwords,
       cache,
       pageCache: new KvPageCacheVersion(env.CACHE),
+      analytics,
       botVerifier,
       rateLimiter,
       email,

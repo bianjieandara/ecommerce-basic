@@ -2,6 +2,7 @@
 // storefront reads with, so a saved value can never break a page.
 import { can } from '@/domain/identity/role';
 import { DomainError } from '@/domain/shared/errors';
+import { issueCode, type FieldIssue } from '../forms/fields-to-schema';
 import type { SettingsRepository } from '../ports/content';
 import type { AdminUser } from '../ports/identity';
 import type { Clock } from '../ports/platform';
@@ -47,8 +48,9 @@ export class SaveSettings {
     }
     const parsed = SETTINGS_SCHEMAS[group].safeParse(values);
     if (!parsed.success) {
-      const issues = parsed.error.issues.map((issue) => ({
+      const issues: FieldIssue[] = parsed.error.issues.map((issue) => ({
         path: issue.path.join('.'),
+        code: issueCode(issue),
         message: issue.message,
       }));
       throw new DomainError('VALIDATION_FAILED', 'Some settings are not valid', { issues });

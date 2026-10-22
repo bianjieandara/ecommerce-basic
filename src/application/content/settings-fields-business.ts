@@ -64,7 +64,8 @@ export const businessFieldDefinitions = {
     paypalExchangeRate: {
       kind: 'number',
       label: bilingual('Tasa de cambio para PayPal', 'PayPal exchange rate'),
-      min: 0,
+      // Same rule as the schema (positive): zero is refused by both, so the form never offers a value the server refuses.
+      min: 0.0001,
       step: 0.0001,
       nullable: true,
     },

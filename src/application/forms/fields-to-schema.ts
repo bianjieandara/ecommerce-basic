@@ -13,6 +13,29 @@ export interface SchemaOptions {
 /** Longest text accepted when a field declares no max. */
 const DEFAULT_MAX_TEXT = 2000;
 
+/** Refusal of a choice that is not one of the field's options. */
+const UNKNOWN_OPTION = { message: 'Unknown option', params: { code: 'UNKNOWN_OPTION' } };
+
+/**
+ * One refused field as a use case returns it. `code` is the translation key the UI shows; `message` is English, for the logs.
+ */
+export interface FieldIssue {
+  path: string;
+  code: string;
+  message: string;
+}
+
+/**
+ * Reads the display code of a zod issue. Checks declare their code in `params`; built-in checks (min, regex, enum) have none
+ * and map to the generic code, which the UI shows as its plain "invalid" text.
+ * @param issue Issue from a zod parse.
+ * @returns The display code.
+ */
+export function issueCode(issue: z.core.$ZodIssue): string {
+  const params = 'params' in issue ? (issue.params as { code?: unknown } | undefined) : undefined;
+  return typeof params?.code === 'string' ? params.code : 'INVALID';
+}
+
 /**
  * Builds the zod schema for one field.
  * @param field Field descriptor.
@@ -51,14 +74,14 @@ function fieldSchema(field: FieldDescriptor, options: SchemaOptions): z.ZodType 
       return z.boolean();
     case 'select': {
       const allowed = field.options.map((option) => option.value);
-      const choice = z.string().refine((value) => allowed.includes(value), 'Unknown option');
+      const choice = z.string().refine((value) => allowed.includes(value), UNKNOWN_OPTION);
       return field.nullable ? choice.nullable() : choice;
     }
     case 'object':
       return fieldsToSchema(field.fields, options);
     case 'multiselect': {
       const allowed = field.options.map((option) => option.value);
-      return z.array(z.string().refine((value) => allowed.includes(value), 'Unknown option'));
+      return z.array(z.string().refine((value) => allowed.includes(value), UNKNOWN_OPTION));
     }
     case 'image':
       return z.uuid().nullable();
@@ -68,9 +91,10 @@ function fieldSchema(field: FieldDescriptor, options: SchemaOptions): z.ZodType 
       return z.array(z.uuid()).max(field.max ?? 50);
     case 'link':
       return z.object({
-        href: z
-          .string()
-          .refine((value) => value.startsWith('/') || value.startsWith('https://'), 'Use / or https://'),
+        href: z.string().refine((value) => value.startsWith('/') || value.startsWith('https://'), {
+          message: 'Use / or https://',
+          params: { code: 'LINK_HREF' },
+        }),
         label: z.object({ es: z.string().max(200), en: z.string().max(200) }),
       });
     case 'repeater': {

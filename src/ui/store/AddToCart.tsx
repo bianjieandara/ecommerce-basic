@@ -1,8 +1,9 @@
 // Add-to-cart control on the product page (Preact island): quantity stepper and the add button.
 // The labels arrive already translated from the server, so the island needs no dictionary.
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { addToCart, cartOpen, type CartLine } from '../stores/cart';
 import { showToast } from '../stores/toast';
+import { track } from '@/ui/lib/track';
 
 /** Props of the add-to-cart control. */
 export interface AddToCartProps {
@@ -30,6 +31,18 @@ export default function AddToCart(props: AddToCartProps) {
   const available = !props.trackInventory || props.stock > 0;
   const maximum = props.trackInventory ? Math.min(MAX_PER_ADD, props.stock) : MAX_PER_ADD;
 
+  // This island mounts only on the product page with a chosen variant, so its mount is the product view. The browser
+  // beacon is meant to be the one source of view_item (it carries the Pixel event id); the server must stop writing its
+  // own view_item, or the event is counted twice. A different variant is a different page load, so this runs once.
+  useEffect(() => {
+    track('view_item', {
+      items: [
+        { productId: props.productId, variantId: props.variantId, quantity: 1, priceMinor: props.priceMinor },
+      ],
+      valueMinor: props.priceMinor,
+    });
+  }, []);
+
   const add = () => {
     const line: Omit<CartLine, 'quantity'> & { quantity: number } = {
       variantId: props.variantId,
@@ -42,6 +55,17 @@ export default function AddToCart(props: AddToCartProps) {
       productPath: props.productPath,
     };
     addToCart(line);
+    track('add_to_cart', {
+      items: [
+        {
+          productId: props.productId,
+          variantId: props.variantId,
+          quantity,
+          priceMinor: props.priceMinor,
+        },
+      ],
+      valueMinor: props.priceMinor * quantity,
+    });
     cartOpen.set(true);
     showToast(props.labels.added, 'success');
   };

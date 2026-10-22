@@ -46,6 +46,8 @@ import type { Pbkdf2PasswordHasher } from '@/infrastructure/security/security-ad
 import type { CatalogAdmin } from './admin-catalog';
 import type { ContentAdmin } from './admin-content';
 import type { TranslateText } from '@/application/ai/translate-text';
+import type { AnalyticsWriter } from '@/application/ports/analytics';
+import type { TrackEvent } from '@/application/marketing/track-event';
 import type { WhatsAppServices } from './whatsapp';
 import type { BuildReport } from '@/application/reports/build-report';
 import type { InventoryServices } from './inventory';
@@ -105,6 +107,8 @@ export interface Container {
   catalogAdmin: CatalogAdmin;
   contentAdmin: ContentAdmin;
   translate: TranslateText;
+  /** Storefront events from the browser: validated, written to analytics, and queued for Meta when consent allows. */
+  trackEvent: TrackEvent;
   /** Reports: the sales, product, tax, inventory, customer and funnel views. */
   reports: BuildReport;
   /** WhatsApp: admin templates, Meta submit and sync, and the webhook. */
@@ -122,6 +126,7 @@ export interface Container {
     passwords: Pbkdf2PasswordHasher;
     cache: CacheStore;
     pageCache: PageCacheVersion;
+    analytics: AnalyticsWriter;
     botVerifier: BotVerifier;
     rateLimiter: RateLimiter;
     email: EmailSender;

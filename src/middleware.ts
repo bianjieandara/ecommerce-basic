@@ -6,6 +6,7 @@ import { createContainer } from '@/composition/create-container';
 import { DomainError } from '@/domain/shared/errors';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { sessionTokenOf } from '@/http/admin-session';
+import { recordPageView } from '@/http/analytics';
 import { errorResponse } from '@/http/errors';
 import { withPageCache } from '@/http/page-cache';
 import { withSecurityHeaders } from '@/http/security-headers';
@@ -94,5 +95,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
         render,
       )
     : await render();
+  recordPageView(
+    { analytics: app.platform.analytics, clock: app.platform.clock, requestId: context.locals.requestId },
+    context.request,
+    response,
+  );
   return withSecurityHeaders(response, context.url);
 });

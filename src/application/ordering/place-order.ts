@@ -68,12 +68,12 @@ export class PlaceOrder {
     const shipping = quote.shippingOptions.find((option) => option.id === input.shippingMethodId);
     if (!shipping) {
       throw new DomainError('VALIDATION_FAILED', 'Choose a shipping method', [
-        { path: ['shippingMethodId'], message: 'Unknown shipping method' },
+        { path: ['shippingMethodId'], code: 'UNKNOWN_SHIPPING_METHOD', message: 'Unknown shipping method' },
       ]);
     }
     if (shipping.kind === 'flat' && input.address === null) {
       throw new DomainError('VALIDATION_FAILED', 'A shipping address is required', [
-        { path: ['address'], message: 'Required for delivery' },
+        { path: ['address'], code: 'ADDRESS_REQUIRED', message: 'Required for delivery' },
       ]);
     }
 
@@ -184,6 +184,8 @@ export class PlaceOrder {
     const order: Order = {
       id,
       number: placed.number,
+      // Checkout does not record marketing consent yet, so no purchase is sent to Meta for this order.
+      marketingConsent: false,
       status: 'pending_payment',
       paymentMethod: input.paymentMethod,
       paymentReference: initiation.kind === 'redirect' ? (initiation.providerReference ?? null) : null,

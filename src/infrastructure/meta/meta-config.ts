@@ -2,6 +2,7 @@
 // flags, never the ids or tokens themselves.
 import { readSecret } from '@/infrastructure/cloudflare/env';
 import type { WhatsAppConnectionStatus } from '@/application/ports/whatsapp';
+import type { GraphConfig } from './graph-client';
 
 /** Every Meta setting the WhatsApp adapters use. A null value means the setting is not set. */
 export interface MetaSettings {
@@ -45,4 +46,13 @@ export function connectionStatusOf(settings: MetaSettings): WhatsAppConnectionSt
     appSecretConfigured: settings.appSecret !== null,
     verifyTokenConfigured: settings.verifyToken !== null,
   };
+}
+
+/**
+ * Connection settings of the Conversions API: the Graph version is shared with WhatsApp, the token is its own
+ * (META_CAPI_TOKEN) so the two can be revoked separately.
+ * @returns Version and token, each null when unset.
+ */
+export function readCapiSettings(): GraphConfig {
+  return { version: readSecret('META_GRAPH_VERSION'), token: readSecret('META_CAPI_TOKEN') };
 }

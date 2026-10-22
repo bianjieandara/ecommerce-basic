@@ -85,4 +85,4 @@ export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
 };
 
 /** Job types whose handlers are added in later stages. Dispatching one logs and acknowledges it. */
-export const PENDING_JOB_TYPES: readonly JobType[] = ['marketing.meta_capi'];
+export const PENDING_JOB_TYPES: readonly JobType[] = [];

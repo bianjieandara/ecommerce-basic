@@ -16,6 +16,11 @@ export const CURRENCIES = {
 export type CurrencyCode = keyof typeof CURRENCIES;
 
 /**
+ * Every supported code as a tuple, for zod enums and option lists. Derived from CURRENCIES so the two can never disagree.
+ */
+export const CURRENCY_CODES = Object.keys(CURRENCIES) as [CurrencyCode, ...CurrencyCode[]];
+
+/**
  * Checks whether a string is a supported currency code.
  * @param value Candidate code.
  * @returns True for supported codes.

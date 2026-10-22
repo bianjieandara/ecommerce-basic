@@ -2,6 +2,7 @@
 // so a key missing in Spanish fails `npm run check`. Placeholders use {name} syntax.
 export const en = {
   common: {
+    ratingLabel: '{count} out of 5 stars',
     addToCart: 'Add to cart',
     checkout: 'Checkout',
     viewCart: 'View cart',

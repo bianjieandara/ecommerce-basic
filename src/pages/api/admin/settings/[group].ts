@@ -6,6 +6,7 @@ import { defineEndpoint } from '@/http/define-endpoint';
 
 const saveSettingsInput = z.object({ values: z.unknown() });
 
+/** POST: saves one settings group, validated by its schema. */
 export const POST = defineEndpoint({
   method: 'POST',
   input: saveSettingsInput,

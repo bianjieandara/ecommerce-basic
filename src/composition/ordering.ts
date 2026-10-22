@@ -23,6 +23,8 @@ import { RenderInvoicePdf } from '@/application/invoicing/render-invoice-pdf';
 import { VoidInvoice } from '@/application/invoicing/void-invoice';
 import { NotificationService } from '@/application/notifications/notification-service';
 import { D1CatalogQueryService } from '@/infrastructure/d1/catalog-query-service';
+import { ReportPurchase } from '@/application/marketing/report-purchase';
+import { logEvent } from '@/infrastructure/system/logger';
 import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-repository';
 import { readSecret } from '@/infrastructure/cloudflare/env';
 import { BrowserRunPdfRenderer, NoopLegalInvoiceIssuer } from '@/infrastructure/invoicing/invoicing-adapters';
@@ -130,6 +132,7 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     links,
     clock,
     siteUrl,
+    purchase: new ReportPurchase({ jobs, settings, clock, log: logEvent }),
   });
   const quoteCart = ({ newDays }: { newDays: number }) =>
     new QuoteCart({

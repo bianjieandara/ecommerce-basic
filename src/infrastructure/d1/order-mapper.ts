@@ -34,6 +34,7 @@ export interface OrderRow {
   tracking_code: string | null;
   attribution_json: string;
   billing_json: string;
+  marketing_consent: number;
   created_at: string;
   updated_at: string;
 }
@@ -111,6 +112,7 @@ export function toOrder(row: OrderRow, items: OrderItem[]): Order {
     trackingCode: row.tracking_code,
     attribution: parseJson<Record<string, string>>(row.attribution_json, {}),
     billing: parseJson<Record<string, string>>(row.billing_json, {}),
+    marketingConsent: row.marketing_consent === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

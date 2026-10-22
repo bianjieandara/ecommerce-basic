@@ -16,13 +16,16 @@ The consent rules below are the target behaviour.
 | Name             | Sent when                                         | Value and items                              |
 | ---------------- | ------------------------------------------------- | -------------------------------------------- |
 | `page_view`      | An HTML page of the storefront is served          | none                                         |
-| `view_item`      | A product page is served                          | one item (the product and the variant shown) |
+| `view_item`      | A product page is viewed (browser beacon)         | one item (the product and the variant shown) |
 | `add_to_cart`    | A product is added to the cart                    | items, value = price times quantity          |
 | `begin_checkout` | The checkout page is opened with a non-empty cart | items, value = cart total                    |
 | `purchase`       | The payment is confirmed on the server            | items, value = order total, `orderId`        |
 
-`page_view` and `view_item` are written by the server. `add_to_cart` and `begin_checkout` come from the browser
-(`POST /api/events`). `purchase` is written by the server when the payment is confirmed, never from the browser.
+`page_view` is written by the server for every storefront HTML page. `view_item`, `add_to_cart` and `begin_checkout`
+come from the browser (`POST /api/events`, at most 10 events per request). The server does not write `view_item`: the
+beacon is its only source, so a product page is counted once and the event carries the pixel event id.
+`purchase` is written by the server when the payment is confirmed, never from the browser. `page_view` and `purchase`
+are refused by `POST /api/events`.
 
 ## Analytics Engine data point
 
