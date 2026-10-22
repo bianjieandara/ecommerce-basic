@@ -23,6 +23,8 @@ export interface StockDelta {
   reason: StockReason;
   reference?: string;
   note?: string;
+  /** Unit cost in minor units to save in the same batch (an import row with a cost column). */
+  costMinor?: number;
 }
 
 /** Who makes a batch of changes, and when. */
@@ -44,6 +46,8 @@ export interface InventoryRow {
   /** Effective threshold: the variant's own, or the store default. */
   threshold: number;
   tracked: boolean;
+  /** Whether the product is published. Drafts and archived products take no subscriptions and send no alerts. */
+  productActive: boolean;
   costMinor: number | null;
   /** Variant price, or the product's base price when the variant has none. */
   priceMinor: number;
@@ -57,6 +61,8 @@ export interface InventoryFilter {
   search: string;
   categoryId: string | null;
   status: StockStatus | 'all';
+  /** Leave out variants that do not track stock (the count-sheet export has nothing to count for them). */
+  trackedOnly?: boolean;
   sort: 'name' | 'stock_asc' | 'stock_desc' | 'value_desc';
   locale: Locale;
   defaultThreshold: number;
@@ -88,13 +94,15 @@ export interface StockMovement {
   createdAt: string;
 }
 
-/** Filters and page of the movement ledger. Dates are YYYY-MM-DD, both ends included. */
+/** Filters and page of the movement ledger. Dates are YYYY-MM-DD days of `timeZone`, both ends included. */
 export interface MovementFilter {
   search: string;
   variantId: string | null;
   reason: StockReason | null;
   from: string | null;
   to: string | null;
+  /** The store's time zone: the days above start and end at its midnight, not at UTC midnight. */
+  timeZone: string;
   locale: Locale;
   page: number;
   pageSize: number;

@@ -7,26 +7,32 @@ import type {
   MovementFilter,
   StockMovement,
 } from '@/application/ports/inventory';
+import { dayAfterStartUtc, dayStartUtc } from '@/domain/shared/day-bounds';
 import type { Locale } from '@/domain/shared/locale';
 import { toPaginated, type Paginated } from '@/domain/shared/pagination';
-import { toPrefixQuery } from './catalog-query-service';
-import { queryAll, queryFirst, type SqlValue } from './d1-client';
+import { queryAll, queryFirst, statement, type SqlValue } from './d1-client';
 import {
+  INVENTORY_FROM,
   INVENTORY_ROW_SELECT,
-  PRODUCT_NAME_SQL,
-  VARIANT_LABEL_SQL,
   rowBinds,
   toInventoryRow,
   type InventoryRecord,
   type MovementRecord,
 } from './inventory-rows';
+import { PRODUCT_NAME_SQL, VARIANT_LABEL_SQL, textSearch, whereClause } from './sql-fragments';
 
-/** ORDER BY per sort. Runs over the outer select, so the aliases of the row select are available. */
-const SORTS: Record<InventoryFilter['sort'], string> = {
-  name: 'r.product_name COLLATE NOCASE, r.variant_label, r.variant_id',
-  stock_asc: 'r.stock, r.product_name COLLATE NOCASE',
-  stock_desc: 'r.stock DESC, r.product_name COLLATE NOCASE',
-  value_desc: 'r.stock * r.price_minor DESC',
+/**
+ * ORDER BY per sort, over the variant and product tables (the page's ids are found before any other column is computed).
+ * Every sort ends with the variant id, so a page boundary never repeats or skips a row.
+ */
+const SORTS: Record<InventoryFilter['sort'], { sql: string; needsLocale: boolean }> = {
+  name: { sql: `${PRODUCT_NAME_SQL} COLLATE NOCASE, v.product_id, v.position, v.id`, needsLocale: true },
+  stock_asc: { sql: 'v.stock, v.product_id, v.position, v.id', needsLocale: false },
+  stock_desc: { sql: 'v.stock DESC, v.product_id, v.position, v.id', needsLocale: false },
+  value_desc: {
+    sql: 'v.stock * COALESCE(v.price_minor, p.base_price_minor) DESC, v.product_id, v.position, v.id',
+    needsLocale: false,
+  },
 };
 
 /** D1-backed inventory reads. */
@@ -35,7 +41,7 @@ export class D1InventoryQueries implements InventoryQueries {
   constructor(private readonly db: D1Database) {}
 
   /**
-   * Matches a SKU or a barcode exactly.
+   * Matches a SKU or a barcode exactly. A code that is both one variant's SKU and another's barcode opens the SKU's variant.
    * @param code Typed or scanned code.
    * @param locale Language of the names.
    * @param defaultThreshold Store default low-stock threshold.
@@ -48,38 +54,46 @@ export class D1InventoryQueries implements InventoryQueries {
   ): Promise<InventoryRow | null> {
     const row = await queryFirst<InventoryRecord>(
       this.db,
-      `${INVENTORY_ROW_SELECT} WHERE v.sku = ? OR v.barcode = ? LIMIT 1`,
-      [...rowBinds(defaultThreshold, locale), code, code],
+      `${INVENTORY_ROW_SELECT} WHERE v.sku = ? OR v.barcode = ? ORDER BY (v.sku = ?) DESC, v.id LIMIT 1`,
+      [...rowBinds(defaultThreshold, locale), code, code, code],
     );
     return row ? toInventoryRow(row) : null;
   }
 
   /**
-   * One page of the inventory table.
+   * One page of the inventory table. The page's ids and the total come first, from the variant and product tables only; the
+   * names, labels and thumbnails are then loaded for those rows alone, not for every row that matches.
    * @param filter Filters, sort and page.
    * @returns The rows and the paging information.
    */
   async listRows(filter: InventoryFilter): Promise<Paginated<InventoryRow>> {
     const { clause, binds } = inventoryWhere(filter);
-    const counted = await queryFirst<{ n: number }>(
-      this.db,
-      `SELECT COUNT(*) AS n FROM product_variants v JOIN products p ON p.id = v.product_id ${clause}`,
-      binds,
-    );
-    const rows = await queryAll<InventoryRecord>(
-      this.db,
-      `SELECT * FROM (${INVENTORY_ROW_SELECT} ${clause}) r ORDER BY ${SORTS[filter.sort]} LIMIT ? OFFSET ?`,
-      [
-        ...rowBinds(filter.defaultThreshold, filter.locale),
+    const sort = SORTS[filter.sort];
+    const [counted, paged] = await this.db.batch([
+      statement(this.db, `SELECT COUNT(*) AS n ${INVENTORY_FROM} ${clause}`, binds),
+      statement(this.db, `SELECT v.id ${INVENTORY_FROM} ${clause} ORDER BY ${sort.sql} LIMIT ? OFFSET ?`, [
         ...binds,
+        ...(sort.needsLocale ? [filter.locale] : []),
         filter.pageSize,
         (filter.page - 1) * filter.pageSize,
-      ],
+      ]),
+    ]);
+    const total = (counted?.results[0] as { n: number } | undefined)?.n ?? 0;
+    const ids = ((paged?.results ?? []) as { id: string }[]).map((row) => row.id);
+    if (ids.length === 0) {
+      return toPaginated([], total, { page: filter.page, pageSize: filter.pageSize });
+    }
+    const records = await queryAll<InventoryRecord>(
+      this.db,
+      `${INVENTORY_ROW_SELECT} WHERE v.id IN (SELECT value FROM json_each(?))`,
+      [...rowBinds(filter.defaultThreshold, filter.locale), JSON.stringify(ids)],
     );
-    return toPaginated(rows.map(toInventoryRow), counted?.n ?? 0, {
-      page: filter.page,
-      pageSize: filter.pageSize,
+    const byId = new Map(records.map((record) => [record.variant_id, record]));
+    const items = ids.flatMap((id) => {
+      const record = byId.get(id);
+      return record ? [toInventoryRow(record)] : [];
     });
+    return toPaginated(items, total, { page: filter.page, pageSize: filter.pageSize });
   }
 
   /**
@@ -92,14 +106,14 @@ export class D1InventoryQueries implements InventoryQueries {
       `SELECT COALESCE(SUM(v.stock), 0) AS units,
          COALESCE(SUM(v.stock * COALESCE(v.cost_minor, 0)), 0) AS cost_minor,
          COALESCE(SUM(v.stock * COALESCE(v.price_minor, p.base_price_minor)), 0) AS retail_minor
-       FROM product_variants v JOIN products p ON p.id = v.product_id
+       ${INVENTORY_FROM}
        WHERE v.track_inventory = 1`,
     );
     return { units: row?.units ?? 0, costMinor: row?.cost_minor ?? 0, retailMinor: row?.retail_minor ?? 0 };
   }
 
   /**
-   * One page of the movement ledger, newest first.
+   * One page of the movement ledger, newest first. The page's ids come first, then the names for those rows alone.
    * @param filter Filters and page.
    * @returns The rows and the paging information.
    */
@@ -107,20 +121,33 @@ export class D1InventoryQueries implements InventoryQueries {
     const { clause, binds } = movementWhere(filter);
     const from = `FROM inventory_movements m JOIN product_variants v ON v.id = m.variant_id
       JOIN products p ON p.id = v.product_id`;
-    const counted = await queryFirst<{ n: number }>(this.db, `SELECT COUNT(*) AS n ${from} ${clause}`, binds);
-    const rows = await queryAll<MovementRecord>(
+    const [counted, paged] = await this.db.batch([
+      statement(this.db, `SELECT COUNT(*) AS n ${from} ${clause}`, binds),
+      statement(
+        this.db,
+        `SELECT m.id ${from} ${clause} ORDER BY m.created_at DESC, m.rowid DESC LIMIT ? OFFSET ?`,
+        [...binds, filter.pageSize, (filter.page - 1) * filter.pageSize],
+      ),
+    ]);
+    const total = (counted?.results[0] as { n: number } | undefined)?.n ?? 0;
+    const ids = ((paged?.results ?? []) as { id: string }[]).map((row) => row.id);
+    if (ids.length === 0) {
+      return toPaginated([], total, { page: filter.page, pageSize: filter.pageSize });
+    }
+    const records = await queryAll<MovementRecord>(
       this.db,
       `SELECT m.id, m.variant_id, v.sku, m.delta, m.stock_after, m.reason, m.reference, m.note, m.created_at,
          ${PRODUCT_NAME_SQL} AS product_name, ${VARIANT_LABEL_SQL} AS variant_label,
          COALESCE((SELECT u.name FROM admin_users u WHERE u.id = m.actor), m.actor) AS actor_name
-       ${from} ${clause}
-       ORDER BY m.created_at DESC, m.rowid DESC LIMIT ? OFFSET ?`,
-      [filter.locale, filter.locale, ...binds, filter.pageSize, (filter.page - 1) * filter.pageSize],
+       ${from} WHERE m.id IN (SELECT value FROM json_each(?))`,
+      [filter.locale, filter.locale, JSON.stringify(ids)],
     );
-    return toPaginated(rows.map(toMovement), counted?.n ?? 0, {
-      page: filter.page,
-      pageSize: filter.pageSize,
+    const byId = new Map(records.map((record) => [record.id, record]));
+    const items = ids.flatMap((id) => {
+      const record = byId.get(id);
+      return record ? [toMovement(record)] : [];
     });
+    return toPaginated(items, total, { page: filter.page, pageSize: filter.pageSize });
   }
 }
 
@@ -133,7 +160,7 @@ function inventoryWhere(filter: InventoryFilter): { clause: string; binds: SqlVa
   const conditions: string[] = [];
   const binds: SqlValue[] = [];
   if (filter.search) {
-    const search = searchSql(filter.search);
+    const search = textSearch(filter.search, ['v.sku', 'v.barcode']);
     conditions.push(search.sql);
     binds.push(...search.binds);
   }
@@ -143,6 +170,7 @@ function inventoryWhere(filter: InventoryFilter): { clause: string; binds: SqlVa
     );
     binds.push(filter.categoryId);
   }
+  if (filter.trackedOnly) conditions.push('v.track_inventory = 1');
   // The same rules as stockStatus() in the domain: untracked, out (empty), low (at or below the threshold), in stock.
   switch (filter.status) {
     case 'all':
@@ -176,7 +204,7 @@ function movementWhere(filter: MovementFilter): { clause: string; binds: SqlValu
   const conditions: string[] = [];
   const binds: SqlValue[] = [];
   if (filter.search) {
-    const search = searchSql(filter.search);
+    const search = textSearch(filter.search, ['v.sku', 'v.barcode']);
     conditions.push(search.sql);
     binds.push(...search.binds);
   }
@@ -188,42 +216,17 @@ function movementWhere(filter: MovementFilter): { clause: string; binds: SqlValu
     conditions.push('m.reason = ?');
     binds.push(filter.reason);
   }
-  // Dates are compared by their day part, so both ends are included.
+  // Days are the store's, so each end is the instant that day starts (or the next one does) in its time zone. Timestamps are
+  // ISO UTC strings of one fixed length, so comparing them as text compares them in time, and the index on created_at works.
   if (filter.from) {
-    conditions.push('substr(m.created_at, 1, 10) >= ?');
-    binds.push(filter.from);
+    conditions.push('m.created_at >= ?');
+    binds.push(dayStartUtc(filter.from, filter.timeZone));
   }
   if (filter.to) {
-    conditions.push('substr(m.created_at, 1, 10) <= ?');
-    binds.push(filter.to);
+    conditions.push('m.created_at < ?');
+    binds.push(dayAfterStartUtc(filter.to, filter.timeZone));
   }
   return { clause: whereClause(conditions), binds };
-}
-
-/**
- * Text search over SKU, barcode and product name. The name uses the full-text index when the text has words to search.
- * @param text What the admin typed.
- * @returns The condition and its binds.
- */
-function searchSql(text: string): { sql: string; binds: SqlValue[] } {
-  const like = `%${text}%`;
-  const parts = ['v.sku LIKE ?', 'v.barcode LIKE ?'];
-  const binds: SqlValue[] = [like, like];
-  const prefix = toPrefixQuery(text);
-  if (prefix) {
-    parts.push('p.id IN (SELECT product_id FROM product_search WHERE product_search MATCH ?)');
-    binds.push(prefix);
-  }
-  return { sql: `(${parts.join(' OR ')})`, binds };
-}
-
-/**
- * Joins conditions into a WHERE clause.
- * @param conditions Conditions, combined with AND.
- * @returns The clause, or an empty string when there are no conditions.
- */
-function whereClause(conditions: string[]): string {
-  return conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 }
 
 /**

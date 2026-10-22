@@ -7,24 +7,26 @@ import { InventoryAlerts } from '@/application/inventory/inventory-alerts';
 import { SubscribeBackInStock } from '@/application/inventory/subscribe-back-in-stock';
 import type { NotificationService } from '@/application/notifications/notification-service';
 import type { SettingsRepository } from '@/application/ports/content';
-import type { InventoryQueries, InventoryRepository } from '@/application/ports/inventory';
+import type { InventoryQueries } from '@/application/ports/inventory';
 import type { JobQueue } from '@/application/ports/jobs';
-import type { BotVerifier, Clock, IdGenerator } from '@/application/ports/platform';
+import type { BotVerifier, CacheStore, Clock, IdGenerator } from '@/application/ports/platform';
+import { logEvent } from '@/infrastructure/system/logger';
 import { D1InventoryQueries } from '@/infrastructure/d1/inventory-queries';
 import { D1InventoryRepository } from '@/infrastructure/d1/stock-repository';
 
 /** The inventory services the container exposes. */
 export interface InventoryServices {
-  /** Writes: stock, unit costs and subscriptions. */
-  stock: InventoryRepository;
   /** Reads for the screens, the scanner and the ledger. */
   queries: InventoryQueries;
   /** Queues the alerts for a list of stock changes. Every module that changes stock calls it. */
   evaluateStock: EvaluateStockChanges;
   /** Handlers of the two alert jobs. */
   alerts: InventoryAlerts;
+  /** Manual stock changes from the admin screens. */
   adjustStock: AdjustStock;
+  /** CSV stock imports (preview and apply). */
   importStock: ImportStock;
+  /** Storefront "tell me when it is back" requests. */
   subscribeBackInStock: SubscribeBackInStock;
 }
 
@@ -33,6 +35,7 @@ export interface InventoryDeps {
   ids: IdGenerator;
   clock: Clock;
   settings: SettingsRepository;
+  cache: CacheStore;
   jobs: JobQueue;
   notifications: NotificationService;
   botVerifier: BotVerifier;
@@ -50,10 +53,14 @@ export function createInventory(env: Env, deps: InventoryDeps): InventoryService
   const evaluateStock = new EvaluateStockChanges({
     jobs: deps.jobs,
     settings: deps.settings,
+    cache: deps.cache,
+    ids: deps.ids,
     clock: deps.clock,
+    onError: (error) =>
+      logEvent('inventory.alerts_failed', { error: error instanceof Error ? error.message : 'unknown' }),
   });
+  // The write repository stays in here: pages change stock only through the use cases, which validate and queue the alerts.
   return {
-    stock,
     queries: new D1InventoryQueries(env.DB),
     evaluateStock,
     alerts: new InventoryAlerts({

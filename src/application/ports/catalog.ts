@@ -38,8 +38,6 @@ export interface ProductSaveContext {
   stockNote: string | null;
   /** Stock change per variant id. A new variant starts at 0, so its delta is its first stock. */
   stockDeltas: Record<string, number>;
-  /** Threshold used by variants that do not set their own. */
-  defaultLowStockThreshold: number;
 }
 
 /** Write side: product aggregate persistence. */

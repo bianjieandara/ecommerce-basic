@@ -1,7 +1,7 @@
 // Filters of the inventory screens, read from the query string. A list, its paging and its CSV export all read them here, so a
 // filtered view and the file exported from it always agree.
 import type { InventoryFilter, MovementFilter } from '@/application/ports/inventory';
-import type { StockReason, StockStatus } from '@/domain/inventory/stock';
+import { STOCK_REASONS, STOCK_STATUSES } from '@/domain/inventory/stock';
 import type { Locale } from '@/domain/shared/locale';
 import { positiveInteger } from './list-query';
 
@@ -12,22 +12,10 @@ export const INVENTORY_PAGE_SIZE = 25;
 export const EXPORT_ROW_LIMIT = 5000;
 
 /** Stock states the table can be filtered by. */
-const STATUSES: readonly (StockStatus | 'all')[] = ['all', 'in_stock', 'low', 'out', 'untracked'];
+const STATUSES = ['all', ...STOCK_STATUSES] as const;
 
 /** Orders of the table. */
 const SORTS: readonly InventoryFilter['sort'][] = ['name', 'stock_asc', 'stock_desc', 'value_desc'];
-
-/** Reasons a ledger row can have. */
-const REASONS: readonly StockReason[] = [
-  'initial',
-  'sale',
-  'cancel_restore',
-  'restock',
-  'manual_adjust',
-  'return',
-  'damage',
-  'import',
-];
 
 /** A calendar day as YYYY-MM-DD. */
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -62,20 +50,23 @@ export function inventoryFilterFrom(
  * Reads the ledger filters. Values that do not parse are ignored.
  * @param params Query string of the page or of the export.
  * @param locale Language of the names.
+ * @param timeZone The store's time zone, which the date filters follow.
  * @param pageSize Rows per page.
  * @returns The filters and the page.
  */
 export function movementFilterFrom(
   params: URLSearchParams,
   locale: Locale,
+  timeZone: string,
   pageSize: number,
 ): MovementFilter {
   return {
     search: searchText(params),
     variantId: params.get('variant') || null,
-    reason: REASONS.find((reason) => reason === params.get('reason')) ?? null,
+    reason: STOCK_REASONS.find((reason) => reason === params.get('reason')) ?? null,
     from: dayOf(params.get('from')),
     to: dayOf(params.get('to')),
+    timeZone,
     locale,
     page: positiveInteger(params.get('page')),
     pageSize,

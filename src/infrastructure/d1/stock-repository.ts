@@ -13,7 +13,7 @@ import { DomainError } from '@/domain/shared/errors';
 import type { Locale } from '@/domain/shared/locale';
 import { boolToInt, isCheckViolation, queryAll, statement } from './d1-client';
 import { INVENTORY_ROW_SELECT, rowBinds, toInventoryRow, type InventoryRecord } from './inventory-rows';
-import { changesAfter, readStockLevels, stockLedgerStatements } from './stock-ledger';
+import { addStockChange, stockChangesFrom, type LedgerSlot } from './stock-ledger';
 
 /** D1-backed stock repository. */
 export class D1InventoryRepository implements InventoryRepository {
@@ -21,7 +21,7 @@ export class D1InventoryRepository implements InventoryRepository {
   constructor(private readonly db: D1Database) {}
 
   /**
-   * Applies the changes and their ledger rows in one batch, then reports the stock each change left.
+   * Applies the changes, their ledger rows and any unit costs in one batch, and reports the stock each change left.
    * @param changes Changes to apply; all of them apply or none does.
    * @param context Who makes the changes, and when.
    * @returns One change per requested change, with before and after values.
@@ -29,33 +29,38 @@ export class D1InventoryRepository implements InventoryRepository {
    */
   async adjust(changes: StockDelta[], context: AdjustContext): Promise<StockChange[]> {
     if (changes.length === 0) return [];
-    const statements = changes.flatMap((change) =>
-      stockLedgerStatements(this.db, {
-        variantId: change.variantId,
-        delta: change.delta,
-        reason: change.reason,
-        reference: change.reference ?? null,
-        note: change.note ?? null,
-        actor: context.actorId,
-        nowIso: context.nowIso,
-      }),
-    );
+    const statements: D1PreparedStatement[] = [];
+    const slots: LedgerSlot[] = [];
+    for (const change of changes) {
+      slots.push(
+        addStockChange(this.db, statements, {
+          variantId: change.variantId,
+          delta: change.delta,
+          reason: change.reason,
+          reference: change.reference ?? null,
+          note: change.note ?? null,
+          actor: context.actorId,
+          nowIso: context.nowIso,
+        }),
+      );
+      // A cost that arrives with a stock change is saved with it, so the two cannot end up half applied.
+      if (change.costMinor !== undefined) {
+        statements.push(
+          statement(this.db, 'UPDATE product_variants SET cost_minor = ? WHERE id = ?', [
+            change.costMinor,
+            change.variantId,
+          ]),
+        );
+      }
+    }
     try {
-      await this.db.batch(statements);
+      return stockChangesFrom(await this.db.batch(statements), slots);
     } catch (error) {
       // The CHECK (stock >= 0) constraint refuses the change, and the batch rolls back as a whole.
       if (isCheckViolation(error))
         throw new DomainError('OUT_OF_STOCK', 'Not enough stock for one of the changes');
       throw error;
     }
-    const deltas = changes.map((change) => ({ variantId: change.variantId, delta: change.delta }));
-    return changesAfter(
-      await readStockLevels(
-        this.db,
-        deltas.map((delta) => delta.variantId),
-      ),
-      deltas,
-    );
   }
 
   /**

@@ -11,7 +11,6 @@ import { slugify } from '@/domain/shared/slug';
 import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
 import type { ProductRepository } from '../ports/catalog';
 import type { AttributeRepository, CategoryRepository } from '../ports/catalog-admin';
-import type { SettingsRepository } from '../ports/content';
 import type { MediaRepository } from '../ports/media';
 import type { Clock, IdGenerator } from '../ports/platform';
 import type { ProductInput, ProductTextInput } from './schemas';
@@ -22,7 +21,6 @@ export interface UpsertProductDeps {
   categories: CategoryRepository;
   attributes: AttributeRepository;
   media: MediaRepository;
-  settings: SettingsRepository;
   evaluateStock: EvaluateStockChanges;
   ids: IdGenerator;
   clock: Clock;
@@ -30,7 +28,7 @@ export interface UpsertProductDeps {
 
 /** Creates or updates a product. */
 export class UpsertProduct {
-  /** @param deps Repositories, settings, ids and clock. */
+  /** @param deps Repositories, ids and clock. */
   constructor(private readonly deps: UpsertProductDeps) {}
 
   /**
@@ -94,12 +92,10 @@ export class UpsertProduct {
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
     };
-    const inventory = await this.deps.settings.get('inventory');
     const stockChanges = await this.deps.products.save(product, {
       actorId,
       stockNote: input.stockNote,
       stockDeltas,
-      defaultLowStockThreshold: inventory.defaultLowStockThreshold,
     });
     await this.deps.evaluateStock.execute(stockChanges);
     return { id: product.id };

@@ -8,7 +8,7 @@ import { BUTTON, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
 import type { StockReason } from '@/domain/inventory/stock';
 import { formatDateTime } from '@/domain/shared/format';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
-import { INVENTORY_PAGE_SIZE, movementFilterFrom } from '@/http/admin-inventory-page';
+import { EXPORT_ROW_LIMIT, INVENTORY_PAGE_SIZE, movementFilterFrom } from '@/http/admin-inventory-page';
 import { listHref } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
 import { pickNamespace, t } from '@/ui/i18n';
@@ -19,7 +19,7 @@ const lang = admin.locale;
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
 const params = Astro.url.searchParams;
-const filter = movementFilterFrom(params, lang, INVENTORY_PAGE_SIZE);
+const filter = movementFilterFrom(params, lang, store.general.timezone, INVENTORY_PAGE_SIZE);
 const result = await app.inventory.queries.listMovements(filter);
 const labels = pickNamespace(lang, 'admin').inventory;
 const page = labels.movementsPage;
@@ -52,6 +52,11 @@ const exportHref = query
       </a>
     </div>
   </div>
+  {result.total > EXPORT_ROW_LIMIT && (
+    <p class="text-text/70 text-sm" role="note">
+      {t(lang, 'admin.inventory.exportLimit', { max: EXPORT_ROW_LIMIT })}
+    </p>
+  )}
 
   <ListToolbar
     action={ADMIN_PATHS.inventoryMovements}

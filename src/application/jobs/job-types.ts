@@ -35,13 +35,20 @@ export const notifyEmailPayload = z.object({
 /** Parsed payload of notify.email. */
 export type NotifyEmailPayload = z.infer<typeof notifyEmailPayload>;
 
-/** Payload of the invoice jobs: the invoice they work on. */
+/** Payload of the invoice jobs that work on an existing invoice. */
 export const invoiceJobPayload = z.object({ invoiceId: z.string().min(1).max(64) });
 
-/** Payload of inventory.low_stock_alert: the variant and the day it is for (one alert per variant per day). */
+/** Payload of invoice.issue: the paid order to issue an invoice for. */
+export const invoiceIssuePayload = z.object({ orderId: z.string().min(1).max(64) });
+
+/**
+ * Payload of inventory.low_stock_alert: every variant one operation pushed to its line, so an import that crosses a hundred
+ * lines sends one table, not a hundred emails. `alertId` names the alert; the notification key is built on it, so a retry of
+ * the job sends nothing twice.
+ */
 export const lowStockAlertPayload = z.object({
-  variantId: z.string().min(1).max(64),
-  day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  alertId: z.string().min(1).max(64),
+  variantIds: z.array(z.string().min(1).max(64)).min(1).max(500),
 });
 
 /**
@@ -58,6 +65,7 @@ export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
   'orders.expire_stale': expireStaleOrdersPayload,
   'maintenance.purge': maintenancePurgePayload,
   'notify.email': notifyEmailPayload,
+  'invoice.issue': invoiceIssuePayload,
   'invoice.render_pdf': invoiceJobPayload,
   'invoice.legal_issue': invoiceJobPayload,
   'inventory.low_stock_alert': lowStockAlertPayload,

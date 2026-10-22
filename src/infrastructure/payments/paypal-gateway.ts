@@ -1,79 +1,24 @@
 // PayPal Orders v2 over REST. The customer approves on PayPal and comes back to the store, where the payment is captured.
 // The PAYMENT.CAPTURE.* webhooks cover payments that finish without the customer coming back.
 import { absoluteUrl } from '@/application/documents/urls';
-import type { OrderSummary } from '@/application/dto/order-dto';
 import type { CacheStore } from '@/application/ports/platform';
 import type { PaymentConfirmation, PaymentGateway, PaymentInitiation } from '@/application/ports/payments';
-import { CURRENCIES, type CurrencyCode } from '@/domain/shared/currency';
+import { type CurrencyCode } from '@/domain/shared/currency';
 import { DomainError } from '@/domain/shared/errors';
 import { PATHS, withQuery } from '@/domain/shared/paths';
 import { workersFetch } from '../system/http-fetch';
-
-/** Settings the adapter reads from its environment. */
-export interface PayPalConfig {
-  clientId: string | null;
-  clientSecret: string | null;
-  webhookId: string | null;
-  environment: 'sandbox' | 'live';
-}
-
-/** Input of initiate(). PayPal needs only the order, the access key and the site URL. */
-interface PayPalInitiateInput {
-  order: OrderSummary;
-  accessKey: string;
-  origin: string;
-}
-
-/** Currencies the store can charge through PayPal. Other currencies are not offered at checkout. */
-const PAYPAL_CURRENCIES: readonly CurrencyCode[] = ['USD', 'EUR'];
-/** KV key of the OAuth token. */
-const TOKEN_KEY = 'paypal:token';
-/** Seconds before expiry at which the token is refreshed. */
-const TOKEN_MARGIN_SECONDS = 300;
-
-/** The parts of a PayPal order or capture response this adapter reads. */
-interface PayPalOrderResponse {
-  id?: string;
-  status?: string;
-  links?: { rel: string; href: string }[];
-  purchase_units?: {
-    payments?: {
-      captures?: { id: string; status: string; amount: { value: string; currency_code: string } }[];
-    };
-  }[];
-  message?: string;
-}
-
-/** A webhook event as PayPal sends it. */
-export interface PayPalEvent {
-  id: string;
-  event_type: string;
-  resource: {
-    amount?: { value: string; currency_code: string };
-    supplementary_data?: { related_ids?: { order_id?: string } };
-  };
-}
-
-/**
- * Converts a minor-unit amount to the decimal text PayPal expects.
- * @param amountMinor Amount in minor units.
- * @param currency Currency code.
- * @returns Decimal text, such as "12.50".
- */
-function toMajor(amountMinor: number, currency: CurrencyCode): string {
-  const exponent = CURRENCIES[currency].exponent;
-  return (amountMinor / 10 ** exponent).toFixed(exponent);
-}
-
-/**
- * Converts PayPal's decimal text to minor units.
- * @param value Decimal text.
- * @param currency Currency code.
- * @returns Amount in minor units.
- */
-function toMinor(value: string, currency: CurrencyCode): number {
-  return Math.round(Number(value) * 10 ** CURRENCIES[currency].exponent);
-}
+import {
+  PAYPAL_CURRENCIES,
+  TOKEN_KEY,
+  TOKEN_MARGIN_SECONDS,
+  toMajor,
+  toMinor,
+  type PayPalConfig,
+  type PayPalEvent,
+  type PayPalInitiateInput,
+  type PayPalOrderResponse,
+} from './paypal-support';
+export type { PayPalConfig, PayPalEvent } from './paypal-support';
 
 /** PayPal checkout: approval on PayPal, capture on return, and webhook confirmation. */
 export class PayPalGateway implements PaymentGateway {

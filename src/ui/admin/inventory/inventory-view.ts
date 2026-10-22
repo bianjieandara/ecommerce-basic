@@ -4,7 +4,13 @@ import type { CurrencyCode } from '@/domain/shared/currency';
 import { formatMoney } from '@/domain/shared/format';
 import type { Locale } from '@/domain/shared/locale';
 import { money } from '@/domain/shared/money';
-import type { StockStatus } from '@/domain/inventory/stock';
+import {
+  MANUAL_STOCK_REASONS,
+  type ManualStockReason,
+  type StockProblem,
+  type StockStatus,
+} from '@/domain/inventory/stock';
+import type { ImportRowCode } from '@/application/inventory/stock-import';
 import type { Dictionary } from '@/ui/i18n';
 import { BADGE, BADGE_TONE } from '../lib/classes';
 
@@ -12,10 +18,10 @@ import { BADGE, BADGE_TONE } from '../lib/classes';
 export type InventoryLabels = Dictionary['admin']['inventory'];
 
 /** Reasons the adjustment form offers. Initial stock, sales and cancellations come from the system, not from here. */
-export type AdjustReason = 'restock' | 'manual_adjust' | 'return' | 'damage';
+export type AdjustReason = ManualStockReason;
 
 /** The reasons the adjustment form offers, in display order. */
-export const ADJUST_REASONS: readonly AdjustReason[] = ['restock', 'manual_adjust', 'return', 'damage'];
+export const ADJUST_REASONS: readonly AdjustReason[] = MANUAL_STOCK_REASONS;
 
 /** Values the adjustment form produces. */
 export interface AdjustValues {
@@ -101,4 +107,41 @@ export function moneyText(
   country: string,
 ): string {
   return amountMinor === null ? '—' : formatMoney(money(amountMinor, currency), locale, country);
+}
+
+/**
+ * Message for a failed call to an inventory endpoint. The server sends codes in `details`, never text to show.
+ * @param labels Inventory labels.
+ * @param details The `details` of the failed call.
+ * @returns The translated problem, or the generic failure text.
+ */
+export function problemText(labels: InventoryLabels, details: unknown): string {
+  const reason = (details as { reason?: unknown } | null)?.reason;
+  if (typeof reason === 'string' && reason in labels.problems) {
+    return labels.problems[reason as StockProblem];
+  }
+  return labels.failed;
+}
+
+/**
+ * Translated reason a CSV row (or the whole file) did not apply.
+ * @param labels Inventory labels.
+ * @param code Row code from the import result.
+ * @returns The label.
+ */
+export function importRowText(labels: InventoryLabels, code: ImportRowCode | null): string {
+  return code === null ? labels.csv.error : labels.csv.codes[code];
+}
+
+/**
+ * Translated reason a whole CSV file was refused (before any row was read).
+ * @param labels Inventory labels.
+ * @param details The `details` of the failed call.
+ * @returns The message, or the generic failure text.
+ */
+export function importFileText(labels: InventoryLabels, details: unknown): string {
+  const info = details as { reason?: unknown; max?: unknown } | null;
+  if (info?.reason === 'import_header') return labels.csv.fileHeader;
+  if (info?.reason === 'import_rows') return fill(labels.csv.fileRows, { max: Number(info.max ?? 0) });
+  return labels.csv.failed;
 }

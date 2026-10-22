@@ -1,5 +1,6 @@
 // AdjustStock: manual stock changes from the inventory screens. Each change writes a ledger row with its reason, its note and
 // the admin who made it. The alerts are evaluated once the batch has applied.
+import { planStockChange } from '@/domain/inventory/stock';
 import { DomainError } from '@/domain/shared/errors';
 import type { SettingsRepository } from '../ports/content';
 import type { InventoryRepository, InventoryRow, StockChange, StockDelta } from '../ports/inventory';
@@ -27,7 +28,7 @@ export class AdjustStock {
    * @param input Validated request.
    * @param actorId Admin who makes the change.
    * @returns The stock changes (empty when every count already matched).
-   * @throws DomainError NOT_FOUND, VALIDATION_FAILED (repeated or untracked variant, negative count or stock), OUT_OF_STOCK.
+   * @throws DomainError NOT_FOUND, VALIDATION_FAILED (a repeated variant, or a StockProblem in `details.reason`), OUT_OF_STOCK.
    */
   async execute(input: AdjustStockInput, actorId: string): Promise<StockChange[]> {
     const variantIds = input.items.map((item) => item.variantId);
@@ -50,16 +51,24 @@ export class AdjustStock {
     for (const item of input.items) {
       const row = byId.get(item.variantId);
       if (!row) throw new DomainError('NOT_FOUND', 'Variant not found');
-      if (!row.tracked) throw new DomainError('VALIDATION_FAILED', 'This variant does not track stock');
-      if (item.mode === 'set' && item.value < 0) {
-        throw new DomainError('VALIDATION_FAILED', 'A counted stock cannot be negative');
+      const plan = planStockChange({
+        tracked: row.tracked,
+        stock: row.stock,
+        mode: item.mode === 'set' ? 'set' : 'add',
+        quantity: item.value,
+        expected: item.expected,
+      });
+      // The reason is a code the screen translates; the message is for logs.
+      if ('problem' in plan) {
+        throw new DomainError('VALIDATION_FAILED', `Stock change refused: ${plan.problem}`, {
+          reason: plan.problem,
+          variantId: item.variantId,
+        });
       }
-      const delta = item.mode === 'set' ? item.value - row.stock : item.value;
-      if (row.stock + delta < 0) throw new DomainError('VALIDATION_FAILED', 'Stock cannot go below zero');
-      if (delta !== 0) {
+      if (plan.delta !== 0) {
         changes.push({
           variantId: item.variantId,
-          delta,
+          delta: plan.delta,
           reason: input.reason,
           reference,
           note: input.note ?? undefined,

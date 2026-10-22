@@ -24,20 +24,19 @@ export const GET = defineEndpoint({
       inventory.defaultLowStockThreshold,
       EXPORT_ROW_LIMIT,
     );
-    const result = await app.inventory.queries.listRows(filter);
-    // Untracked variants have no stock to count, so they are left out of the sheet.
-    const rows = result.items
-      .filter((row) => row.tracked)
-      .map((row) => [
-        row.sku,
-        'set',
-        row.stock,
-        row.costMinor === null ? null : majorTextFromMinor(row.costMinor, exponent),
-        null,
-        row.productName,
-        row.variantLabel,
-        row.barcode,
-      ]);
+    // The link carries the page of the screen it came from; a file always starts at the first row of the filter.
+    const result = await app.inventory.queries.listRows({ ...filter, page: 1, trackedOnly: true });
+    // Untracked variants have no stock to count, so the query leaves them out of the sheet.
+    const rows = result.items.map((row) => [
+      row.sku,
+      'set',
+      row.stock,
+      row.costMinor === null ? null : majorTextFromMinor(row.costMinor, exponent),
+      null,
+      row.productName,
+      row.variantLabel,
+      row.barcode,
+    ]);
     const header = ['sku', 'mode', 'quantity', 'cost', 'note', 'product', 'variant', 'barcode'];
     return csvResponse(toCsv(header, rows), 'stock.csv');
   },

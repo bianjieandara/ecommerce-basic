@@ -2,14 +2,14 @@
 import type { Product, ProductStatus, ProductTranslation } from '@/domain/catalog/product';
 import { DomainError } from '@/domain/shared/errors';
 import { slugify } from '@/domain/shared/slug';
+import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
 import type { ProductRepository } from '../ports/catalog';
-import type { SettingsRepository } from '../ports/content';
 import type { Clock, IdGenerator } from '../ports/platform';
 
 /** Dependencies of the product actions. */
 export interface ProductActionsDeps {
   products: ProductRepository;
-  settings: SettingsRepository;
+  evaluateStock: EvaluateStockChanges;
   ids: IdGenerator;
   clock: Clock;
 }
@@ -33,7 +33,7 @@ export class ChangeProductStatus {
 
 /** Copies a product as a draft. Variant ids are new and SKUs and barcodes are cleared, because SKUs must stay unique. */
 export class DuplicateProduct {
-  /** @param deps Repositories, settings, ids and clock. */
+  /** @param deps Repository, stock alert evaluation, ids and clock. */
   constructor(private readonly deps: ProductActionsDeps) {}
 
   /**
@@ -66,13 +66,8 @@ export class DuplicateProduct {
       createdAt: now,
       updatedAt: now,
     };
-    const inventory = await this.deps.settings.get('inventory');
-    await this.deps.products.save(copy, {
-      actorId,
-      stockNote: null,
-      stockDeltas,
-      defaultLowStockThreshold: inventory.defaultLowStockThreshold,
-    });
+    const stockChanges = await this.deps.products.save(copy, { actorId, stockNote: null, stockDeltas });
+    await this.deps.evaluateStock.execute(stockChanges);
     return { id: copy.id };
   }
 }

@@ -5,7 +5,7 @@ import type { ImportStockResult } from '@/application/inventory/import-stock';
 import { MAX_IMPORT_BYTES } from '@/application/inventory/stock-import';
 import { postForm } from '../lib/api-client';
 import { BUTTON, BUTTON_PRIMARY, ERROR_TEXT, FIELD, LABEL, PANEL, TABLE_WRAP } from '../lib/classes';
-import { fill, type InventoryLabels } from './inventory-view';
+import { fill, importFileText, importRowText, type InventoryLabels } from './inventory-view';
 
 /** Props of the import panel. */
 export interface CsvImportProps {
@@ -55,7 +55,7 @@ export default function CsvImport(props: CsvImportProps) {
     const response = await postForm<ImportStockResult>('/api/admin/inventory/import', form);
     setBusy(false);
     if (!response.ok) {
-      setMessage(response.message || csv.failed);
+      setMessage(importFileText(labels, response.details));
       return;
     }
     setResult(response.data);
@@ -135,7 +135,9 @@ export default function CsvImport(props: CsvImportProps) {
                 <tr key={`${row.line}-${row.sku}`}>
                   <td data-label={csv.line}>{row.line}</td>
                   <td data-label={labels.columnSku}>{row.sku}</td>
-                  <td data-label={csv.result}>{row.status === 'ok' ? csv.ok : (row.message ?? csv.error)}</td>
+                  <td data-label={csv.result}>
+                    {row.status === 'ok' ? csv.ok : importRowText(labels, row.code)}
+                  </td>
                   <td data-label={csv.before}>{row.before ?? '—'}</td>
                   <td data-label={csv.after}>{row.after ?? '—'}</td>
                 </tr>

@@ -9,9 +9,16 @@ export const GET = defineEndpoint({
   method: 'GET',
   handler: async ({ context }) => {
     const admin = requireAdmin(context.locals.admin);
-    const result = await context.locals.app.inventory.queries.listMovements(
-      movementFilterFrom(context.url.searchParams, admin.locale, EXPORT_ROW_LIMIT),
+    const app = context.locals.app;
+    const general = await app.settings.get('general');
+    const filter = movementFilterFrom(
+      context.url.searchParams,
+      admin.locale,
+      general.timezone,
+      EXPORT_ROW_LIMIT,
     );
+    // The link carries the page of the screen it came from; a file always starts at the first row of the filter.
+    const result = await app.inventory.queries.listMovements({ ...filter, page: 1 });
     const header = [
       'date',
       'sku',

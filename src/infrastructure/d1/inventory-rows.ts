@@ -4,6 +4,7 @@ import type { InventoryRow } from '@/application/ports/inventory';
 import { stockStatus, type StockReason } from '@/domain/inventory/stock';
 import type { Locale } from '@/domain/shared/locale';
 import type { SqlValue } from './d1-client';
+import { PRODUCT_NAME_SQL, PRODUCT_SLUG_SQL, VARIANT_LABEL_SQL } from './sql-fragments';
 
 /** Columns of INVENTORY_ROW_SELECT as the database returns them. */
 export interface InventoryRecord {
@@ -16,20 +17,12 @@ export interface InventoryRecord {
   cost_minor: number | null;
   price_minor: number;
   threshold: number;
+  product_status: string;
   product_name: string | null;
   product_slug: string | null;
   variant_label: string | null;
   thumb_key: string | null;
 }
-
-/** Product name in the requested language; another language when that one is missing. Takes the locale as a bind. */
-export const PRODUCT_NAME_SQL = `(SELECT t.name FROM product_translations t WHERE t.product_id = p.id ORDER BY (t.locale = ?) DESC LIMIT 1)`;
-
-/** Variant label: the attribute values in attribute order, in the requested language. Takes the locale as a bind. */
-export const VARIANT_LABEL_SQL = `(SELECT GROUP_CONCAT(label, ' / ') FROM (
-  SELECT json_extract(av.label_json, '$.' || ?) AS label FROM variant_attribute_values vav
-  JOIN attribute_values av ON av.id = vav.attribute_value_id JOIN attributes a ON a.id = av.attribute_id
-  WHERE vav.variant_id = v.id ORDER BY a.position))`;
 
 /** Storage key of the smallest stored image: the variant's own image, else the product's first one. */
 const THUMB_KEY_SQL = `(SELECT json_extract(j.value, '$.key') FROM media_assets m, json_each(m.variants_json) j
@@ -38,16 +31,23 @@ const THUMB_KEY_SQL = `(SELECT json_extract(j.value, '$.key') FROM media_assets 
   ORDER BY json_extract(j.value, '$.width') LIMIT 1)`;
 
 /**
+ * The variants inventory works with: active ones only. A variant removed in the product editor is deactivated, not deleted,
+ * so its ledger rows survive; it must not be listed, counted, scanned, adjusted or offered for back-in-stock again.
+ */
+export const INVENTORY_FROM =
+  'FROM product_variants v JOIN products p ON p.id = v.product_id AND v.is_active = 1';
+
+/**
  * The inventory row select. Its binds come first, in this order (see rowBinds); callers add their WHERE clause after it.
  */
 export const INVENTORY_ROW_SELECT = `SELECT v.id AS variant_id, v.product_id, v.sku, v.barcode, v.stock, v.track_inventory,
   v.cost_minor, COALESCE(v.price_minor, p.base_price_minor) AS price_minor,
-  COALESCE(v.low_stock_threshold, ?) AS threshold,
+  COALESCE(v.low_stock_threshold, ?) AS threshold, p.status AS product_status,
   ${PRODUCT_NAME_SQL} AS product_name,
-  (SELECT t.slug FROM product_translations t WHERE t.product_id = p.id ORDER BY (t.locale = ?) DESC LIMIT 1) AS product_slug,
+  ${PRODUCT_SLUG_SQL} AS product_slug,
   ${VARIANT_LABEL_SQL} AS variant_label,
   ${THUMB_KEY_SQL} AS thumb_key
-FROM product_variants v JOIN products p ON p.id = v.product_id`;
+${INVENTORY_FROM}`;
 
 /**
  * Binds for INVENTORY_ROW_SELECT: the default threshold, then the locale for the name, the slug and the variant label.
@@ -77,6 +77,7 @@ export function toInventoryRow(record: InventoryRecord): InventoryRow {
     stock: record.stock,
     threshold: record.threshold,
     tracked,
+    productActive: record.product_status === 'active',
     costMinor: record.cost_minor,
     priceMinor: record.price_minor,
     status: stockStatus(record.stock, record.threshold, tracked),

@@ -8,7 +8,7 @@ import type { ProductStatus } from '@/domain/catalog/product';
 import type { Locale } from '@/domain/shared/locale';
 import { type Paginated, toPaginated } from '@/domain/shared/pagination';
 import { queryAll, queryFirst, type SqlValue } from './d1-client';
-import { toPrefixQuery } from './catalog-query-service';
+import { PRODUCT_NAME_SQL, productNameMatch, whereClause } from './sql-fragments';
 
 /** One row of the admin list query. */
 interface ListRow {
@@ -56,12 +56,12 @@ export class D1AdminCatalogQueries implements AdminCatalogQueries {
            AND (v.track_inventory = 0 OR v.stock > 0))`,
       );
     }
-    const term = toPrefixQuery(filter.search);
-    if (term) {
-      where.push('p.id IN (SELECT product_id FROM product_search WHERE product_search MATCH ?)');
-      params.push(term);
+    const match = productNameMatch(filter.search);
+    if (match) {
+      where.push(match.sql);
+      params.push(...match.binds);
     }
-    const clause = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
+    const clause = whereClause(where);
 
     const counted = await queryFirst<{ n: number }>(
       this.db,
@@ -71,12 +71,12 @@ export class D1AdminCatalogQueries implements AdminCatalogQueries {
     const rows = await queryAll<ListRow>(
       this.db,
       `SELECT p.id, p.status, p.base_price_minor, p.is_on_sale, p.is_featured, p.updated_at,
-         (SELECT t.name FROM product_translations t WHERE t.product_id = p.id ORDER BY (t.locale = ?) DESC LIMIT 1) AS name,
+         ${PRODUCT_NAME_SQL} AS name,
          (SELECT COALESCE(SUM(v.stock), 0) FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1) AS stock,
          (SELECT COUNT(*) FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1) AS variant_count,
          (SELECT i.media_id FROM product_images i WHERE i.product_id = p.id ORDER BY i.position LIMIT 1) AS image_media_id
        FROM products p ${clause}
-       ORDER BY p.updated_at DESC LIMIT ? OFFSET ?`,
+       ORDER BY p.updated_at DESC, p.id LIMIT ? OFFSET ?`,
       [locale, ...params, filter.pageSize, (filter.page - 1) * filter.pageSize],
     );
     return toPaginated(rows.map(toRow), counted?.n ?? 0, { page: filter.page, pageSize: filter.pageSize });

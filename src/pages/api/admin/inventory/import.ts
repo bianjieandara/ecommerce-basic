@@ -8,11 +8,15 @@ export const POST = defineEndpoint({
   method: 'POST',
   body: 'form',
   input: importStockInput,
-  invalidatesCache: true,
-  handler: async ({ input, context }) =>
-    context.locals.app.inventory.importStock.execute(
+  handler: async ({ input, context }) => {
+    const dryRun = input.dryRun === '1';
+    const result = await context.locals.app.inventory.importStock.execute(
       await input.file.text(),
       requireAdmin(context.locals.admin).id,
-      { dryRun: input.dryRun === '1' },
-    ),
+      { dryRun },
+    );
+    // Only an applied import changes what the storefront shows; a preview must not flush the page cache.
+    if (!dryRun) await context.locals.app.platform.pageCache.bump();
+    return result;
+  },
 });

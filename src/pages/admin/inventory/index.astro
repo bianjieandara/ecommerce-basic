@@ -8,7 +8,7 @@ import CsvImport from '@/ui/admin/inventory/CsvImport.tsx';
 import { BUTTON, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { categoryOptions } from '@/http/admin-catalog-page';
-import { INVENTORY_PAGE_SIZE, inventoryFilterFrom } from '@/http/admin-inventory-page';
+import { EXPORT_ROW_LIMIT, INVENTORY_PAGE_SIZE, inventoryFilterFrom } from '@/http/admin-inventory-page';
 import { listHref } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
 import { pickNamespace, t } from '@/ui/i18n';
@@ -44,6 +44,11 @@ const exportHref = query ? `/api/admin/inventory/export?${query}` : '/api/admin/
       </a>
     </div>
   </div>
+  {result.total > EXPORT_ROW_LIMIT && (
+    <p class="text-text/70 text-sm" role="note">
+      {t(lang, 'admin.inventory.exportLimit', { max: EXPORT_ROW_LIMIT })}
+    </p>
+  )}
 
   <ListToolbar
     action={ADMIN_PATHS.inventory}

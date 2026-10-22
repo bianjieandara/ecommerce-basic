@@ -5,8 +5,8 @@ import { SUPPORTED_LOCALES } from '@/domain/shared/locale';
 import { PAYMENT_METHODS } from '../ports/payments';
 
 /**
- * Largest number of lines in one order. Each line writes up to three rows, and a D1 batch takes at most 100 statements,
- * so this keeps every order inside one batch.
+ * Largest number of lines in one order. Each line writes up to three rows, so this keeps an order to about a hundred
+ * statements in one batch. D1 documents no batch ceiling, so the cap is a conservative guess: measure before raising it.
  */
 export const MAX_ORDER_LINES = 30;
 

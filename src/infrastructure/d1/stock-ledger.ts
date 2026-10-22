@@ -1,8 +1,9 @@
 // Stock changes always go through here. The stock update and its ledger row are built together, so a batch cannot change
-// stock without also writing the movement that explains it.
+// stock without also writing the movement that explains it. The ledger row comes back from the same batch (RETURNING), so
+// the stock a change reports is the one that batch produced, whatever other requests do at the same time.
 import type { StockChange } from '@/application/ports/inventory';
 import type { StockReason } from '@/domain/inventory/stock';
-import { queryAll, statement, type SqlValue } from './d1-client';
+import { statement, type SqlValue } from './d1-client';
 
 /** One stock change and the guard that must hold for it to apply. */
 export interface StockLedgerChange {
@@ -17,16 +18,23 @@ export interface StockLedgerChange {
   guard?: { sql: string; params: SqlValue[] };
 }
 
-/** Stock of a variant as the ledger holds it, with its own alert threshold (null = store default). */
-export interface StockLevel {
-  productId: string;
-  stock: number;
+/** Where the ledger statement of a change sits in its batch, and the delta it applied. */
+export interface LedgerSlot {
+  index: number;
+  delta: number;
+}
+
+/** Row the ledger statement returns. */
+interface LedgerReturn {
+  variant_id: string;
+  product_id: string;
+  stock_after: number;
   threshold: number | null;
 }
 
 /**
  * Builds the two statements of one stock change: the stock update and the ledger row. They must run in one batch.
- * The ledger row reads the stock after the update, so `stock_after` is always the real value.
+ * The ledger row reads the stock after the update, so `stock_after` is always the real value, and it returns that value.
  * @param db D1 binding.
  * @param change The change.
  * @returns The update first, then the ledger row.
@@ -41,7 +49,9 @@ export function stockLedgerStatements(db: D1Database, change: StockLedgerChange)
   const ledger = statement(
     db,
     `INSERT INTO inventory_movements (id, variant_id, product_id, delta, stock_after, reason, reference, note, actor, created_at)
-     SELECT ?, v.id, v.product_id, ?, v.stock, ?, ?, ?, ?, ? FROM product_variants v WHERE v.id = ? AND ${guard.sql}`,
+     SELECT ?, v.id, v.product_id, ?, v.stock, ?, ?, ?, ?, ? FROM product_variants v WHERE v.id = ? AND ${guard.sql}
+     RETURNING variant_id, product_id, stock_after,
+       (SELECT low_stock_threshold FROM product_variants WHERE id = variant_id) AS threshold`,
     [
       crypto.randomUUID(),
       change.delta,
@@ -58,55 +68,39 @@ export function stockLedgerStatements(db: D1Database, change: StockLedgerChange)
 }
 
 /**
- * Reads the stock of variants as it is now. Call it after the batch that changed them, so the values include that batch.
+ * Adds the statements of a stock change to a batch.
  * @param db D1 binding.
- * @param variantIds Variants to read; unknown ids are missing from the result.
- * @returns The stock per variant id.
+ * @param statements The batch being built; the change's two statements are appended.
+ * @param change The change.
+ * @returns The slot of the ledger statement, to pass to stockChangesFrom with the batch's results.
  */
-export async function readStockLevels(
+export function addStockChange(
   db: D1Database,
-  variantIds: string[],
-): Promise<Map<string, StockLevel>> {
-  if (variantIds.length === 0) return new Map();
-  const rows = await queryAll<{
-    id: string;
-    product_id: string;
-    stock: number;
-    low_stock_threshold: number | null;
-  }>(
-    db,
-    'SELECT id, product_id, stock, low_stock_threshold FROM product_variants WHERE id IN (SELECT value FROM json_each(?))',
-    [JSON.stringify(variantIds)],
-  );
-  return new Map(
-    rows.map((row): [string, StockLevel] => [
-      row.id,
-      { productId: row.product_id, stock: row.stock, threshold: row.low_stock_threshold },
-    ]),
-  );
+  statements: D1PreparedStatement[],
+  change: StockLedgerChange,
+): LedgerSlot {
+  statements.push(...stockLedgerStatements(db, change));
+  return { index: statements.length - 1, delta: change.delta };
 }
 
 /**
- * Turns applied deltas into stock changes. `after` is the stock on record now; `before` is `after` minus the delta.
- * A delta for a variant that is missing from `levels` is skipped.
- * @param levels Stock read after the batch.
- * @param deltas The deltas that were applied.
- * @returns One change per delta that has a stock level.
+ * Reads the changes a batch applied from the results of that batch. A change whose guard did not hold wrote no ledger row
+ * and is left out. The threshold is the variant's own; null means the store default.
+ * @param results Results of `db.batch`, in statement order.
+ * @param slots Slots returned by addStockChange for the batch.
+ * @returns One change per ledger row written.
  */
-export function changesAfter(
-  levels: Map<string, StockLevel>,
-  deltas: { variantId: string; delta: number }[],
-): StockChange[] {
-  return deltas.flatMap(({ variantId, delta }) => {
-    const level = levels.get(variantId);
-    if (!level) return [];
+export function stockChangesFrom(results: D1Result[], slots: LedgerSlot[]): StockChange[] {
+  return slots.flatMap(({ index, delta }) => {
+    const row = (results[index]?.results as LedgerReturn[] | undefined)?.[0];
+    if (!row) return [];
     return [
       {
-        variantId,
-        productId: level.productId,
-        before: level.stock - delta,
-        after: level.stock,
-        threshold: level.threshold,
+        variantId: row.variant_id,
+        productId: row.product_id,
+        before: row.stock_after - delta,
+        after: row.stock_after,
+        threshold: row.threshold,
       },
     ];
   });

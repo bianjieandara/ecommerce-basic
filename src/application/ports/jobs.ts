@@ -5,6 +5,7 @@
 export type JobType =
   | 'notify.email'
   | 'notify.whatsapp'
+  | 'invoice.issue'
   | 'invoice.render_pdf'
   | 'invoice.legal_issue'
   | 'marketing.meta_capi'

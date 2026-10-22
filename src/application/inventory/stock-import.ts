@@ -1,14 +1,19 @@
 // Format of a stock CSV: its columns, its limits and the rules each row must meet. The import use case and the admin preview
 // both read files with this parser, so the preview shows exactly what an import would apply.
+import type { StockProblem } from '@/domain/inventory/stock';
 import { DomainError } from '@/domain/shared/errors';
 import { minorFromMajorText } from '@/domain/shared/money';
-import { parseCsv } from '../documents/csv';
+import { parseCsv, unguardCell } from '../documents/csv';
 
 /** Largest CSV file accepted, in bytes. */
 export const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 
-/** Most data rows in one file. Keeps one import inside a single request's time budget. */
-export const MAX_IMPORT_ROWS = 500;
+/**
+ * Most data rows in one file. A row costs two statements. D1's limits page lists 1,000 queries per invocation on the paid
+ * plan, while the Workers page lists 10,000 subrequests; 400 rows stay under the stricter figure even if every batched
+ * statement counts as a query.
+ */
+export const MAX_IMPORT_ROWS = 400;
 
 /** Largest absolute quantity in one row. Matches the adjustment schema. */
 const MAX_QUANTITY = 1_000_000;
@@ -26,11 +31,24 @@ export interface StockImportLine {
   note: string | null;
 }
 
+/** Why a row cannot be applied. The import screen translates these codes. */
+export type ImportRowCode =
+  | 'sku_required'
+  | 'mode_invalid'
+  | 'quantity_invalid'
+  | 'quantity_too_large'
+  | 'cost_invalid'
+  | 'sku_duplicate'
+  | 'sku_unknown'
+  | StockProblem
+  | 'stock_changed'
+  | 'batch_failed';
+
 /** A row that cannot be applied, with the reason. */
 export interface StockImportIssue {
   line: number;
   sku: string;
-  message: string;
+  code: ImportRowCode;
 }
 
 /**
@@ -49,13 +67,18 @@ export function parseStockImport(
   const columns = header.map((name) => name.trim().toLowerCase());
   const column = (name: string) => columns.indexOf(name);
   if (REQUIRED_COLUMNS.some((name) => column(name) < 0)) {
-    throw new DomainError('VALIDATION_FAILED', 'The first row must name the columns sku, mode and quantity');
+    throw new DomainError('VALIDATION_FAILED', 'The first row must name the columns sku, mode and quantity', {
+      reason: 'import_header',
+    });
   }
   const data = body
     .map((cells, offset) => ({ cells, line: offset + 2 }))
     .filter(({ cells }) => cells.some((cell) => cell.trim() !== ''));
   if (data.length > MAX_IMPORT_ROWS) {
-    throw new DomainError('VALIDATION_FAILED', `A file holds at most ${MAX_IMPORT_ROWS} rows`);
+    throw new DomainError('VALIDATION_FAILED', `A file holds at most ${MAX_IMPORT_ROWS} rows`, {
+      reason: 'import_rows',
+      max: MAX_IMPORT_ROWS,
+    });
   }
 
   const lines: StockImportLine[] = [];
@@ -64,10 +87,10 @@ export function parseStockImport(
   for (const { cells, line } of data) {
     const cell = (name: string) => (cells[column(name)] ?? '').trim();
     const parsed = readRow(line, cell, exponent);
-    if (typeof parsed === 'string') {
-      issues.push({ line, sku: cell('sku'), message: parsed });
+    if ('code' in parsed) {
+      issues.push({ line, sku: unguardCell(cell('sku')), code: parsed.code });
     } else if (seen.has(parsed.sku)) {
-      issues.push({ line, sku: parsed.sku, message: 'This SKU appears twice; keep one row per SKU' });
+      issues.push({ line, sku: parsed.sku, code: 'sku_duplicate' });
     } else {
       seen.add(parsed.sku);
       lines.push(parsed);
@@ -81,21 +104,24 @@ export function parseStockImport(
  * @param line Line number in the file.
  * @param cell Reads a column of this row by name.
  * @param exponent Decimal places of the store currency.
- * @returns The row, or the message for its first problem.
+ * @returns The row, or the code of its first problem.
  */
-function readRow(line: number, cell: (name: string) => string, exponent: number): StockImportLine | string {
-  const sku = cell('sku');
-  if (!sku) return 'SKU is required';
+function readRow(
+  line: number,
+  cell: (name: string) => string,
+  exponent: number,
+): StockImportLine | { code: ImportRowCode } {
+  const sku = unguardCell(cell('sku'));
+  if (!sku) return { code: 'sku_required' };
   const mode = cell('mode').toLowerCase();
-  if (mode !== 'set' && mode !== 'add') return 'Mode must be set or add';
+  if (mode !== 'set' && mode !== 'add') return { code: 'mode_invalid' };
   const quantityText = cell('quantity');
-  if (!/^-?\d+$/.test(quantityText)) return 'Quantity must be a whole number';
+  if (!/^-?\d+$/.test(quantityText)) return { code: 'quantity_invalid' };
   const quantity = Number(quantityText);
-  if (Math.abs(quantity) > MAX_QUANTITY) return 'Quantity is too large';
-  if (mode === 'set' && quantity < 0) return 'A counted quantity cannot be negative';
+  if (Math.abs(quantity) > MAX_QUANTITY) return { code: 'quantity_too_large' };
   const costText = cell('cost');
   const costMinor = costText ? minorFromMajorText(costText, exponent) : null;
-  if (costText && (costMinor === null || costMinor < 0)) return 'Cost must be a positive amount';
+  if (costText && (costMinor === null || costMinor < 0)) return { code: 'cost_invalid' };
   const note = cell('note').slice(0, 200);
   return { line, sku, mode, quantity, costMinor, note: note || null };
 }

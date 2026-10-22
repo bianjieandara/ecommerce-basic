@@ -4,8 +4,8 @@ import { canTransition, isPaidOrLater } from '@/domain/ordering/order-status';
 import { DomainError } from '@/domain/shared/errors';
 import type { Order } from '../dto/order-dto';
 import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
-import type { IssueInvoice } from '../invoicing/issue-invoice';
 import type { SettingsRepository } from '../ports/content';
+import type { JobQueue } from '../ports/jobs';
 import type { OrderRepository } from '../ports/ordering';
 import type { Clock } from '../ports/platform';
 import type { PaymentConfirmation, PaymentEventLog } from '../ports/payments';
@@ -18,7 +18,7 @@ export interface ConfirmPaymentDeps {
   events: PaymentEventLog;
   notifications: NotificationService;
   settings: SettingsRepository;
-  issueInvoice: IssueInvoice;
+  jobs: JobQueue;
   evaluateStock: EvaluateStockChanges;
   clock: Clock;
   siteUrl: string;
@@ -78,7 +78,15 @@ export class ConfirmPayment {
           { paidAt: nowIso },
         );
         if (paid) await this.notifyCustomer(order, 'payment_confirmed');
-        if (paid || isPaidOrLater(order.status)) await this.deps.issueInvoice.executeIfAutomatic(order.id);
+        // Issuing runs as a job, not here: a failure that keeps happening would otherwise fail the webhook until the
+        // provider gives up on the endpoint, and no payment would be confirmed at all. The job is idempotent and retried.
+        if (paid || isPaidOrLater(order.status)) {
+          await this.deps.jobs.enqueue(
+            'invoice.issue',
+            { orderId: order.id },
+            { idempotencyKey: `invoice-issue:${order.id}` },
+          );
+        }
         return;
       }
       case 'failed':

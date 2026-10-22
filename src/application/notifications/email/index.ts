@@ -4,10 +4,12 @@ import type { TemplateRules } from '../template-engine';
 import { ADMIN_EMAILS } from './admin-emails';
 import { CUSTOMER_EMAILS } from './customer-emails';
 import { GLOBAL_EMAIL_VARIABLES, type EmailDefinition } from './definition';
+import { ORDER_EMAILS } from './order-emails';
 import { STORE_EMAILS } from './store-emails';
 
 /** Every notification email, by key. */
 export const EMAIL_DEFINITIONS: Record<NotificationKey, EmailDefinition> = {
+  ...ORDER_EMAILS,
   ...CUSTOMER_EMAILS,
   ...STORE_EMAILS,
   ...ADMIN_EMAILS,

@@ -8,24 +8,26 @@ import {
 } from '@/domain/catalog/product';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';
 import { boolToInt, statement } from './d1-client';
-import { stockLedgerStatements } from './stock-ledger';
+import { addStockChange, type LedgerSlot } from './stock-ledger';
 
 /**
  * Builds the statements that write one product: the product row, its text and search rows, categories, images,
  * variants with their attribute values, and the stock movements the save causes.
  * @param db D1 binding.
  * @param product Aggregate to save.
- * @param context Actor, note, stock changes and the fallback threshold.
+ * @param context Actor, note and stock changes.
  * @param storedVariantIds Variant ids already stored for this product.
- * @returns Statements in the order they must run.
+ * @returns Statements in the order they must run, and where the ledger row of each stock change sits in them (to read the
+ * changes back from the batch's results).
  */
 export function productStatements(
   db: D1Database,
   product: Product,
   context: ProductSaveContext,
   storedVariantIds: Set<string>,
-): D1PreparedStatement[] {
+): { statements: D1PreparedStatement[]; slots: LedgerSlot[] } {
   const { minPriceMinor, maxPriceMinor } = computePriceRange(product);
+  const slots: LedgerSlot[] = [];
   const statements: D1PreparedStatement[] = [
     statement(
       db,
@@ -104,7 +106,7 @@ export function productStatements(
   }
 
   for (const variant of product.variants) {
-    statements.push(...variantStatements(db, product, variant, context, storedVariantIds.has(variant.id)));
+    variantStatements(db, product, variant, context, storedVariantIds.has(variant.id), statements, slots);
   }
 
   // Variants that left the editor are deactivated, not deleted: their ledger rows reference them.
@@ -115,7 +117,7 @@ export function productStatements(
       [product.id, JSON.stringify(product.variants.map((variant) => variant.id))],
     ),
   );
-  return statements;
+  return { statements, slots };
 }
 
 /**
@@ -126,7 +128,8 @@ export function productStatements(
  * @param variant Variant to write.
  * @param context Actor, note and stock changes.
  * @param stored Whether the variant already exists in the database.
- * @returns Statements in the order they must run.
+ * @param statements The batch being built; this variant's statements are appended in the order they must run.
+ * @param slots Where the ledger rows of stock changes sit in the batch; this variant's slot is appended when its stock changes.
  */
 function variantStatements(
   db: D1Database,
@@ -134,7 +137,9 @@ function variantStatements(
   variant: ProductVariant,
   context: ProductSaveContext,
   stored: boolean,
-): D1PreparedStatement[] {
+  statements: D1PreparedStatement[],
+  slots: LedgerSlot[],
+): void {
   const fields = [
     variant.sku,
     variant.barcode,
@@ -173,18 +178,19 @@ function variantStatements(
     ),
   ];
 
+  statements.push(row, ...links);
   const delta = context.stockDeltas[variant.id] ?? 0;
-  const ledger =
-    delta === 0
-      ? []
-      : stockLedgerStatements(db, {
-          variantId: variant.id,
-          delta,
-          reason: stored ? 'manual_adjust' : 'initial',
-          reference: null,
-          note: context.stockNote,
-          actor: context.actorId,
-          nowIso: product.updatedAt,
-        });
-  return [row, ...links, ...ledger];
+  if (delta !== 0) {
+    slots.push(
+      addStockChange(db, statements, {
+        variantId: variant.id,
+        delta,
+        reason: stored ? 'manual_adjust' : 'initial',
+        reference: null,
+        note: context.stockNote,
+        actor: context.actorId,
+        nowIso: product.updatedAt,
+      }),
+    );
+  }
 }

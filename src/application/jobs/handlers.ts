@@ -1,5 +1,6 @@
 // Job handler registry for the handlers implemented so far. Each handler validates its payload with the schema from
 // job-types.ts and calls application logic only; it never touches Cloudflare bindings directly.
+import type { IssueInvoice } from '../invoicing/issue-invoice';
 import type { IssueLegalInvoice } from '../invoicing/issue-legal-invoice';
 import type { RenderInvoicePdf } from '../invoicing/render-invoice-pdf';
 import type { ReviewsService } from '../content/reviews-service';
@@ -12,6 +13,7 @@ import type { JobHandler } from './dispatcher';
 import {
   backInStockPayload,
   expireStaleOrdersPayload,
+  invoiceIssuePayload,
   invoiceJobPayload,
   lowStockAlertPayload,
   maintenancePurgePayload,
@@ -24,6 +26,7 @@ export interface JobHandlerDeps {
   clock: Clock;
   sendNotificationEmail: SendNotificationEmail;
   expireStaleOrders: ExpireStaleOrders;
+  issueInvoice: IssueInvoice;
   renderInvoicePdf: RenderInvoicePdf;
   issueLegalInvoice: IssueLegalInvoice;
   reviews: ReviewsService;
@@ -52,6 +55,9 @@ export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, 
       expireStaleOrdersPayload.parse(payload);
       await deps.expireStaleOrders.execute();
     },
+    'invoice.issue': async (payload) => {
+      await deps.issueInvoice.executeIfAutomatic(invoiceIssuePayload.parse(payload).orderId);
+    },
     'invoice.render_pdf': async (payload) => {
       await deps.renderInvoicePdf.execute(invoiceJobPayload.parse(payload).invoiceId);
     },
@@ -63,7 +69,7 @@ export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, 
     },
     'inventory.low_stock_alert': async (payload) => {
       const input = lowStockAlertPayload.parse(payload);
-      await deps.inventoryAlerts.lowStock(input.variantId, input.day);
+      await deps.inventoryAlerts.lowStock(input.variantIds, input.alertId);
     },
     'inventory.back_in_stock': async (payload) => {
       const input = backInStockPayload.parse(payload);

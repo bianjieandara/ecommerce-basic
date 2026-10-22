@@ -12,7 +12,6 @@ import type {
   AttributeRepository,
   CategoryRepository,
 } from '@/application/ports/catalog-admin';
-import type { SettingsRepository } from '@/application/ports/content';
 import type { MediaStorage } from '@/application/ports/media';
 import type { Clock, IdGenerator } from '@/application/ports/platform';
 import { D1AdminCatalogQueries } from '@/infrastructure/d1/admin-catalog-queries';
@@ -38,14 +37,13 @@ export interface CatalogAdmin {
 export interface CatalogAdminDeps {
   ids: IdGenerator;
   clock: Clock;
-  settings: SettingsRepository;
   evaluateStock: EvaluateStockChanges;
 }
 
 /**
  * Builds the admin catalog services from the Worker environment.
  * @param env Worker bindings (DB is used).
- * @param deps Ids, clock and settings.
+ * @param deps Ids and clock.
  * @returns The wired services.
  */
 export function createCatalogAdmin(env: Env, deps: CatalogAdminDeps): CatalogAdmin {
@@ -63,7 +61,6 @@ export function createCatalogAdmin(env: Env, deps: CatalogAdminDeps): CatalogAdm
       categories,
       attributes,
       media,
-      settings: deps.settings,
       evaluateStock: deps.evaluateStock,
       ids: deps.ids,
       clock: deps.clock,
@@ -71,7 +68,7 @@ export function createCatalogAdmin(env: Env, deps: CatalogAdminDeps): CatalogAdm
     changeProductStatus: new ChangeProductStatus({ products, clock: deps.clock }),
     duplicateProduct: new DuplicateProduct({
       products,
-      settings: deps.settings,
+      evaluateStock: deps.evaluateStock,
       ids: deps.ids,
       clock: deps.clock,
     }),

@@ -10,7 +10,14 @@ import { BUTTON, BUTTON_PRIMARY, ERROR_TEXT, PANEL, TABLE_WRAP } from '../lib/cl
 import { BarcodeScanner } from './BarcodeScanner';
 import { InventoryRowView } from './InventoryRowView';
 import { StockAdjustDrawer } from './StockAdjustDrawer';
-import { fill, moneyText, rowTitle, type AdjustValues, type InventoryLabels } from './inventory-view';
+import {
+  fill,
+  moneyText,
+  problemText,
+  rowTitle,
+  type AdjustValues,
+  type InventoryLabels,
+} from './inventory-view';
 
 /** Props of the table. The first page of rows and the totals come from the server. */
 export interface InventoryPanelProps {
@@ -49,13 +56,18 @@ export default function InventoryPanel(props: InventoryPanelProps) {
     setError(null);
     setNotice(null);
     const result = await postJson<StockChange[]>('/api/admin/inventory/adjust', {
-      items: targets.map((row) => ({ variantId: row.variantId, mode: values.mode, value: values.value })),
+      items: targets.map((row) => ({
+        variantId: row.variantId,
+        mode: values.mode,
+        value: values.value,
+        expected: row.stock,
+      })),
       reason: values.reason,
       note: values.note,
     });
     setBusy(false);
     if (!result.ok) {
-      setError(result.message || labels.failed);
+      setError(problemText(labels, result.details));
       return false;
     }
     const changes = result.data;

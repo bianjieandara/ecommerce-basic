@@ -11,38 +11,11 @@ import { formatMoney } from '@/domain/shared/format';
 import type { Locale } from '@/domain/shared/locale';
 import { money } from '@/domain/shared/money';
 import { cartLines } from '../stores/cart';
+import { CheckoutAddressFields } from './CheckoutAddressFields';
+import { CheckoutSummary } from './CheckoutSummary';
+import { goToNextStep, readAttribution, turnstileToken, type CheckoutLabels } from './checkout-support';
 
-/** Labels of the checkout form. Translated on the server; error labels are keyed by error code. */
-export interface CheckoutLabels {
-  contact: string;
-  delivery: string;
-  payment: string;
-  summary: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  address2: string;
-  city: string;
-  region: string;
-  postalCode: string;
-  countryCode: string;
-  note: string;
-  whatsappOptIn: string;
-  placeOrder: string;
-  placing: string;
-  subtotal: string;
-  tax: string;
-  shipping: string;
-  total: string;
-  shippingPending: string;
-  empty: string;
-  continueShopping: string;
-  quoteError: string;
-  formError: string;
-  methods: Record<PaymentMethod, string>;
-  errors: Record<string, string>;
-}
+export type { CheckoutLabels } from './checkout-support';
 
 /** Props of the checkout form. */
 export interface CheckoutFormProps {
@@ -54,43 +27,6 @@ export interface CheckoutFormProps {
   cartHref: string;
   continueHref: string;
   labels: CheckoutLabels;
-}
-
-/**
- * Reads the attribution saved from the landing page (filled in Stage 19). Returns an empty object when none exists.
- * @returns Attribution fields.
- */
-function readAttribution(): Record<string, string> {
-  try {
-    const parsed = JSON.parse(sessionStorage.getItem('attribution') ?? '{}') as unknown;
-    return parsed && typeof parsed === 'object' ? (parsed as Record<string, string>) : {};
-  } catch {
-    return {};
-  }
-}
-
-/**
- * Turnstile token, once the widget has produced one.
- * @returns The token, or null.
- */
-function turnstileToken(): string | null {
-  const input = document.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
-  return input?.value ? input.value : null;
-}
-
-/**
- * Sends the customer to the next step. Online methods go to the provider page. WhatsApp opens the chat in a new tab and
- * this tab shows the order. The manual methods go straight to the order page.
- * @param order Result of the checkout request.
- * @param chosen Payment method the customer picked.
- */
-function goToNextStep(order: PlacedOrder, chosen: PaymentMethod): void {
-  if (order.next.kind === 'redirect' && chosen !== 'whatsapp') {
-    window.location.assign(order.next.url);
-    return;
-  }
-  if (order.next.kind === 'redirect') window.open(order.next.url, '_blank', 'noopener');
-  window.location.assign(order.orderPath);
 }
 
 /**
@@ -272,39 +208,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
             </label>
           ))}
           {needsAddress && (
-            <div class="grid gap-3 sm:grid-cols-2">
-              <label class="flex flex-col gap-1 text-sm sm:col-span-2">
-                {labels.address}
-                <input name="line1" autoComplete="address-line1" required class={inputClass} />
-              </label>
-              <label class="flex flex-col gap-1 text-sm">
-                {labels.address2}
-                <input name="line2" autoComplete="address-line2" class={inputClass} />
-              </label>
-              <label class="flex flex-col gap-1 text-sm">
-                {labels.city}
-                <input name="city" autoComplete="address-level2" required class={inputClass} />
-              </label>
-              <label class="flex flex-col gap-1 text-sm">
-                {labels.region}
-                <input name="region" autoComplete="address-level1" class={inputClass} />
-              </label>
-              <label class="flex flex-col gap-1 text-sm">
-                {labels.postalCode}
-                <input name="postalCode" autoComplete="postal-code" class={inputClass} />
-              </label>
-              <label class="flex flex-col gap-1 text-sm">
-                {labels.countryCode}
-                <input
-                  name="country"
-                  defaultValue={props.country}
-                  minLength={2}
-                  maxLength={2}
-                  required
-                  class={inputClass}
-                />
-              </label>
-            </div>
+            <CheckoutAddressFields labels={labels} country={props.country} inputClass={inputClass} />
           )}
           <label class="flex flex-col gap-1 text-sm">
             {labels.note}
@@ -337,43 +241,18 @@ export default function CheckoutForm(props: CheckoutFormProps) {
         )}
       </div>
 
-      <aside class="rounded-brand bg-surface flex h-fit flex-col gap-3 p-4" aria-label={labels.summary}>
-        {lines.map((line) => (
-          <p class="flex justify-between gap-3 text-sm">
-            <span>
-              {line.quantity} × {line.name}
-            </span>
-            <span>{fmt(line.unitPriceMinor * line.quantity)}</span>
-          </p>
-        ))}
-        <p class="border-text/10 flex justify-between border-t pt-3 text-sm">
-          <span>{labels.subtotal}</span>
-          <span>{quote ? fmt(quote.totals.subtotalMinor) : '…'}</span>
-        </p>
-        <p class="flex justify-between text-sm">
-          <span>
-            {labels.tax} {props.taxLabel}
-          </span>
-          <span>{quote ? fmt(quote.totals.taxMinor) : '…'}</span>
-        </p>
-        <p class="flex justify-between text-sm">
-          <span>{labels.shipping}</span>
-          <span>{selected ? fmt(selected.costMinor) : labels.shippingPending}</span>
-        </p>
-        <p class="border-text/10 flex justify-between border-t pt-3 text-base font-semibold">
-          <span>{labels.total}</span>
-          <span>{quote && selected ? fmt(quote.totals.totalMinor) : '…'}</span>
-        </p>
-        <div class="cf-turnstile" data-sitekey={props.siteKey} />
-        <button
-          type="submit"
-          disabled={submitting || !quote || !method || !shippingId}
-          class="rounded-brand bg-primary text-on-primary inline-flex min-h-12 items-center justify-center font-semibold disabled:opacity-50"
-        >
-          {submitting ? labels.placing : labels.placeOrder}
-        </button>
-        {quoteFailed && <p class="text-accent text-sm">{labels.quoteError}</p>}
-      </aside>
+      <CheckoutSummary
+        labels={labels}
+        lines={lines}
+        quote={quote}
+        shipping={selected}
+        fmt={fmt}
+        taxLabel={props.taxLabel}
+        siteKey={props.siteKey}
+        submitting={submitting}
+        canSubmit={Boolean(quote && method && shippingId)}
+        quoteFailed={quoteFailed}
+      />
     </form>
   );
 }

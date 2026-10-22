@@ -13,6 +13,10 @@ export interface QueuedJob {
 /** Largest delay a queued message can have (24 hours). */
 const MAX_DELAY_SECONDS = 86_400;
 
+/** Queues accept at most 100 messages and 256 KB per sendBatch call; the byte budget leaves room for the envelope. */
+const MAX_BATCH_MESSAGES = 100;
+const MAX_BATCH_BYTES = 250_000;
+
 /** Cloudflare Queues implementation of JobQueue. */
 export class CloudflareJobQueue implements JobQueue {
   /**
@@ -31,12 +35,15 @@ export class CloudflareJobQueue implements JobQueue {
   }
 
   async enqueueMany(jobs: { type: JobType; payload: unknown; options?: EnqueueOptions }[]): Promise<void> {
-    await this.queue.sendBatch(
+    // The platform's limits are this adapter's business: callers may pass any number of jobs.
+    for (const batch of splitForSendBatch(
       jobs.map((job) => ({
         body: this.envelope(job.type, job.payload, job.options ?? {}),
         ...delayOption(job.options ?? {}),
       })),
-    );
+    )) {
+      await this.queue.sendBatch(batch);
+    }
   }
 
   /**
@@ -66,4 +73,27 @@ export class CloudflareJobQueue implements JobQueue {
 function delayOption(options: EnqueueOptions): { delaySeconds?: number } {
   if (options.delaySeconds === undefined) return {};
   return { delaySeconds: Math.min(MAX_DELAY_SECONDS, Math.max(0, Math.floor(options.delaySeconds))) };
+}
+
+/**
+ * Splits messages into groups that fit one sendBatch call: at most 100 messages and about 250 KB.
+ * @param messages Messages in order.
+ * @returns The groups, in order. An empty list gives no groups.
+ */
+function splitForSendBatch<T extends { body: unknown }>(messages: T[]): T[][] {
+  const groups: T[][] = [];
+  let current: T[] = [];
+  let bytes = 0;
+  for (const message of messages) {
+    const size = new TextEncoder().encode(JSON.stringify(message.body)).length;
+    if (current.length > 0 && (current.length >= MAX_BATCH_MESSAGES || bytes + size > MAX_BATCH_BYTES)) {
+      groups.push(current);
+      current = [];
+      bytes = 0;
+    }
+    current.push(message);
+    bytes += size;
+  }
+  if (current.length > 0) groups.push(current);
+  return groups;
 }

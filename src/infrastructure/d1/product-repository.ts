@@ -12,7 +12,7 @@ import {
   type VariantRow,
 } from './product-mapper';
 import { productStatements } from './product-statements';
-import { changesAfter, readStockLevels } from './stock-ledger';
+import { stockChangesFrom } from './stock-ledger';
 
 /** D1-backed product repository. */
 export class D1ProductRepository implements ProductRepository {
@@ -70,7 +70,7 @@ export class D1ProductRepository implements ProductRepository {
   /**
    * Saves the aggregate in one batch and reports the stock changes it caused.
    * @param product Aggregate to save.
-   * @param context Actor, note, stock changes and fallback threshold.
+   * @param context Actor, note and stock changes.
    * @returns The stock changes, with the stock the ledger now holds.
    * @throws DomainError CONFLICT for a taken slug or SKU, or when stock changed underneath the save.
    */
@@ -80,8 +80,15 @@ export class D1ProductRepository implements ProductRepository {
       'SELECT id FROM product_variants WHERE product_id = ?',
       [product.id],
     );
+    const { statements, slots } = productStatements(
+      this.db,
+      product,
+      context,
+      new Set(stored.map((row) => row.id)),
+    );
+    let results: D1Result[];
     try {
-      await this.db.batch(productStatements(this.db, product, context, new Set(stored.map((row) => row.id))));
+      results = await this.db.batch(statements);
     } catch (error) {
       if (isUniqueViolation(error)) throw new DomainError('CONFLICT', 'That slug or SKU is already in use');
       if (isCheckViolation(error)) {
@@ -89,7 +96,7 @@ export class D1ProductRepository implements ProductRepository {
       }
       throw error;
     }
-    return this.stockChanges(product, context);
+    return stockChangesFrom(results, slots);
   }
 
   /**
@@ -124,26 +131,5 @@ export class D1ProductRepository implements ProductRepository {
       statement(this.db, 'DELETE FROM product_search WHERE product_id = ?', [id]),
       statement(this.db, 'DELETE FROM products WHERE id = ?', [id]),
     ]);
-  }
-
-  /**
-   * The stock changes of a save, with the stock the ledger holds after it. Read after the batch, so a concurrent sale
-   * shows up in `after` and in the ledger.
-   * @param product Saved product.
-   * @param context Stock changes of the save.
-   * @returns One change per variant whose stock moved.
-   */
-  private async stockChanges(product: Product, context: ProductSaveContext): Promise<StockChange[]> {
-    const deltas = product.variants
-      .map((variant) => ({ variantId: variant.id, delta: context.stockDeltas[variant.id] ?? 0 }))
-      .filter((change) => change.delta !== 0);
-    const levels = await readStockLevels(
-      this.db,
-      deltas.map((change) => change.variantId),
-    );
-    return changesAfter(levels, deltas).map((change) => ({
-      ...change,
-      threshold: change.threshold ?? context.defaultLowStockThreshold,
-    }));
   }
 }

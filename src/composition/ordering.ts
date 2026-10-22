@@ -1,0 +1,161 @@
+// Wiring of ordering, payments and invoicing: gateways, checkout, payment confirmation, expiry, and the invoice use cases.
+// Kept apart from the container, like the admin catalog and inventory, so the container stays a list of what exists.
+import type { EvaluateStockChanges } from '@/application/inventory/evaluate-stock-changes';
+import type { SettingsRepository } from '@/application/ports/content';
+import type { InvoiceRepository, LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoicing';
+import type { JobQueue } from '@/application/ports/jobs';
+import type { MediaStorage } from '@/application/ports/media';
+import type { OrderRepository } from '@/application/ports/ordering';
+import type { PaymentEventLog, PaymentGateway, PaymentMethod } from '@/application/ports/payments';
+import type { BotVerifier, CacheStore, Clock, Hasher, IdGenerator } from '@/application/ports/platform';
+import { QuoteCart } from '@/application/cart/quote-cart';
+import { CapturePayment } from '@/application/ordering/capture-payment';
+import { ConfirmPayment } from '@/application/ordering/confirm-payment';
+import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
+import { GetOrderStatus } from '@/application/ordering/get-order-status';
+import { PlaceOrder } from '@/application/ordering/place-order';
+import { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
+import { IssueInvoice } from '@/application/invoicing/issue-invoice';
+import { IssueLegalInvoice } from '@/application/invoicing/issue-legal-invoice';
+import { RenderInvoicePdf } from '@/application/invoicing/render-invoice-pdf';
+import { VoidInvoice } from '@/application/invoicing/void-invoice';
+import { NotificationService } from '@/application/notifications/notification-service';
+import { D1CatalogQueryService } from '@/infrastructure/d1/catalog-query-service';
+import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-repository';
+import { readSecret } from '@/infrastructure/cloudflare/env';
+import { BrowserRunPdfRenderer, NoopLegalInvoiceIssuer } from '@/infrastructure/invoicing/invoicing-adapters';
+import {
+  BankTransferGateway,
+  CashOnDeliveryGateway,
+  WhatsAppGateway,
+} from '@/infrastructure/payments/manual-gateways';
+import { PayPalGateway } from '@/infrastructure/payments/paypal-gateway';
+import { StripeGateway } from '@/infrastructure/payments/stripe-gateway';
+
+/** The ordering services the container exposes. */
+export interface OrderingServices {
+  legal: LegalInvoiceIssuer;
+  pdf: PdfRenderer;
+  issueInvoice: IssueInvoice;
+  renderInvoicePdf: RenderInvoicePdf;
+  issueLegalInvoice: IssueLegalInvoice;
+  expireStaleOrders: ExpireStaleOrders;
+  stripe: StripeGateway;
+  paypal: PayPalGateway;
+  gateways: Record<PaymentMethod, PaymentGateway>;
+  confirmPayment: ConfirmPayment;
+  capturePayment: CapturePayment;
+  quoteCart: (options: { newDays: number }) => QuoteCart;
+  placeOrder: PlaceOrder;
+  orderStatus: GetOrderStatus;
+  invoicePdf: GetInvoicePdf;
+  voidInvoice: VoidInvoice;
+}
+
+/** Dependencies of the ordering wiring. */
+export interface OrderingDeps {
+  clock: Clock;
+  ids: IdGenerator;
+  hasher: Hasher;
+  cache: CacheStore;
+  settings: SettingsRepository;
+  jobs: JobQueue;
+  notifications: NotificationService;
+  botVerifier: BotVerifier;
+  media: MediaStorage;
+  orders: OrderRepository;
+  invoices: InvoiceRepository;
+  paymentEvents: PaymentEventLog;
+  evaluateStock: EvaluateStockChanges;
+  siteUrl: string;
+}
+
+/**
+ * Builds the ordering, payment and invoicing services from the Worker environment.
+ * @param env Worker bindings and vars (DB, BROWSER, PAYPAL_ENV and the payment secrets are used).
+ * @param deps Shared services.
+ * @returns The wired services.
+ */
+export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
+  const { clock, ids, hasher, cache, settings, jobs, notifications, botVerifier, media } = deps;
+  const { orders, invoices, paymentEvents, evaluateStock, siteUrl } = deps;
+  const legal = new NoopLegalInvoiceIssuer();
+  const pdf = new BrowserRunPdfRenderer(env.BROWSER);
+  const pdfDeps = { invoices, settings, pdf, media, clock };
+  const issueInvoice = new IssueInvoice({ orders, invoices, settings, jobs, legal, clock, ids });
+  const renderInvoicePdf = new RenderInvoicePdf({ ...pdfDeps, orders, notifications, siteUrl });
+  const issueLegalInvoice = new IssueLegalInvoice({ invoices, legal, clock });
+  const expireStaleOrders = new ExpireStaleOrders({
+    orders,
+    notifications,
+    settings,
+    evaluateStock,
+    clock,
+    siteUrl,
+  });
+
+  const stripe = new StripeGateway(readSecret('STRIPE_SECRET_KEY'), readSecret('STRIPE_WEBHOOK_SECRET'));
+  const paypal = new PayPalGateway(
+    {
+      clientId: readSecret('PAYPAL_CLIENT_ID'),
+      clientSecret: readSecret('PAYPAL_CLIENT_SECRET'),
+      webhookId: readSecret('PAYPAL_WEBHOOK_ID'),
+      environment: String(env.PAYPAL_ENV) === 'live' ? 'live' : 'sandbox',
+    },
+    cache,
+  );
+  const gateways: Record<PaymentMethod, PaymentGateway> = {
+    stripe,
+    paypal,
+    whatsapp: new WhatsAppGateway(),
+    bank_transfer: new BankTransferGateway(),
+    cash_on_delivery: new CashOnDeliveryGateway(),
+  };
+  const confirmPayment = new ConfirmPayment({
+    orders,
+    events: paymentEvents,
+    notifications,
+    settings,
+    jobs,
+    evaluateStock,
+    clock,
+    siteUrl,
+  });
+  const quoteCart = ({ newDays }: { newDays: number }) =>
+    new QuoteCart({
+      catalog: new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() }),
+      shipping: new D1ShippingMethodRepository(env.DB),
+    });
+  const placeOrder = new PlaceOrder({
+    settings,
+    quoteCart,
+    orders,
+    gateways,
+    botVerifier,
+    hasher,
+    ids,
+    clock,
+    notifications,
+    evaluateStock,
+    siteUrl,
+  });
+  const orderStatus = new GetOrderStatus({ orders, invoices, hasher });
+  return {
+    legal,
+    pdf,
+    issueInvoice,
+    renderInvoicePdf,
+    issueLegalInvoice,
+    expireStaleOrders,
+    stripe,
+    paypal,
+    gateways,
+    confirmPayment,
+    capturePayment: new CapturePayment({ orders, gateways, confirmPayment }),
+    quoteCart,
+    placeOrder,
+    orderStatus,
+    invoicePdf: new GetInvoicePdf({ ...pdfDeps, orderStatus, invoices, media }),
+    voidInvoice: new VoidInvoice({ invoices, orders, clock }),
+  };
+}

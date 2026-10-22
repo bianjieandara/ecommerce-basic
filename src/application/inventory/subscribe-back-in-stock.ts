@@ -33,18 +33,20 @@ export class SubscribeBackInStock {
     if (!(await this.deps.botVerifier.verify(input.turnstileToken, client.ip))) {
       throw new DomainError('BOT_CHECK_FAILED', 'The security check failed');
     }
-    const [inventory, whatsapp] = await Promise.all([
+    const [general, inventory, whatsapp] = await Promise.all([
+      this.deps.settings.get('general'),
       this.deps.settings.get('inventory'),
       this.deps.settings.get('whatsapp'),
     ]);
+    const locale = input.locale ?? general.defaultLocale;
     if (!inventory.backInStockEnabled)
       throw new DomainError('INVALID_STATE', 'Back-in-stock alerts are turned off');
     const [row] = await this.deps.inventory.findVariants(
       [input.variantId],
-      input.locale,
+      locale,
       inventory.defaultLowStockThreshold,
     );
-    if (!row) throw new DomainError('NOT_FOUND', 'Variant not found');
+    if (!row?.productActive) throw new DomainError('NOT_FOUND', 'Variant not found');
     if (stockStatus(row.stock, row.threshold, row.tracked) !== 'out') {
       throw new DomainError('INVALID_STATE', 'This variant is available now');
     }
@@ -59,7 +61,7 @@ export class SubscribeBackInStock {
       variantId: row.variantId,
       email: input.email.toLowerCase(),
       phone,
-      locale: input.locale,
+      locale,
       whatsappOptIn: phone !== null && input.whatsappOptIn,
       createdAt: this.deps.clock.now().toISOString(),
     });
