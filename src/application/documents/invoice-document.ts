@@ -119,12 +119,14 @@ export function renderInvoiceHtml(invoice: Invoice, options: InvoiceDocumentOpti
 <html lang="${invoice.locale}">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${text(number)}</title>
 <style>
   @page { size: A4; margin: 16mm; }
   body { font: 12px/1.45 Arial, Helvetica, sans-serif; color: #111; margin: 0; }
   h1 { font-size: 20px; margin: 0; }
   .head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid ${color}; padding-bottom: 10px; }
+  .head-meta { text-align: right; }
   .parties { display: flex; gap: 24px; margin: 18px 0; }
   .parties > div { flex: 1; }
   .label { font-size: 10px; text-transform: uppercase; color: #666; letter-spacing: .04em; margin-bottom: 4px; }
@@ -139,13 +141,20 @@ export function renderInvoiceHtml(invoice: Invoice, options: InvoiceDocumentOpti
   .watermark { position: fixed; top: 35%; left: 8%; font-size: 120px; font-weight: 700; color: rgba(190, 0, 0, .12); transform: rotate(-25deg); }
   .footer { margin-top: 28px; font-size: 10px; color: #555; white-space: pre-line; }
   .legal { font-size: 10px; color: #555; margin-top: 8px; }
+  /* Phones: stack the blocks and use the full width. Screen only, so the printed PDF keeps its A4 layout. */
+  @media screen and (max-width: 600px) {
+    .head, .parties { flex-direction: column; gap: 12px; }
+    .head-meta { text-align: left; }
+    .tax, .totals { width: 100%; }
+    .watermark { font-size: 64px; }
+  }
 </style>
 </head>
 <body>
 ${watermark}
 <header class="head">
   <div><h1>${text(invoice.seller.legalName)}</h1></div>
-  <div style="text-align:right"><h1>${L.title} ${text(number)}</h1><div>${L.issued}: ${formatDate(invoice.issuedAt, invoice.locale, options.country, options.timeZone)}</div></div>
+  <div class="head-meta"><h1>${L.title} ${text(number)}</h1><div>${L.issued}: ${formatDate(invoice.issuedAt, invoice.locale, options.country, options.timeZone)}</div></div>
 </header>
 <section class="parties">
   <div>

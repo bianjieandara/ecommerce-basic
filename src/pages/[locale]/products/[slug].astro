@@ -3,6 +3,9 @@
 // The chosen option is the ?v= parameter; the first available option is used when it is missing.
 import Price from '@/ui/components/Price.astro';
 import AddToCart from '@/ui/store/AddToCart.tsx';
+import BackInStockForm from '@/ui/store/BackInStockForm.tsx';
+import RelatedProducts from '@/ui/store/RelatedProducts.astro';
+import TurnstileScript from '@/ui/components/TurnstileScript.astro';
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import { isLocale } from '@/domain/shared/locale';
 import { PATHS, withQuery } from '@/domain/shared/paths';
@@ -20,8 +23,10 @@ const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
-const product = await app.catalog({ newDays: store.catalog.newDays }).getProductBySlug(lang, slug);
+const catalog = app.catalog({ newDays: store.catalog.newDays });
+const product = await catalog.getProductBySlug(lang, slug);
 if (!product) return new Response('Not found', { status: 404 });
+const related = await catalog.listRelatedProducts(lang, product.id, 8);
 
 const view = storeViewFor(store, lang);
 const contact = contactFor(store, lang);
@@ -35,6 +40,10 @@ const selected =
 const price = selected?.priceMinor ?? product.basePriceMinor;
 const compareAt = selected?.compareAtPriceMinor ?? product.compareAtPriceMinor;
 const inStock = selected !== null && selected.isActive && (!selected.trackInventory || selected.stock > 0);
+// Only tracked, active options with no stock take alerts: the same rule the subscription use case enforces.
+const outOfStock = selected !== null && selected.isActive && selected.trackInventory && selected.stock <= 0;
+// The settings are read only for an option that can take the form, so every other product view stays as cheap as before.
+const backInStock = outOfStock && (await app.settings.get('inventory')).backInStockEnabled;
 const hasOptions = product.variants.some((variant) => variant.variantLabel !== '');
 const option = selected && selected.variantLabel ? ` (${selected.variantLabel})` : '';
 const whatsappHref = whatsappLink(
@@ -101,13 +110,19 @@ const category = product.categories[0];
 
     <div class="flex flex-col gap-5">
       <nav aria-label="breadcrumb" class="text-sm text-text/60">
-        <a href={PATHS.shop(lang)} class="-my-3.5 inline-block py-3.5 underline">
+        <a
+          href={PATHS.shop(lang)}
+          class="-my-3.5 inline-flex min-h-11 min-w-11 items-center justify-center underline"
+        >
           {t(lang, 'nav.shop')}
         </a>
         {category && (
           <>
             {' / '}
-            <a href={PATHS.category(lang, category.slug)} class="-my-3.5 inline-block py-3.5 underline">
+            <a
+              href={PATHS.category(lang, category.slug)}
+              class="-my-3.5 inline-flex min-h-11 min-w-11 items-center justify-center underline"
+            >
               {category.name}
             </a>
           </>
@@ -194,10 +209,35 @@ const category = product.categories[0];
           }}
         />
       )}
+      {selected && backInStock && (
+        <BackInStockForm
+          client:visible
+          variantId={selected.id}
+          locale={lang}
+          siteKey={app.config.turnstileSiteKey}
+          labels={{
+            title: t(lang, 'product_page.backInStockTitle'),
+            intro: t(lang, 'product_page.backInStockIntro'),
+            email: t(lang, 'product_page.backInStockEmail'),
+            phone: t(lang, 'product_page.backInStockPhone'),
+            whatsapp: t(lang, 'product_page.backInStockWhatsapp'),
+            submit: t(lang, 'product_page.backInStockSubmit'),
+            sending: t(lang, 'product_page.backInStockSending'),
+            done: t(lang, 'product_page.backInStockDone'),
+            error: t(lang, 'product_page.backInStockError'),
+            invalid: t(lang, 'product_page.backInStockInvalid'),
+            botFailed: t(lang, 'product_page.backInStockBotFailed'),
+            rateLimited: t(lang, 'product_page.backInStockRateLimited'),
+            unavailable: t(lang, 'product_page.backInStockUnavailable'),
+          }}
+        />
+      )}
       <section class="flex flex-col gap-2 border-t border-text/10 pt-5">
         <h2 class="text-sm font-semibold">{t(lang, 'product.description')}</h2>
         <div class="max-w-prose leading-relaxed [&_p]:my-3" set:html={description} />
       </section>
     </div>
   </article>
+  <RelatedProducts products={related} view={view} />
 </StoreLayout>
+{backInStock && <TurnstileScript />}

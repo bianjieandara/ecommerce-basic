@@ -48,15 +48,6 @@ export function readAttribution(): Record<string, string> {
 }
 
 /**
- * Turnstile token, once the widget has produced one.
- * @returns The token, or null.
- */
-export function turnstileToken(): string | null {
-  const input = document.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
-  return input?.value ? input.value : null;
-}
-
-/**
  * Sends the customer to the next step. Online methods go to the provider page. WhatsApp opens the chat in a new tab and
  * this tab shows the order. The manual methods go straight to the order page.
  * @param order Result of the checkout request.

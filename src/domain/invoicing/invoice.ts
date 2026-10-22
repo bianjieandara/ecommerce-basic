@@ -1,8 +1,11 @@
 // Invoice rules: numbering format and when an invoice may be voided. Invoices are never deleted.
 import type { OrderStatus } from '../ordering/order-status';
 
-/** Invoice lifecycle. "void" keeps the record and marks it cancelled (no deletion ever). */
-export type InvoiceStatus = 'issued' | 'void';
+/** Invoice states. "void" keeps the record and marks it cancelled (no deletion ever). Matches the CHECK on invoices.status. */
+export const INVOICE_STATUSES = ['issued', 'void'] as const;
+
+/** One invoice state. */
+export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 
 /** Digits used for the consecutive number part. */
 const NUMBER_DIGITS = 6;

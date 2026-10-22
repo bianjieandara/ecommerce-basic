@@ -14,7 +14,8 @@ export interface CheckoutSummaryProps {
   /** Formats an amount in minor units in the store currency. */
   fmt: (amountMinor: number) => string;
   taxLabel: string;
-  siteKey: string;
+  /** Ref callback of the bot check: the form renders the Turnstile widget into the element it attaches to. */
+  turnstileRef: (node: HTMLElement | null) => void;
   submitting: boolean;
   /** Whether the form has everything it needs to place the order. */
   canSubmit: boolean;
@@ -55,7 +56,7 @@ export function CheckoutSummary(props: CheckoutSummaryProps) {
         <span>{labels.total}</span>
         <span>{quote && shipping ? fmt(quote.totals.totalMinor) : '…'}</span>
       </p>
-      <div class="cf-turnstile" data-sitekey={props.siteKey} />
+      <div ref={props.turnstileRef} />
       <button
         type="submit"
         disabled={props.submitting || !props.canSubmit}

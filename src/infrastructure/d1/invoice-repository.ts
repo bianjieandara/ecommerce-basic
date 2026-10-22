@@ -14,6 +14,7 @@ import type {
   LegalResult,
   LegalStatus,
   NewInvoice,
+  VoidRecord,
 } from '@/application/ports/invoicing';
 import { boolToInt, parseJson, queryFirst, statement } from './d1-client';
 
@@ -183,13 +184,24 @@ export class D1InvoiceRepository implements InvoiceRepository {
     ).run();
   }
 
-  async void(id: string, reason: string, nowIso: string): Promise<void> {
-    await statement(
-      this.db,
-      `UPDATE invoices SET status = 'void', void_reason = ?, pdf_key = NULL, updated_at = ?
-       WHERE id = ? AND status = 'issued'`,
-      [reason, nowIso, id],
-    ).run();
+  async void(record: VoidRecord): Promise<void> {
+    // The timeline entry is written only when this call's update changed the row. Its timestamp is this call's, so a repeated
+    // or losing void adds nothing.
+    await this.db.batch([
+      statement(
+        this.db,
+        `UPDATE invoices SET status = 'void', void_reason = ?, pdf_key = NULL, updated_at = ?
+         WHERE id = ? AND status = 'issued'`,
+        [record.reason, record.nowIso, record.id],
+      ),
+      statement(
+        this.db,
+        `INSERT INTO order_events (id, order_id, type, note, actor, created_at)
+         SELECT ?, order_id, 'invoice_voided', ?, ?, ? FROM invoices
+         WHERE id = ? AND status = 'void' AND updated_at = ?`,
+        [record.eventId, record.reason, record.actorId, record.nowIso, record.id, record.nowIso],
+      ),
+    ]);
   }
 
   /**

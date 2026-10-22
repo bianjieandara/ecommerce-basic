@@ -31,6 +31,7 @@ import type { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import type { ExpireStaleOrders } from '@/application/ordering/expire-orders';
 import type { GetOrderStatus } from '@/application/ordering/get-order-status';
 import type { PlaceOrder } from '@/application/ordering/place-order';
+import type { GetInvoiceHtml } from '@/application/invoicing/get-invoice-html';
 import type { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
 import type { IssueInvoice } from '@/application/invoicing/issue-invoice';
 import type { VoidInvoice } from '@/application/invoicing/void-invoice';
@@ -79,6 +80,8 @@ export interface Container {
   issueInvoice: IssueInvoice;
   /** Customer PDF download. */
   invoicePdf: GetInvoicePdf;
+  /** Customer invoice page: the same document as the PDF, as HTML. */
+  invoiceHtml: GetInvoiceHtml;
   voidInvoice: VoidInvoice;
   /** Contact form: stores the message and queues the store alert and the auto-reply. */
   submitContact: SubmitContactMessage;

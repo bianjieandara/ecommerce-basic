@@ -80,6 +80,15 @@ export interface NewInvoice extends Omit<
   issuedAt: string;
 }
 
+/** What a void records: the reason, who voided the invoice, and the order timeline entry that shows it. */
+export interface VoidRecord {
+  id: string;
+  reason: string;
+  actorId: string;
+  eventId: string;
+  nowIso: string;
+}
+
 /** Persistence for invoices and their series counters. */
 export interface InvoiceRepository {
   /**
@@ -91,8 +100,11 @@ export interface InvoiceRepository {
   findByOrderId(orderId: string): Promise<Invoice | null>;
   setPdfKey(id: string, key: string, nowIso: string): Promise<void>;
   setLegalResult(id: string, result: LegalResult, nowIso: string): Promise<void>;
-  /** Voids an issued invoice and clears its PDF, so the next download is rendered with the void mark. */
-  void(id: string, reason: string, nowIso: string): Promise<void>;
+  /**
+   * Voids an issued invoice, clears its PDF so the next download is rendered with the void mark, and writes the order
+   * timeline entry in the same batch. Nothing changes when the invoice is no longer issued.
+   */
+  void(record: VoidRecord): Promise<void>;
 }
 
 /** Turns invoice HTML into a PDF. */

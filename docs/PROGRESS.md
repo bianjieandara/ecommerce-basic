@@ -7,10 +7,10 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [x] Stage 2 — Shared kernel, i18n and formatting
 - [x] Stage 3 — Database schema and seed data
 - [x] Stage 4 — Domain model and application ports
-- [ ] Stage 5 — Infrastructure adapters, jobs, composition, HTTP helpers (open: retry and dead-letter paths never exercised)
-- [ ] Stage 6 — Design system and layouts (open: 360 px storefront check not done)
-- [ ] Stage 7 — Public storefront: home, catalog with filters, product
-- [ ] Stage 8 — Cart
+- [x] Stage 5 — Infrastructure adapters, jobs, composition, HTTP helpers
+- [x] Stage 6 — Design system and layouts
+- [x] Stage 7 — Public storefront: home, catalog with filters, product
+- [x] Stage 8 — Cart
 - [x] Stage 9 — Notifications: engine, email templates, multichannel service
 - [ ] Stage 10 — Checkout, payments, orders
 - [ ] Stage 11 — Invoicing

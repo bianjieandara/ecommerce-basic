@@ -4,6 +4,7 @@
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import SectionRenderer from '@/ui/widgets/SectionRenderer.astro';
 import MapFacade from '@/ui/components/MapFacade.astro';
+import TurnstileScript from '@/ui/components/TurnstileScript.astro';
 import ContactForm from '@/ui/store/ContactForm.tsx';
 import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
@@ -178,4 +179,4 @@ const formLabels = {
     </section>
   </div>
 </StoreLayout>
-<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<TurnstileScript />

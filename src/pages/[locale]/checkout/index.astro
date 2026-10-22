@@ -2,6 +2,7 @@
 // Checkout page. The cart lives in the browser, so the form island asks the server to price it and places the order.
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import CheckoutForm from '@/ui/store/CheckoutForm.tsx';
+import TurnstileScript from '@/ui/components/TurnstileScript.astro';
 import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 import { PATHS } from '@/domain/shared/paths';
@@ -97,4 +98,4 @@ const labels = {
     labels={labels}
   />
 </StoreLayout>
-<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<TurnstileScript />

@@ -1,6 +1,7 @@
 // Contact form (Preact island). It posts the message to /api/contact and shows the answer. The honeypot field is hidden
 // from people; a bot that fills it gets the same success answer as anyone else.
 import { useState } from 'preact/hooks';
+import { useTurnstile } from '@/ui/lib/turnstile';
 
 /** Labels of the contact form. Translated on the server. */
 export interface ContactFormLabels {
@@ -25,15 +26,6 @@ export interface ContactFormProps {
 }
 
 /**
- * Turnstile token, once the widget has produced one.
- * @returns The token, or null.
- */
-function turnstileToken(): string | null {
-  const input = document.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
-  return input?.value ? input.value : null;
-}
-
-/**
  * Contact form with its own answer messages.
  * @param props Locale, Turnstile site key and translated labels.
  */
@@ -42,6 +34,7 @@ export default function ContactForm(props: ContactFormProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errorText, setErrorText] = useState('');
   const inputClass = 'rounded-brand border-text/20 min-h-11 w-full border bg-white px-3';
+  const turnstile = useTurnstile(props.siteKey);
 
   /**
    * Sends the message and shows the answer.
@@ -65,10 +58,11 @@ export default function ContactForm(props: ContactFormProps) {
           phone: field('phone'),
           message: field('message'),
           website: field('website'),
-          turnstileToken: turnstileToken(),
+          turnstileToken: turnstile.token(),
         }),
       });
       const result = (await response.json()) as { ok: boolean; error?: { code?: string } };
+      turnstile.reset();
       if (result.ok) {
         form.reset();
         setStatus('sent');
@@ -121,7 +115,7 @@ export default function ContactForm(props: ContactFormProps) {
           <input name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
-      <div class="cf-turnstile" data-sitekey={props.siteKey} />
+      <div ref={turnstile.element} />
       {status === 'error' && (
         <p role="alert" class="text-accent text-sm">
           {errorText}

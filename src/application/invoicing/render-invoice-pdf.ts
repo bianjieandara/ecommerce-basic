@@ -1,8 +1,8 @@
 // RenderInvoicePdf: turns an issued invoice into a PDF, stores it in R2 and then emails it to the customer. It is the
 // invoice.render_pdf job. A repeat finds the PDF already stored and sends the email only if it was not queued yet.
 import { formatInvoiceNumber } from '@/domain/invoicing/invoice';
-import { pickText } from '@/domain/shared/localized-text';
 import { renderInvoiceHtml } from '../documents/invoice-document';
+import { invoiceDocumentOptions } from './invoice-options';
 import type { SettingsRepository } from '../ports/content';
 import type { Invoice, InvoiceRepository, PdfRenderer } from '../ports/invoicing';
 import type { MediaStorage } from '../ports/media';
@@ -38,18 +38,8 @@ export interface PdfStoreDeps {
  * @throws when the renderer fails. The caller decides whether that is retried.
  */
 export async function storePdf(deps: PdfStoreDeps, invoice: Invoice): Promise<ArrayBuffer> {
-  const [general, theme, invoicing] = await Promise.all([
-    deps.settings.get('general'),
-    deps.settings.get('theme'),
-    deps.settings.get('invoicing'),
-  ]);
-  const html = renderInvoiceHtml(invoice, {
-    storeName: general.storeName,
-    country: general.country,
-    timeZone: general.timezone,
-    primaryColor: theme.colorPrimary,
-    footerNotes: pickText(invoicing.footerNotes, invoice.locale, 'es'),
-  });
+  // The same options the customer page uses, so the stored PDF and the page show the same store details.
+  const html = renderInvoiceHtml(invoice, await invoiceDocumentOptions(deps.settings, invoice));
   const bytes = await deps.pdf.render(html);
   const key = invoicePdfKey(invoice.id);
   await deps.media.put(key, bytes, 'application/pdf');

@@ -10,10 +10,11 @@ import type { CurrencyCode } from '@/domain/shared/currency';
 import { formatMoney } from '@/domain/shared/format';
 import type { Locale } from '@/domain/shared/locale';
 import { money } from '@/domain/shared/money';
+import { useTurnstile } from '@/ui/lib/turnstile';
 import { cartLines } from '../stores/cart';
 import { CheckoutAddressFields } from './CheckoutAddressFields';
 import { CheckoutSummary } from './CheckoutSummary';
-import { goToNextStep, readAttribution, turnstileToken, type CheckoutLabels } from './checkout-support';
+import { goToNextStep, readAttribution, type CheckoutLabels } from './checkout-support';
 
 export type { CheckoutLabels } from './checkout-support';
 
@@ -42,6 +43,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
   const [method, setMethod] = useState<PaymentMethod | ''>('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const turnstile = useTurnstile(props.siteKey);
   const key = `${lines.map((line) => `${line.variantId}:${line.quantity}:${line.unitPriceMinor}`).join('|')}#${shippingId}`;
 
   useEffect(() => {
@@ -123,7 +125,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
           paymentMethod: method,
           note: field('note'),
           attribution: readAttribution(),
-          turnstileToken: turnstileToken(),
+          turnstileToken: turnstile.token(),
         }),
       });
       const result = (await response.json()) as {
@@ -133,6 +135,8 @@ export default function CheckoutForm(props: CheckoutFormProps) {
       };
       if (!result.ok || !result.data) {
         setFormError(labels.errors[result.error?.code ?? ''] ?? labels.errors.generic ?? labels.formError);
+        // A token can be verified only once, so the widget starts over for the next attempt.
+        turnstile.reset();
         setSubmitting(false);
         return;
       }
@@ -140,6 +144,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
       goToNextStep(result.data, method);
     } catch {
       setFormError(labels.formError);
+      turnstile.reset();
       setSubmitting(false);
     }
   }
@@ -248,7 +253,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
         shipping={selected}
         fmt={fmt}
         taxLabel={props.taxLabel}
-        siteKey={props.siteKey}
+        turnstileRef={turnstile.element}
         submitting={submitting}
         canSubmit={Boolean(quote && method && shippingId)}
         quoteFailed={quoteFailed}

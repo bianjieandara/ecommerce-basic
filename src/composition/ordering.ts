@@ -15,6 +15,7 @@ import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
 import { GetOrderStatus } from '@/application/ordering/get-order-status';
 import { OrderLinks } from '@/application/ordering/order-links';
 import { PlaceOrder } from '@/application/ordering/place-order';
+import { GetInvoiceHtml } from '@/application/invoicing/get-invoice-html';
 import { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
 import { IssueInvoice } from '@/application/invoicing/issue-invoice';
 import { IssueLegalInvoice } from '@/application/invoicing/issue-legal-invoice';
@@ -50,6 +51,7 @@ export interface OrderingServices {
   placeOrder: PlaceOrder;
   orderStatus: GetOrderStatus;
   invoicePdf: GetInvoicePdf;
+  invoiceHtml: GetInvoiceHtml;
   voidInvoice: VoidInvoice;
 }
 
@@ -160,6 +162,7 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     placeOrder,
     orderStatus,
     invoicePdf: new GetInvoicePdf({ ...pdfDeps, orderStatus, invoices, media }),
-    voidInvoice: new VoidInvoice({ invoices, orders, clock }),
+    invoiceHtml: new GetInvoiceHtml({ orderStatus, invoices, settings }),
+    voidInvoice: new VoidInvoice({ invoices, orders, clock, ids, media }),
   };
 }

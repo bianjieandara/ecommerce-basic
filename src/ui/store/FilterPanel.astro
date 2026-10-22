@@ -1,6 +1,7 @@
 ---
 // Filter form for the catalog. A plain GET form: it works without JavaScript and its URL is the canonical one.
 // Used twice per page (desktop sidebar and mobile drawer); `idPrefix` keeps the element ids unique.
+import FilterResultsButton from '@/ui/store/FilterResultsButton.tsx';
 import { t } from '@/ui/i18n';
 import { routes, withQuery } from '@/ui/lib/routes';
 import type { CatalogOptions, CatalogQuery } from '@/domain/catalog/catalog-query';
@@ -36,7 +37,13 @@ const flags = [
 ];
 ---
 
-<form method="get" action={basePath} class="flex flex-col gap-6" aria-label={t(locale, 'filters.title')}>
+<form
+  id={`${idPrefix}-filters`}
+  method="get"
+  action={basePath}
+  class="flex flex-col gap-6"
+  aria-label={t(locale, 'filters.title')}
+>
   {query.q && <input type="hidden" name="q" value={query.q} />}
   {sortValue !== options.defaultSort && <input type="hidden" name="sort" value={sortValue} />}
 
@@ -141,12 +148,19 @@ const flags = [
     ))}
   </fieldset>
 
-  <div class="flex flex-col gap-2">
-    <button type="submit" class="min-h-11 rounded-brand bg-primary px-4 font-semibold text-on-primary">
-      {t(locale, 'filters.showResults', { count: resultCount })}
-    </button>
-    <a href={withQuery(basePath, { q: query.q ?? undefined })} class="min-h-11 text-center text-sm underline">
-      {t(locale, 'shop.clearFilters')}
-    </a>
+  <!-- On phones this box stays at the bottom of the drawer while the facets scroll. It must be a direct child of the form:
+       a sticky box only moves inside its containing block, and the wrapper around the link was too short to keep it in view. -->
+  <div class="max-md:bg-background max-md:sticky max-md:bottom-0 max-md:py-2">
+    <FilterResultsButton
+      client:idle
+      formId={`${idPrefix}-filters`}
+      locale={locale}
+      category={query.categorySlug}
+      initialCount={resultCount}
+      labelTemplate={t(locale, 'filters.showResults', { count: '{count}' })}
+    />
   </div>
+  <a href={withQuery(basePath, { q: query.q ?? undefined })} class="min-h-11 text-center text-sm underline">
+    {t(locale, 'shop.clearFilters')}
+  </a>
 </form>
