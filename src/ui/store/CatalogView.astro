@@ -130,7 +130,7 @@ const activeFilters = [
         <ul class="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4">
           {listing.items.map((product, index) => (
             <li>
-              <ProductCard product={product} view={view} eager={index < 2} />
+              <ProductCard product={product} view={view} eager={index < 2} headingLevel={2} />
             </li>
           ))}
         </ul>

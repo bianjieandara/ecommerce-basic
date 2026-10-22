@@ -15,6 +15,8 @@ interface Props {
   eager?: boolean;
   /** How wide the tile is at each breakpoint; the default matches the shop grid (2, 3 and 4 columns). */
   sizes?: string;
+  /** Heading level of the name: 3 under a section title, 2 where the page title is the only heading above (the shop). */
+  headingLevel?: 2 | 3;
 }
 
 const {
@@ -22,13 +24,15 @@ const {
   view,
   eager = false,
   sizes = '(min-width: 1280px) 23vw, (min-width: 768px) 31vw, 46vw',
+  headingLevel = 3,
 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const srcset = product.imageVariants.length > 1 ? buildSrcSet(product.imageVariants) : undefined;
 const href = routes.product(view.locale, product.slug);
 ---
 
 <article class="group flex min-w-0 flex-col gap-2">
-  <a href={href} class="block overflow-hidden rounded-brand bg-surface">
+  <a href={href} class="block overflow-hidden rounded-brand bg-surface" aria-hidden="true" tabindex="-1">
     {product.imageKey ? (
       <img
         src={mediaUrl(product.imageKey)}
@@ -43,7 +47,7 @@ const href = routes.product(view.locale, product.slug);
         class="aspect-square w-full object-cover transition duration-300 group-hover:scale-[1.02]"
       />
     ) : (
-      <span class="flex aspect-square w-full items-center justify-center text-xs text-text/50">
+      <span class="flex aspect-square w-full items-center justify-center text-xs text-text/70">
         {t(view.locale, 'product_page.noImage')}
       </span>
     )}
@@ -53,11 +57,11 @@ const href = routes.product(view.locale, product.slug);
     {product.isNew && <Badge tone="success">{t(view.locale, 'product.new')}</Badge>}
     {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}
   </div>
-  <h3 class="text-sm font-medium leading-snug">
+  <Heading class="text-sm font-medium leading-snug">
     <a href={href} class="-my-3.5 inline-block py-3.5 hover:underline">
       {product.name}
     </a>
-  </h3>
+  </Heading>
   <Price
     amountMinor={product.minPriceMinor}
     compareAtMinor={product.compareAtPriceMinor}

@@ -14,7 +14,7 @@ import { renderMarkdown } from '@/ui/lib/markdown';
 import { mediaUrl } from '@/ui/lib/media-url';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { loadStoreContext } from '@/http/store-context';
-import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
+import { buildTitle, catalogOptionsFor, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
 import { productStructuredData } from '@/ui/lib/storefront-seo';
 import { themeToCss } from '@/ui/lib/theme-css';
 
@@ -58,13 +58,23 @@ const alternates = Object.fromEntries(
   ),
 );
 const description = renderMarkdown(product.descriptionMd);
+const pageDescription = metaDescription(
+  store,
+  lang,
+  product.seoDescription,
+  product.shortDescription,
+  product.descriptionMd
+    .replace(/[#*_`>[]()-]+/g, ' ')
+    .replace(/s+/g, ' ')
+    .slice(0, 155),
+);
 const mainImage = product.images[0];
 const category = product.categories[0];
 ---
 
 <StoreLayout
   title={buildTitle(store, lang, product.seoTitle || product.name)}
-  description={product.seoDescription || product.shortDescription}
+  description={pageDescription}
   locale={lang}
   storeName={store.general.storeName}
   currency={view.currency}
@@ -82,7 +92,7 @@ const category = product.categories[0];
     },
     product,
     { currency: store.general.currency, exponent: catalogOptionsFor(store).exponent },
-    product.seoDescription || product.shortDescription,
+    pageDescription,
   )}
   themeCss={themeToCss(store.theme)}
   fontPreset={store.theme.fontPreset}
@@ -101,7 +111,7 @@ const category = product.categories[0];
           class="aspect-square w-full rounded-brand bg-surface object-cover"
         />
       ) : (
-        <div class="flex aspect-square w-full items-center justify-center rounded-brand bg-surface text-sm text-text/50">
+        <div class="flex aspect-square w-full items-center justify-center rounded-brand bg-surface text-sm text-text/70">
           {t(lang, 'product_page.noImage')}
         </div>
       )}
@@ -198,7 +208,7 @@ const category = product.categories[0];
           href={whatsappHref}
           target="_blank"
           rel="noopener"
-          class="inline-flex min-h-12 items-center justify-center rounded-brand bg-emerald-600 px-6 font-semibold text-white"
+          class="inline-flex min-h-12 items-center justify-center rounded-brand bg-emerald-700 px-6 font-semibold text-white"
         >
           {t(lang, 'product.askWhatsApp')}
         </a>

@@ -5,7 +5,7 @@ import CatalogView from '@/ui/store/CatalogView.astro';
 import { isLocale } from '@/domain/shared/locale';
 import { loadCatalogPage } from '@/http/catalog-request';
 import { loadStoreContext } from '@/http/store-context';
-import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { buildTitle, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
 import { routes } from '@/ui/lib/routes';
 import { categoryStructuredData } from '@/ui/lib/storefront-seo';
 import { t } from '@/ui/i18n';
@@ -36,7 +36,7 @@ const alternates = Object.fromEntries(
 
 <StoreLayout
   title={buildTitle(load.store, lang, category.name)}
-  description={category.description}
+  description={metaDescription(load.store, lang, category.description)}
   locale={lang}
   storeName={load.store.general.storeName}
   currency={view.currency}

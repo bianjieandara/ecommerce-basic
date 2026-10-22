@@ -46,7 +46,7 @@ const otherHref = alternates[other] ?? (other === 'es' ? '/es/' : '/en/');
         href={otherHref}
         hreflang={other}
         class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium hover:bg-surface"
-        aria-label={t(locale, 'nav.language')}
+        aria-label={`${other.toUpperCase()} ${t(locale, 'nav.language')}`}
       >
         {other.toUpperCase()}
       </a>

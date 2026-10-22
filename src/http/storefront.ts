@@ -60,6 +60,19 @@ export function contactFor(store: StoreContext, locale: Locale): StorefrontConta
 }
 
 /**
+ * Meta description of a page: the first non-empty candidate, then the store's default description, then its name. A page
+ * with no description is penalized by search engines, so none is ever left empty.
+ * @param store Settings snapshot.
+ * @param locale Page language.
+ * @param candidates Page-specific descriptions, best first.
+ * @returns A non-empty description.
+ */
+export function metaDescription(store: StoreContext, locale: Locale, ...candidates: string[]): string {
+  const own = candidates.map((text) => text.trim()).find((text) => text !== '');
+  return own ?? (pickText(store.seo.defaultDescription, locale, 'es') || store.general.storeName);
+}
+
+/**
  * Page title from the SEO title template ("%s | Store"), or the store name alone on the home page.
  * @param store Settings snapshot.
  * @param locale Page language.

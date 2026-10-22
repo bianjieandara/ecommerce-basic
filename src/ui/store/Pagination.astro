@@ -46,7 +46,7 @@ const pages = Array.from({ length: totalPages }, (_, index) => index + 1).filter
         {t(locale, 'pagination.previous')}
       </a>
     ) : (
-      <span class="min-h-11 px-4 leading-[2.75rem] text-text/40">{t(locale, 'pagination.previous')}</span>
+      <span class="min-h-11 px-4 leading-[2.75rem] text-text/60">{t(locale, 'pagination.previous')}</span>
     )}
     <ol class="flex items-center gap-1 text-sm">
       {pages.map((number, index) => (
@@ -81,7 +81,7 @@ const pages = Array.from({ length: totalPages }, (_, index) => index + 1).filter
         {t(locale, 'pagination.next')}
       </a>
     ) : (
-      <span class="min-h-11 px-4 leading-[2.75rem] text-text/40">{t(locale, 'pagination.next')}</span>
+      <span class="min-h-11 px-4 leading-[2.75rem] text-text/60">{t(locale, 'pagination.next')}</span>
     )}
   </nav>
 )}
