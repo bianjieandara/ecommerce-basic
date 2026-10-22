@@ -7,6 +7,7 @@ import { defineEndpoint } from '@/http/define-endpoint';
 /** Requests a password reset link. Always answers the same way. */
 export const POST = defineEndpoint({
   method: 'POST',
+  rateLimit: { bucket: 'auth', scope: 'forgot' },
   input: forgotPasswordInput,
   handler: async ({ input, context }) => {
     await context.locals.app.requestPasswordReset.execute(input, clientOf(context.request));

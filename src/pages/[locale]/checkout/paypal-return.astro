@@ -1,6 +1,7 @@
 ---
 // PayPal return: the customer approved the payment on PayPal. The store captures it here, then shows the order page.
 // The order is only captured when the access key matches and the PayPal order id is the one stored with the order.
+import { logEvent } from '@/http/log';
 import { isLocale } from '@/domain/shared/locale';
 import { PATHS, withQuery } from '@/domain/shared/paths';
 
@@ -18,7 +19,10 @@ try {
   await app.capturePayment.execute(found.order.id, token);
 } catch (error) {
   // The order page shows what the store knows. A capture that completes later is confirmed by the PayPal webhook.
-  console.warn('paypal.capture_failed', error instanceof Error ? error.message : String(error));
+  logEvent('paypal.capture_failed', {
+    requestId: Astro.locals.requestId,
+    reason: error instanceof Error ? error.message : String(error),
+  });
 }
 return Astro.redirect(withQuery(PATHS.order(lang, number), { key }), 303);
 ---

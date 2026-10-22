@@ -6,6 +6,7 @@ import { defineEndpoint } from '@/http/define-endpoint';
 /** Sets a new password from a reset or invitation link. */
 export const POST = defineEndpoint({
   method: 'POST',
+  rateLimit: { bucket: 'auth', scope: 'reset' },
   input: resetPasswordInput,
   handler: async ({ input, context }) => {
     await context.locals.app.resetPassword.execute(input);

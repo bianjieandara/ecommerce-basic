@@ -7,6 +7,7 @@ import { DomainError } from '@/domain/shared/errors';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { sessionTokenOf } from '@/http/admin-session';
 import { errorResponse } from '@/http/errors';
+import { withSecurityHeaders } from '@/http/security-headers';
 import { getEnv, getExecutionContext } from '@/infrastructure/cloudflare/env';
 
 /** Admin pages anyone may open. */
@@ -39,9 +40,9 @@ function adminHeaders(response: Response): Response {
 }
 
 /**
- * Runs before every request: attaches the container and the admin session, then guards the admin area.
+ * Attaches the container and the admin session, then guards the admin area.
  */
-export const onRequest = defineMiddleware(async (context, next) => {
+const handle = defineMiddleware(async (context, next) => {
   context.locals.requestId = crypto.randomUUID();
   const app = createContainer(getEnv(), getExecutionContext(context.locals));
   context.locals.app = app;
@@ -67,4 +68,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return adminHeaders(denied);
   }
   return adminHeaders(await next());
+});
+
+/** Runs before every request; whatever answers it gets the security headers. */
+export const onRequest = defineMiddleware(async (context, next) => {
+  const response = await handle(context, next);
+  return withSecurityHeaders(response as Response, context.url);
 });

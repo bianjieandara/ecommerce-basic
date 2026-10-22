@@ -61,6 +61,40 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
 }
 
 /**
+ * Reads the body up to a byte limit. The Content-Length header is only a hint a client can leave out or lie about, so the
+ * limit is enforced on the bytes actually received and the stream is cancelled as soon as it is passed.
+ * @param request Incoming request.
+ * @param limit Most bytes accepted.
+ * @returns The body bytes.
+ * @throws DomainError VALIDATION_FAILED when the body is larger than the limit.
+ */
+async function readCapped(request: Request, limit: number): Promise<Uint8Array<ArrayBuffer>> {
+  const tooLarge = () => new DomainError('VALIDATION_FAILED', 'Request body too large');
+  if (Number(request.headers.get('content-length') ?? '0') > limit) throw tooLarge();
+  const reader = request.body?.getReader();
+  if (!reader) return new Uint8Array();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > limit) {
+      await reader.cancel();
+      throw tooLarge();
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+
+/**
  * Reads the request body with a size limit.
  * @param request Incoming request.
  * @param kind JSON, or form fields for uploads.
@@ -68,19 +102,19 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
  * @throws DomainError VALIDATION_FAILED for a missing, oversized or malformed body.
  */
 async function readBody(request: Request, kind: 'json' | 'form'): Promise<unknown> {
-  const length = Number(request.headers.get('content-length') ?? '0');
-  if (length > (kind === 'form' ? MAX_FORM_BYTES : MAX_JSON_BYTES)) {
-    throw new DomainError('VALIDATION_FAILED', 'Request body too large');
-  }
+  const bytes = await readCapped(request, kind === 'form' ? MAX_FORM_BYTES : MAX_JSON_BYTES);
   if (kind === 'form') {
     try {
-      return Object.fromEntries(await request.formData());
+      const form = await new Response(bytes, {
+        headers: { 'content-type': request.headers.get('content-type') ?? '' },
+      }).formData();
+      return Object.fromEntries(form);
     } catch {
       throw new DomainError('VALIDATION_FAILED', 'Request body must be form data');
     }
   }
   try {
-    return await request.json();
+    return JSON.parse(new TextDecoder().decode(bytes));
   } catch {
     throw new DomainError('VALIDATION_FAILED', 'Request body must be JSON');
   }
@@ -99,7 +133,10 @@ function parse<S extends z.ZodType>(schema: S, raw: unknown): z.infer<S> {
     throw new DomainError(
       'VALIDATION_FAILED',
       'Invalid input',
-      result.error.issues.map((issue) => ({ path: issue.path, message: issue.message })),
+      // The shape the use cases return too, so one form handler reads both: dotted field paths in `issues`.
+      {
+        issues: result.error.issues.map((issue) => ({ path: issue.path.join('.'), message: issue.message })),
+      },
     );
   }
   return result.data;

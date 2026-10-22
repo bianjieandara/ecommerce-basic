@@ -7,6 +7,7 @@ import { defineEndpoint } from '@/http/define-endpoint';
 /** Signs an admin in and starts their session. */
 export const POST = defineEndpoint({
   method: 'POST',
+  rateLimit: { bucket: 'auth', scope: 'login' },
   input: loginInput,
   handler: async ({ input, context }) => {
     const { token, user } = await context.locals.app.login.execute(input, clientOf(context.request));

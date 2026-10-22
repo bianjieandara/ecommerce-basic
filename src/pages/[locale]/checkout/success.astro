@@ -2,6 +2,7 @@
 // Payment return page. When the customer paid by card, the payment is checked with the provider here, so the order is confirmed
 // even if the provider's notification is late (or cannot reach this site, as on a development machine). The order page shows the
 // real status; this page then forwards the customer there.
+import { logEvent } from '@/http/log';
 import { isLocale } from '@/domain/shared/locale';
 import { PATHS, withQuery } from '@/domain/shared/paths';
 
@@ -17,7 +18,10 @@ if (found && found.order.paymentMethod === 'dlocalgo' && found.order.status === 
     await app.capturePayment.execute(found.order.id);
   } catch (error) {
     // The order page shows what the store knows; the notification can still confirm the payment later.
-    console.warn('dlocalgo.settle_failed', error instanceof Error ? error.message : String(error));
+    logEvent('dlocalgo.settle_failed', {
+      requestId: Astro.locals.requestId,
+      reason: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 return Astro.redirect(withQuery(PATHS.order(locale as 'es' | 'en', number), { key }), 303);
