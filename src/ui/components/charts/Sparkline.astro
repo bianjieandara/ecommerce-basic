@@ -1,0 +1,39 @@
+---
+// Sparkline: a small line of numbers with no axes, for a table cell or a card. Server-rendered SVG with an accessible name.
+interface Props {
+  label: string;
+  values: number[];
+  class?: string;
+}
+
+const { label, values, class: className = '' } = Astro.props;
+const width = 120;
+const height = 32;
+const high = Math.max(...values, 0);
+const low = Math.min(...values, 0);
+const span = high - low || 1;
+const points = values
+  .map((value, index) => {
+    const x = values.length > 1 ? (index / (values.length - 1)) * width : width / 2;
+    const y = height - ((value - low) / span) * height;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  })
+  .join(' ');
+---
+
+<svg
+  role="img"
+  aria-label={label}
+  viewBox={`0 0 ${width} ${height}`}
+  class={`h-8 w-full max-w-[120px] overflow-visible ${className}`}
+  preserveAspectRatio="none"
+>
+  <polyline
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    points={points}
+  />
+</svg>

@@ -80,7 +80,7 @@ const formLabels = {
           <div>
             <dt class="font-semibold">{t(lang, 'contact.email')}</dt>
             <dd>
-              <a href={`mailto:${store.contact.email}`} class="underline">
+              <a href={`mailto:${store.contact.email}`} class="inline-flex min-h-11 items-center underline">
                 {store.contact.email}
               </a>
             </dd>
@@ -90,7 +90,7 @@ const formLabels = {
           <div>
             <dt class="font-semibold">{t(lang, 'contact.call')}</dt>
             <dd>
-              <a href={`tel:${store.contact.phone}`} class="underline">
+              <a href={`tel:${store.contact.phone}`} class="inline-flex min-h-11 items-center underline">
                 {store.contact.phone}
               </a>
             </dd>
@@ -100,7 +100,7 @@ const formLabels = {
           <div>
             <dt class="font-semibold">{t(lang, 'contact.whatsApp')}</dt>
             <dd>
-              <a href={whatsappHref} rel="noopener" class="underline">
+              <a href={whatsappHref} rel="noopener" class="inline-flex min-h-11 items-center underline">
                 {store.contact.whatsappNumber}
               </a>
             </dd>

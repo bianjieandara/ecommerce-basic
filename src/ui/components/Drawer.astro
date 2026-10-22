@@ -5,10 +5,12 @@ interface Props {
   id: string;
   /** Accessible title shown in the header. */
   title: string;
+  /** Translated text of the close button (its accessible name). */
+  closeLabel: string;
   class?: string;
 }
 
-const { id, title, class: className = '' } = Astro.props;
+const { id, title, closeLabel, class: className = '' } = Astro.props;
 ---
 
 <dialog
@@ -26,7 +28,7 @@ const { id, title, class: className = '' } = Astro.props;
         type="button"
         data-dialog-close
         class="min-h-11 min-w-11 rounded-full text-xl"
-        aria-label="Close"
+        aria-label={closeLabel}
       >
         ×
       </button>

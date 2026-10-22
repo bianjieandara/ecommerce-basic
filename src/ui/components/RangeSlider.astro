@@ -1,0 +1,109 @@
+---
+// Two native range inputs and two number fields for a minimum and a maximum. The four fields stay in step, and the minimum
+// never passes the maximum. The form posts the two numbers under name_min and name_max.
+interface Props {
+  id: string;
+  name: string;
+  label: string;
+  minLabel: string;
+  maxLabel: string;
+  min: number;
+  max: number;
+  step?: number;
+  valueMin?: number;
+  valueMax?: number;
+  class?: string;
+}
+
+const {
+  id,
+  name,
+  label,
+  minLabel,
+  maxLabel,
+  min,
+  max,
+  step = 1,
+  valueMin = min,
+  valueMax = max,
+  class: className = '',
+} = Astro.props;
+const field = 'h-11 w-full rounded-brand border border-text/20 bg-white px-3 text-sm';
+---
+
+<fieldset id={id} data-range class={`flex flex-col gap-3 text-sm ${className}`}>
+  <legend class="font-semibold">{label}</legend>
+  <input
+    type="range"
+    data-bound="min"
+    data-kind="range"
+    aria-label={minLabel}
+    name={`${name}_min`}
+    min={min}
+    max={max}
+    step={step}
+    value={valueMin}
+    class="h-11 w-full accent-primary"
+  />
+  <input
+    type="range"
+    data-bound="max"
+    data-kind="range"
+    aria-label={maxLabel}
+    name={`${name}_max`}
+    min={min}
+    max={max}
+    step={step}
+    value={valueMax}
+    class="h-11 w-full accent-primary"
+  />
+  <div class="grid grid-cols-2 gap-3">
+    <label class="flex flex-col gap-1">
+      <span>{minLabel}</span>
+      <input
+        type="number"
+        data-bound="min"
+        data-kind="number"
+        min={min}
+        max={max}
+        step={step}
+        value={valueMin}
+        class={field}
+      />
+    </label>
+    <label class="flex flex-col gap-1">
+      <span>{maxLabel}</span>
+      <input
+        type="number"
+        data-bound="max"
+        data-kind="number"
+        min={min}
+        max={max}
+        step={step}
+        value={valueMax}
+        class={field}
+      />
+    </label>
+  </div>
+</fieldset>
+
+<script>
+  // Keeps the two sliders and the two number fields of one range in step, and keeps the minimum at or below the maximum.
+  document.querySelectorAll<HTMLElement>('[data-range]').forEach((root) => {
+    root.addEventListener('input', (event) => {
+      const from = event.target as HTMLInputElement;
+      const bound = from.dataset.bound;
+      const minRange = root.querySelector<HTMLInputElement>('[data-bound="min"][data-kind="range"]');
+      const maxRange = root.querySelector<HTMLInputElement>('[data-bound="max"][data-kind="range"]');
+      if (minRange && maxRange && Number(minRange.value) > Number(maxRange.value)) {
+        if (bound === 'min') maxRange.value = minRange.value;
+        else minRange.value = maxRange.value;
+      }
+      root.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+        const isMin = input.dataset.bound === 'min';
+        const source = isMin ? minRange : maxRange;
+        if (source) input.value = source.value;
+      });
+    });
+  });
+</script>

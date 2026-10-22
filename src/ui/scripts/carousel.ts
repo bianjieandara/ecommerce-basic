@@ -21,12 +21,15 @@ export function initCarousel(root: HTMLElement): void {
   const autoplayMs = Number(root.dataset.autoplay ?? DEFAULT_AUTOPLAY_MS);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // The button is the touch target (44px square). The visible dot is its child, so the dots stay small on screen but easy to hit.
   const dots = slides.map((_, index) => {
     const dot = document.createElement('button');
     dot.type = 'button';
-    dot.className =
-      'h-2.5 w-2.5 rounded-full bg-text/25 aria-[current=true]:bg-primary min-h-11 min-w-4 flex items-center justify-center';
+    dot.className = 'group flex min-h-11 min-w-11 items-center justify-center';
     dot.setAttribute('aria-label', `${index + 1} / ${slides.length}`);
+    const bar = document.createElement('span');
+    bar.className = 'h-2.5 w-2.5 rounded-full bg-text/25 group-aria-[current=true]:bg-primary';
+    dot.appendChild(bar);
     dot.addEventListener('click', () => goTo(index));
     dotsHost?.appendChild(dot);
     return dot;

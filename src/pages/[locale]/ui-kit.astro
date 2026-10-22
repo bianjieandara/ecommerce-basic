@@ -1,0 +1,232 @@
+---
+// DEV only: every store component on one page, so each can be checked at 360 px. Nothing links here, and production builds
+// answer 404.
+import StoreLayout from '@/ui/layouts/StoreLayout.astro';
+import Accordion from '@/ui/components/Accordion.astro';
+import Badge from '@/ui/components/Badge.astro';
+import Button from '@/ui/components/Button.astro';
+import Carousel from '@/ui/components/Carousel.astro';
+import Choice from '@/ui/components/Choice.astro';
+import Drawer from '@/ui/components/Drawer.astro';
+import EmptyState from '@/ui/components/EmptyState.astro';
+import Field from '@/ui/components/Field.astro';
+import IconButton from '@/ui/components/IconButton.astro';
+import Input from '@/ui/components/Input.astro';
+import Price from '@/ui/components/Price.astro';
+import Rating from '@/ui/components/Rating.astro';
+import RangeSlider from '@/ui/components/RangeSlider.astro';
+import Skeleton from '@/ui/components/Skeleton.astro';
+import BarChart from '@/ui/components/charts/BarChart.astro';
+import LineChart from '@/ui/components/charts/LineChart.astro';
+import Sparkline from '@/ui/components/charts/Sparkline.astro';
+import { isLocale } from '@/domain/shared/locale';
+import { PATHS } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+import { loadStoreContext } from '@/http/store-context';
+import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { themeToCss } from '@/ui/lib/theme-css';
+
+if (!import.meta.env.DEV) return new Response('Not found', { status: 404 });
+const { locale } = Astro.params;
+if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+const lang = locale as 'es' | 'en';
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const view = storeViewFor(store, lang);
+const contact = contactFor(store, lang);
+const title = t(lang, 'ui_kit.title');
+const fieldClass = 'h-11 w-full rounded-brand border border-text/20 bg-white px-3 text-sm';
+const points = [1, 2, 3, 4, 5, 6, 7].map((value) => ({ label: String(value), value: value * 3 + 2 }));
+---
+
+<StoreLayout
+  title={buildTitle(store, lang, title)}
+  locale={lang}
+  storeName={store.general.storeName}
+  currency={view.currency}
+  country={view.country}
+  alternates={{ es: PATHS.shop('es'), en: PATHS.shop('en') }}
+  canonical={new URL(PATHS.shop(lang), Astro.url.origin).toString()}
+  noindex={true}
+  themeCss={themeToCss(store.theme)}
+  webAnalyticsToken={store.integrations.webAnalyticsToken}
+  contact={contact}
+>
+  <article class="flex flex-col gap-10">
+    <header class="flex flex-col gap-2">
+      <h1 class="text-2xl font-semibold">{title}</h1>
+      <p class="text-sm text-text/70">{t(lang, 'ui_kit.note')}</p>
+    </header>
+
+    <section class="flex flex-col gap-3" aria-labelledby="kit-buttons">
+      <h2 id="kit-buttons" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.buttons')}
+      </h2>
+      <div class="flex flex-wrap gap-2">
+        <Button variant="primary">{t(lang, 'ui_kit.primary')}</Button>
+        <Button variant="secondary">{t(lang, 'ui_kit.secondary')}</Button>
+        <Button variant="ghost">{t(lang, 'ui_kit.ghost')}</Button>
+        <Button variant="danger">{t(lang, 'ui_kit.danger')}</Button>
+      </div>
+      <h3 class="pt-2 font-semibold">{t(lang, 'ui_kit.icons')}</h3>
+      <div class="flex flex-wrap gap-2">
+        <IconButton icon="search" label={t(lang, 'ui_kit.search')} />
+        <IconButton icon="cart" label={t(lang, 'ui_kit.cart')} />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3" aria-labelledby="kit-badges">
+      <h2 id="kit-badges" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.badges')}
+      </h2>
+      <div class="flex flex-wrap gap-2">
+        <Badge>{t(lang, 'ui_kit.neutral')}</Badge>
+        <Badge tone="success">{t(lang, 'ui_kit.success')}</Badge>
+        <Badge tone="warning">{t(lang, 'ui_kit.warning')}</Badge>
+        <Badge tone="danger">{t(lang, 'ui_kit.danger')}</Badge>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3" aria-labelledby="kit-prices">
+      <h2 id="kit-prices" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.prices')}
+      </h2>
+      <Price
+        amountMinor={2500000}
+        compareAtMinor={3000000}
+        currency={view.currency}
+        locale={lang}
+        country={view.country}
+      />
+      <h3 class="pt-2 font-semibold">{t(lang, 'ui_kit.rating')}</h3>
+      <Rating value={4.5} />
+      <h3 class="pt-2 font-semibold">{t(lang, 'ui_kit.skeleton')}</h3>
+      <Skeleton lines={3} />
+      <h3 class="pt-2 font-semibold">{t(lang, 'ui_kit.empty')}</h3>
+      <EmptyState title={t(lang, 'ui_kit.emptyTitle')} text={t(lang, 'ui_kit.emptyText')} icon="search" />
+    </section>
+
+    <section class="flex flex-col gap-4" aria-labelledby="kit-fields">
+      <h2 id="kit-fields" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.fields')}
+      </h2>
+      <Field id="kit-name" label={t(lang, 'ui_kit.fieldLabel')} hint={t(lang, 'ui_kit.fieldHint')}>
+        <Input id="kit-name" name="name" />
+      </Field>
+      <Field id="kit-size" label={t(lang, 'ui_kit.selectLabel')}>
+        <select id="kit-size" name="size" class={fieldClass}>
+          <option>{t(lang, 'ui_kit.selectOption')}</option>
+        </select>
+      </Field>
+      <Field id="kit-note" label={t(lang, 'ui_kit.textareaLabel')}>
+        <textarea
+          id="kit-note"
+          name="note"
+          rows="3"
+          class="w-full rounded-brand border border-text/20 bg-white p-3 text-sm"
+        ></textarea>
+      </Field>
+    </section>
+
+    <section class="flex flex-col gap-2" aria-labelledby="kit-choices">
+      <h2 id="kit-choices" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.choices')}
+      </h2>
+      <Choice
+        kind="checkbox"
+        id="kit-check"
+        name="check"
+        value="1"
+        label={t(lang, 'ui_kit.checkbox')}
+        checked={true}
+      />
+      <Choice
+        kind="radio"
+        id="kit-radio-a"
+        name="radio"
+        value="a"
+        label={t(lang, 'ui_kit.radioA')}
+        checked={true}
+      />
+      <Choice kind="radio" id="kit-radio-b" name="radio" value="b" label={t(lang, 'ui_kit.radioB')} />
+      <Choice
+        kind="switch"
+        id="kit-switch"
+        name="switch"
+        value="1"
+        label={t(lang, 'ui_kit.switch')}
+        checked={true}
+      />
+    </section>
+
+    <section class="flex flex-col gap-3" aria-labelledby="kit-range">
+      <h2 id="kit-range" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.range')}
+      </h2>
+      <RangeSlider
+        id="kit-range-field"
+        name="price"
+        label={t(lang, 'ui_kit.range')}
+        minLabel={t(lang, 'ui_kit.minimum')}
+        maxLabel={t(lang, 'ui_kit.maximum')}
+        min={0}
+        max={100}
+        valueMin={10}
+        valueMax={80}
+      />
+    </section>
+
+    <section class="flex flex-col gap-3" aria-labelledby="kit-accordion">
+      <h2 id="kit-accordion" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.accordion')}
+      </h2>
+      <Accordion
+        items={[
+          { title: t(lang, 'ui_kit.faqOne'), body: t(lang, 'ui_kit.faqOneText') },
+          { title: t(lang, 'ui_kit.faqTwo'), body: t(lang, 'ui_kit.faqTwoText') },
+        ]}
+      />
+    </section>
+
+    <section class="flex flex-col gap-3" aria-labelledby="kit-drawer">
+      <h2 id="kit-drawer" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.drawer')}
+      </h2>
+      <button
+        type="button"
+        data-dialog-open="kit-drawer"
+        class="rounded-brand bg-primary inline-flex min-h-12 items-center justify-center px-5 font-semibold text-on-primary"
+      >
+        {t(lang, 'ui_kit.openDrawer')}
+      </button>
+      <Drawer id="kit-drawer" title={t(lang, 'ui_kit.drawerTitle')} closeLabel={t(lang, 'ui_kit.close')}>
+        <p class="text-sm">{t(lang, 'ui_kit.drawerText')}</p>
+      </Drawer>
+    </section>
+
+    <section class="flex flex-col gap-3" aria-labelledby="kit-carousel">
+      <h2 id="kit-carousel" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.carousel')}
+      </h2>
+      <Carousel label={t(lang, 'ui_kit.carousel')} autoplay={0} slideBasis="85%">
+        {[1, 2, 3, 4].map((n) => (
+          <div class="rounded-brand bg-surface flex aspect-square items-center justify-center text-2xl font-semibold">
+            {t(lang, 'ui_kit.slide')} {n}
+          </div>
+        ))}
+      </Carousel>
+    </section>
+
+    <section class="flex flex-col gap-3" aria-labelledby="kit-charts">
+      <h2 id="kit-charts" class="text-lg font-semibold">
+        {t(lang, 'ui_kit.charts')}
+      </h2>
+      <LineChart title={t(lang, 'ui_kit.lineChart')} points={points} />
+      <BarChart title={t(lang, 'ui_kit.barChart')} points={points} />
+      <p class="flex items-center gap-3 text-sm">
+        {t(lang, 'ui_kit.sparkline')}
+        <Sparkline label={t(lang, 'ui_kit.sparkline')} values={points.map((point) => point.value)} />
+      </p>
+    </section>
+  </article>
+</StoreLayout>

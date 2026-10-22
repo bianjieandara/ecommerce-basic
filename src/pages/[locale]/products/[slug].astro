@@ -101,13 +101,13 @@ const category = product.categories[0];
 
     <div class="flex flex-col gap-5">
       <nav aria-label="breadcrumb" class="text-sm text-text/60">
-        <a href={PATHS.shop(lang)} class="underline">
+        <a href={PATHS.shop(lang)} class="-my-3.5 inline-block py-3.5 underline">
           {t(lang, 'nav.shop')}
         </a>
         {category && (
           <>
             {' / '}
-            <a href={PATHS.category(lang, category.slug)} class="underline">
+            <a href={PATHS.category(lang, category.slug)} class="-my-3.5 inline-block py-3.5 underline">
               {category.name}
             </a>
           </>

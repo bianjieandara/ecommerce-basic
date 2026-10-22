@@ -21,19 +21,28 @@ const year = new Date().getFullYear();
       <p class="font-semibold">{storeName}</p>
       {address && <p class="mt-2 text-sm text-text/70">{address}</p>}
       {email && (
-        <a href={`mailto:${email}`} class="mt-2 block text-sm underline">
+        <a href={`mailto:${email}`} class="mt-2 flex min-h-11 items-center text-sm underline">
           {email}
         </a>
       )}
     </div>
     <nav aria-label={t(locale, 'footer.legal')} class="flex flex-col gap-2 text-sm">
-      <a href={routes.page(locale, 'privacy')} class="underline-offset-4 hover:underline">
+      <a
+        href={routes.page(locale, 'privacy')}
+        class="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+      >
         {t(locale, 'footer.privacy')}
       </a>
-      <a href={routes.page(locale, 'terms')} class="underline-offset-4 hover:underline">
+      <a
+        href={routes.page(locale, 'terms')}
+        class="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+      >
         {t(locale, 'footer.terms')}
       </a>
-      <a href={routes.page(locale, 'shipping-returns')} class="underline-offset-4 hover:underline">
+      <a
+        href={routes.page(locale, 'shipping-returns')}
+        class="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+      >
         {t(locale, 'footer.shippingReturns')}
       </a>
     </nav>

@@ -1,0 +1,23 @@
+---
+// Accordion: native disclosure widgets, so it works without JavaScript and keeps the browser's keyboard behaviour.
+interface Props {
+  items: { title: string; body: string }[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+---
+
+<div class={`flex flex-col divide-y divide-text/10 border-y border-text/10 ${className}`}>
+  {items.map((item) => (
+    <details class="group py-1">
+      <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 font-semibold [&::-webkit-details-marker]:hidden">
+        {item.title}
+        <span aria-hidden="true" class="text-xl transition group-open:rotate-45">
+          +
+        </span>
+      </summary>
+      <p class="pb-3 text-sm text-text/80">{item.body}</p>
+    </details>
+  ))}
+</div>

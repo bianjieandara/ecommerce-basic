@@ -37,7 +37,10 @@ const { label, autoplay = 6000, slideBasis = '85%', class: className = '' } = As
     >
       ‹
     </button>
-    <div data-carousel-dots class="flex items-center gap-1"></div>
+    <div
+      data-carousel-dots
+      class="flex min-w-0 flex-1 items-center justify-start overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
+    ></div>
     <button
       type="button"
       data-carousel-next
@@ -50,12 +53,14 @@ const { label, autoplay = 6000, slideBasis = '85%', class: className = '' } = As
 </section>
 
 <style>
-  [data-carousel-track] > * {
+  /* The slides come from the page that uses the carousel, not from this component, so the rule must be global. A scoped
+     rule would never reach them, and the slides would collapse onto each other. */
+  :global([data-carousel-track] > *) {
     flex: 0 0 var(--slide-basis);
     scroll-snap-align: start;
   }
   @media (min-width: 768px) {
-    [data-carousel-track] > * {
+    :global([data-carousel-track] > *) {
       flex-basis: calc((100% - 2 * 1rem) / 3);
     }
   }

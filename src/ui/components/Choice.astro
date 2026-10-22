@@ -1,0 +1,40 @@
+---
+// One choice control: a checkbox, a radio button or a switch. The native input stays in the form, so keyboards and form
+// posts work as usual; the visible shape is drawn with CSS. The whole row is the touch target (at least 44px tall).
+interface Props {
+  kind: 'checkbox' | 'radio' | 'switch';
+  id: string;
+  name: string;
+  value: string;
+  label: string;
+  checked?: boolean;
+  class?: string;
+}
+
+const { kind, id, name, value, label, checked = false, class: className = '' } = Astro.props;
+const inputType = kind === 'switch' ? 'checkbox' : kind;
+---
+
+<label for={id} class={`flex min-h-11 items-center gap-3 text-sm ${className}`}>
+  {kind === 'switch' ? (
+    <>
+      <input id={id} type="checkbox" name={name} value={value} checked={checked} class="peer sr-only" />
+      <span
+        aria-hidden="true"
+        class="relative inline-flex h-6 w-11 shrink-0 rounded-full bg-text/25 transition peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-accent [&>span]:peer-checked:translate-x-5"
+      >
+        <span class="absolute top-0.5 left-0.5 size-5 rounded-full bg-white transition" />
+      </span>
+    </>
+  ) : (
+    <input
+      id={id}
+      type={inputType}
+      name={name}
+      value={value}
+      checked={checked}
+      class="size-5 shrink-0 accent-primary"
+    />
+  )}
+  <span>{label}</span>
+</label>

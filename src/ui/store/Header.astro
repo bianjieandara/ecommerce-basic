@@ -19,7 +19,7 @@ const otherHref = alternates[other] ?? (other === 'es' ? '/es/' : '/en/');
 
 <header class="sticky top-0 z-30 border-b border-text/10 bg-background/95 backdrop-blur">
   <div class="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
-    <a href={routes.home(locale)} class="font-semibold tracking-tight">
+    <a href={routes.home(locale)} class="inline-flex min-h-11 items-center font-semibold tracking-tight">
       {storeName}
     </a>
     <nav aria-label="Main" class="ml-6 hidden items-center gap-5 text-sm md:flex">
@@ -41,7 +41,7 @@ const otherHref = alternates[other] ?? (other === 'es' ? '/es/' : '/en/');
       <a
         href={otherHref}
         hreflang={other}
-        class="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-medium hover:bg-surface"
+        class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium hover:bg-surface"
         aria-label={t(locale, 'nav.language')}
       >
         {other.toUpperCase()}

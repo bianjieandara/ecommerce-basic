@@ -41,7 +41,7 @@ const href = routes.product(view.locale, product.slug);
     {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}
   </div>
   <h3 class="text-sm font-medium leading-snug">
-    <a href={href} class="hover:underline">
+    <a href={href} class="-my-3.5 inline-block py-3.5 hover:underline">
       {product.name}
     </a>
   </h3>

@@ -78,7 +78,12 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
         </div>
       )}
       {pending && found.order.paymentMethod === 'cash_on_delivery' && (
-        <p class="text-sm">{t(lang, 'order.codHelp')}</p>
+        <div class="rounded-brand bg-surface flex flex-col gap-2 p-4 text-sm">
+          <p>{t(lang, 'order.codHelp')}</p>
+          {pickText(checkout.cashOnDeliveryNote, lang, 'es') && (
+            <div set:html={renderMarkdown(pickText(checkout.cashOnDeliveryNote, lang, 'es'))} />
+          )}
+        </div>
       )}
       {pending && found.order.paymentMethod === 'whatsapp' && storeChat && (
         <a

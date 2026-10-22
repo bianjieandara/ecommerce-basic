@@ -1,0 +1,26 @@
+---
+// Icon-only button or link. The icon is decorative, so the label is the accessible name. Always 44px square (touch target).
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+
+interface Props {
+  icon: IconName;
+  label: string;
+  href?: string;
+  type?: 'button' | 'submit';
+  class?: string;
+}
+
+const { icon, label, href, type = 'button', class: className = '' } = Astro.props;
+const classes = `inline-flex min-h-11 min-w-11 items-center justify-center rounded-full hover:bg-surface ${className}`;
+---
+
+{href ? (
+  <a href={href} class={classes} aria-label={label}>
+    <Icon name={icon} />
+  </a>
+) : (
+  <button type={type} class={classes} aria-label={label}>
+    <Icon name={icon} />
+  </button>
+)}
