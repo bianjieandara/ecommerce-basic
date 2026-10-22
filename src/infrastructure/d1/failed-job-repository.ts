@@ -50,13 +50,17 @@ export class D1FailedJobRepository implements FailedJobRepository {
   }
 
   async list(page: number, pageSize: number): Promise<{ items: FailedJob[]; total: number }> {
-    const rows = await queryAll<FailedJobRow>(
-      this.db,
-      'SELECT * FROM failed_jobs ORDER BY created_at DESC LIMIT ? OFFSET ?',
-      [pageSize, (page - 1) * pageSize],
-    );
-    const count = await queryFirst<{ n: number }>(this.db, 'SELECT COUNT(*) AS n FROM failed_jobs');
-    return { items: rows.map(toFailedJob), total: count?.n ?? 0 };
+    // The page and the count are independent, so one batch answers both.
+    const results = await this.db.batch([
+      statement(this.db, 'SELECT * FROM failed_jobs ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?', [
+        pageSize,
+        (page - 1) * pageSize,
+      ]),
+      statement(this.db, 'SELECT COUNT(*) AS n FROM failed_jobs'),
+    ]);
+    const rows = (results[0]?.results ?? []) as FailedJobRow[];
+    const total = ((results[1]?.results ?? []) as { n: number }[])[0]?.n ?? 0;
+    return { items: rows.map(toFailedJob), total };
   }
 
   async get(id: string): Promise<FailedJob | null> {
@@ -64,12 +68,25 @@ export class D1FailedJobRepository implements FailedJobRepository {
     return row ? toFailedJob(row) : null;
   }
 
-  async resolve(id: string, resolution: 'retried' | 'discarded', nowIso: string): Promise<void> {
-    await statement(this.db, 'UPDATE failed_jobs SET resolution = ?, resolved_at = ? WHERE id = ?', [
-      resolution,
-      nowIso,
-      id,
-    ]).run();
+  async resolve(id: string, resolution: 'retried' | 'discarded', nowIso: string): Promise<boolean> {
+    // The guard keeps a job that is already resolved from being resolved again, for example by a second admin.
+    const result = await statement(
+      this.db,
+      'UPDATE failed_jobs SET resolution = ?, resolved_at = ? WHERE id = ? AND resolved_at IS NULL',
+      [resolution, nowIso, id],
+    ).run();
+    return result.meta.changes > 0;
+  }
+
+  async findUnresolvedByNotificationKey(idempotencyKey: string): Promise<FailedJob[]> {
+    const rows = await queryAll<FailedJobRow>(
+      this.db,
+      `SELECT * FROM failed_jobs
+       WHERE job_type = 'notify.email' AND resolved_at IS NULL AND json_extract(payload_json, '$.idempotencyKey') = ?
+       ORDER BY created_at ASC, id ASC`,
+      [idempotencyKey],
+    );
+    return rows.map(toFailedJob);
   }
 
   /**

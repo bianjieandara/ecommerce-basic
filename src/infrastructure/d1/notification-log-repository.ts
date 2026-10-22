@@ -17,6 +17,7 @@ interface NotificationLogRow {
   provider_message_id: string | null;
   error: string | null;
   order_id: string | null;
+  idempotency_key: string;
   created_at: string;
 }
 
@@ -36,6 +37,7 @@ function toEntry(row: NotificationLogRow): NotificationLogEntry {
     providerMessageId: row.provider_message_id,
     error: row.error,
     orderId: row.order_id,
+    idempotencyKey: row.idempotency_key,
     createdAt: row.created_at,
   };
 }
@@ -112,12 +114,33 @@ export class D1NotificationLogRepository implements NotificationLogRepository {
   }
 
   async list(page: number, pageSize: number): Promise<{ items: NotificationLogEntry[]; total: number }> {
+    // The page and the count are independent, so one batch answers both.
+    const results = await this.db.batch([
+      statement(
+        this.db,
+        'SELECT * FROM notification_log ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?',
+        [pageSize, (page - 1) * pageSize],
+      ),
+      statement(this.db, 'SELECT COUNT(*) AS n FROM notification_log'),
+    ]);
+    const rows = (results[0]?.results ?? []) as NotificationLogRow[];
+    const total = ((results[1]?.results ?? []) as { n: number }[])[0]?.n ?? 0;
+    return { items: rows.map(toEntry), total };
+  }
+
+  async get(id: string): Promise<NotificationLogEntry | null> {
+    const row = await queryFirst<NotificationLogRow>(this.db, 'SELECT * FROM notification_log WHERE id = ?', [
+      id,
+    ]);
+    return row ? toEntry(row) : null;
+  }
+
+  async listForOrder(orderId: string, limit: number): Promise<NotificationLogEntry[]> {
     const rows = await queryAll<NotificationLogRow>(
       this.db,
-      'SELECT * FROM notification_log ORDER BY created_at DESC LIMIT ? OFFSET ?',
-      [pageSize, (page - 1) * pageSize],
+      'SELECT * FROM notification_log WHERE order_id = ? ORDER BY created_at DESC, id DESC LIMIT ?',
+      [orderId, limit],
     );
-    const count = await queryFirst<{ n: number }>(this.db, 'SELECT COUNT(*) AS n FROM notification_log');
-    return { items: rows.map(toEntry), total: count?.n ?? 0 };
+    return rows.map(toEntry);
   }
 }

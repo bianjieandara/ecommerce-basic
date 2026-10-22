@@ -57,7 +57,10 @@ export interface FailedJobRepository {
   record(job: JobEnvelope, error: string): Promise<void>;
   list(page: number, pageSize: number): Promise<{ items: FailedJob[]; total: number }>;
   get(id: string): Promise<FailedJob | null>;
-  resolve(id: string, resolution: 'retried' | 'discarded', nowIso: string): Promise<void>;
+  /** Marks an unresolved job. Returns false, and changes nothing, when the job was already resolved. */
+  resolve(id: string, resolution: 'retried' | 'discarded', nowIso: string): Promise<boolean>;
+  /** Unresolved e-mail jobs for one notification, oldest first. */
+  findUnresolvedByNotificationKey(idempotencyKey: string): Promise<FailedJob[]>;
   /** Deletes resolved jobs resolved before the cutoff. Unresolved jobs are never deleted. */
   purgeResolvedBefore(cutoffIso: string): Promise<void>;
 }

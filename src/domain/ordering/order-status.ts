@@ -15,6 +15,22 @@ export const ORDER_STATUSES = [
 /** One order state. */
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
+/**
+ * States the store owner may set by hand. `paid` is for bank transfers and cash on delivery; `refunded` only records a
+ * refund the owner made outside the store. Gateway-driven states are not listed.
+ */
+export const MANUAL_ORDER_TARGETS = [
+  'paid',
+  'processing',
+  'shipped',
+  'delivered',
+  'cancelled',
+  'refunded',
+] as const;
+
+/** A state the store owner may set by hand. */
+export type ManualOrderTarget = (typeof MANUAL_ORDER_TARGETS)[number];
+
 const TRANSITIONS: Record<OrderStatus, readonly OrderStatus[]> = {
   pending_payment: ['paid', 'cancelled'],
   paid: ['processing', 'refunded', 'cancelled'],
@@ -26,7 +42,7 @@ const TRANSITIONS: Record<OrderStatus, readonly OrderStatus[]> = {
 };
 
 /** States in which money has been received. Revenue and invoices count these. */
-const PAID_OR_LATER: readonly OrderStatus[] = ['paid', 'processing', 'shipped', 'delivered'];
+export const PAID_OR_LATER: readonly OrderStatus[] = ['paid', 'processing', 'shipped', 'delivered'];
 
 /**
  * Checks whether an order may move from one state to another.

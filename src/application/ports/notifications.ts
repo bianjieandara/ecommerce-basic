@@ -53,6 +53,8 @@ export interface NotificationLogEntry {
   providerMessageId: string | null;
   error: string | null;
   orderId: string | null;
+  /** Unique per message; the retry of a failed job finds its log row through it. */
+  idempotencyKey: string;
   createdAt: string;
 }
 
@@ -75,6 +77,9 @@ export interface NotificationLogRepository {
     nowIso: string,
   ): Promise<void>;
   list(page: number, pageSize: number): Promise<{ items: NotificationLogEntry[]; total: number }>;
+  get(id: string): Promise<NotificationLogEntry | null>;
+  /** The newest messages sent for one order, for the order screen. */
+  listForOrder(orderId: string, limit: number): Promise<NotificationLogEntry[]>;
 }
 
 /** A file attached to a notification. The queue holds only this reference; the bytes are read when the email is sent. */

@@ -60,7 +60,7 @@ export class D1ContactMessageRepository implements ContactMessageRepository {
   async list(page: number, pageSize: number): Promise<Paginated<ContactMessage>> {
     const rows = await queryAll<ContactMessageRow>(
       this.db,
-      'SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT ? OFFSET ?',
+      'SELECT * FROM contact_messages ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?',
       [pageSize, (page - 1) * pageSize],
     );
     const count = await queryFirst<{ n: number }>(this.db, 'SELECT COUNT(*) AS n FROM contact_messages');
