@@ -100,8 +100,9 @@ export function computeIsOnSale(product: Product): boolean {
 
 /**
  * Validates the variant matrix before saving.
- * Rules: at least one variant; at most 100; a variant with no attributes must be the only one; at most 3 attributes
- * per variant; every attribute combination is unique.
+ * Rules: at least one variant, and one of them active; at most 100 variants; at most 3 attributes per variant; every
+ * attribute combination is unique. A variant without attributes must be the only active variant: inactive variants are
+ * not sold, so a simple product can be turned into one with attributes by deactivating its old variant.
  * @param variants Variants to validate.
  * @throws DomainError VALIDATION_FAILED describing the first broken rule.
  */
@@ -111,6 +112,8 @@ export function assertVariantsConsistent(variants: ProductVariant[]): void {
   if (variants.length > MAX_VARIANTS_PER_PRODUCT) {
     throw new DomainError('VALIDATION_FAILED', `At most ${MAX_VARIANTS_PER_PRODUCT} variants per product`);
   }
+  const activeCount = variants.filter((variant) => variant.isActive).length;
+  if (activeCount === 0) throw new DomainError('VALIDATION_FAILED', 'Keep at least one variant active');
   const combinations = new Set<string>();
   for (const variant of variants) {
     if (variant.attributeValueIds.length > MAX_ATTRIBUTES_PER_PRODUCT) {
@@ -119,8 +122,11 @@ export function assertVariantsConsistent(variants: ProductVariant[]): void {
         `At most ${MAX_ATTRIBUTES_PER_PRODUCT} attributes per product`,
       );
     }
-    if (variant.attributeValueIds.length === 0 && variants.length > 1) {
-      throw new DomainError('VALIDATION_FAILED', 'A variant without attributes must be the only variant');
+    if (variant.isActive && variant.attributeValueIds.length === 0 && activeCount > 1) {
+      throw new DomainError(
+        'VALIDATION_FAILED',
+        'A variant without attributes must be the only active variant',
+      );
     }
     const key = [...variant.attributeValueIds].sort().join('|');
     if (combinations.has(key)) throw new DomainError('VALIDATION_FAILED', 'Duplicate variant combination');

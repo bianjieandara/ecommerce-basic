@@ -1,0 +1,18 @@
+---
+// Small status label. The tone decides the colour; the text is always passed in, already translated.
+interface Props {
+  label: string;
+  tone?: 'ok' | 'warn' | 'muted';
+}
+
+const { label, tone = 'muted' } = Astro.props;
+const tones = {
+  ok: 'bg-primary/15 text-text',
+  warn: 'bg-accent/15 text-text',
+  muted: 'bg-text/10 text-text/75',
+};
+---
+
+<span class={`rounded-brand inline-flex items-center px-2 py-0.5 text-xs font-semibold ${tones[tone]}`}>
+  {label}
+</span>

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { postJson } from './lib/api-client';
+import { FIELD } from './lib/classes';
 
 /** Which form the island shows. */
 export type AuthMode = 'setup' | 'login' | 'forgot' | 'reset';
@@ -51,7 +52,7 @@ const ENDPOINTS: Record<AuthMode, string> = {
   reset: '/api/admin/password/reset',
 };
 
-const inputClass = 'rounded-brand border-text/20 min-h-11 w-full border bg-white px-3';
+const inputClass = FIELD;
 
 /**
  * Turnstile API, once the script on the page has loaded.

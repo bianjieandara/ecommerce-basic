@@ -1,0 +1,104 @@
+// Admin product list: one query with the filters, paged, returning the rows the table shows.
+import type {
+  AdminCatalogQueries,
+  AdminProductFilter,
+  AdminProductRow,
+} from '@/application/ports/catalog-admin';
+import type { ProductStatus } from '@/domain/catalog/product';
+import type { Locale } from '@/domain/shared/locale';
+import { type Paginated, toPaginated } from '@/domain/shared/pagination';
+import { queryAll, queryFirst, type SqlValue } from './d1-client';
+import { toPrefixQuery } from './catalog-query-service';
+
+/** One row of the admin list query. */
+interface ListRow {
+  id: string;
+  name: string | null;
+  status: ProductStatus;
+  base_price_minor: number;
+  is_on_sale: number;
+  is_featured: number;
+  stock: number;
+  variant_count: number;
+  image_media_id: string | null;
+  updated_at: string;
+}
+
+/** D1-backed admin product list. */
+export class D1AdminCatalogQueries implements AdminCatalogQueries {
+  /** @param db D1 database binding. */
+  constructor(private readonly db: D1Database) {}
+
+  /**
+   * Lists products matching the filters. The name follows the requested language and falls back to any other.
+   * Stock counts active variants; a product is out of stock when every active variant is tracked and empty.
+   * @param filter Filters and page.
+   * @param locale Language of the names.
+   * @returns One page of rows.
+   */
+  async listProducts(filter: AdminProductFilter, locale: Locale): Promise<Paginated<AdminProductRow>> {
+    const where: string[] = [];
+    const params: SqlValue[] = [];
+    if (filter.status !== 'all') {
+      where.push('p.status = ?');
+      params.push(filter.status);
+    }
+    if (filter.categoryId) {
+      where.push(
+        'EXISTS (SELECT 1 FROM product_categories pc WHERE pc.product_id = p.id AND pc.category_id = ?)',
+      );
+      params.push(filter.categoryId);
+    }
+    if (filter.onSale) where.push('p.is_on_sale = 1');
+    if (filter.outOfStock) {
+      where.push(
+        `NOT EXISTS (SELECT 1 FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1
+           AND (v.track_inventory = 0 OR v.stock > 0))`,
+      );
+    }
+    const term = toPrefixQuery(filter.search);
+    if (term) {
+      where.push('p.id IN (SELECT product_id FROM product_search WHERE product_search MATCH ?)');
+      params.push(term);
+    }
+    const clause = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
+
+    const counted = await queryFirst<{ n: number }>(
+      this.db,
+      `SELECT COUNT(*) AS n FROM products p ${clause}`,
+      params,
+    );
+    const rows = await queryAll<ListRow>(
+      this.db,
+      `SELECT p.id, p.status, p.base_price_minor, p.is_on_sale, p.is_featured, p.updated_at,
+         (SELECT t.name FROM product_translations t WHERE t.product_id = p.id ORDER BY (t.locale = ?) DESC LIMIT 1) AS name,
+         (SELECT COALESCE(SUM(v.stock), 0) FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1) AS stock,
+         (SELECT COUNT(*) FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1) AS variant_count,
+         (SELECT i.media_id FROM product_images i WHERE i.product_id = p.id ORDER BY i.position LIMIT 1) AS image_media_id
+       FROM products p ${clause}
+       ORDER BY p.updated_at DESC LIMIT ? OFFSET ?`,
+      [locale, ...params, filter.pageSize, (filter.page - 1) * filter.pageSize],
+    );
+    return toPaginated(rows.map(toRow), counted?.n ?? 0, { page: filter.page, pageSize: filter.pageSize });
+  }
+}
+
+/**
+ * Maps a list row to the port's shape.
+ * @param row Row from the list query.
+ * @returns The admin list row.
+ */
+function toRow(row: ListRow): AdminProductRow {
+  return {
+    id: row.id,
+    name: row.name ?? '',
+    status: row.status,
+    basePriceMinor: row.base_price_minor,
+    isOnSale: row.is_on_sale === 1,
+    isFeatured: row.is_featured === 1,
+    stock: row.stock,
+    variantCount: row.variant_count,
+    imageMediaId: row.image_media_id,
+    updatedAt: row.updated_at,
+  };
+}

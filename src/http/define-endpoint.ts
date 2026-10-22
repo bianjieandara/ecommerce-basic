@@ -1,25 +1,33 @@
 // Endpoint factory: every API route is built with this, so parsing, errors and response shape are consistent.
-// Stage 5 supports public GET and POST routes. Admin auth, rate limits and bot checks are added in Stages 13 and 23.
+// Auth is enforced by the middleware; this file validates input, runs the handler and maps errors to responses.
 import type { APIContext, APIRoute } from 'astro';
 import { z } from 'zod';
+import { MAX_UPLOAD_BYTES } from '@/domain/media/media-asset';
 import { DomainError } from '@/domain/shared/errors';
 import { errorResponse } from './errors';
 
-/** Largest JSON body accepted by a public endpoint. */
+/** Largest JSON body accepted by an endpoint. */
 const MAX_JSON_BYTES = 64 * 1024;
+
+/** Largest form body: one upload plus room for field names and multipart boundaries. */
+const MAX_FORM_BYTES = MAX_UPLOAD_BYTES + 1024 * 1024;
 
 /** Options for one endpoint. */
 export interface EndpointOptions<S extends z.ZodType, R> {
   method: 'GET' | 'POST';
-  /** Zod schema for the query string (GET) or the JSON body (POST). */
+  /** Zod schema for the query string (GET) or the body. Without one, the body is not read at all. */
   input?: S;
+  /** How the body is read: JSON by default, or form fields for uploads. */
+  body?: 'json' | 'form';
+  /** Set on admin changes: the page cache is invalidated once the handler succeeds. */
+  invalidatesCache?: boolean;
   handler: (context: { input: z.infer<S>; context: APIContext }) => Promise<R>;
 }
 
 /**
  * Creates an Astro API route with validation and error mapping.
  * Success responses are `{ ok: true, data }`; failures are `{ ok: false, error }` with a proper status.
- * @param options Method, input schema and handler.
+ * @param options Method, input schema, body kind and handler.
  * @returns An APIRoute to export as GET or POST.
  */
 export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<S, R>): APIRoute {
@@ -31,10 +39,11 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
         options.method === 'GET'
           ? Object.fromEntries(context.url.searchParams)
           : options.input
-            ? await readJson(context.request)
+            ? await readBody(context.request, options.body ?? 'json')
             : undefined;
       const input = options.input ? parse(options.input, raw) : (undefined as z.infer<S>);
       const data = await options.handler({ input, context });
+      if (options.invalidatesCache) await context.locals.app.platform.pageCache.bump();
       // A handler that needs more than JSON (for example a session cookie) returns its own Response.
       if (data instanceof Response) return data;
       return Response.json({ ok: true, data }, { headers: { 'Cache-Control': 'no-store' } });
@@ -45,14 +54,24 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
 }
 
 /**
- * Reads a JSON body with a size limit.
+ * Reads the request body with a size limit.
  * @param request Incoming request.
- * @returns Parsed JSON value.
+ * @param kind JSON, or form fields for uploads.
+ * @returns The parsed body.
  * @throws DomainError VALIDATION_FAILED for a missing, oversized or malformed body.
  */
-async function readJson(request: Request): Promise<unknown> {
+async function readBody(request: Request, kind: 'json' | 'form'): Promise<unknown> {
   const length = Number(request.headers.get('content-length') ?? '0');
-  if (length > MAX_JSON_BYTES) throw new DomainError('VALIDATION_FAILED', 'Request body too large');
+  if (length > (kind === 'form' ? MAX_FORM_BYTES : MAX_JSON_BYTES)) {
+    throw new DomainError('VALIDATION_FAILED', 'Request body too large');
+  }
+  if (kind === 'form') {
+    try {
+      return Object.fromEntries(await request.formData());
+    } catch {
+      throw new DomainError('VALIDATION_FAILED', 'Request body must be form data');
+    }
+  }
   try {
     return await request.json();
   } catch {

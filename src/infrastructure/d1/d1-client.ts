@@ -60,6 +60,24 @@ export function parseJson<T>(text: string | null | undefined, fallback: T): T {
 }
 
 /**
+ * True when a statement or batch failed on a UNIQUE constraint, for example a slug or SKU that is already used.
+ * @param error Error thrown by D1.
+ * @returns Whether the error is a uniqueness violation.
+ */
+export function isUniqueViolation(error: unknown): boolean {
+  return error instanceof Error && error.message.includes('UNIQUE constraint failed');
+}
+
+/**
+ * True when a statement or batch failed on a CHECK constraint, for example stock that would go negative.
+ * @param error Error thrown by D1.
+ * @returns Whether the error is a check violation.
+ */
+export function isCheckViolation(error: unknown): boolean {
+  return error instanceof Error && error.message.includes('CHECK constraint failed');
+}
+
+/**
  * Converts a boolean to the 0/1 integer stored in D1.
  * @param value Boolean value.
  * @returns 1 or 0.

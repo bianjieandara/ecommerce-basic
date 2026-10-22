@@ -1,5 +1,7 @@
 // Admin session cookie and the helpers around it. Production uses the __Host- prefix (HTTPS only, no domain, path /). Local
 // http development uses a plain name, because browsers refuse Secure cookies on plain http.
+import type { AdminUser } from '@/application/ports/identity';
+import { DomainError } from '@/domain/shared/errors';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 
 /** Cookie lifetime in seconds; keep in step with SESSION_DAYS in application/identity/sessions.ts. */
@@ -105,4 +107,15 @@ export function signedOutResponse(url: URL, location: string): Response {
  */
 export function safeAdminPath(value: string | null): string {
   return value && ADMIN_PATH.test(value) ? value : ADMIN_PATHS.dashboard;
+}
+
+/**
+ * The signed-in admin of a route that needs one. Admin routes are guarded by the middleware; this keeps the types honest.
+ * @param admin Admin from the request locals.
+ * @returns The admin.
+ * @throws DomainError UNAUTHORIZED when nobody is signed in.
+ */
+export function requireAdmin(admin: AdminUser | null): AdminUser {
+  if (!admin) throw new DomainError('UNAUTHORIZED', 'Please sign in to continue.');
+  return admin;
 }

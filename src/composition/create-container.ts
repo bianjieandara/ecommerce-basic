@@ -81,6 +81,8 @@ import {
 } from '@/infrastructure/security/security-adapters';
 import { CryptoIdGenerator, SystemClock, WebCryptoHasher } from '@/infrastructure/system/system-adapters';
 import { logEvent } from '@/infrastructure/system/logger';
+import { createCatalogAdmin, createMediaLibrary, type CatalogAdmin } from './admin-catalog';
+import type { MediaLibrary } from '@/application/media/media-library';
 
 /** Everything the application can use for one request or one job run. */
 export interface Container {
@@ -128,6 +130,10 @@ export interface Container {
   requestPasswordReset: RequestPasswordReset;
   resetPassword: ResetPassword;
   inviteAdmin: InviteAdmin;
+  /** Admin catalog: products, categories, attributes and the product list. */
+  catalogAdmin: CatalogAdmin;
+  /** Image library: uploads of resized variants, listing and removal. */
+  mediaLibrary: MediaLibrary;
   platform: {
     clock: Clock;
     ids: IdGenerator;
@@ -239,6 +245,9 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     notifications,
     siteUrl,
   });
+
+  const catalogAdmin = createCatalogAdmin(env, { ids, clock, settings });
+  const mediaLibrary = createMediaLibrary(env, { ids, clock, storage: media });
 
   const contactMessages = new D1ContactMessageRepository(env.DB);
   const submitContact = new SubmitContactMessage({
@@ -364,6 +373,8 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     requestPasswordReset,
     resetPassword,
     inviteAdmin,
+    catalogAdmin,
+    mediaLibrary,
     platform: {
       clock,
       ids,

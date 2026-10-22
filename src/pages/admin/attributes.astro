@@ -1,0 +1,26 @@
+---
+// Attributes (Size, Color, ...) and their values. Variants are generated from them in the product editor.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import AttributeManager from '@/ui/admin/AttributeManager.tsx';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const items = await app.catalogAdmin.attributes.list();
+---
+
+<AdminLayout title={t(lang, 'admin.attributes.title')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.attributes.title')}</h1>
+  <AttributeManager
+    client:load
+    items={items}
+    locale={lang}
+    labels={pickNamespace(lang, 'admin')}
+    errors={pickNamespace(lang, 'errors')}
+  />
+</AdminLayout>

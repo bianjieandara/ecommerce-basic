@@ -1,0 +1,34 @@
+---
+// New product: the same editor as an existing product, starting from a blank draft.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import ProductEditor from '@/ui/admin/ProductEditor.tsx';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadProductEditor } from '@/http/admin-catalog-page';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const editor = await loadProductEditor(app, null, lang);
+if (!editor) return new Response('Not found', { status: 404 });
+---
+
+<AdminLayout title={t(lang, 'admin.product.titleNew')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.product.titleNew')}</h1>
+  <ProductEditor
+    client:load
+    initial={editor.initial}
+    labels={pickNamespace(lang, 'admin')}
+    errors={pickNamespace(lang, 'errors')}
+    categories={editor.categories}
+    attributes={editor.attributes}
+    media={editor.media}
+    money={{ exponent: editor.exponent }}
+    currency={editor.currency}
+    defaultLowStockThreshold={editor.defaultLowStockThreshold}
+    listHref={ADMIN_PATHS.products}
+  />
+</AdminLayout>

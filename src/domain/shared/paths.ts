@@ -46,4 +46,8 @@ export const ADMIN_PATHS = {
   resetPassword: '/admin/reset-password',
   acceptInvite: '/admin/accept-invite',
   reports: '/admin/reports',
+  products: '/admin/products',
+  categories: '/admin/categories',
+  attributes: '/admin/attributes',
+  media: '/admin/media',
 } as const;

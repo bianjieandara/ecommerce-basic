@@ -290,3 +290,30 @@ environment, so the document was not viewed.
   - `ChangeOwnPassword` and `UpdateProfile` need a profile screen. The phone field waits for WhatsApp alerts (Stage 18).
   - An `auth` option on `defineEndpoint`. The middleware guards the routes instead.
 - **Not verified:** email delivery through Cloudflare Email Service (the console sender was used), the admin screens at 360px, and the Turnstile widget on the storefront forms, which render their widget from inside the island the way the admin form first did and need a browser check.
+
+## 2026-10-21 — Stage 14 (admin catalog and media)
+
+- **Verified locally** (`npm run dev`, a Node script against the admin API with 38 checks, and the browser at 360px):
+  - Media: the browser resizes each photo to the store widths (480, 960, 1600; WebP at 0.82, JPEG at 0.85 when WebP is not available). The server checks each size's bytes, and a stored size is served from `/media/…` as `image/webp`. An original narrower than 480px keeps its own width, so nothing is enlarged.
+  - Products: one product with two attributes, six variants, four images and both languages saved in one request. The ledger holds one `initial` row per variant that starts with stock. The storefront lists it under the Red and S filters in English and Spanish, and both product pages render under their own slugs.
+  - Stock: an edit applies only the difference from the stock the editor loaded, so a sale made while the editor was open is kept. Each manual change writes one `manual_adjust` row with the note.
+  - Rules: a repeated SKU answers 409, a product without a name 422, an unknown category 422. An image, an attribute value or a category still in use cannot be deleted (409).
+  - Browser: the upload from the media screen, the save from the phone-width editor (the saved product reloads with its name, slug, image and stock, and shows the saved notice), and the product list, categories and attributes screens with no console errors.
+- **Decisions.**
+  - A product save is one D1 batch. A variant that leaves the editor is deactivated, not deleted, because its ledger rows point at it.
+  - The rule "a variant without attributes must be the only variant" counts active variants. A simple product can therefore become an attribute product: generating combinations deactivates its old variant. Keeping at least one variant active is also required.
+  - Stock is the only part of a save that moves stock. The editor sends the stock it loaded (`stockBefore`), and only the difference is written to the ledger.
+  - Products are archived, not deleted. `ProductRepository.delete` refuses a product that has stock history, and the admin screens do not expose delete.
+  - The product list uses the storefront's search builder (`toPrefixQuery`), so search terms are sanitised the same way in both places.
+  - Filters are GET parameters. The list works without JavaScript and a filtered view can be bookmarked. `ListToolbar` is that form; the URL hook from the plan is not needed for it.
+  - Each size is a form field named `size-<width>`, which lets an original narrower than the store widths keep its own width. `defineEndpoint` gained `body: 'form'` for uploads and `invalidatesCache`, which bumps the page-cache version after an admin change.
+  - The image library's "in use" check covers products, variants, categories and testimonials. It does not yet cover store settings (logo, favicon, social image); the settings screens in Stage 17 must add that check.
+- **Deferred** (plan items for later stages or not needed yet):
+  - Bulk set of price and stock across variants (plan item 4).
+  - Category images, and alternative text for images: the data exists, no screen edits it yet.
+  - Thumbnails in the product list: the list returns the image id, not its storage key.
+  - Shared `ConfirmDialog` and `StickySaveBar` components: the editor has its own sticky save bar, and deletes use `window.confirm`.
+  - Filter chips and the date range picker in `ListToolbar`: the reports screens (Stage 20) need them.
+  - Mobile bottom tabs: the shell has a top navigation row for now.
+- **Not verified:** a real phone (the browser used a 360px viewport), the variant grid with six generated combinations in the browser (the same rule was exercised through the API), the storefront product page layout beyond status and name, and Cloudflare R2 (local emulation only).
+- **Test data.** The local database now holds the products, categories, attributes and images from the smoke runs. Their names and SKUs carry a per-run suffix. Clear them before any demo.

@@ -46,3 +46,32 @@ export function multiplyMoney(m: Money, quantity: number): Money {
   }
   return money(m.amountMinor * quantity, m.currency);
 }
+
+/**
+ * Reads a price typed in major units ("12.50") into minor units, without floating point arithmetic: an amount with more
+ * decimals than the currency has is refused instead of rounded.
+ * @param text Typed amount with an optional decimal separator (dot or comma) and no thousands separators.
+ * @param exponent Minor-unit digits of the currency (2 for cents, 0 for CLP).
+ * @returns Minor units, or null when the text is not a valid amount.
+ */
+export function minorFromMajorText(text: string, exponent: number): number | null {
+  const match = /^(\d+)(?:[.,](\d+))?$/.exec(text.trim());
+  if (!match) return null;
+  const [, whole = '0', fraction = ''] = match;
+  if (/[1-9]/.test(fraction.slice(exponent))) return null;
+  const cents = fraction.slice(0, exponent).padEnd(exponent, '0') || '0';
+  const minor = Number(whole) * 10 ** exponent + Number(cents);
+  return Number.isSafeInteger(minor) ? minor : null;
+}
+
+/**
+ * Formats minor units as the text an input field shows ("1250" becomes "12.50"); the inverse of minorFromMajorText.
+ * @param amountMinor Minor units.
+ * @param exponent Minor-unit digits of the currency.
+ * @returns The amount with a dot as the decimal separator.
+ */
+export function majorTextFromMinor(amountMinor: number, exponent: number): string {
+  if (exponent === 0) return String(amountMinor);
+  const digits = String(amountMinor).padStart(exponent + 1, '0');
+  return `${digits.slice(0, -exponent)}.${digits.slice(-exponent)}`;
+}

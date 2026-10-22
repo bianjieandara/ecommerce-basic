@@ -1,6 +1,6 @@
 // Catalog ports. The read side returns DTOs (query service); the write side saves domain aggregates (repositories).
 import type { CatalogQuery } from '@/domain/catalog/catalog-query';
-import type { Product } from '@/domain/catalog/product';
+import type { Product, ProductStatus } from '@/domain/catalog/product';
 import type { Locale } from '@/domain/shared/locale';
 import type { Paginated } from '@/domain/shared/pagination';
 import type { StockChange } from './inventory';
@@ -31,14 +31,27 @@ export interface CatalogQueryService {
   listForFeed(locale: Locale): Promise<FeedItemDto[]>;
 }
 
+/** What a product save needs besides the aggregate: who makes the change, and the stock movements it causes. */
+export interface ProductSaveContext {
+  actorId: string;
+  /** Optional note stored with every manual stock movement of this save. */
+  stockNote: string | null;
+  /** Stock change per variant id. A new variant starts at 0, so its delta is its first stock. */
+  stockDeltas: Record<string, number>;
+  /** Threshold used by variants that do not set their own. */
+  defaultLowStockThreshold: number;
+}
+
 /** Write side: product aggregate persistence. */
 export interface ProductRepository {
   findById(id: string): Promise<Product | null>;
   /**
-   * Saves the aggregate in one batch: product, translations, categories, images, variants, attribute values,
-   * search rows and denormalized prices. Stock changes are recorded in the ledger in the same batch.
-   * Returns the stock changes so callers can evaluate alerts.
+   * Saves the aggregate in one batch: product, translations, categories, images, variants, attribute values, search
+   * rows and denormalized prices. Stock changes go to the ledger in the same batch. Variants that left the list are
+   * deactivated, not deleted, so their stock history stays intact. Returns the stock changes for alert checks.
    */
-  save(product: Product, actorId: string): Promise<StockChange[]>;
+  save(product: Product, context: ProductSaveContext): Promise<StockChange[]>;
+  /** Changes only the status, so a quick toggle never rewrites stock. */
+  setStatus(id: string, status: ProductStatus, nowIso: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

@@ -1,0 +1,40 @@
+---
+// Edit product: the editor loaded with the stored product. After a save the page shows the saved notice.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import ProductEditor from '@/ui/admin/ProductEditor.tsx';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadProductEditor } from '@/http/admin-catalog-page';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const editor = await loadProductEditor(app, Astro.params.id ?? null, lang);
+if (!editor) return new Response('Not found', { status: 404 });
+const saved = Astro.url.searchParams.get('saved') === '1';
+---
+
+<AdminLayout title={t(lang, 'admin.product.titleEdit')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.product.titleEdit')}</h1>
+  {saved && (
+    <p role="status" class="rounded-brand bg-primary/15 px-4 py-3 text-sm">
+      {t(lang, 'admin.product.saved')}
+    </p>
+  )}
+  <ProductEditor
+    client:load
+    initial={editor.initial}
+    labels={pickNamespace(lang, 'admin')}
+    errors={pickNamespace(lang, 'errors')}
+    categories={editor.categories}
+    attributes={editor.attributes}
+    media={editor.media}
+    money={{ exponent: editor.exponent }}
+    currency={editor.currency}
+    defaultLowStockThreshold={editor.defaultLowStockThreshold}
+    listHref={ADMIN_PATHS.products}
+  />
+</AdminLayout>

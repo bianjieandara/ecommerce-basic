@@ -1,0 +1,161 @@
+---
+// Admin product list. Filters are query parameters, so the list works without JavaScript and a filtered view can be shared.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import DataTable from '@/ui/admin/DataTable.astro';
+import ListToolbar from '@/ui/admin/ListToolbar.astro';
+import RowActions from '@/ui/admin/RowActions.tsx';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { BUTTON_PRIMARY, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { formatDate, formatMoney } from '@/domain/shared/format';
+import { categoryOptions, listHref, productFilterFrom } from '@/http/admin-catalog-page';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const params = Astro.url.searchParams;
+const filter = productFilterFrom(params);
+const [result, categories] = await Promise.all([
+  app.catalogAdmin.productList.listProducts(filter, lang),
+  app.catalogAdmin.categories.list(),
+]);
+const choices = categoryOptions(categories, lang);
+const statusLabel = {
+  draft: t(lang, 'admin.status.draft'),
+  active: t(lang, 'admin.status.active'),
+  archived: t(lang, 'admin.status.archived'),
+};
+const rowLabels = {
+  publish: t(lang, 'admin.products.publish'),
+  unpublish: t(lang, 'admin.products.unpublish'),
+  duplicate: t(lang, 'admin.products.duplicate'),
+  working: t(lang, 'admin.products.working'),
+  failed: t(lang, 'admin.products.failed'),
+};
+---
+
+<AdminLayout title={t(lang, 'admin.products.title')} locale={lang} storeName={store.general.storeName}>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl font-semibold">{t(lang, 'admin.products.title')}</h1>
+    <a href={`${ADMIN_PATHS.products}/new`} class={BUTTON_PRIMARY}>
+      {t(lang, 'admin.products.new')}
+    </a>
+  </div>
+
+  <ListToolbar
+    action={ADMIN_PATHS.products}
+    search={filter.search}
+    labels={{
+      search: t(lang, 'admin.products.search'),
+      apply: t(lang, 'admin.products.apply'),
+      clear: t(lang, 'admin.products.clear'),
+    }}
+    clearHref={ADMIN_PATHS.products}
+  >
+    <label class={`${LABEL} sm:w-44`}>
+      {t(lang, 'admin.products.status')}
+      <select name="status" class={FIELD}>
+        <option value="all" selected={filter.status === 'all'}>
+          {t(lang, 'admin.products.statusAll')}
+        </option>
+        <option value="draft" selected={filter.status === 'draft'}>
+          {statusLabel.draft}
+        </option>
+        <option value="active" selected={filter.status === 'active'}>
+          {statusLabel.active}
+        </option>
+        <option value="archived" selected={filter.status === 'archived'}>
+          {statusLabel.archived}
+        </option>
+      </select>
+    </label>
+    <label class={`${LABEL} sm:w-52`}>
+      {t(lang, 'admin.products.category')}
+      <select name="category" class={FIELD}>
+        <option value="">{t(lang, 'admin.products.categoryAll')}</option>
+        {choices.map((choice) => (
+          <option value={choice.id} selected={filter.categoryId === choice.id}>
+            {`${'— '.repeat(choice.depth)}${choice.label}`}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label class="flex min-h-11 items-center gap-2 text-sm">
+      <input type="checkbox" name="sale" value="1" class="size-5" checked={filter.onSale} />
+      {t(lang, 'admin.products.onSale')}
+    </label>
+    <label class="flex min-h-11 items-center gap-2 text-sm">
+      <input type="checkbox" name="stock" value="1" class="size-5" checked={filter.outOfStock} />
+      {t(lang, 'admin.products.outOfStock')}
+    </label>
+  </ListToolbar>
+
+  <DataTable>
+    <thead>
+      <tr>
+        <th scope="col">{t(lang, 'admin.products.columnName')}</th>
+        <th scope="col">{t(lang, 'admin.products.columnStatus')}</th>
+        <th scope="col">{t(lang, 'admin.products.columnPrice')}</th>
+        <th scope="col">{t(lang, 'admin.products.columnStock')}</th>
+        <th scope="col">{t(lang, 'admin.products.columnVariants')}</th>
+        <th scope="col">{t(lang, 'admin.products.columnUpdated')}</th>
+        <th scope="col">
+          <span class="sr-only">{t(lang, 'admin.products.edit')}</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {result.items.map((row) => (
+        <tr>
+          <td data-label={t(lang, 'admin.products.columnName')}>
+            <a href={`${ADMIN_PATHS.products}/${row.id}`} class={LINK_BUTTON}>
+              {row.name || '—'}
+            </a>
+          </td>
+          <td data-label={t(lang, 'admin.products.columnStatus')}>
+            <StatusBadge label={statusLabel[row.status]} tone={row.status === 'active' ? 'ok' : 'muted'} />
+          </td>
+          <td data-label={t(lang, 'admin.products.columnPrice')}>
+            {formatMoney(
+              { amountMinor: row.basePriceMinor, currency: store.general.currency },
+              lang,
+              store.general.country,
+            )}
+          </td>
+          <td data-label={t(lang, 'admin.products.columnStock')}>{row.stock}</td>
+          <td data-label={t(lang, 'admin.products.columnVariants')}>{row.variantCount}</td>
+          <td data-label={t(lang, 'admin.products.columnUpdated')}>
+            {formatDate(row.updatedAt, lang, store.general.country, store.general.timezone)}
+          </td>
+          <td>
+            <RowActions client:visible productId={row.id} status={row.status} labels={rowLabels} />
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </DataTable>
+
+  {result.items.length === 0 && <p class="text-sm text-text/70">{t(lang, 'admin.products.empty')}</p>}
+
+  <nav class="flex items-center justify-between gap-3 text-sm" aria-label={t(lang, 'admin.products.title')}>
+    {result.page > 1 ? (
+      <a href={listHref(ADMIN_PATHS.products, params, result.page - 1)} class={LINK_BUTTON}>
+        {t(lang, 'admin.products.prev')}
+      </a>
+    ) : (
+      <span />
+    )}
+    <span>{t(lang, 'admin.products.pageOf', { page: result.page, total: result.totalPages })}</span>
+    {result.page < result.totalPages ? (
+      <a href={listHref(ADMIN_PATHS.products, params, result.page + 1)} class={LINK_BUTTON}>
+        {t(lang, 'admin.products.next')}
+      </a>
+    ) : (
+      <span />
+    )}
+  </nav>
+</AdminLayout>
