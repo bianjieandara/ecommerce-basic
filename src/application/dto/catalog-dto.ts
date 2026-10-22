@@ -118,3 +118,15 @@ export interface FeedItemDto {
   color: string | null;
   size: string | null;
 }
+
+/** One sitemap row: the slug in every language that has one, and when the item last changed (ISO timestamp). */
+export interface SitemapEntryDto {
+  slugs: Partial<Record<Locale, string>>;
+  updatedAt: string;
+}
+
+/** The catalog URLs a search engine may index: active products and active categories. */
+export interface SitemapCatalogDto {
+  products: SitemapEntryDto[];
+  categories: SitemapEntryDto[];
+}

@@ -17,7 +17,7 @@ import { themeToCss } from '@/ui/lib/theme-css';
 // Order data is personal and changes with payments, so it is never cached.
 Astro.response.headers.set('Cache-Control', 'no-store');
 const { locale, number: rawNumber } = Astro.params;
-if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 const app = Astro.locals.app;
 const number = Number(rawNumber);

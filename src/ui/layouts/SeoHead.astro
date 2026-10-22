@@ -1,0 +1,64 @@
+---
+// Search and social metadata for the document head: robots, canonical, hreflang (absolute, with x-default),
+// Open Graph, Twitter card and JSON-LD. BaseLayout includes it; pages only pass data through the layouts.
+import type { Locale } from '@/domain/shared/locale';
+import { serializeJsonLd, type JsonLd } from '@/ui/lib/structured-data';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** Other-language paths or URLs of this page. */
+  alternates: Partial<Record<Locale, string>>;
+  canonical?: string;
+  noindex: boolean;
+  /** Language search engines use when none matches; the store default. */
+  defaultLocale: Locale;
+  siteName: string;
+  /** Path or absolute URL of the sharing image. */
+  ogImage?: string;
+  ogType: 'website' | 'product';
+  jsonLd: JsonLd[];
+}
+
+const {
+  title,
+  description,
+  locale,
+  alternates,
+  canonical,
+  noindex,
+  defaultLocale,
+  siteName,
+  ogImage,
+  ogType,
+  jsonLd,
+} = Astro.props;
+// hreflang and og:image must be absolute URLs; pages hand over paths.
+const absolute = (href: string) => new URL(href, Astro.url.origin).toString();
+const links = (Object.entries(alternates) as [Locale, string][]).map(([code, href]) => ({
+  code,
+  href: absolute(href),
+}));
+const xDefault = alternates[defaultLocale] ? absolute(alternates[defaultLocale] as string) : null;
+const image = ogImage ? absolute(ogImage) : null;
+---
+
+{noindex && <meta name="robots" content="noindex,follow" />}
+{canonical && <link rel="canonical" href={canonical} />}
+{links.map((link) => (
+  <link rel="alternate" hreflang={link.code} href={link.href} />
+))}
+{xDefault && !noindex && <link rel="alternate" hreflang="x-default" href={xDefault} />}
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={title} />
+{description && <meta property="og:description" content={description} />}
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:locale" content={locale === 'es' ? 'es_ES' : 'en_US'} />
+{image && <meta property="og:image" content={image} />}
+<meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={title} />
+{description && <meta name="twitter:description" content={description} />}
+{image && <meta name="twitter:image" content={image} />}
+{jsonLd.length > 0 && <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />}

@@ -14,18 +14,19 @@ import { renderMarkdown } from '@/ui/lib/markdown';
 import { mediaUrl } from '@/ui/lib/media-url';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { loadStoreContext } from '@/http/store-context';
-import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
+import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
+import { productStructuredData } from '@/ui/lib/storefront-seo';
 import { themeToCss } from '@/ui/lib/theme-css';
 
 const { locale, slug } = Astro.params;
-if (!isLocale(locale ?? '') || !slug) return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '') || !slug) return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
 const catalog = app.catalog({ newDays: store.catalog.newDays });
 const product = await catalog.getProductBySlug(lang, slug);
-if (!product) return new Response('Not found', { status: 404 });
+if (!product) return Astro.rewrite('/404');
 const related = await catalog.listRelatedProducts(lang, product.id, 8);
 
 const view = storeViewFor(store, lang);
@@ -70,6 +71,19 @@ const category = product.categories[0];
   country={view.country}
   alternates={alternates}
   canonical={new URL(PATHS.product(lang, slug), Astro.url.origin).toString()}
+  defaultLocale={store.general.defaultLocale}
+  ogImage={mainImage ? mediaUrl(mainImage.key) : undefined}
+  jsonLd={productStructuredData(
+    {
+      origin: Astro.url.origin,
+      locale: lang,
+      storeName: store.general.storeName,
+      labels: { home: t(lang, 'nav.home'), shop: t(lang, 'nav.shop') },
+    },
+    product,
+    { currency: store.general.currency, exponent: catalogOptionsFor(store).exponent },
+    product.seoDescription || product.shortDescription,
+  )}
   themeCss={themeToCss(store.theme)}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}

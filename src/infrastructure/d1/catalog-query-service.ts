@@ -13,10 +13,12 @@ import type {
   ProductDetailDto,
   QuoteVariantDto,
   SearchSuggestionDto,
+  SitemapCatalogDto,
 } from '@/application/dto/catalog-dto';
 import { cardSelect, toCard, type CardRow } from './catalog-cards';
 import { loadFacets } from './catalog-facets';
 import { loadFeed } from './catalog-feed';
+import { loadSitemapCatalog } from './catalog-sitemap';
 import { buildWhere, newCutoff, orderByFor, type CatalogQueryOptions } from './catalog-filters';
 import { loadProductBySlug } from './catalog-product-detail';
 import { loadCategoryAlternates, loadRelatedProductIds } from './catalog-related';
@@ -167,5 +169,9 @@ export class D1CatalogQueryService implements CatalogQueryService {
 
   listForFeed(locale: Locale): Promise<FeedItemDto[]> {
     return loadFeed(this.db, locale);
+  }
+
+  listSitemapCatalog(): Promise<SitemapCatalogDto> {
+    return loadSitemapCatalog(this.db);
   }
 }

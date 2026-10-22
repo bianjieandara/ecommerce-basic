@@ -1,0 +1,10 @@
+---
+// Not-found page. Unknown URLs and the storefront pages that rewrite here answer 404 in the visitor's language.
+import ErrorPage from '@/ui/store/ErrorPage.astro';
+import { requestLocale } from '@/http/request-locale';
+
+Astro.response.status = 404;
+const locale = requestLocale(Astro.request, Astro.originPathname);
+---
+
+<ErrorPage locale={locale} kind="notFound" />

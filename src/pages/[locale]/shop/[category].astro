@@ -7,16 +7,18 @@ import { loadCatalogPage } from '@/http/catalog-request';
 import { loadStoreContext } from '@/http/store-context';
 import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
 import { routes } from '@/ui/lib/routes';
+import { categoryStructuredData } from '@/ui/lib/storefront-seo';
+import { t } from '@/ui/i18n';
 import { themeToCss } from '@/ui/lib/theme-css';
 
 const { locale, category: categorySlug } = Astro.params;
-if (!isLocale(locale ?? '') || !categorySlug) return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '') || !categorySlug) return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
 const category = await app.catalog({ newDays: store.catalog.newDays }).getCategoryBySlug(lang, categorySlug);
-if (!category) return new Response('Not found', { status: 404 });
+if (!category) return Astro.rewrite('/404');
 
 const load = await loadCatalogPage(app, Astro.url, lang, categorySlug);
 if ('redirectTo' in load) return Astro.redirect(load.redirectTo, 301);
@@ -42,6 +44,16 @@ const alternates = Object.fromEntries(
   alternates={alternates}
   canonical={new URL(load.basePath, Astro.url.origin).toString()}
   noindex={!load.indexable}
+  defaultLocale={load.store.general.defaultLocale}
+  jsonLd={categoryStructuredData(
+    {
+      origin: Astro.url.origin,
+      locale: lang,
+      storeName: load.store.general.storeName,
+      labels: { home: t(lang, 'nav.home'), shop: t(lang, 'nav.shop') },
+    },
+    category,
+  )}
   themeCss={themeToCss(load.store.theme)}
   webAnalyticsToken={load.store.integrations.webAnalyticsToken}
   contact={contact}

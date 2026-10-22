@@ -12,6 +12,7 @@ import type {
   ProductDetailDto,
   QuoteVariantDto,
   SearchSuggestionDto,
+  SitemapCatalogDto,
 } from '../dto/catalog-dto';
 
 /** Storefront read model for listings, search, product pages and feeds. */
@@ -33,6 +34,8 @@ export interface CatalogQueryService {
   /** Slug of a category in every language that has one, for the language switch on category pages. */
   getCategoryAlternates(categoryId: string): Promise<Partial<Record<Locale, string>>>;
   listForFeed(locale: Locale): Promise<FeedItemDto[]>;
+  /** Slugs and last change of every active product and category, for the sitemap. */
+  listSitemapCatalog(): Promise<SitemapCatalogDto>;
 }
 
 /** What a product save needs besides the aggregate: who makes the change, and the stock movements it causes. */

@@ -1,0 +1,31 @@
+---
+// Localized error page (404 and 500). It uses the bare document, not the store layout, because it must still
+// render when the database is the thing that failed. It is never indexed.
+import BaseLayout from '@/ui/layouts/BaseLayout.astro';
+import type { Locale } from '@/domain/shared/locale';
+import { PATHS } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+
+interface Props {
+  locale: Locale;
+  kind: 'notFound' | 'serverError';
+}
+
+const { locale, kind } = Astro.props;
+const title = t(locale, `error_pages.${kind}Title`);
+---
+
+<BaseLayout title={title} locale={locale} noindex>
+  <main class="mx-auto flex min-h-dvh max-w-xl flex-col items-center justify-center gap-4 px-4 py-12 text-center">
+    <h1 class="text-3xl font-semibold">{title}</h1>
+    <p class="text-text/70">{t(locale, `error_pages.${kind}Text`)}</p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <a class="inline-flex min-h-11 items-center rounded-brand bg-primary px-5 text-primary-contrast" href={PATHS.home(locale)}>
+        {t(locale, 'error_pages.goHome')}
+      </a>
+      <a class="inline-flex min-h-11 items-center rounded-brand border border-text/20 px-5" href={PATHS.shop(locale)}>
+        {t(locale, 'error_pages.goShop')}
+      </a>
+    </div>
+  </main>
+</BaseLayout>

@@ -24,7 +24,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [ ] Stage 19 — Tracking, consent and Meta marketing
 - [ ] Stage 20 — Reports
 - [ ] Stage 21 — Caching and performance
-- [ ] Stage 22 — SEO and i18n polish
+- [x] Stage 22 — SEO and i18n polish
 - [ ] Stage 23 — Security hardening and observability
 - [ ] Stage 24 — Workers AI helpers (optional)
 - [ ] Stage 25 — Multi-client deployment and provisioning

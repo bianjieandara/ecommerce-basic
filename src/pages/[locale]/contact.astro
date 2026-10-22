@@ -17,7 +17,7 @@ import { loadPageContent, loadSectionData } from '@/http/page-content';
 import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
 
 const { locale } = Astro.params;
-if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
@@ -61,6 +61,7 @@ const formLabels = {
   country={view.country}
   alternates={{ es: PATHS.contact('es'), en: PATHS.contact('en') }}
   canonical={new URL(PATHS.contact(lang), Astro.url.origin).toString()}
+  defaultLocale={store.general.defaultLocale}
   themeCss={themeToCss(store.theme)}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}

@@ -10,13 +10,13 @@ import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/
 import { themeToCss } from '@/ui/lib/theme-css';
 
 const { locale, slug } = Astro.params;
-if (!isLocale(locale ?? '') || !slug || slug === 'home') return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '') || !slug || slug === 'home') return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
 const page = await loadPageContent(app, slug, lang);
-if (!page) return new Response('Not found', { status: 404 });
+if (!page) return Astro.rewrite('/404');
 
 const view = storeViewFor(store, lang);
 const contact = contactFor(store, lang);
@@ -32,6 +32,7 @@ const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(s
   country={view.country}
   alternates={{ es: PATHS.page('es', slug), en: PATHS.page('en', slug) }}
   canonical={new URL(PATHS.page(lang, slug), Astro.url.origin).toString()}
+  defaultLocale={store.general.defaultLocale}
   themeCss={themeToCss(store.theme)}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}

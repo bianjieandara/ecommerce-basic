@@ -14,7 +14,7 @@ import { themeToCss } from '@/ui/lib/theme-css';
 // The checkout form carries the customer's own data, so the page is never cached.
 Astro.response.headers.set('Cache-Control', 'no-store');
 const { locale } = Astro.params;
-if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;

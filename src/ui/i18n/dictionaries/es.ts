@@ -209,6 +209,14 @@ export const es: Dictionary = {
     INVALID_STATE: 'Esta acción no está permitida en el estado actual.',
     generic: 'Algo salió mal. Inténtalo de nuevo.',
   },
+  error_pages: {
+    notFoundTitle: 'Página no encontrada',
+    notFoundText: 'La página que buscas no existe o cambió de dirección.',
+    serverErrorTitle: 'Algo salió mal',
+    serverErrorText: 'No pudimos cargar esta página. Inténtalo de nuevo en un momento.',
+    goHome: 'Volver al inicio',
+    goShop: 'Ver la tienda',
+  },
   sort: {
     featured: 'Destacados',
     newest: 'Novedades',

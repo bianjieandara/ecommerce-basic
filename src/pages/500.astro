@@ -1,0 +1,9 @@
+---
+// Server-error page, shown when a page throws. It reads no data, so it still renders when D1 is down.
+import ErrorPage from '@/ui/store/ErrorPage.astro';
+import { requestLocale } from '@/http/request-locale';
+
+const locale = requestLocale(Astro.request, Astro.originPathname);
+---
+
+<ErrorPage locale={locale} kind="serverError" />

@@ -208,6 +208,14 @@ export const en = {
     INVALID_STATE: 'This action is not allowed for the current status.',
     generic: 'Something went wrong. Please try again.',
   },
+  error_pages: {
+    notFoundTitle: 'Page not found',
+    notFoundText: 'The page you are looking for does not exist or has moved.',
+    serverErrorTitle: 'Something went wrong',
+    serverErrorText: 'We could not load this page. Please try again in a moment.',
+    goHome: 'Back to the home page',
+    goShop: 'Browse the shop',
+  },
   sort: {
     featured: 'Featured',
     newest: 'Newest',

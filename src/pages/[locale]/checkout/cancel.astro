@@ -9,7 +9,7 @@ import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
 import { themeToCss } from '@/ui/lib/theme-css';
 
 const { locale } = Astro.params;
-if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 
 const store = await loadStoreContext(Astro.locals.app);

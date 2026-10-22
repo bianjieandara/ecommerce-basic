@@ -3,19 +3,22 @@
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import SectionRenderer from '@/ui/widgets/SectionRenderer.astro';
 import { isLocale } from '@/domain/shared/locale';
+import { pickText } from '@/domain/shared/localized-text';
 import { PATHS } from '@/domain/shared/paths';
 import { loadStoreContext } from '@/http/store-context';
 import { loadPageContent, loadSectionData } from '@/http/page-content';
 import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
+import { homeStructuredData } from '@/ui/lib/storefront-seo';
+import { t } from '@/ui/i18n';
 import { themeToCss } from '@/ui/lib/theme-css';
 
 const { locale } = Astro.params;
-if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
 
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
 const page = await loadPageContent(app, 'home', locale as 'es' | 'en');
-if (!page) return new Response('Not found', { status: 404 });
+if (!page) return Astro.rewrite('/404');
 
 const view = storeViewFor(store, locale as 'es' | 'en');
 const contact = contactFor(store, view.locale);
@@ -30,13 +33,23 @@ const data = await loadSectionData(
 
 <StoreLayout
   title={buildTitle(store, view.locale, '')}
-  description={store.general.storeName}
+  description={pickText(store.seo.defaultDescription, view.locale, 'es') || store.general.storeName}
   locale={view.locale}
   storeName={store.general.storeName}
   currency={view.currency}
   country={view.country}
   alternates={{ es: PATHS.home('es'), en: PATHS.home('en') }}
   canonical={new URL(PATHS.home(view.locale), Astro.url.origin).toString()}
+  defaultLocale={store.general.defaultLocale}
+  jsonLd={homeStructuredData(
+    {
+      origin: Astro.url.origin,
+      locale: view.locale,
+      storeName: store.general.storeName,
+      labels: { home: t(view.locale, 'nav.home'), shop: t(view.locale, 'nav.shop') },
+    },
+    { email: contact.email, address: contact.address },
+  )}
   themeCss={themeToCss(store.theme)}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}

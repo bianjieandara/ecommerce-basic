@@ -10,7 +10,7 @@ import { PATHS } from '@/domain/shared/paths';
 import { themeToCss } from '@/ui/lib/theme-css';
 
 const { locale } = Astro.params;
-if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
+if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
@@ -33,6 +33,7 @@ const title = t(lang, 'shop.title');
   alternates={{ es: PATHS.shop('es'), en: PATHS.shop('en') }}
   canonical={new URL(load.basePath, Astro.url.origin).toString()}
   noindex={!load.indexable}
+  defaultLocale={load.store.general.defaultLocale}
   themeCss={themeToCss(load.store.theme)}
   webAnalyticsToken={load.store.integrations.webAnalyticsToken}
   contact={contact}

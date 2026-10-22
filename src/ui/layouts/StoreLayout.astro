@@ -7,6 +7,7 @@ import MobileTabBar from '../store/MobileTabBar.astro';
 import WhatsAppFloat from '../store/WhatsAppFloat.astro';
 import Toaster from '../components/Toaster';
 import type { Locale } from '@/domain/shared/locale';
+import type { JsonLd } from '@/ui/lib/structured-data';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import { t } from '@/ui/i18n';
 import { routes } from '@/ui/lib/routes';
@@ -20,6 +21,10 @@ interface Props {
   alternates?: Partial<Record<Locale, string>>;
   canonical?: string;
   noindex?: boolean;
+  defaultLocale?: Locale;
+  ogImage?: string;
+  ogType?: 'website' | 'product';
+  jsonLd?: JsonLd[];
   themeCss?: string;
   webAnalyticsToken?: string;
   currency?: CurrencyCode;
@@ -41,6 +46,10 @@ const {
   alternates,
   canonical,
   noindex,
+  defaultLocale,
+  ogImage,
+  ogType,
+  jsonLd,
   themeCss,
   webAnalyticsToken,
   contact = { email: '', address: '', whatsappNumber: '', whatsappMessage: '', showWhatsappFloat: false },
@@ -56,6 +65,11 @@ const {
   alternates={alternates}
   canonical={canonical}
   noindex={noindex}
+  defaultLocale={defaultLocale}
+  siteName={storeName}
+  ogImage={ogImage}
+  ogType={ogType}
+  jsonLd={jsonLd}
   themeCss={themeCss}
   webAnalyticsToken={webAnalyticsToken}
 >
