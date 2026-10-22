@@ -20,18 +20,20 @@ export class CapturePayment {
   /**
    * Captures the payment of an order and applies the result.
    * @param orderId Order id. The caller has already checked the customer's access key.
-   * @param providerReference Provider order id from the return link. It must be the one stored with the order.
+   * @param providerReference Provider reference from the return link when the provider sends one (PayPal does); it must be the
+   * one stored with the order. Without it the stored reference is used (dLocal Go sends the customer back with no reference).
    * @throws DomainError NOT_FOUND when the reference does not belong to the order.
    */
-  async execute(orderId: string, providerReference: string): Promise<void> {
+  async execute(orderId: string, providerReference?: string): Promise<void> {
     const order = await this.deps.orders.findById(orderId);
-    if (!order || order.paymentReference !== providerReference) {
+    const reference = providerReference ?? order?.paymentReference;
+    if (!order || !reference || order.paymentReference !== reference) {
       throw new DomainError('NOT_FOUND', 'Order not found');
     }
     const gateway = this.deps.gateways[order.paymentMethod];
     if (!gateway.capture)
       throw new DomainError('INVALID_STATE', 'This payment method is not captured by the store');
-    const confirmation = await gateway.capture(providerReference, order.id);
-    await this.deps.confirmPayment.execute(confirmation);
+    const confirmation = await gateway.capture(reference, order.id);
+    if (confirmation) await this.deps.confirmPayment.execute(confirmation);
   }
 }

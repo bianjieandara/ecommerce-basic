@@ -17,7 +17,7 @@ export const POST = defineEndpoint({
       tax: store.tax,
       paymentMethods: availablePaymentMethods(
         app.gateways,
-        { checkout, contact: store.contact },
+        { checkout, contact: store.contact, country: store.general.country },
         store.general.currency,
       ),
     });

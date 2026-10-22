@@ -2,8 +2,9 @@
 # EMAIL_TRANSPORT=console logs emails to the terminal instead of sending them through Email Service.
 EMAIL_TRANSPORT=console
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
+# dLocal Go sandbox keys: dashboard-sbx.dlocalgo.com > Integrations > API Integration. Live keys come from dashboard.dlocalgo.com.
+DLOCALGO_API_KEY=
+DLOCALGO_SECRET_KEY=
 PAYPAL_CLIENT_ID=
 PAYPAL_CLIENT_SECRET=
 PAYPAL_WEBHOOK_ID=

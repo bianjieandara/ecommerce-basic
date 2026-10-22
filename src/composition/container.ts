@@ -41,7 +41,7 @@ import type { LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoic
 import type { EmailTemplateService } from '@/application/notifications/email-template-service';
 import type { NotificationService } from '@/application/notifications/notification-service';
 import type { PayPalGateway } from '@/infrastructure/payments/paypal-gateway';
-import type { StripeGateway } from '@/infrastructure/payments/stripe-gateway';
+import type { DLocalGoGateway } from '@/infrastructure/payments/dlocalgo-gateway';
 import type { Pbkdf2PasswordHasher } from '@/infrastructure/security/security-adapters';
 import type { CatalogAdmin } from './admin-catalog';
 import type { InventoryServices } from './inventory';
@@ -71,7 +71,7 @@ export interface Container {
   /** One payment gateway per method. */
   gateways: Record<PaymentMethod, PaymentGateway>;
   /** Provider adapters that also verify webhooks. */
-  providers: { stripe: StripeGateway; paypal: PayPalGateway };
+  providers: { dlocalgo: DLocalGoGateway; paypal: PayPalGateway };
   placeOrder: PlaceOrder;
   confirmPayment: ConfirmPayment;
   capturePayment: CapturePayment;

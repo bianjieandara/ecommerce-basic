@@ -78,7 +78,7 @@ export const inventorySettings = z.object({
 
 export const checkoutSettings = z.object({
   enabledMethods: z
-    .array(z.enum(['stripe', 'paypal', 'whatsapp', 'bank_transfer', 'cash_on_delivery']))
+    .array(z.enum(['dlocalgo', 'paypal', 'whatsapp', 'bank_transfer', 'cash_on_delivery']))
     .default(['whatsapp']),
   bankTransferInstructions: localized(),
   cashOnDeliveryNote: localized(),

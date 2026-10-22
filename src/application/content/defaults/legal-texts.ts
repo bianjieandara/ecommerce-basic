@@ -20,7 +20,7 @@ Procesar y entregar tus pedidos, emitir facturas, atender consultas, enviarte co
 Ejecución del contrato (pedidos), obligaciones legales (facturación), tu consentimiento (marketing y WhatsApp) e interés legítimo (seguridad y prevención de fraude).
 
 ### Encargados
-Usamos proveedores para operar la tienda: Cloudflare (alojamiento y envío de correos), Stripe y PayPal (pagos), Google (reseñas y mapas), Meta (WhatsApp y medición de publicidad cuando das tu consentimiento).
+Usamos proveedores para operar la tienda: Cloudflare (alojamiento y envío de correos), dLocal Go y PayPal (pagos), Google (reseñas y mapas), Meta (WhatsApp y medición de publicidad cuando das tu consentimiento).
 
 ### Transferencias internacionales
 Algunos proveedores procesan datos fuera de tu país con garantías contractuales adecuadas.
@@ -54,7 +54,7 @@ To process and deliver orders, issue invoices, answer enquiries, send confirmati
 Performance of a contract (orders), legal obligations (invoicing), your consent (marketing and WhatsApp) and legitimate interest (security and fraud prevention).
 
 ### Processors
-We use providers to run the store: Cloudflare (hosting and email delivery), Stripe and PayPal (payments), Google (reviews and maps), Meta (WhatsApp and advertising measurement when you consent).
+We use providers to run the store: Cloudflare (hosting and email delivery), dLocal Go and PayPal (payments), Google (reviews and maps), Meta (WhatsApp and advertising measurement when you consent).
 
 ### International transfers
 Some providers process data outside your country under adequate contractual safeguards.

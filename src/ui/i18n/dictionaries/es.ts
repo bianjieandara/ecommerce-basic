@@ -105,7 +105,7 @@ export const es: Dictionary = {
     cancelTitle: 'Pago cancelado',
     cancelBody: 'Tu pedido sigue esperando el pago. Puedes intentarlo de nuevo desde la página del pedido.',
     methods: {
-      stripe: 'Tarjeta',
+      dlocalgo: 'Tarjeta',
       paypal: 'PayPal',
       whatsapp: 'Pedido por WhatsApp',
       bank_transfer: 'Transferencia bancaria',
@@ -279,7 +279,7 @@ export const es: Dictionary = {
         refunded: 'Reembolsado',
       },
       methods: {
-        stripe: 'Tarjeta (Stripe)',
+        dlocalgo: 'Tarjeta (dLocal Go)',
         paypal: 'PayPal',
         whatsapp: 'WhatsApp',
         bank_transfer: 'Transferencia bancaria',

@@ -24,6 +24,7 @@
     "PUBLIC_SITE_URL": "http://localhost:4321",
     "EMAIL_FROM": "Store <orders@example.com>",
     "PAYPAL_ENV": "sandbox",
+    "DLOCALGO_ENV": "sandbox",
     "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
     "PUBLIC_MEDIA_BASE_URL": "",
     "WHATSAPP_PHONE_NUMBER_ID": "",

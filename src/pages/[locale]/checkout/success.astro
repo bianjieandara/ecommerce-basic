@@ -1,5 +1,7 @@
 ---
-// Payment return page. The order page shows the real status, so this page only forwards the customer there.
+// Payment return page. When the customer paid by card, the payment is checked with the provider here, so the order is confirmed
+// even if the provider's notification is late (or cannot reach this site, as on a development machine). The order page shows the
+// real status; this page then forwards the customer there.
 import { isLocale } from '@/domain/shared/locale';
 import { PATHS, withQuery } from '@/domain/shared/paths';
 
@@ -8,5 +10,15 @@ if (!isLocale(locale ?? '')) return new Response('Not found', { status: 404 });
 const number = Number(Astro.url.searchParams.get('order'));
 if (!Number.isInteger(number) || number <= 0) return new Response('Not found', { status: 404 });
 const key = Astro.url.searchParams.get('key') ?? '';
+const app = Astro.locals.app;
+const found = await app.orderStatus.execute(number, key);
+if (found && found.order.paymentMethod === 'dlocalgo' && found.order.status === 'pending_payment') {
+  try {
+    await app.capturePayment.execute(found.order.id);
+  } catch (error) {
+    // The order page shows what the store knows; the notification can still confirm the payment later.
+    console.warn('dlocalgo.settle_failed', error instanceof Error ? error.message : String(error));
+  }
+}
 return Astro.redirect(withQuery(PATHS.order(locale as 'es' | 'en', number), { key }), 303);
 ---

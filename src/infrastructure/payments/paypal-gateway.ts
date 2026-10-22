@@ -3,16 +3,16 @@
 import { absoluteUrl } from '@/application/documents/urls';
 import type { CacheStore } from '@/application/ports/platform';
 import type { PaymentConfirmation, PaymentGateway, PaymentInitiation } from '@/application/ports/payments';
-import { type CurrencyCode } from '@/domain/shared/currency';
+import type { CurrencyCode } from '@/domain/shared/currency';
 import { DomainError } from '@/domain/shared/errors';
+import { majorTextOf } from '@/domain/shared/money';
 import { PATHS, withQuery } from '@/domain/shared/paths';
 import { workersFetch } from '../system/http-fetch';
+import { providerAmountMinor } from './provider-amounts';
 import {
   PAYPAL_CURRENCIES,
   TOKEN_KEY,
   TOKEN_MARGIN_SECONDS,
-  toMajor,
-  toMinor,
   type PayPalConfig,
   type PayPalEvent,
   type PayPalInitiateInput,
@@ -60,7 +60,7 @@ export class PayPalGateway implements PaymentGateway {
           {
             reference_id: order.id,
             custom_id: String(order.number),
-            amount: { currency_code: order.currency, value: toMajor(order.totalMinor, order.currency) },
+            amount: { currency_code: order.currency, value: majorTextOf(order.totalMinor, order.currency) },
           },
         ],
         application_context: {
@@ -108,7 +108,7 @@ export class PayPalGateway implements PaymentGateway {
       eventId: `capture:${capture.id}`,
       providerReference,
       outcome: capture.status === 'COMPLETED' ? 'succeeded' : 'failed',
-      amountMinor: toMinor(capture.amount.value, currency),
+      amountMinor: providerAmountMinor(capture.amount.value, currency, 'PayPal'),
       currency,
     };
   }
@@ -159,7 +159,7 @@ export class PayPalGateway implements PaymentGateway {
       eventId: event.id,
       providerReference,
       outcome,
-      amountMinor: toMinor(amount.value, currency),
+      amountMinor: providerAmountMinor(amount.value, currency, 'PayPal'),
       currency,
     };
   }

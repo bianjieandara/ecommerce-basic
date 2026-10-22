@@ -12,7 +12,7 @@ export function getEnv(): Env {
 
 /**
  * Reads a secret or var by its binding name. Empty strings count as unset.
- * @param name Binding name, for example "STRIPE_SECRET_KEY".
+ * @param name Binding name, for example "DLOCALGO_SECRET_KEY".
  * @returns The value, or null when it is missing or empty.
  */
 export function readSecret(name: string): string | null {

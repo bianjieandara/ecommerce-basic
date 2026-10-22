@@ -1,7 +1,6 @@
-// PayPal types and pure helpers: the settings, the API shapes, the currencies PayPal accepts, and amount conversion.
-
+// PayPal types and constants: the settings, the API shapes, and the currencies PayPal accepts.
 import type { OrderSummary } from '@/application/dto/order-dto';
-import { CURRENCIES, type CurrencyCode } from '@/domain/shared/currency';
+import type { CurrencyCode } from '@/domain/shared/currency';
 
 /** Settings the adapter reads from its environment. */
 export interface PayPalConfig {
@@ -49,25 +48,4 @@ export interface PayPalEvent {
     amount?: { value: string; currency_code: string };
     supplementary_data?: { related_ids?: { order_id?: string } };
   };
-}
-
-/**
- * Converts a minor-unit amount to the decimal text PayPal expects.
- * @param amountMinor Amount in minor units.
- * @param currency Currency code.
- * @returns Decimal text, such as "12.50".
- */
-export function toMajor(amountMinor: number, currency: CurrencyCode): string {
-  const exponent = CURRENCIES[currency].exponent;
-  return (amountMinor / 10 ** exponent).toFixed(exponent);
-}
-
-/**
- * Converts PayPal's decimal text to minor units.
- * @param value Decimal text.
- * @param currency Currency code.
- * @returns Amount in minor units.
- */
-export function toMinor(value: string, currency: CurrencyCode): number {
-  return Math.round(Number(value) * 10 ** CURRENCIES[currency].exponent);
 }

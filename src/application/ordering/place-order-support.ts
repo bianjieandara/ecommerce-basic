@@ -34,7 +34,7 @@ export interface PlacedOrder {
 }
 
 /** Methods whose payment window is checkout.onlineHoldMinutes long. The others use manualAutoCancelDays. */
-export const ONLINE_METHODS: readonly PaymentMethod[] = ['stripe', 'paypal'];
+export const ONLINE_METHODS: readonly PaymentMethod[] = ['dlocalgo', 'paypal'];
 
 /**
  * Stops checkout when the cart no longer matches the store: unavailable lines, short stock or changed prices.

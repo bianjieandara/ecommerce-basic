@@ -40,7 +40,7 @@ export class PlaceOrder {
       this.deps.settings.get('contact'),
       this.deps.settings.get('catalog'),
     ]);
-    const gatewaySettings = { checkout, contact };
+    const gatewaySettings = { checkout, contact, country: general.country };
     const paymentMethods = availablePaymentMethods(this.deps.gateways, gatewaySettings, general.currency);
     if (!paymentMethods.includes(input.paymentMethod)) {
       throw new DomainError('PAYMENT_METHOD_UNAVAILABLE', 'This payment method is not available');

@@ -128,7 +128,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     settings,
   });
 
-  const { legal, pdf, stripe, paypal, renderInvoicePdf, issueLegalInvoice, ...orderingServices } =
+  const { legal, pdf, dlocalgo, paypal, renderInvoicePdf, issueLegalInvoice, ...orderingServices } =
     createOrdering(env, {
       clock,
       ids,
@@ -201,7 +201,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
       siteUrl,
     }),
     ...orderingServices,
-    providers: { stripe, paypal },
+    providers: { dlocalgo, paypal },
     submitContact,
     reviews,
     ...identity,

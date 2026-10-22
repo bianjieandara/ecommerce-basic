@@ -15,7 +15,7 @@ import type { PaymentMethod } from '../ports/payments';
 
 /** Payment method names as customers read them. */
 const METHOD_NAMES: Record<PaymentMethod, Record<Locale, string>> = {
-  stripe: { es: 'Tarjeta (Stripe)', en: 'Card (Stripe)' },
+  dlocalgo: { es: 'Tarjeta (dLocal Go)', en: 'Card (dLocal Go)' },
   paypal: { es: 'PayPal', en: 'PayPal' },
   whatsapp: { es: 'Pedido por WhatsApp', en: 'Order via WhatsApp' },
   bank_transfer: { es: 'Transferencia bancaria', en: 'Bank transfer' },

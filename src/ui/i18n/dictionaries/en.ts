@@ -104,7 +104,7 @@ export const en = {
     cancelTitle: 'Payment cancelled',
     cancelBody: 'Your order is still waiting for payment. You can try again from the order page.',
     methods: {
-      stripe: 'Card',
+      dlocalgo: 'Card',
       paypal: 'PayPal',
       whatsapp: 'Order via WhatsApp',
       bank_transfer: 'Bank transfer',
@@ -278,7 +278,7 @@ export const en = {
         refunded: 'Refunded',
       },
       methods: {
-        stripe: 'Card (Stripe)',
+        dlocalgo: 'Card (dLocal Go)',
         paypal: 'PayPal',
         whatsapp: 'WhatsApp',
         bank_transfer: 'Bank transfer',

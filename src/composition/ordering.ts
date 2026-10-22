@@ -32,7 +32,7 @@ import {
   WhatsAppGateway,
 } from '@/infrastructure/payments/manual-gateways';
 import { PayPalGateway } from '@/infrastructure/payments/paypal-gateway';
-import { StripeGateway } from '@/infrastructure/payments/stripe-gateway';
+import { DLocalGoGateway } from '@/infrastructure/payments/dlocalgo-gateway';
 
 /** The ordering services the container exposes. */
 export interface OrderingServices {
@@ -42,7 +42,7 @@ export interface OrderingServices {
   renderInvoicePdf: RenderInvoicePdf;
   issueLegalInvoice: IssueLegalInvoice;
   expireStaleOrders: ExpireStaleOrders;
-  stripe: StripeGateway;
+  dlocalgo: DLocalGoGateway;
   paypal: PayPalGateway;
   gateways: Record<PaymentMethod, PaymentGateway>;
   confirmPayment: ConfirmPayment;
@@ -99,7 +99,11 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     siteUrl,
   });
 
-  const stripe = new StripeGateway(readSecret('STRIPE_SECRET_KEY'), readSecret('STRIPE_WEBHOOK_SECRET'));
+  const dlocalgo = new DLocalGoGateway({
+    apiKey: readSecret('DLOCALGO_API_KEY'),
+    secretKey: readSecret('DLOCALGO_SECRET_KEY'),
+    environment: readSecret('DLOCALGO_ENV') === 'live' ? 'live' : 'sandbox',
+  });
   const paypal = new PayPalGateway(
     {
       clientId: readSecret('PAYPAL_CLIENT_ID'),
@@ -110,7 +114,7 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     cache,
   );
   const gateways: Record<PaymentMethod, PaymentGateway> = {
-    stripe,
+    dlocalgo,
     paypal,
     whatsapp: new WhatsAppGateway(),
     bank_transfer: new BankTransferGateway(),
@@ -153,7 +157,7 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     renderInvoicePdf,
     issueLegalInvoice,
     expireStaleOrders,
-    stripe,
+    dlocalgo,
     paypal,
     gateways,
     confirmPayment,

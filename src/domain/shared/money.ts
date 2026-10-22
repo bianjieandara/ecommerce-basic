@@ -1,6 +1,6 @@
 // Money as integer minor units (cents). Floats are never used for money: they round incorrectly.
 import { DomainError } from './errors';
-import type { CurrencyCode } from './currency';
+import { CURRENCIES, type CurrencyCode } from './currency';
 
 /** An amount of one currency, stored in minor units. */
 export interface Money {
@@ -74,4 +74,28 @@ export function majorTextFromMinor(amountMinor: number, exponent: number): strin
   if (exponent === 0) return String(amountMinor);
   const digits = String(amountMinor).padStart(exponent + 1, '0');
   return `${digits.slice(0, -exponent)}.${digits.slice(-exponent)}`;
+}
+
+/**
+ * Formats an amount as decimal text in its currency's own precision, the way payment providers take amounts ("1250" in USD
+ * becomes "12.50"; in CLP it stays "1250"). Built from the integer digits, so it never rounds.
+ * @param amountMinor Minor units.
+ * @param currency Currency code.
+ * @returns Decimal text with a dot as the separator.
+ */
+export function majorTextOf(amountMinor: number, currency: CurrencyCode): string {
+  return majorTextFromMinor(amountMinor, CURRENCIES[currency].exponent);
+}
+
+/**
+ * Reads a provider's decimal amount into minor units. Providers send numbers such as 550 or 550.0; this turns the number into
+ * text with the currency's digits first, so the conversion stays on decimal text and not on floating-point multiplication.
+ * @param amount Amount as a number or as text.
+ * @param currency Currency code.
+ * @returns Minor units, or null when the amount is not a valid non-negative figure for the currency.
+ */
+export function minorOfProviderAmount(amount: number | string, currency: CurrencyCode): number | null {
+  const exponent = CURRENCIES[currency].exponent;
+  const text = typeof amount === 'number' ? amount.toFixed(exponent) : amount;
+  return minorFromMajorText(text, exponent);
 }

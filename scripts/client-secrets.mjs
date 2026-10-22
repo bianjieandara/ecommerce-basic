@@ -1,5 +1,5 @@
 // Uploads .secrets/<slug>.json to the client's Worker with `wrangler secret bulk`.
-// The secrets file is a flat JSON object: { "STRIPE_SECRET_KEY": "...", ... }. It is gitignored.
+// The secrets file is a flat JSON object: { "DLOCALGO_SECRET_KEY": "...", ... }. It is gitignored.
 // Usage: node scripts/client-secrets.mjs <slug>
 import { spawnSync } from 'node:child_process';
 import { existsSync, unlinkSync, writeFileSync } from 'node:fs';
