@@ -1,7 +1,8 @@
 // Stock changes always go through here. The stock update and its ledger row are built together, so a batch cannot change
 // stock without also writing the movement that explains it.
+import type { StockChange } from '@/application/ports/inventory';
 import type { StockReason } from '@/domain/inventory/stock';
-import { statement, type SqlValue } from './d1-client';
+import { queryAll, statement, type SqlValue } from './d1-client';
 
 /** One stock change and the guard that must hold for it to apply. */
 export interface StockLedgerChange {
@@ -14,6 +15,13 @@ export interface StockLedgerChange {
   nowIso: string;
   /** SQL condition with its parameters. The change and its ledger row apply only while it holds. */
   guard?: { sql: string; params: SqlValue[] };
+}
+
+/** Stock of a variant as the ledger holds it, with its own alert threshold (null = store default). */
+export interface StockLevel {
+  productId: string;
+  stock: number;
+  threshold: number | null;
 }
 
 /**
@@ -47,4 +55,59 @@ export function stockLedgerStatements(db: D1Database, change: StockLedgerChange)
     ],
   );
   return [update, ledger];
+}
+
+/**
+ * Reads the stock of variants as it is now. Call it after the batch that changed them, so the values include that batch.
+ * @param db D1 binding.
+ * @param variantIds Variants to read; unknown ids are missing from the result.
+ * @returns The stock per variant id.
+ */
+export async function readStockLevels(
+  db: D1Database,
+  variantIds: string[],
+): Promise<Map<string, StockLevel>> {
+  if (variantIds.length === 0) return new Map();
+  const rows = await queryAll<{
+    id: string;
+    product_id: string;
+    stock: number;
+    low_stock_threshold: number | null;
+  }>(
+    db,
+    'SELECT id, product_id, stock, low_stock_threshold FROM product_variants WHERE id IN (SELECT value FROM json_each(?))',
+    [JSON.stringify(variantIds)],
+  );
+  return new Map(
+    rows.map((row): [string, StockLevel] => [
+      row.id,
+      { productId: row.product_id, stock: row.stock, threshold: row.low_stock_threshold },
+    ]),
+  );
+}
+
+/**
+ * Turns applied deltas into stock changes. `after` is the stock on record now; `before` is `after` minus the delta.
+ * A delta for a variant that is missing from `levels` is skipped.
+ * @param levels Stock read after the batch.
+ * @param deltas The deltas that were applied.
+ * @returns One change per delta that has a stock level.
+ */
+export function changesAfter(
+  levels: Map<string, StockLevel>,
+  deltas: { variantId: string; delta: number }[],
+): StockChange[] {
+  return deltas.flatMap(({ variantId, delta }) => {
+    const level = levels.get(variantId);
+    if (!level) return [];
+    return [
+      {
+        variantId,
+        productId: level.productId,
+        before: level.stock - delta,
+        after: level.stock,
+        threshold: level.threshold,
+      },
+    ];
+  });
 }

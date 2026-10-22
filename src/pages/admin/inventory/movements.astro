@@ -1,0 +1,145 @@
+---
+// Stock ledger: every change to stock, newest first, with its reason and who made it. Filters live in the URL, so a view can be
+// shared and its export matches it.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import DataTable from '@/ui/admin/DataTable.astro';
+import ListToolbar from '@/ui/admin/ListToolbar.astro';
+import { BUTTON, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
+import type { StockReason } from '@/domain/inventory/stock';
+import { formatDateTime } from '@/domain/shared/format';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { INVENTORY_PAGE_SIZE, movementFilterFrom } from '@/http/admin-inventory-page';
+import { listHref } from '@/http/list-query';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const params = Astro.url.searchParams;
+const filter = movementFilterFrom(params, lang, INVENTORY_PAGE_SIZE);
+const result = await app.inventory.queries.listMovements(filter);
+const labels = pickNamespace(lang, 'admin').inventory;
+const page = labels.movementsPage;
+const reasons: Record<StockReason, string> = labels.reasons;
+const reasonOptions: StockReason[] = [
+  'initial',
+  'sale',
+  'cancel_restore',
+  'restock',
+  'manual_adjust',
+  'return',
+  'damage',
+  'import',
+];
+const query = params.toString();
+const exportHref = query
+  ? `/api/admin/inventory/movements/export?${query}`
+  : '/api/admin/inventory/movements/export';
+---
+
+<AdminLayout title={page.title} locale={lang} storeName={store.general.storeName}>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl font-semibold">{page.title}</h1>
+    <div class="flex flex-wrap gap-2">
+      <a href={ADMIN_PATHS.inventory} class={BUTTON}>
+        {page.back}
+      </a>
+      <a href={exportHref} class={BUTTON}>
+        {page.export}
+      </a>
+    </div>
+  </div>
+
+  <ListToolbar
+    action={ADMIN_PATHS.inventoryMovements}
+    search={filter.search}
+    labels={{ search: labels.search, apply: labels.apply, clear: labels.clear }}
+    clearHref={ADMIN_PATHS.inventoryMovements}
+  >
+    {filter.variantId && <input type="hidden" name="variant" value={filter.variantId} />}
+    <label class={`${LABEL} sm:w-52`}>
+      {page.reason}
+      <select name="reason" class={FIELD}>
+        <option value="">{page.reasonAll}</option>
+        {reasonOptions.map((reason) => (
+          <option value={reason} selected={filter.reason === reason}>
+            {reasons[reason]}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label class={`${LABEL} sm:w-44`}>
+      {page.from}
+      <input type="date" name="from" value={filter.from ?? ''} class={FIELD} />
+    </label>
+    <label class={`${LABEL} sm:w-44`}>
+      {page.to}
+      <input type="date" name="to" value={filter.to ?? ''} class={FIELD} />
+    </label>
+  </ListToolbar>
+
+  <DataTable>
+    <thead>
+      <tr>
+        <th scope="col">{page.columnDate}</th>
+        <th scope="col">{page.columnProduct}</th>
+        <th scope="col">{labels.columnSku}</th>
+        <th scope="col">{page.columnChange}</th>
+        <th scope="col">{page.columnStockAfter}</th>
+        <th scope="col">{page.columnReason}</th>
+        <th scope="col">{page.columnActor}</th>
+        <th scope="col">{page.columnNote}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {result.items.map((movement) => (
+        <tr>
+          <td data-label={page.columnDate}>
+            {formatDateTime(movement.createdAt, lang, store.general.country, store.general.timezone)}
+          </td>
+          <td data-label={page.columnProduct}>
+            {movement.productName}
+            {movement.variantLabel && <span class="text-text/70"> · {movement.variantLabel}</span>}
+          </td>
+          <td data-label={labels.columnSku}>{movement.sku ?? '—'}</td>
+          <td data-label={page.columnChange}>
+            <strong>{movement.delta > 0 ? `+${movement.delta}` : movement.delta}</strong>
+          </td>
+          <td data-label={page.columnStockAfter}>{movement.stockAfter}</td>
+          <td data-label={page.columnReason}>{reasons[movement.reason]}</td>
+          <td data-label={page.columnActor}>
+            {movement.actor === 'system'
+              ? page.system
+              : movement.actor === 'customer'
+                ? page.customer
+                : movement.actor}
+          </td>
+          <td data-label={page.columnNote}>{movement.note ?? ''}</td>
+        </tr>
+      ))}
+    </tbody>
+  </DataTable>
+
+  {result.items.length === 0 && <p class="text-text/70 text-sm">{page.empty}</p>}
+
+  <nav class="flex items-center justify-between gap-3 text-sm" aria-label={page.title}>
+    {result.page > 1 ? (
+      <a href={listHref(ADMIN_PATHS.inventoryMovements, params, result.page - 1)} class={LINK_BUTTON}>
+        {labels.prev}
+      </a>
+    ) : (
+      <span />
+    )}
+    <span>{t(lang, 'admin.inventory.pageOf', { page: result.page, total: result.totalPages })}</span>
+    {result.page < result.totalPages ? (
+      <a href={listHref(ADMIN_PATHS.inventoryMovements, params, result.page + 1)} class={LINK_BUTTON}>
+        {labels.next}
+      </a>
+    ) : (
+      <span />
+    )}
+  </nav>
+</AdminLayout>

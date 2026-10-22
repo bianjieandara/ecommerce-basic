@@ -3,6 +3,7 @@
 import { canTransition, isPaidOrLater } from '@/domain/ordering/order-status';
 import { DomainError } from '@/domain/shared/errors';
 import type { Order } from '../dto/order-dto';
+import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
 import type { IssueInvoice } from '../invoicing/issue-invoice';
 import type { SettingsRepository } from '../ports/content';
 import type { OrderRepository } from '../ports/ordering';
@@ -18,6 +19,7 @@ export interface ConfirmPaymentDeps {
   notifications: NotificationService;
   settings: SettingsRepository;
   issueInvoice: IssueInvoice;
+  evaluateStock: EvaluateStockChanges;
   clock: Clock;
   siteUrl: string;
 }
@@ -83,12 +85,13 @@ export class ConfirmPayment {
       case 'expired': {
         // A late payment for an order already cancelled is not revived: the stock may have been sold.
         const type = confirmation.outcome === 'failed' ? 'payment_failed' : 'payment_expired';
-        const cancelled = await this.deps.orders.cancelAndReleaseStock(order.id, 'pending_payment', {
+        const released = await this.deps.orders.cancelAndReleaseStock(order.id, 'pending_payment', {
           type,
           actor,
           at: nowIso,
         });
-        if (cancelled) await this.notifyCustomer(order, 'order_cancelled');
+        await this.deps.evaluateStock.execute(released.restored);
+        if (released.cancelled) await this.notifyCustomer(order, 'order_cancelled');
         return;
       }
       case 'refunded': {

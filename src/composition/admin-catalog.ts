@@ -4,6 +4,7 @@ import { ManageAttributes } from '@/application/catalog/manage-attributes';
 import { ManageCategories } from '@/application/catalog/manage-categories';
 import { ChangeProductStatus, DuplicateProduct } from '@/application/catalog/product-actions';
 import { UpsertProduct } from '@/application/catalog/upsert-product';
+import type { EvaluateStockChanges } from '@/application/inventory/evaluate-stock-changes';
 import { MediaLibrary } from '@/application/media/media-library';
 import type { ProductRepository } from '@/application/ports/catalog';
 import type {
@@ -38,6 +39,7 @@ export interface CatalogAdminDeps {
   ids: IdGenerator;
   clock: Clock;
   settings: SettingsRepository;
+  evaluateStock: EvaluateStockChanges;
 }
 
 /**
@@ -62,6 +64,7 @@ export function createCatalogAdmin(env: Env, deps: CatalogAdminDeps): CatalogAdm
       attributes,
       media,
       settings: deps.settings,
+      evaluateStock: deps.evaluateStock,
       ids: deps.ids,
       clock: deps.clock,
     }),

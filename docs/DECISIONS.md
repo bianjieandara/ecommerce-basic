@@ -317,3 +317,36 @@ environment, so the document was not viewed.
   - Mobile bottom tabs: the shell has a top navigation row for now.
 - **Not verified:** a real phone (the browser used a 360px viewport), the variant grid with six generated combinations in the browser (the same rule was exercised through the API), the storefront product page layout beyond status and name, and Cloudflare R2 (local emulation only).
 - **Test data.** The local database now holds the products, categories, attributes and images from the smoke runs. Their names and SKUs carry a per-run suffix. Clear them before any demo.
+
+## 2026-10-21 — Stage 15 (inventory module)
+
+- **Verified locally** (`npm run dev` against the local D1, two scratch scripts outside the repo: 36 and 6 checks, all passing):
+  - Manual adjustments, the CSV import and a sale all reach the ledger. Every row's `stock_after` equals the running total of the deltas up to it, and the last row is the stock on record.
+  - Low stock: crossing the line queued one `low_stock_store` message. Repeats on the same UTC day added none, and the message reached `sent` in the notification log.
+  - Back in stock: a subscriber to a sold-out variant got one `back_in_stock` message at the restock. A second restock told nobody again, because the subscription was already marked as told.
+  - Expired order: the scheduler cancelled it, gave its unit back as a `cancel_restore` row, and the stock on record matched that row.
+  - CSV import: the preview changed nothing and reported an unknown SKU with its reason. The import applied the valid row and set its unit cost from the `cost` column.
+  - Barcode and SKU lookups open the right variant; an unknown code answers 404. A repeated variant and a negative count are refused with 422.
+  - The two admin pages answer 200 for every filter combination tried, including malformed ones. The dev log shows no errors.
+  - `npm run check` and `npm run build` pass.
+- **Decisions.**
+  - Every producer of stock changes returns what it changed: order placement, cancellations (expiry and payment failure), manual adjustments, imports and product saves. `EvaluateStockChanges` is the one place that turns those changes into alert jobs. `place()` and `cancelAndReleaseStock()` report their changes, read back after the batch.
+  - A variant without its own threshold keeps `null`, and the evaluation applies the store default. Product saves still resolve the default on the way in, as before.
+  - Alerts are jobs and are never sent inline. A low-stock alert is keyed by variant and UTC day. A back-in-stock message is keyed by variant and restock time, so each restock tells each subscriber once.
+  - Back-in-stock subscriptions take only sold-out variants. Repeating a request refreshes it, and the response is the same either way, so it never shows whether an address already subscribed. The bot check and the `forms` rate limit apply.
+  - Manual changes are batches of up to 50 variants, one D1 batch each. A counted value becomes a difference from the stock read just before the write. A sale between that read and the write moves the counted value by that sale; the ledger still matches the stock.
+  - CSV: the header must name `sku`, `mode` and `quantity`. `cost` and `note` are optional, and other columns are ignored. A file holds at most 2 MB and 500 rows, and each SKU may appear once. Rows apply in batches of 50 under one import id. A batch that loses stock to a concurrent change fails and reports its rows, and the other batches still apply.
+  - The export is a count sheet: mode `set`, the stock on record and the cost, so it imports back unchanged. Untracked variants are left out. Cells that start with `= + - @` get a leading `'`, and files start with a UTF-8 byte-order mark.
+  - The preview runs on the server with the import's own parser, so the preview and the import cannot disagree. The plan had the preview in the browser; one copy of the rules is simpler.
+  - Barcodes: where the browser has `BarcodeDetector` (Chrome on Android), the camera reads EAN, UPC, Code 128 and 39, and QR codes. Typed codes work everywhere. A decoded code is looked up as a SKU or barcode, so a QR code that holds a URL is not parsed.
+  - Totals count every tracked variant (stock on hand), not only the sellable ones.
+  - Store alerts go to the order notification address, falling back to the contact address. The alert channel list is read, but only e-mail is sent until WhatsApp joins in Stage 18.
+  - Shared code: `http/list-query.ts` holds the page number and list links used by products and inventory. `ui/styles/admin-table.css` is global, so the Preact tables get the card layout. `StatusBadge` uses the shared badge classes. The islands fill `{placeholders}` with a one-line helper instead of importing `ui/i18n`, which would bundle both dictionaries into the browser.
+- **Deferred.**
+  - The storefront back-in-stock form on the product page (a Stage 7 item). `POST /api/stock-subscriptions` is in place and tested; the form and its strings wait for the storefront pass.
+  - WhatsApp alerts for low stock and back in stock (Stage 18). Subscriptions already store the phone number and the opt-in.
+  - The dashboard counts of low and sold-out variants (Stage 16).
+- **Not verified.**
+  - Barcode scanning with a camera: no Android phone was used. The lookup the scanner calls was verified with the same request.
+  - The inventory screens at 360px in a browser. They reuse the admin card layout that the product list uses.
+- **Size.** `create-container.ts`, `order-repository.ts` and the two dictionaries are above the 250-line guideline. The first two were already above it, and the dictionaries grew with each stage. Splitting them is a separate change.

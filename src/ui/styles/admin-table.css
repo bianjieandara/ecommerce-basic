@@ -1,0 +1,46 @@
+/* Admin tables. One markup serves the phone and the desktop: below the md breakpoint every row becomes a card and each
+   cell shows its data-label. Global, not scoped, so the Preact tables (the inventory) get the same look as Astro tables. */
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+}
+.admin-table thead th {
+  font-weight: 600;
+  border-bottom: 1px solid color-mix(in oklab, currentColor 15%, transparent);
+}
+.admin-table tbody tr {
+  border-bottom: 1px solid color-mix(in oklab, currentColor 10%, transparent);
+}
+@media (max-width: 767px) {
+  .admin-table thead {
+    display: none;
+  }
+  .admin-table,
+  .admin-table tbody {
+    display: block;
+  }
+  .admin-table tr {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem;
+  }
+  .admin-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.2rem 0;
+  }
+  .admin-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    opacity: 0.7;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-table * {
+    transition: none;
+  }
+}

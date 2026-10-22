@@ -50,4 +50,6 @@ export const ADMIN_PATHS = {
   categories: '/admin/categories',
   attributes: '/admin/attributes',
   media: '/admin/media',
+  inventory: '/admin/inventory',
+  inventoryMovements: '/admin/inventory/movements',
 } as const;

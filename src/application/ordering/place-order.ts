@@ -8,6 +8,7 @@ import type { SettingsRepository } from '../ports/content';
 import type { NewOrder, OrderRepository } from '../ports/ordering';
 import type { PaymentGateway, PaymentInitiation, PaymentMethod } from '../ports/payments';
 import type { BotVerifier, Clock, Hasher, IdGenerator } from '../ports/platform';
+import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
 import type { NotificationService } from '../notifications/notification-service';
 import { newAccessKey } from './access-key';
 import { orderPresentation, orderSections } from './order-sections';
@@ -25,6 +26,7 @@ export interface PlaceOrderDeps {
   ids: IdGenerator;
   clock: Clock;
   notifications: NotificationService;
+  evaluateStock: EvaluateStockChanges;
   siteUrl: string;
 }
 
@@ -161,6 +163,7 @@ export class PlaceOrder {
       items,
     };
     const placed = await this.deps.orders.place(draft);
+    await this.deps.evaluateStock.execute(placed.stockChanges);
 
     const summary: OrderSummary = {
       id,
@@ -190,11 +193,12 @@ export class PlaceOrder {
       });
     } catch (error) {
       // The provider never took the order, so the stock goes back at once.
-      await this.deps.orders.cancelAndReleaseStock(id, 'pending_payment', {
+      const released = await this.deps.orders.cancelAndReleaseStock(id, 'pending_payment', {
         type: 'payment_start_failed',
         actor: 'system',
         at: this.deps.clock.now().toISOString(),
       });
+      await this.deps.evaluateStock.execute(released.restored);
       throw error instanceof DomainError
         ? error
         : new DomainError('PAYMENT_PROVIDER_ERROR', 'The payment could not be started');

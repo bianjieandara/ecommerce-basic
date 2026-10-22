@@ -8,7 +8,8 @@ import StatusBadge from '@/ui/admin/StatusBadge.astro';
 import { BUTTON_PRIMARY, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { formatDate, formatMoney } from '@/domain/shared/format';
-import { categoryOptions, listHref, productFilterFrom } from '@/http/admin-catalog-page';
+import { categoryOptions, productFilterFrom } from '@/http/admin-catalog-page';
+import { listHref } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
 import { t } from '@/ui/i18n';
 

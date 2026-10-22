@@ -26,3 +26,24 @@ export function crossedLowStock(before: number, after: number, threshold: number
 export function cameBackInStock(before: number, after: number): boolean {
   return before <= 0 && after > 0;
 }
+
+/** Stock state shown in the inventory table; the table's status filter uses the same values. */
+export type StockStatus = 'in_stock' | 'low' | 'out' | 'untracked';
+
+/** Most variants one adjustment can change. Bulk selection stops here, and the adjust endpoint refuses more. */
+export const MAX_ADJUST_ITEMS = 50;
+
+/**
+ * Classifies a variant for the inventory table and its filters. Untracked variants are always sellable, so they never
+ * show as low or out.
+ * @param stock Units in stock.
+ * @param threshold Low-stock threshold of the variant.
+ * @param tracked Whether the variant tracks its stock.
+ * @returns The status.
+ */
+export function stockStatus(stock: number, threshold: number, tracked: boolean): StockStatus {
+  if (!tracked) return 'untracked';
+  if (stock <= 0) return 'out';
+  if (stock <= threshold) return 'low';
+  return 'in_stock';
+}

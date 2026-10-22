@@ -8,6 +8,7 @@ import {
 } from '@/domain/catalog/product';
 import { DomainError } from '@/domain/shared/errors';
 import { slugify } from '@/domain/shared/slug';
+import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
 import type { ProductRepository } from '../ports/catalog';
 import type { AttributeRepository, CategoryRepository } from '../ports/catalog-admin';
 import type { SettingsRepository } from '../ports/content';
@@ -22,6 +23,7 @@ export interface UpsertProductDeps {
   attributes: AttributeRepository;
   media: MediaRepository;
   settings: SettingsRepository;
+  evaluateStock: EvaluateStockChanges;
   ids: IdGenerator;
   clock: Clock;
 }
@@ -93,12 +95,13 @@ export class UpsertProduct {
       updatedAt: now,
     };
     const inventory = await this.deps.settings.get('inventory');
-    await this.deps.products.save(product, {
+    const stockChanges = await this.deps.products.save(product, {
       actorId,
       stockNote: input.stockNote,
       stockDeltas,
       defaultLowStockThreshold: inventory.defaultLowStockThreshold,
     });
+    await this.deps.evaluateStock.execute(stockChanges);
     return { id: product.id };
   }
 

@@ -82,6 +82,7 @@ import {
 import { CryptoIdGenerator, SystemClock, WebCryptoHasher } from '@/infrastructure/system/system-adapters';
 import { logEvent } from '@/infrastructure/system/logger';
 import { createCatalogAdmin, createMediaLibrary, type CatalogAdmin } from './admin-catalog';
+import { createInventory, type InventoryServices } from './inventory';
 import type { MediaLibrary } from '@/application/media/media-library';
 
 /** Everything the application can use for one request or one job run. */
@@ -134,6 +135,8 @@ export interface Container {
   catalogAdmin: CatalogAdmin;
   /** Image library: uploads of resized variants, listing and removal. */
   mediaLibrary: MediaLibrary;
+  /** Inventory: manual adjustments, CSV import, the ledger, alerts and back-in-stock subscriptions. */
+  inventory: InventoryServices;
   platform: {
     clock: Clock;
     ids: IdGenerator;
@@ -246,7 +249,21 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     siteUrl,
   });
 
-  const catalogAdmin = createCatalogAdmin(env, { ids, clock, settings });
+  const inventory = createInventory(env, {
+    ids,
+    clock,
+    settings,
+    jobs: jobQueue,
+    notifications,
+    botVerifier,
+    siteUrl,
+  });
+  const catalogAdmin = createCatalogAdmin(env, {
+    ids,
+    clock,
+    settings,
+    evaluateStock: inventory.evaluateStock,
+  });
   const mediaLibrary = createMediaLibrary(env, { ids, clock, storage: media });
 
   const contactMessages = new D1ContactMessageRepository(env.DB);
@@ -270,7 +287,14 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   const issueInvoice = new IssueInvoice({ orders, invoices, settings, jobs: jobQueue, legal, clock, ids });
   const renderInvoicePdf = new RenderInvoicePdf({ ...pdfDeps, orders, notifications, siteUrl });
   const issueLegalInvoice = new IssueLegalInvoice({ invoices, legal, clock });
-  const expireStaleOrders = new ExpireStaleOrders({ orders, notifications, settings, clock, siteUrl });
+  const expireStaleOrders = new ExpireStaleOrders({
+    orders,
+    notifications,
+    settings,
+    evaluateStock: inventory.evaluateStock,
+    clock,
+    siteUrl,
+  });
   const handlers = buildJobHandlers({
     failedJobs,
     clock,
@@ -279,6 +303,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     renderInvoicePdf,
     issueLegalInvoice,
     reviews,
+    inventoryAlerts: inventory.alerts,
   });
 
   const stripe = new StripeGateway(readSecret('STRIPE_SECRET_KEY'), readSecret('STRIPE_WEBHOOK_SECRET'));
@@ -304,6 +329,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     notifications,
     settings,
     issueInvoice,
+    evaluateStock: inventory.evaluateStock,
     clock,
     siteUrl,
   });
@@ -322,6 +348,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     ids,
     clock,
     notifications,
+    evaluateStock: inventory.evaluateStock,
     siteUrl,
   });
   const orderStatus = new GetOrderStatus({ orders, invoices, hasher });
@@ -375,6 +402,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     inviteAdmin,
     catalogAdmin,
     mediaLibrary,
+    inventory,
     platform: {
       clock,
       ids,

@@ -1,0 +1,138 @@
+---
+// Inventory: every variant with its stock, filtered in the URL. The table handles adjustments, bulk changes and the barcode
+// lookup; the CSV import sits below it, and the ledger has its own page.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import ListToolbar from '@/ui/admin/ListToolbar.astro';
+import InventoryPanel from '@/ui/admin/inventory/InventoryPanel.tsx';
+import CsvImport from '@/ui/admin/inventory/CsvImport.tsx';
+import { BUTTON, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { categoryOptions } from '@/http/admin-catalog-page';
+import { INVENTORY_PAGE_SIZE, inventoryFilterFrom } from '@/http/admin-inventory-page';
+import { listHref } from '@/http/list-query';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const params = Astro.url.searchParams;
+const inventory = await app.settings.get('inventory');
+const filter = inventoryFilterFrom(params, lang, inventory.defaultLowStockThreshold, INVENTORY_PAGE_SIZE);
+const [result, totals, categories] = await Promise.all([
+  app.inventory.queries.listRows(filter),
+  app.inventory.queries.totals(),
+  app.catalogAdmin.categories.list(),
+]);
+const choices = categoryOptions(categories, lang);
+const labels = pickNamespace(lang, 'admin').inventory;
+const query = params.toString();
+const exportHref = query ? `/api/admin/inventory/export?${query}` : '/api/admin/inventory/export';
+---
+
+<AdminLayout title={labels.title} locale={lang} storeName={store.general.storeName}>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl font-semibold">{labels.title}</h1>
+    <div class="flex flex-wrap gap-2">
+      <a href={ADMIN_PATHS.inventoryMovements} class={BUTTON}>
+        {labels.movements}
+      </a>
+      <a href={exportHref} class={BUTTON}>
+        {labels.exportCsv}
+      </a>
+    </div>
+  </div>
+
+  <ListToolbar
+    action={ADMIN_PATHS.inventory}
+    search={filter.search}
+    labels={{ search: labels.search, apply: labels.apply, clear: labels.clear }}
+    clearHref={ADMIN_PATHS.inventory}
+  >
+    <label class={`${LABEL} sm:w-52`}>
+      {labels.category}
+      <select name="category" class={FIELD}>
+        <option value="">{labels.categoryAll}</option>
+        {choices.map((choice) => (
+          <option value={choice.id} selected={filter.categoryId === choice.id}>
+            {`${'— '.repeat(choice.depth)}${choice.label}`}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label class={`${LABEL} sm:w-48`}>
+      {labels.status}
+      <select name="status" class={FIELD}>
+        <option value="all" selected={filter.status === 'all'}>
+          {labels.statusAll}
+        </option>
+        <option value="in_stock" selected={filter.status === 'in_stock'}>
+          {labels.statusInStock}
+        </option>
+        <option value="low" selected={filter.status === 'low'}>
+          {labels.statusLow}
+        </option>
+        <option value="out" selected={filter.status === 'out'}>
+          {labels.statusOut}
+        </option>
+        <option value="untracked" selected={filter.status === 'untracked'}>
+          {labels.statusUntracked}
+        </option>
+      </select>
+    </label>
+    <label class={`${LABEL} sm:w-52`}>
+      {labels.sort}
+      <select name="sort" class={FIELD}>
+        <option value="name" selected={filter.sort === 'name'}>
+          {labels.sortName}
+        </option>
+        <option value="stock_asc" selected={filter.sort === 'stock_asc'}>
+          {labels.sortStockAsc}
+        </option>
+        <option value="stock_desc" selected={filter.sort === 'stock_desc'}>
+          {labels.sortStockDesc}
+        </option>
+        <option value="value_desc" selected={filter.sort === 'value_desc'}>
+          {labels.sortValueDesc}
+        </option>
+      </select>
+    </label>
+  </ListToolbar>
+
+  <InventoryPanel
+    client:load
+    rows={result.items}
+    totals={totals}
+    labels={labels}
+    locale={lang}
+    currency={store.general.currency}
+    country={store.general.country}
+  />
+
+  <nav class="flex items-center justify-between gap-3 text-sm" aria-label={labels.title}>
+    {result.page > 1 ? (
+      <a href={listHref(ADMIN_PATHS.inventory, params, result.page - 1)} class={LINK_BUTTON}>
+        {labels.prev}
+      </a>
+    ) : (
+      <span />
+    )}
+    <span>{t(lang, 'admin.inventory.pageOf', { page: result.page, total: result.totalPages })}</span>
+    {result.page < result.totalPages ? (
+      <a href={listHref(ADMIN_PATHS.inventory, params, result.page + 1)} class={LINK_BUTTON}>
+        {labels.next}
+      </a>
+    ) : (
+      <span />
+    )}
+  </nav>
+
+  <details class="rounded-brand bg-surface p-4">
+    <summary class="min-h-11 cursor-pointer py-2 text-sm font-semibold">{labels.csv.title}</summary>
+    <div class="mt-4">
+      <CsvImport client:visible labels={labels} />
+    </div>
+  </details>
+</AdminLayout>

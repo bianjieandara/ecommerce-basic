@@ -1,6 +1,7 @@
 // Ordering ports. Placing an order is one D1 batch: counter, order, items, stock and ledger succeed or fail together.
 import type { OrderStatus } from '@/domain/ordering/order-status';
 import type { CustomerDetails, Order, OrderItem } from '../dto/order-dto';
+import type { StockChange } from './inventory';
 import type { PaymentMethod } from './payments';
 
 /** Everything needed to insert a new order (computed by PlaceOrder before the batch). */
@@ -49,10 +50,19 @@ export interface OrderEvent {
   createdAt: string;
 }
 
+/** What a cancellation did: whether it applied, and the stock it gave back (empty when nothing changed). */
+export interface CancelResult {
+  cancelled: boolean;
+  restored: StockChange[];
+}
+
 /** Persistence for orders. */
 export interface OrderRepository {
-  /** Stores the order with its items, stock decrements and ledger rows in one batch. Throws OUT_OF_STOCK. */
-  place(draft: NewOrder): Promise<{ id: string; number: number }>;
+  /**
+   * Stores the order with its items, stock decrements and ledger rows in one batch. Throws OUT_OF_STOCK.
+   * `stockChanges` are the decrements, so alerts can be evaluated for them.
+   */
+  place(draft: NewOrder): Promise<{ id: string; number: number; stockChanges: StockChange[] }>;
   findById(id: string): Promise<Order | null>;
   findByNumber(number: number): Promise<Order | null>;
   /** Id and access-key hash for an order number. Checked before anything else is loaded. */
@@ -72,9 +82,9 @@ export interface OrderRepository {
   ): Promise<boolean>;
   /**
    * Cancels an order that is still in `from` and gives its stock back. stock_released makes a repeat a no-op.
-   * Returns false when nothing changed.
+   * `restored` lists the stock given back, so a restock can notify back-in-stock subscribers.
    */
-  cancelAndReleaseStock(id: string, from: OrderStatus, event: NewOrderEvent): Promise<boolean>;
+  cancelAndReleaseStock(id: string, from: OrderStatus, event: NewOrderEvent): Promise<CancelResult>;
   /** Pending orders whose payment window has closed, oldest first. */
   listExpiredPending(nowIso: string, limit: number): Promise<string[]>;
   listEvents(orderId: string): Promise<OrderEvent[]>;

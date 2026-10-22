@@ -1,5 +1,6 @@
 // ExpireStaleOrders: cancels pending orders whose payment window has closed and gives their stock back. The scheduler
 // runs it on every tick through the orders.expire_stale job.
+import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
 import type { SettingsRepository } from '../ports/content';
 import type { OrderRepository } from '../ports/ordering';
 import type { Clock } from '../ports/platform';
@@ -11,6 +12,7 @@ export interface ExpireStaleOrdersDeps {
   orders: OrderRepository;
   notifications: NotificationService;
   settings: SettingsRepository;
+  evaluateStock: EvaluateStockChanges;
   clock: Clock;
   siteUrl: string;
 }
@@ -34,12 +36,13 @@ export class ExpireStaleOrders {
     for (const id of ids) {
       const order = await this.deps.orders.findById(id);
       if (!order) continue;
-      const done = await this.deps.orders.cancelAndReleaseStock(id, 'pending_payment', {
+      const released = await this.deps.orders.cancelAndReleaseStock(id, 'pending_payment', {
         type: 'expired',
         actor: 'system',
         at: nowIso,
       });
-      if (!done) continue;
+      await this.deps.evaluateStock.execute(released.restored);
+      if (!released.cancelled) continue;
       cancelled += 1;
       await this.deps.notifications.notify({
         key: 'order_cancelled',

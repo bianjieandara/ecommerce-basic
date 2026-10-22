@@ -12,6 +12,7 @@ import {
   type VariantRow,
 } from './product-mapper';
 import { productStatements } from './product-statements';
+import { changesAfter, readStockLevels } from './stock-ledger';
 
 /** D1-backed product repository. */
 export class D1ProductRepository implements ProductRepository {
@@ -133,24 +134,16 @@ export class D1ProductRepository implements ProductRepository {
    * @returns One change per variant whose stock moved.
    */
   private async stockChanges(product: Product, context: ProductSaveContext): Promise<StockChange[]> {
-    const changed = product.variants.filter((variant) => (context.stockDeltas[variant.id] ?? 0) !== 0);
-    if (changed.length === 0) return [];
-    const rows = await queryAll<{ id: string; stock: number }>(
+    const deltas = product.variants
+      .map((variant) => ({ variantId: variant.id, delta: context.stockDeltas[variant.id] ?? 0 }))
+      .filter((change) => change.delta !== 0);
+    const levels = await readStockLevels(
       this.db,
-      'SELECT id, stock FROM product_variants WHERE id IN (SELECT value FROM json_each(?))',
-      [JSON.stringify(changed.map((variant) => variant.id))],
+      deltas.map((change) => change.variantId),
     );
-    const stockNow = new Map(rows.map((row): [string, number] => [row.id, row.stock]));
-    return changed.map((variant) => {
-      const delta = context.stockDeltas[variant.id] ?? 0;
-      const after = stockNow.get(variant.id) ?? variant.stock;
-      return {
-        variantId: variant.id,
-        productId: product.id,
-        before: after - delta,
-        after,
-        threshold: variant.lowStockThreshold ?? context.defaultLowStockThreshold,
-      };
-    });
+    return changesAfter(levels, deltas).map((change) => ({
+      ...change,
+      threshold: change.threshold ?? context.defaultLowStockThreshold,
+    }));
   }
 }

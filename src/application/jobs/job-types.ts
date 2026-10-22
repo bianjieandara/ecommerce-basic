@@ -38,6 +38,21 @@ export type NotifyEmailPayload = z.infer<typeof notifyEmailPayload>;
 /** Payload of the invoice jobs: the invoice they work on. */
 export const invoiceJobPayload = z.object({ invoiceId: z.string().min(1).max(64) });
 
+/** Payload of inventory.low_stock_alert: the variant and the day it is for (one alert per variant per day). */
+export const lowStockAlertPayload = z.object({
+  variantId: z.string().min(1).max(64),
+  day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+});
+
+/**
+ * Payload of inventory.back_in_stock: the variant that has stock again, and when it did. Each restock is a separate event,
+ * so a subscriber is told once per restock even when the same variant sells out and comes back.
+ */
+export const backInStockPayload = z.object({
+  variantId: z.string().min(1).max(64),
+  restockedAt: z.iso.datetime(),
+});
+
 /** Job types with a real schema in this stage. */
 export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
   'orders.expire_stale': expireStaleOrdersPayload,
@@ -45,14 +60,14 @@ export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
   'notify.email': notifyEmailPayload,
   'invoice.render_pdf': invoiceJobPayload,
   'invoice.legal_issue': invoiceJobPayload,
+  'inventory.low_stock_alert': lowStockAlertPayload,
+  'inventory.back_in_stock': backInStockPayload,
 };
 
 /** Job types whose handlers are added in later stages. Dispatching one logs and acknowledges it. */
 export const PENDING_JOB_TYPES: readonly JobType[] = [
   'notify.whatsapp',
   'marketing.meta_capi',
-  'inventory.low_stock_alert',
-  'inventory.back_in_stock',
   'reports.weekly_summary',
   'analytics.daily_rollup',
 ];

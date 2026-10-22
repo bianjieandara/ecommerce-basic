@@ -3,14 +3,17 @@
 import type { IssueLegalInvoice } from '../invoicing/issue-legal-invoice';
 import type { RenderInvoicePdf } from '../invoicing/render-invoice-pdf';
 import type { ReviewsService } from '../content/reviews-service';
+import type { InventoryAlerts } from '../inventory/inventory-alerts';
 import type { ExpireStaleOrders } from '../ordering/expire-orders';
 import type { SendNotificationEmail } from '../notifications/send-notification-email';
 import type { FailedJobRepository, JobType } from '../ports/jobs';
 import type { Clock } from '../ports/platform';
 import type { JobHandler } from './dispatcher';
 import {
+  backInStockPayload,
   expireStaleOrdersPayload,
   invoiceJobPayload,
+  lowStockAlertPayload,
   maintenancePurgePayload,
   notifyEmailPayload,
 } from './job-types';
@@ -24,6 +27,7 @@ export interface JobHandlerDeps {
   renderInvoicePdf: RenderInvoicePdf;
   issueLegalInvoice: IssueLegalInvoice;
   reviews: ReviewsService;
+  inventoryAlerts: InventoryAlerts;
 }
 
 /** Milliseconds in one day. */
@@ -56,6 +60,14 @@ export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, 
     },
     'invoice.legal_issue': async (payload) => {
       await deps.issueLegalInvoice.execute(invoiceJobPayload.parse(payload).invoiceId);
+    },
+    'inventory.low_stock_alert': async (payload) => {
+      const input = lowStockAlertPayload.parse(payload);
+      await deps.inventoryAlerts.lowStock(input.variantId, input.day);
+    },
+    'inventory.back_in_stock': async (payload) => {
+      const input = backInStockPayload.parse(payload);
+      await deps.inventoryAlerts.backInStock(input.variantId, input.restockedAt);
     },
   };
 }

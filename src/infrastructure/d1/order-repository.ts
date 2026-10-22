@@ -4,7 +4,9 @@ import { DomainError } from '@/domain/shared/errors';
 import type { Locale } from '@/domain/shared/locale';
 import type { OrderStatus } from '@/domain/ordering/order-status';
 import type { Order, OrderItem } from '@/application/dto/order-dto';
+import type { StockChange } from '@/application/ports/inventory';
 import type {
+  CancelResult,
   NewOrder,
   NewOrderEvent,
   OrderEvent,
@@ -13,7 +15,7 @@ import type {
 } from '@/application/ports/ordering';
 import type { PaymentMethod } from '@/application/ports/payments';
 import { boolToInt, parseJson, queryAll, queryFirst, statement, type SqlValue } from './d1-client';
-import { stockLedgerStatements } from './stock-ledger';
+import { changesAfter, readStockLevels, stockLedgerStatements } from './stock-ledger';
 
 /** Row shape of orders. */
 interface OrderRow {
@@ -123,7 +125,7 @@ export class D1OrderRepository implements OrderRepository {
   /** @param db D1 database binding. */
   constructor(private readonly db: D1Database) {}
 
-  async place(draft: NewOrder): Promise<{ id: string; number: number }> {
+  async place(draft: NewOrder): Promise<{ id: string; number: number; stockChanges: StockChange[] }> {
     const statements = [
       statement(this.db, 'UPDATE order_counter SET last_number = last_number + 1 WHERE id = 1'),
       statement(
@@ -221,7 +223,14 @@ export class D1OrderRepository implements OrderRepository {
       draft.id,
     ]);
     if (!row) throw new Error('The order was not stored');
-    return { id: draft.id, number: row.number };
+    const sales = draft.items
+      .filter((item) => item.stockTracked)
+      .map((item) => ({ variantId: item.variantId, delta: -item.quantity }));
+    const levels = await readStockLevels(
+      this.db,
+      sales.map((sale) => sale.variantId),
+    );
+    return { id: draft.id, number: row.number, stockChanges: changesAfter(levels, sales) };
   }
 
   async findById(id: string): Promise<Order | null> {
@@ -287,7 +296,7 @@ export class D1OrderRepository implements OrderRepository {
     return (results[1]?.meta.changes ?? 0) > 0;
   }
 
-  async cancelAndReleaseStock(id: string, from: OrderStatus, event: NewOrderEvent): Promise<boolean> {
+  async cancelAndReleaseStock(id: string, from: OrderStatus, event: NewOrderEvent): Promise<CancelResult> {
     const items = await queryAll<{ variant_id: string; quantity: number }>(
       this.db,
       'SELECT variant_id, quantity FROM order_items WHERE order_id = ? AND stock_tracked = 1',
@@ -326,7 +335,14 @@ export class D1OrderRepository implements OrderRepository {
       ),
     ];
     const results = await this.db.batch(statements);
-    return (results[results.length - 1]?.meta.changes ?? 0) > 0;
+    const cancelled = (results[results.length - 1]?.meta.changes ?? 0) > 0;
+    if (!cancelled) return { cancelled, restored: [] };
+    const restores = items.map((item) => ({ variantId: item.variant_id, delta: item.quantity }));
+    const levels = await readStockLevels(
+      this.db,
+      restores.map((restore) => restore.variantId),
+    );
+    return { cancelled, restored: changesAfter(levels, restores) };
   }
 
   async listExpiredPending(nowIso: string, limit: number): Promise<string[]> {
