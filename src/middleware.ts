@@ -45,13 +45,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.requestId = crypto.randomUUID();
   const app = createContainer(getEnv(), getExecutionContext(context.locals));
   context.locals.app = app;
-  const token = sessionTokenOf(context.request);
-  context.locals.admin = token ? await app.sessions.resolve(token) : null;
+  context.locals.admin = null;
 
   const path = context.url.pathname;
   const isAdminPage = path === ADMIN_PATHS.dashboard || path.startsWith('/admin/');
   const isAdminApi = path.startsWith('/api/admin/');
+  // Only the admin area needs the session. Storefront pages never read it, so an admin browsing the shop costs no query.
   if (!isAdminPage && !isAdminApi) return next();
+
+  const token = sessionTokenOf(context.request);
+  context.locals.admin = token ? await app.sessions.resolve(token) : null;
 
   const isPublic = PUBLIC_ADMIN_PAGES.has(path) || PUBLIC_ADMIN_APIS.has(path);
   if (!isPublic && !context.locals.admin) {

@@ -7,7 +7,7 @@ declare namespace App {
     app: import('@/composition/create-container').Container;
     /** Unique id for this request, used to correlate logs. */
     requestId: string;
-    /** The signed-in admin, or null. Set from the session cookie on every request. */
+    /** The signed-in admin, or null. Set from the session cookie on admin pages and admin endpoints only; null everywhere else. */
     admin: import('@/application/ports/identity').AdminUser | null;
   }
 }
