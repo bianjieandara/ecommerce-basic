@@ -1,18 +1,146 @@
 ---
-// Admin dashboard. Its sections arrive in the later stages; for now it confirms that sign-in works.
+// Admin home: sales over three periods, the work waiting for the owner, the last 14 days of revenue and the top products.
+// One dashboard snapshot is read per request; each card links to the list behind its number.
 import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import LineChart from '@/ui/components/charts/LineChart.astro';
+import { formatMoney, formatNumber } from '@/domain/shared/format';
+import { money } from '@/domain/shared/money';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { loadStoreContext } from '@/http/store-context';
 import { t } from '@/ui/i18n';
 
 const admin = Astro.locals.admin;
 if (!admin) return Astro.redirect(ADMIN_PATHS.login);
-const store = await loadStoreContext(Astro.locals.app);
 const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const { currency, country, storeName } = store.general;
+const snapshot = await app.adminOps.dashboard.execute();
+
+/** Counts in the store's number format. */
+const count = (value: number) => formatNumber(value, lang, country);
+/** Amounts are integer minor units; money() refuses anything else, so a bad total fails loudly instead of showing a wrong price. */
+const price = (amountMinor: number) => formatMoney(money(amountMinor, currency), lang, country);
+
+/** The five figures of one period, as label and formatted value pairs. */
+const kpiRows = (kpis: typeof snapshot.today) => [
+  { label: t(lang, 'admin.dashboard.placed'), value: count(kpis.placed) },
+  { label: t(lang, 'admin.dashboard.paid'), value: count(kpis.paidOrders) },
+  { label: t(lang, 'admin.dashboard.revenue'), value: price(kpis.revenueMinor) },
+  { label: t(lang, 'admin.dashboard.tax'), value: price(kpis.taxMinor) },
+  { label: t(lang, 'admin.dashboard.average'), value: price(kpis.averageOrderMinor) },
+];
+
+const periods = [
+  { title: t(lang, 'admin.dashboard.today'), rows: kpiRows(snapshot.today) },
+  { title: t(lang, 'admin.dashboard.last7'), rows: kpiRows(snapshot.last7Days) },
+  { title: t(lang, 'admin.dashboard.last30'), rows: kpiRows(snapshot.last30Days) },
+];
+
+const seeAll = t(lang, 'admin.dashboard.seeAll');
+/** Cards for the work waiting on the owner. Each one links to the list that explains its number. */
+const alerts = [
+  {
+    label: t(lang, 'admin.dashboard.toProcess'),
+    value: snapshot.ordersToProcess,
+    href: `${ADMIN_PATHS.orders}?status=paid`,
+    action: t(lang, 'admin.dashboard.openOrders'),
+  },
+  {
+    label: t(lang, 'admin.dashboard.outOfStock'),
+    value: snapshot.outOfStock,
+    href: `${ADMIN_PATHS.inventory}?status=out`,
+    action: seeAll,
+  },
+  {
+    label: t(lang, 'admin.dashboard.lowStock'),
+    value: snapshot.lowStock,
+    href: `${ADMIN_PATHS.inventory}?status=low`,
+    action: seeAll,
+  },
+  {
+    label: t(lang, 'admin.dashboard.unread'),
+    value: snapshot.unreadMessages,
+    href: ADMIN_PATHS.messages,
+    action: seeAll,
+  },
+  {
+    label: t(lang, 'admin.dashboard.failedMessages'),
+    value: snapshot.failedNotifications,
+    href: ADMIN_PATHS.notificationLog,
+    action: seeAll,
+  },
+  {
+    label: t(lang, 'admin.dashboard.failedJobs'),
+    value: snapshot.unresolvedJobs,
+    href: ADMIN_PATHS.jobs,
+    action: seeAll,
+  },
+];
+const chartTitle = t(lang, 'admin.dashboard.chart');
+const chartPoints = snapshot.chart.map((day) => ({ label: day.day, value: day.revenueMinor }));
 ---
 
-<AdminLayout title={t(lang, 'admin.dashboard.title')} locale={lang} storeName={store.general.storeName}>
-  <h1 class="text-2xl font-semibold">{t(lang, 'admin.dashboard.title')}</h1>
-  <p class="text-sm">{t(lang, 'admin.dashboard.signedInAs', { name: admin.name })}</p>
-  <p class="text-text/60 text-sm">{t(lang, 'admin.dashboard.placeholder')}</p>
+<AdminLayout title={t(lang, 'admin.dashboard.title')} locale={lang} storeName={storeName}>
+  <div class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold">{t(lang, 'admin.dashboard.title')}</h1>
+    <p class="text-sm">{t(lang, 'admin.dashboard.signedInAs', { name: admin.name })}</p>
+  </div>
+
+  <div class="grid gap-3 md:grid-cols-3">
+    {periods.map((period) => (
+      <section class="rounded-brand bg-surface flex flex-col gap-3 p-4">
+        <h2 class="text-base font-semibold">{period.title}</h2>
+        <dl class="flex flex-col gap-2 text-sm">
+          {period.rows.map((row) => (
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-text/70">{row.label}</dt>
+              <dd class="font-semibold">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    ))}
+  </div>
+
+  <ul class="grid grid-cols-2 gap-3 md:grid-cols-3">
+    {alerts.map((alert) => (
+      <li class="rounded-brand bg-surface flex flex-col gap-1 p-4">
+        <span class="text-text/70 text-sm">{alert.label}</span>
+        <strong class="text-2xl font-semibold">{count(alert.value)}</strong>
+        <a
+          href={alert.href}
+          class="mt-auto inline-flex min-h-11 items-center text-sm font-semibold underline"
+        >
+          {alert.action}
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <section class="rounded-brand bg-surface flex flex-col gap-3 p-4">
+    <h2 class="text-base font-semibold">{chartTitle}</h2>
+    <LineChart title={chartTitle} points={chartPoints} format={price} />
+  </section>
+
+  <section class="rounded-brand bg-surface flex flex-col gap-3 p-4">
+    <h2 class="text-base font-semibold">{t(lang, 'admin.dashboard.topProducts')}</h2>
+    {snapshot.topProducts.length === 0 ? (
+      <p class="text-text/70 text-sm">{t(lang, 'admin.dashboard.noTopProducts')}</p>
+    ) : (
+      <ol class="flex flex-col">
+        {snapshot.topProducts.map((product) => (
+          <li class="border-text/10 flex flex-col gap-1 border-t py-3">
+            <span class="wrap-break-word font-semibold">{product.name}</span>
+            <span class="flex flex-wrap justify-between gap-x-3 text-sm">
+              <span>{t(lang, 'admin.dashboard.units', { count: count(product.units) })}</span>
+              <span>
+                {t(lang, 'admin.dashboard.revenue')} {price(product.revenueMinor)}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    )}
+  </section>
 </AdminLayout>

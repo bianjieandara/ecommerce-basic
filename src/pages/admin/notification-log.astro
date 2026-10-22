@@ -1,0 +1,125 @@
+---
+// Message log: every e-mail and WhatsApp message the store queued, newest first, 25 per page. Owners can send a failed one again;
+// editors see the failure but not the retry, because a retry queues the message once more.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import AdminPager from '@/ui/admin/AdminPager.astro';
+import DataTable from '@/ui/admin/DataTable.astro';
+import PostAction from '@/ui/admin/PostAction.tsx';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { can } from '@/domain/identity/role';
+import { formatDateTime } from '@/domain/shared/format';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { totalPagesFor } from '@/domain/shared/pagination';
+import { positiveInteger } from '@/http/list-query';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const PAGE_SIZE = 25;
+const ERROR_CHARS = 120;
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const { country, timezone, storeName } = store.general;
+const params = Astro.url.searchParams;
+const page = positiveInteger(params.get('page'));
+const result = await app.adminOps.reads.notificationLog.list(page, PAGE_SIZE);
+const totalPages = totalPagesFor(result.total, PAGE_SIZE);
+// Display guard only: the retry endpoint checks the same permission itself.
+const isOwner = can(admin.role, 'jobs.manage');
+
+/** Badge colour per delivery state: failures stand out, queued and skipped messages stay quiet. */
+const TONE = {
+  queued: 'muted',
+  sent: 'ok',
+  delivered: 'ok',
+  read: 'ok',
+  failed: 'warn',
+  skipped: 'muted',
+} as const;
+/** Shortens an error to `max` characters, ellipsis included, so one long error cannot stretch the table. */
+const cut = (text: string | null, max: number) =>
+  text && text.length > max ? `${text.slice(0, max - 1)}…` : (text ?? '—');
+
+const head = {
+  // admin.notifications has no time label yet; "Date" from the orders namespace stands in until one is added.
+  time: t(lang, 'admin.orders.date'),
+  channel: t(lang, 'admin.notifications.channel'),
+  template: t(lang, 'admin.notifications.template'),
+  recipient: t(lang, 'admin.notifications.recipient'),
+  status: t(lang, 'admin.notifications.status'),
+  error: t(lang, 'admin.notifications.error'),
+};
+const ownerOnly = t(lang, 'admin.notifications.ownerOnly');
+const errorLabel = t(lang, 'errors.generic');
+---
+
+<AdminLayout title={t(lang, 'admin.notifications.title')} locale={lang} storeName={storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.notifications.title')}</h1>
+
+  {result.items.length === 0 ? (
+    <p class="text-text/70 text-sm">{t(lang, 'admin.notifications.empty')}</p>
+  ) : (
+    <DataTable>
+      <thead>
+        <tr>
+          <th scope="col">{head.time}</th>
+          <th scope="col">{head.channel}</th>
+          <th scope="col">{head.template}</th>
+          <th scope="col">{head.recipient}</th>
+          <th scope="col">{head.status}</th>
+          <th scope="col">{head.error}</th>
+          <th scope="col">{t(lang, 'admin.inventory.columnActions')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {result.items.map((entry) => (
+          <tr>
+            <td data-label={head.time}>{formatDateTime(entry.createdAt, lang, country, timezone)}</td>
+            <td data-label={head.channel}>{t(lang, `admin.notifications.channels.${entry.channel}`)}</td>
+            <td data-label={head.template}>
+              <code class="break-all text-xs">{entry.templateKey}</code>
+            </td>
+            <td data-label={head.recipient} class="break-all">
+              {entry.recipient}
+            </td>
+            <td data-label={head.status}>
+              <StatusBadge
+                label={t(lang, `admin.notifications.states.${entry.status}`)}
+                tone={TONE[entry.status]}
+              />
+            </td>
+            <td data-label={head.error} class="wrap-break-word">
+              {cut(entry.error, ERROR_CHARS)}
+            </td>
+            <td>
+              {entry.status === 'failed' &&
+                (isOwner ? (
+                  <PostAction
+                    client:visible
+                    url={`/api/admin/notification-log/${entry.id}/retry`}
+                    label={t(lang, 'admin.notifications.retry')}
+                    busyLabel={t(lang, 'admin.notifications.retrying')}
+                    doneLabel={t(lang, 'admin.notifications.retried')}
+                    errorLabel={errorLabel}
+                    reload
+                  />
+                ) : (
+                  <span class="text-sm">{ownerOnly}</span>
+                ))}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </DataTable>
+  )}
+
+  <AdminPager
+    locale={lang}
+    path={ADMIN_PATHS.notificationLog}
+    params={params}
+    page={page}
+    totalPages={totalPages}
+  />
+</AdminLayout>

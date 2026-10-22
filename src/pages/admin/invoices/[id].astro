@@ -1,0 +1,98 @@
+---
+// Admin invoice view: the store's own invoice document, its totals, the resend action and, for owners, the void form. The document is
+// the same one the customer gets, so the owner sees exactly what was sent.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import PostAction from '@/ui/admin/PostAction.tsx';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import VoidInvoiceForm from '@/ui/admin/invoices/VoidInvoiceForm.tsx';
+import { can } from '@/domain/identity/role';
+import { formatInvoiceNumber } from '@/domain/invoicing/invoice';
+import { formatDate, formatMoney } from '@/domain/shared/format';
+import { money } from '@/domain/shared/money';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const invoice = await app.adminOps.reads.invoiceRecords.findById(Astro.params.id ?? '');
+if (!invoice) return new Response('Not found', { status: 404, headers: { 'cache-control': 'no-store' } });
+const labels = pickNamespace(lang, 'admin').invoices;
+const errorText = t(lang, 'errors.generic');
+const number = formatInvoiceNumber(invoice.series, invoice.number);
+const country = store.general.country;
+const timezone = store.general.timezone;
+const price = (amount: number) => formatMoney(money(amount, invoice.currency), lang, country);
+const canVoid = invoice.status === 'issued' && can(admin.role, 'invoices.void');
+---
+
+<AdminLayout title={number} locale={lang} storeName={store.general.storeName}>
+  <a href={ADMIN_PATHS.invoices} class="inline-flex min-h-11 items-center text-sm underline">
+    {labels.back}
+  </a>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl font-semibold">{t(lang, 'admin.invoices.detailTitle', { number })}</h1>
+    <StatusBadge label={labels.statuses[invoice.status]} tone={invoice.status === 'void' ? 'muted' : 'ok'} />
+  </div>
+
+  <section class="grid gap-4 md:grid-cols-2">
+    <dl class="rounded-brand bg-surface grid grid-cols-2 gap-2 p-4 text-sm">
+      <dt class="text-text/70">{labels.order}</dt>
+      <dd>
+        <a href={`${ADMIN_PATHS.orders}/${invoice.orderNumber}`} class="underline">
+          {invoice.orderNumber}
+        </a>
+      </dd>
+      <dt class="text-text/70">{labels.issued}</dt>
+      <dd>{formatDate(invoice.issuedAt, lang, country, timezone)}</dd>
+      <dt class="text-text/70">{labels.tax}</dt>
+      <dd>{price(invoice.taxMinor)}</dd>
+      <dt class="text-text/70">{labels.total}</dt>
+      <dd class="font-semibold">{price(invoice.totalMinor)}</dd>
+    </dl>
+
+    <div class="flex flex-col gap-4">
+      {invoice.status === 'void' && invoice.voidReason && (
+        <p class="rounded-brand bg-surface p-4 text-sm">
+          {t(lang, 'admin.invoices.voidedBecause', { reason: invoice.voidReason })}
+        </p>
+      )}
+      {invoice.status === 'issued' && (
+        <PostAction
+          url={`/api/admin/invoices/${invoice.id}/resend`}
+          label={labels.resend}
+          busyLabel={labels.resending}
+          doneLabel={labels.resent}
+          errorLabel={errorText}
+          primary={false}
+        />
+      )}
+      {canVoid && (
+        <VoidInvoiceForm
+          client:load
+          invoiceId={invoice.id}
+          labels={{
+            title: labels.voidTitle,
+            hint: labels.voidHint,
+            reason: labels.voidReason,
+            button: labels.voidButton,
+            busy: labels.voiding,
+            error: errorText,
+          }}
+        />
+      )}
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-2">
+    <h2 class="font-semibold">{labels.document}</h2>
+    <iframe
+      src={`/api/admin/invoices/${invoice.id}/document`}
+      title={labels.document}
+      class="rounded-brand border-text/15 h-[70vh] min-h-96 w-full border bg-white"
+    ></iframe>
+  </section>
+</AdminLayout>

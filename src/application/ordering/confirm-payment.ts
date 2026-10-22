@@ -1,17 +1,18 @@
-// ConfirmPayment: applies one payment event from a provider (webhook, return page or capture). Every change is guarded by
-// the order's current status, so a repeated or late event never changes anything that is not already true.
+// ConfirmPayment: applies one payment event from a provider (webhook, return page or capture). Every change is guarded by the
+// order's current status, so a repeated or late event never changes anything that is not already true. The store owner can also
+// mark an order paid by hand (bank transfer, cash on delivery) through the same steps.
 import { canTransition, isPaidOrLater } from '@/domain/ordering/order-status';
 import { DomainError } from '@/domain/shared/errors';
 import type { Order } from '../dto/order-dto';
 import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
+import type { NotificationService } from '../notifications/notification-service';
 import type { SettingsRepository } from '../ports/content';
 import type { JobQueue } from '../ports/jobs';
 import type { OrderRepository } from '../ports/ordering';
-import type { Clock } from '../ports/platform';
 import type { PaymentConfirmation, PaymentEventLog } from '../ports/payments';
-import type { NotificationService } from '../notifications/notification-service';
+import type { Clock } from '../ports/platform';
+import { notifyOrderCustomer } from './customer-notice';
 import type { OrderLinks } from './order-links';
-import { loadOrderPresentation, orderSections } from './order-sections';
 
 /** Dependencies of ConfirmPayment. */
 export interface ConfirmPaymentDeps {
@@ -32,6 +33,9 @@ export interface ConfirmationResult {
   handled: boolean;
   orderNumber: number | null;
 }
+
+/** Customer messages this class sends. */
+type PaymentNotice = 'payment_confirmed' | 'order_cancelled' | 'order_refunded';
 
 /** Applies payment events to orders. */
 export class ConfirmPayment {
@@ -63,6 +67,27 @@ export class ConfirmPayment {
   }
 
   /**
+   * Marks a pending order as paid by hand. Bank transfers and cash on delivery have no gateway event, so the owner confirms them
+   * here. The change, the customer message and the invoice job are the steps a gateway confirmation takes.
+   * @param order Order as loaded.
+   * @param actorId Admin who confirmed the payment; it is written on the timeline.
+   * @param nowIso Time of the change.
+   * @param notify Whether the customer gets the payment message.
+   * @param onFollowUpError Receives a failure of the message or the invoice job. The payment is already recorded, so the caller's
+   * request still succeeds.
+   * @returns False, and changes nothing, when the order is no longer pending.
+   */
+  async markPaid(
+    order: Order,
+    actorId: string,
+    nowIso: string,
+    notify: boolean,
+    onFollowUpError: (error: unknown) => void,
+  ): Promise<boolean> {
+    return this.applyPaid(order, actorId, nowIso, notify, onFollowUpError);
+  }
+
+  /**
    * Applies the outcome of an event to the order, guarded by its current status.
    * @param order Order as loaded.
    * @param confirmation The event.
@@ -72,23 +97,8 @@ export class ConfirmPayment {
     const actor = confirmation.provider;
     switch (confirmation.outcome) {
       case 'succeeded': {
-        const paid = await this.deps.orders.transition(
-          order.id,
-          'pending_payment',
-          'paid',
-          { type: 'payment_confirmed', actor, at: nowIso },
-          { paidAt: nowIso },
-        );
-        if (paid) await this.notifyCustomer(order, 'payment_confirmed');
-        // Issuing runs as a job, not here: a failure that keeps happening would otherwise fail the webhook until the
-        // provider gives up on the endpoint, and no payment would be confirmed at all. The job is idempotent and retried.
-        if (paid || isPaidOrLater(order.status)) {
-          await this.deps.jobs.enqueue(
-            'invoice.issue',
-            { orderId: order.id },
-            { idempotencyKey: `invoice-issue:${order.id}` },
-          );
-        }
+        // Errors propagate here, so the provider retries the event; every step is idempotent.
+        await this.applyPaid(order, actor, nowIso, true);
         return;
       }
       case 'failed':
@@ -119,24 +129,61 @@ export class ConfirmPayment {
   }
 
   /**
-   * Queues the customer message for a change. The order link carries the email key, rebuilt from the stored hash.
+   * Moves a pending order to paid, then queues the customer message and the invoice. Work after the change is not allowed to undo
+   * it: with an error handler, a failure there is reported and the result still says the order was paid.
+   * @param order Order as loaded.
+   * @param actor Who recorded the payment: the gateway, or an admin id.
+   * @param nowIso Time of the change.
+   * @param notify Whether the customer gets the payment message.
+   * @param onFollowUpError Optional handler for failures after the change.
+   * @returns Whether this call moved the order.
+   */
+  private async applyPaid(
+    order: Order,
+    actor: string,
+    nowIso: string,
+    notify: boolean,
+    onFollowUpError?: (error: unknown) => void,
+  ): Promise<boolean> {
+    const paid = await this.deps.orders.transition(
+      order.id,
+      'pending_payment',
+      'paid',
+      { type: 'payment_confirmed', actor, at: nowIso },
+      { paidAt: nowIso },
+    );
+    const followUp = async (): Promise<void> => {
+      if (paid && notify) await this.notifyCustomer(order, 'payment_confirmed');
+      // Issuing runs as a job, not here: a failure that keeps happening would otherwise fail the webhook until the provider gives
+      // up on the endpoint, and no payment would be confirmed at all. The job is idempotent and retried.
+      if (paid || isPaidOrLater(order.status)) {
+        await this.deps.jobs.enqueue(
+          'invoice.issue',
+          { orderId: order.id },
+          { idempotencyKey: `invoice-issue:${order.id}` },
+        );
+      }
+    };
+    if (onFollowUpError) await followUp().catch(onFollowUpError);
+    else await followUp();
+    return paid;
+  }
+
+  /**
+   * Queues the customer message for a change.
    * @param order Order before the change.
    * @param key Message to send.
    */
-  private async notifyCustomer(
-    order: Order,
-    key: 'payment_confirmed' | 'order_cancelled' | 'order_refunded',
-  ): Promise<void> {
-    await this.deps.notifications.notify({
-      key,
-      reference: order.id,
-      orderId: order.id,
-      recipient: { email: order.customer.email, locale: order.locale },
-      context: orderSections(order, order.locale, {
+  private async notifyCustomer(order: Order, key: PaymentNotice): Promise<void> {
+    await notifyOrderCustomer(
+      {
+        notifications: this.deps.notifications,
+        settings: this.deps.settings,
+        links: this.deps.links,
         siteUrl: this.deps.siteUrl,
-        presentation: await loadOrderPresentation(this.deps.settings),
-        accessKey: await this.deps.links.keyFor(order),
-      }),
-    });
+      },
+      order,
+      key,
+    );
   }
 }

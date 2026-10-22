@@ -183,6 +183,7 @@ export class PlaceOrder {
       items: items,
       expiresAt,
       paidAt: null,
+      trackingCode: null,
       createdAt: nowIso,
       updatedAt: nowIso,
     };

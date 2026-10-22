@@ -1,0 +1,145 @@
+---
+// Failed jobs, owners only: the jobs that gave up after their retries, newest first, 25 per page. An unresolved job can be run
+// again or discarded. Payloads may hold customer data, so they stay behind a closed <details>, and editors get no list at all.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import AdminPager from '@/ui/admin/AdminPager.astro';
+import DataTable from '@/ui/admin/DataTable.astro';
+import PostAction from '@/ui/admin/PostAction.tsx';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { can } from '@/domain/identity/role';
+import { formatDateTime } from '@/domain/shared/format';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { totalPagesFor } from '@/domain/shared/pagination';
+import { positiveInteger } from '@/http/list-query';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const PAGE_SIZE = 25;
+const ERROR_CHARS = 200;
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const { country, timezone, storeName } = store.general;
+const params = Astro.url.searchParams;
+const page = positiveInteger(params.get('page'));
+// Display guard only: the endpoints check the same permission. Editors never reach the read, so no payload is loaded for them.
+const result = can(admin.role, 'jobs.manage')
+  ? await app.adminOps.reads.failedJobs.list(page, PAGE_SIZE)
+  : null;
+
+/** Shortens an error to `max` characters, ellipsis included, so one long error cannot stretch the table. */
+const cut = (text: string | null, max: number) =>
+  text && text.length > max ? `${text.slice(0, max - 1)}…` : (text ?? '—');
+
+const head = {
+  job: t(lang, 'admin.jobs.job'),
+  attempts: t(lang, 'admin.jobs.attempts'),
+  failedAt: t(lang, 'admin.jobs.failedAt'),
+  error: t(lang, 'admin.jobs.error'),
+  // admin.jobs has no status label yet; "Status" from the orders namespace stands in until one is added.
+  status: t(lang, 'admin.orders.status'),
+};
+const dataLabel = t(lang, 'admin.jobs.data');
+const errorLabel = t(lang, 'errors.generic');
+---
+
+<AdminLayout title={t(lang, 'admin.jobs.title')} locale={lang} storeName={storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.jobs.title')}</h1>
+
+  {result === null ? (
+    <p class="text-text/70 text-sm">{t(lang, 'admin.jobs.ownerOnly')}</p>
+  ) : (
+    <>
+      {result.items.length === 0 ? (
+        <p class="text-text/70 text-sm">{t(lang, 'admin.jobs.empty')}</p>
+      ) : (
+        <DataTable>
+          <thead>
+            <tr>
+              <th scope="col">{head.job}</th>
+              <th scope="col">{head.attempts}</th>
+              <th scope="col">{head.failedAt}</th>
+              <th scope="col">{head.error}</th>
+              <th scope="col">{head.status}</th>
+              <th scope="col">{t(lang, 'admin.inventory.columnActions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {result.items.map((job) => {
+              const unresolved = job.resolvedAt === null;
+              return (
+                <tr>
+                  <td data-label={head.job}>
+                    <code class="break-all text-xs">{job.jobType}</code>
+                  </td>
+                  <td data-label={head.attempts}>{job.attempts}</td>
+                  <td data-label={head.failedAt}>{formatDateTime(job.createdAt, lang, country, timezone)}</td>
+                  <td data-label={head.error} class="wrap-break-word">
+                    {cut(job.error, ERROR_CHARS)}
+                  </td>
+                  <td data-label={head.status}>
+                    {unresolved ? (
+                      <StatusBadge label={t(lang, 'admin.jobs.open')} tone="warn" />
+                    ) : job.resolution === 'discarded' ? (
+                      <StatusBadge label={t(lang, 'admin.jobs.resolutions.discarded')} tone="muted" />
+                    ) : (
+                      <StatusBadge label={t(lang, 'admin.jobs.resolutions.retried')} tone="ok" />
+                    )}
+                  </td>
+                  <td class="min-w-0">
+                    {/* One column: on phones the payload takes the full card width and the buttons sit below it. */}
+                    <div class="flex min-w-0 flex-1 flex-col gap-2">
+                      <details class="min-w-0">
+                        <summary class="inline-flex min-h-11 cursor-pointer items-center text-sm font-semibold underline">
+                          {dataLabel}
+                        </summary>
+                        {/* set:text keeps the JSON exactly as stringified; template whitespace would show inside the <pre>. */}
+                        <pre
+                          class="rounded-brand mt-2 max-w-full overflow-x-auto bg-white p-3 text-xs"
+                          set:text={JSON.stringify(job.payload, null, 2)}
+                        ></pre>
+                      </details>
+                      {unresolved && (
+                        <span class="flex flex-wrap gap-2">
+                          <PostAction
+                            client:visible
+                            url={`/api/admin/jobs/${job.id}/retry`}
+                            label={t(lang, 'admin.jobs.retry')}
+                            busyLabel={t(lang, 'admin.jobs.retrying')}
+                            doneLabel={t(lang, 'admin.jobs.retried')}
+                            errorLabel={errorLabel}
+                            reload
+                          />
+                          <PostAction
+                            client:visible
+                            url={`/api/admin/jobs/${job.id}/discard`}
+                            label={t(lang, 'admin.jobs.discard')}
+                            busyLabel={t(lang, 'admin.jobs.discarding')}
+                            doneLabel={t(lang, 'admin.jobs.discarded')}
+                            errorLabel={errorLabel}
+                            reload
+                            primary={false}
+                          />
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </DataTable>
+      )}
+
+      <AdminPager
+        locale={lang}
+        path={ADMIN_PATHS.jobs}
+        params={params}
+        page={page}
+        totalPages={totalPagesFor(result.total, PAGE_SIZE)}
+      />
+    </>
+  )}
+</AdminLayout>

@@ -1,0 +1,47 @@
+---
+// Previous and next links for an admin list. The page number goes into the query string; every other filter is kept as it is,
+// so a filtered list pages through the same filtered rows.
+import { t } from '@/ui/i18n';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  locale: Locale;
+  /** Path of the list, without the query string. */
+  path: string;
+  /** Filters of the current view, without `page`. */
+  params: URLSearchParams;
+  page: number;
+  totalPages: number;
+}
+
+const { locale, path, params, page, totalPages } = Astro.props;
+const linkTo = (target: number) => {
+  const search = new URLSearchParams(params);
+  search.set('page', String(target));
+  return `${path}?${search}`;
+};
+const linkClass = 'rounded-brand border-text/20 inline-flex min-h-11 items-center border px-4 text-sm';
+---
+
+{totalPages > 1 && (
+  <nav
+    class="flex items-center justify-between gap-3 text-sm"
+    aria-label={t(locale, 'admin.paging.page', { page, total: totalPages })}
+  >
+    {page > 1 ? (
+      <a href={linkTo(page - 1)} class={linkClass}>
+        {t(locale, 'admin.paging.previous')}
+      </a>
+    ) : (
+      <span />
+    )}
+    <span>{t(locale, 'admin.paging.page', { page, total: totalPages })}</span>
+    {page < totalPages ? (
+      <a href={linkTo(page + 1)} class={linkClass}>
+        {t(locale, 'admin.paging.next')}
+      </a>
+    ) : (
+      <span />
+    )}
+  </nav>
+)}

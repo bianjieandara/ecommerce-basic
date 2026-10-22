@@ -36,6 +36,11 @@ const { title, locale, storeName } = Astro.props;
       { href: ADMIN_PATHS.attributes, label: t(locale, 'admin.nav.attributes') },
       { href: ADMIN_PATHS.media, label: t(locale, 'admin.nav.media') },
       { href: ADMIN_PATHS.inventory, label: t(locale, 'admin.nav.inventory') },
+      { href: ADMIN_PATHS.orders, label: t(locale, 'admin.nav.orders') },
+      { href: ADMIN_PATHS.invoices, label: t(locale, 'admin.nav.invoices') },
+      { href: ADMIN_PATHS.messages, label: t(locale, 'admin.nav.messages') },
+      { href: ADMIN_PATHS.notificationLog, label: t(locale, 'admin.nav.notifications') },
+      { href: ADMIN_PATHS.jobs, label: t(locale, 'admin.nav.jobs') },
     ].map((item) => (
       <a href={item.href} class="inline-flex min-h-11 shrink-0 items-center px-3 text-sm font-semibold">
         {item.label}

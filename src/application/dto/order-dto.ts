@@ -49,6 +49,8 @@ export interface Order {
   items: OrderItem[];
   expiresAt: string | null;
   paidAt: string | null;
+  /** Carrier tracking code, set when the order ships. Empty means none yet. */
+  trackingCode: string | null;
   createdAt: string;
   updatedAt: string;
 }

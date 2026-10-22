@@ -32,6 +32,7 @@ import { CryptoIdGenerator, SystemClock, WebCryptoHasher } from '@/infrastructur
 import { logEvent } from '@/infrastructure/system/logger';
 import { createCatalogAdmin, createMediaLibrary } from './admin-catalog';
 import { createInventory } from './inventory';
+import { createAdminOperations } from './admin-operations';
 import { createIdentity } from './identity';
 import { createOrdering } from './ordering';
 import type { Container } from './container';
@@ -50,7 +51,9 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   const hasher = new WebCryptoHasher();
   const cache = new KvCacheStore(env.CACHE);
   const media = new R2MediaStorage(env.MEDIA);
-  const settings = new D1SettingsRepository(env.DB);
+  // Settings are read once per request. In production requests also share the rows for 30 s, so a settings change reaches every
+  // isolate within that time; in development every request reads them fresh, so edits to the local database show at once.
+  const settings = new D1SettingsRepository(env.DB, { sharedTtlMs: import.meta.env.DEV ? 0 : 30_000 });
   const failedJobs = new D1FailedJobRepository(env.DB);
   const notificationLog = new D1NotificationLogRepository(env.DB);
   const emailTemplateRepository = new D1EmailTemplateRepository(env.DB);
@@ -163,7 +166,23 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     },
   };
 
+  const adminOps = createAdminOperations(env, {
+    clock,
+    hasher,
+    settings,
+    jobs: jobQueue,
+    notifications,
+    orders,
+    invoices,
+    failedJobs,
+    notificationLog,
+    messages: contactMessages,
+    confirmPayment: orderingServices.confirmPayment,
+    evaluateStock: inventory.evaluateStock,
+    siteUrl,
+  });
   return {
+    adminOps,
     config: { siteUrl, turnstileSiteKey: env.TURNSTILE_SITE_KEY },
     settings,
     pages: new D1PageRepository(env.DB),

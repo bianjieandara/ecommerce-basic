@@ -45,6 +45,7 @@ import type { StripeGateway } from '@/infrastructure/payments/stripe-gateway';
 import type { Pbkdf2PasswordHasher } from '@/infrastructure/security/security-adapters';
 import type { CatalogAdmin } from './admin-catalog';
 import type { InventoryServices } from './inventory';
+import type { AdminOperations } from './admin-operations';
 import type { MediaLibrary } from '@/application/media/media-library';
 
 /** Everything the application can use for one request or one job run. */
@@ -101,6 +102,8 @@ export interface Container {
   mediaLibrary: MediaLibrary;
   /** Inventory: manual adjustments, CSV import, the ledger, alerts and back-in-stock subscriptions. */
   inventory: InventoryServices;
+  /** Admin operations: order status changes, invoice resends, failed jobs, notification retries, the inbox and the dashboard. */
+  adminOps: AdminOperations;
   platform: {
     clock: Clock;
     ids: IdGenerator;

@@ -31,6 +31,7 @@ export interface OrderRow {
   customer_note: string;
   expires_at: string | null;
   paid_at: string | null;
+  tracking_code: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -105,6 +106,7 @@ export function toOrder(row: OrderRow, items: OrderItem[]): Order {
     items,
     expiresAt: row.expires_at,
     paidAt: row.paid_at,
+    trackingCode: row.tracking_code,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

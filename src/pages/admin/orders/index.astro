@@ -1,0 +1,155 @@
+---
+// Admin order list: newest first, filtered in the URL by status, payment method, a date range and a search text. The filters are
+// read once here and reused by the paging, so a filtered list pages through the same orders.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import AdminPager from '@/ui/admin/AdminPager.astro';
+import DataTable from '@/ui/admin/DataTable.astro';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { BUTTON, BUTTON_PRIMARY, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { ORDER_STATUS_TONE } from '@/ui/admin/orders/OrderStatusForm.tsx';
+import type { AdminOrderFilter } from '@/application/ports/order-admin';
+import { PAYMENT_METHODS } from '@/application/ports/payments';
+import { ORDER_STATUSES } from '@/domain/ordering/order-status';
+import { dayAfterStartUtc, dayStartUtc } from '@/domain/shared/day-bounds';
+import { formatDateTime, formatMoney } from '@/domain/shared/format';
+import { money } from '@/domain/shared/money';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { positiveInteger } from '@/http/list-query';
+import { pickNamespace } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const general = await app.settings.get('general');
+const labels = pickNamespace(lang, 'admin').orders;
+const params = Astro.url.searchParams;
+const PAGE_SIZE = 25;
+
+/** A calendar day from the query (YYYY-MM-DD), or null. Same rule as the other admin lists. */
+const dayOf = (value: string | null): string | null =>
+  value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+const fromDay = dayOf(params.get('from'));
+const toDay = dayOf(params.get('to'));
+// Unknown values are ignored rather than refused, so an old or edited link still shows a list.
+const filter: AdminOrderFilter = {
+  status: ORDER_STATUSES.find((value) => value === params.get('status')) ?? null,
+  paymentMethod: PAYMENT_METHODS.find((value) => value === params.get('method')) ?? null,
+  // Days follow the store's clock: the range runs from the start of the first day to the start of the day after the last.
+  from: fromDay ? dayStartUtc(fromDay, general.timezone) : null,
+  to: toDay ? dayAfterStartUtc(toDay, general.timezone) : null,
+  search: (params.get('q') ?? '').trim().slice(0, 80) || null,
+};
+const page = positiveInteger(params.get('page'));
+const result = await app.adminOps.reads.orders.list(filter, page, PAGE_SIZE);
+const totalPages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
+const pagingParams = new URLSearchParams(params);
+pagingParams.delete('page');
+---
+
+<AdminLayout title={labels.title} locale={lang} storeName={general.storeName}>
+  <h1 class="text-2xl font-semibold">{labels.title}</h1>
+
+  <form
+    method="get"
+    action={ADMIN_PATHS.orders}
+    class="rounded-brand bg-surface flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap sm:items-end"
+  >
+    <label class={`${LABEL} sm:min-w-64 sm:flex-1`}>
+      {labels.search}
+      <input type="search" name="q" value={filter.search ?? ''} maxlength="80" class={FIELD} />
+    </label>
+    <label class={`${LABEL} sm:w-48`}>
+      {labels.status}
+      <select name="status" class={FIELD}>
+        <option value="" selected={!filter.status}>
+          {labels.allStatuses}
+        </option>
+        {ORDER_STATUSES.map((status) => (
+          <option value={status} selected={filter.status === status}>
+            {labels.states[status]}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label class={`${LABEL} sm:w-48`}>
+      {labels.method}
+      <select name="method" class={FIELD}>
+        <option value="" selected={!filter.paymentMethod}>
+          {labels.allMethods}
+        </option>
+        {PAYMENT_METHODS.map((method) => (
+          <option value={method} selected={filter.paymentMethod === method}>
+            {labels.methods[method]}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label class={`${LABEL} sm:w-44`}>
+      {labels.from}
+      <input type="date" name="from" value={fromDay ?? ''} class={FIELD} />
+    </label>
+    <label class={`${LABEL} sm:w-44`}>
+      {labels.to}
+      <input type="date" name="to" value={toDay ?? ''} class={FIELD} />
+    </label>
+    <div class="flex gap-2">
+      <button type="submit" class={BUTTON_PRIMARY}>
+        {labels.filter}
+      </button>
+      <a href={ADMIN_PATHS.orders} class={BUTTON}>
+        {labels.clear}
+      </a>
+    </div>
+  </form>
+
+  <DataTable>
+    <thead>
+      <tr>
+        <th scope="col">{labels.number}</th>
+        <th scope="col">{labels.date}</th>
+        <th scope="col">{labels.customer}</th>
+        <th scope="col">{labels.total}</th>
+        <th scope="col">{labels.payment}</th>
+        <th scope="col">{labels.status}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {result.items.map((row) => (
+        <tr>
+          <td data-label={labels.number}>
+            <a href={`${ADMIN_PATHS.orders}/${row.number}`} class={LINK_BUTTON}>
+              {row.number}
+            </a>
+          </td>
+          <td data-label={labels.date}>
+            {formatDateTime(row.createdAt, lang, general.country, general.timezone)}
+          </td>
+          <td data-label={labels.customer}>
+            <span class="flex min-w-0 flex-col">
+              <span class="font-semibold">{row.customerName}</span>
+              <span class="text-text/70 break-all">{row.customerEmail}</span>
+            </span>
+          </td>
+          <td data-label={labels.total}>
+            {formatMoney(money(row.totalMinor, row.currency), lang, general.country)}
+          </td>
+          <td data-label={labels.payment}>{labels.methods[row.paymentMethod]}</td>
+          <td data-label={labels.status}>
+            <StatusBadge label={labels.states[row.status]} tone={ORDER_STATUS_TONE[row.status]} />
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </DataTable>
+
+  {result.items.length === 0 && <p class="text-text/70 text-sm">{labels.empty}</p>}
+
+  <AdminPager
+    locale={lang}
+    path={ADMIN_PATHS.orders}
+    params={pagingParams}
+    page={page}
+    totalPages={totalPages}
+  />
+</AdminLayout>

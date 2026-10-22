@@ -1,6 +1,5 @@
 // RenderInvoicePdf: turns an issued invoice into a PDF, stores it in R2 and then emails it to the customer. It is the
 // invoice.render_pdf job. A repeat finds the PDF already stored and sends the email only if it was not queued yet.
-import { formatInvoiceNumber } from '@/domain/invoicing/invoice';
 import { renderInvoiceHtml } from '../documents/invoice-document';
 import { invoiceDocumentOptions } from './invoice-options';
 import type { SettingsRepository } from '../ports/content';
@@ -10,7 +9,7 @@ import type { OrderRepository } from '../ports/ordering';
 import type { Clock } from '../ports/platform';
 import type { NotificationService } from '../notifications/notification-service';
 import type { OrderLinks } from '../ordering/order-links';
-import { loadOrderPresentation, orderSections } from '../ordering/order-sections';
+import { queueInvoiceEmail } from './invoice-email';
 
 /**
  * Storage key of an invoice's PDF.
@@ -81,21 +80,6 @@ export class RenderInvoicePdf {
   private async notifyCustomer(invoice: Invoice): Promise<void> {
     const order = await this.deps.orders.findById(invoice.orderId);
     if (!order) return;
-    const invoicing = await this.deps.settings.get('invoicing');
-    await this.deps.notifications.notify({
-      key: 'invoice_issued',
-      reference: invoice.id,
-      orderId: order.id,
-      recipient: { email: order.customer.email, locale: order.locale },
-      context: {
-        ...orderSections(order, order.locale, {
-          siteUrl: this.deps.siteUrl,
-          presentation: await loadOrderPresentation(this.deps.settings),
-          accessKey: await this.deps.links.keyFor(order),
-        }),
-        invoice: { number: formatInvoiceNumber(invoice.series, invoice.number), url: '' },
-      },
-      attachments: invoicing.attachPdf ? [{ kind: 'invoice_pdf', invoiceId: invoice.id }] : [],
-    });
+    await queueInvoiceEmail(this.deps, order, invoice, invoice.id);
   }
 }

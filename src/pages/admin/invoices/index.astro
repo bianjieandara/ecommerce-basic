@@ -1,0 +1,149 @@
+---
+// Admin invoice list: the invoices the filters match, with the totals of the issued ones. The filters live in the query string, so a
+// filtered view can be bookmarked and paged through.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import AdminPager from '@/ui/admin/AdminPager.astro';
+import DataTable from '@/ui/admin/DataTable.astro';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { BUTTON, FIELD, LABEL } from '@/ui/admin/lib/classes';
+import { INVOICE_STATUSES, formatInvoiceNumber, type InvoiceStatus } from '@/domain/invoicing/invoice';
+import { formatDate, formatMoney } from '@/domain/shared/format';
+import { money } from '@/domain/shared/money';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { dayRangeBounds } from '@/http/store-days';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const PAGE_SIZE = 25;
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const { timezone, currency, country, storeName } = store.general;
+const params = Astro.url.searchParams;
+const labels = pickNamespace(lang, 'admin').invoices;
+
+const statusParam = params.get('status');
+const status = (INVOICE_STATUSES as readonly string[]).includes(statusParam ?? '')
+  ? (statusParam as InvoiceStatus)
+  : null;
+const series = (params.get('series') ?? '').trim().slice(0, 10) || null;
+const search = (params.get('q') ?? '').trim().slice(0, 80) || null;
+const bounds = dayRangeBounds(params.get('from'), params.get('to'), timezone);
+const page = Math.max(1, Number.parseInt(params.get('page') ?? '1', 10) || 1);
+const result = await app.adminOps.reads.invoices.list(
+  { status, series, from: bounds.from, to: bounds.to, search },
+  page,
+  PAGE_SIZE,
+);
+const totalPages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
+const price = (amount: number, code: typeof currency) => formatMoney(money(amount, code), lang, country);
+---
+
+<AdminLayout title={labels.title} locale={lang} storeName={storeName}>
+  <h1 class="text-2xl font-semibold">{labels.title}</h1>
+
+  <section class="grid grid-cols-2 gap-3 md:grid-cols-3" aria-label={labels.issuedTotal}>
+    <div class="rounded-brand bg-surface flex flex-col gap-1 p-4">
+      <span class="text-sm text-text/70">{labels.issuedTotal}</span>
+      <span class="text-xl font-semibold">{price(result.totals.totalMinor, currency)}</span>
+    </div>
+    <div class="rounded-brand bg-surface flex flex-col gap-1 p-4">
+      <span class="text-sm text-text/70">{labels.tax}</span>
+      <span class="text-xl font-semibold">{price(result.totals.taxMinor, currency)}</span>
+    </div>
+    <div class="rounded-brand bg-surface flex flex-col gap-1 p-4">
+      <span class="text-sm text-text/70">
+        {t(lang, 'admin.invoices.issuedCount', { count: result.totals.issued })}
+      </span>
+    </div>
+  </section>
+
+  <form
+    method="get"
+    action={ADMIN_PATHS.invoices}
+    class="grid grid-cols-2 gap-3 md:grid-cols-6"
+    role="search"
+  >
+    <label class={LABEL}>
+      {labels.status}
+      <select name="status" class={FIELD}>
+        <option value="">{labels.allStatuses}</option>
+        {INVOICE_STATUSES.map((value) => (
+          <option value={value} selected={value === status}>
+            {labels.statuses[value]}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label class={LABEL}>
+      {labels.series}
+      <input name="series" value={series ?? ''} maxlength={10} class={FIELD} />
+    </label>
+    <label class={LABEL}>
+      {labels.from}
+      <input type="date" name="from" value={params.get('from') ?? ''} class={FIELD} />
+    </label>
+    <label class={LABEL}>
+      {labels.to}
+      <input type="date" name="to" value={params.get('to') ?? ''} class={FIELD} />
+    </label>
+    <label class={`${LABEL} col-span-2`}>
+      {labels.search}
+      <input name="q" value={search ?? ''} maxlength={80} class={FIELD} />
+    </label>
+    <div class="col-span-2 flex flex-wrap gap-2 md:col-span-6">
+      <button type="submit" class={BUTTON}>
+        {labels.filter}
+      </button>
+      <a href={ADMIN_PATHS.invoices} class={BUTTON}>
+        {labels.clear}
+      </a>
+    </div>
+  </form>
+
+  {result.items.length === 0 ? (
+    <p class="text-text/70 text-sm">{labels.empty}</p>
+  ) : (
+    <DataTable>
+      <thead>
+        <tr>
+          <th>{labels.number}</th>
+          <th>{labels.order}</th>
+          <th>{labels.buyer}</th>
+          <th>{labels.issued}</th>
+          <th>{labels.total}</th>
+          <th>{labels.status}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {result.items.map((invoice) => (
+          <tr>
+            <td data-label={labels.number}>
+              <a href={`${ADMIN_PATHS.invoices}/${invoice.id}`} class="font-semibold underline">
+                {formatInvoiceNumber(invoice.series, invoice.number)}
+              </a>
+            </td>
+            <td data-label={labels.order}>
+              <a href={`${ADMIN_PATHS.orders}/${invoice.orderNumber}`} class="underline">
+                {invoice.orderNumber}
+              </a>
+            </td>
+            <td data-label={labels.buyer}>{invoice.buyerName}</td>
+            <td data-label={labels.issued}>{formatDate(invoice.issuedAt, lang, country, timezone)}</td>
+            <td data-label={labels.total}>{price(invoice.totalMinor, invoice.currency)}</td>
+            <td data-label={labels.status}>
+              <StatusBadge
+                label={labels.statuses[invoice.status]}
+                tone={invoice.status === 'void' ? 'muted' : 'ok'}
+              />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </DataTable>
+  )}
+
+  <AdminPager locale={lang} path={ADMIN_PATHS.invoices} params={params} page={page} totalPages={totalPages} />
+</AdminLayout>

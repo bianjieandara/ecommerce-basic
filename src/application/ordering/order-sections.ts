@@ -110,7 +110,7 @@ export function orderSections(
       total: price(order.totalMinor),
       paymentMethod: METHOD_NAMES[order.paymentMethod][locale],
       url: link,
-      trackingCode: '',
+      trackingCode: order.trackingCode ?? '',
       note: order.note,
       bankInstructions:
         order.paymentMethod === 'bank_transfer' ? pickText(presentation.bankInstructions, locale, 'es') : '',

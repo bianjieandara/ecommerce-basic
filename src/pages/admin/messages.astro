@@ -1,0 +1,121 @@
+---
+// Admin inbox: the contact-form messages, newest first, 25 per page. Unread ones are marked read here; the reply links open
+// the sender's e-mail or WhatsApp chat, so the owner can answer from the phone.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import AdminPager from '@/ui/admin/AdminPager.astro';
+import DataTable from '@/ui/admin/DataTable.astro';
+import PostAction from '@/ui/admin/PostAction.tsx';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { formatDateTime } from '@/domain/shared/format';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { positiveInteger } from '@/http/list-query';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+import { whatsappLink } from '@/ui/lib/whatsapp';
+
+const PAGE_SIZE = 25;
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const { country, timezone, storeName } = store.general;
+const params = Astro.url.searchParams;
+const result = await app.adminOps.reads.messages.list(positiveInteger(params.get('page')), PAGE_SIZE);
+
+const head = {
+  from: t(lang, 'admin.messages.from'),
+  email: t(lang, 'admin.messages.email'),
+  phone: t(lang, 'admin.messages.phone'),
+  received: t(lang, 'admin.messages.received'),
+  message: t(lang, 'admin.messages.message'),
+  unread: t(lang, 'admin.messages.unread'),
+};
+const replyEmail = t(lang, 'admin.messages.replyEmail');
+const replyWhatsApp = t(lang, 'admin.messages.replyWhatsApp');
+---
+
+<AdminLayout title={t(lang, 'admin.messages.title')} locale={lang} storeName={storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.messages.title')}</h1>
+
+  {result.items.length === 0 ? (
+    <p class="text-text/70 text-sm">{t(lang, 'admin.messages.empty')}</p>
+  ) : (
+    <DataTable>
+      <thead>
+        <tr>
+          <th scope="col">{head.from}</th>
+          <th scope="col">{head.email}</th>
+          <th scope="col">{head.phone}</th>
+          <th scope="col">{head.received}</th>
+          <th scope="col">{head.message}</th>
+          <th scope="col">{head.unread}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {result.items.map((message) => {
+          // Empty when the phone has no digits: then there is no WhatsApp link to offer.
+          const whatsapp = message.phone ? whatsappLink(message.phone, '') : '';
+          return (
+            <tr>
+              <td data-label={head.from} class="wrap-break-word">
+                {message.name}
+              </td>
+              <td data-label={head.email}>
+                <span class="flex min-w-0 flex-wrap items-center gap-x-3">
+                  <span class="break-all">{message.email}</span>
+                  <a href={`mailto:${message.email}`} class={LINK_BUTTON}>
+                    {replyEmail}
+                  </a>
+                </span>
+              </td>
+              <td data-label={head.phone}>
+                {message.phone ? (
+                  <span class="flex min-w-0 flex-wrap items-center gap-x-3">
+                    <span class="break-all">{message.phone}</span>
+                    {whatsapp && (
+                      <a href={whatsapp} class={LINK_BUTTON}>
+                        {replyWhatsApp}
+                      </a>
+                    )}
+                  </span>
+                ) : (
+                  <span>—</span>
+                )}
+              </td>
+              <td data-label={head.received}>{formatDateTime(message.createdAt, lang, country, timezone)}</td>
+              <td data-label={head.message}>
+                <span class="wrap-break-word whitespace-pre-line">{message.message}</span>
+              </td>
+              <td>
+                {!message.isRead && (
+                  <span class="flex flex-col items-start gap-2">
+                    <StatusBadge label={head.unread} tone="warn" />
+                    <PostAction
+                      client:visible
+                      url={`/api/admin/messages/${message.id}/read`}
+                      label={t(lang, 'admin.messages.markRead')}
+                      busyLabel={t(lang, 'admin.messages.marking')}
+                      doneLabel={t(lang, 'admin.messages.read')}
+                      errorLabel={t(lang, 'errors.generic')}
+                      reload
+                    />
+                  </span>
+                )}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </DataTable>
+  )}
+
+  <AdminPager
+    locale={lang}
+    path={ADMIN_PATHS.messages}
+    params={params}
+    page={result.page}
+    totalPages={result.totalPages}
+  />
+</AdminLayout>

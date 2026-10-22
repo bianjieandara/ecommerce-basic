@@ -1,0 +1,273 @@
+---
+// Admin order detail: the customer, what was bought and paid, the totals and timeline, the messages sent for the order and its
+// invoice. The status form moves the order to the states it may still reach. The page only reads; each change goes through an endpoint.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import DataTable from '@/ui/admin/DataTable.astro';
+import PostAction from '@/ui/admin/PostAction.tsx';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import OrderStatusForm, { ORDER_STATUS_TONE } from '@/ui/admin/orders/OrderStatusForm.tsx';
+import { BUTTON, LINK_BUTTON, PANEL } from '@/ui/admin/lib/classes';
+import { formatInvoiceNumber } from '@/domain/invoicing/invoice';
+import { canTransition, MANUAL_ORDER_TARGETS } from '@/domain/ordering/order-status';
+import { formatDateTime, formatMoney } from '@/domain/shared/format';
+import { money } from '@/domain/shared/money';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { pickNamespace, t } from '@/ui/i18n';
+import { whatsappLink } from '@/ui/lib/whatsapp';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const general = await app.settings.get('general');
+// Only a positive whole number names an order; anything else is the not-found page.
+const text = Astro.params.number ?? '';
+const orderNumber = /^\d+$/.test(text) ? Number(text) : 0;
+if (!Number.isSafeInteger(orderNumber) || orderNumber < 1) return new Response('Not found', { status: 404 });
+const order = await app.adminOps.reads.orderRecords.findByNumber(orderNumber);
+if (!order) return new Response('Not found', { status: 404 });
+
+const [events, messages, invoice] = await Promise.all([
+  app.adminOps.reads.orderRecords.listEvents(order.id),
+  app.adminOps.reads.notificationLog.listForOrder(order.id, 20),
+  app.adminOps.reads.invoiceRecords.findByOrderId(order.id),
+]);
+const labels = pickNamespace(lang, 'admin').orders;
+const invoiceLabels = pickNamespace(lang, 'admin').invoices;
+const messageLabels = pickNamespace(lang, 'admin').notifications;
+const errorTexts = pickNamespace(lang, 'errors');
+const { country, timezone } = general;
+const when = (iso: string) => formatDateTime(iso, lang, country, timezone);
+const price = (amountMinor: number) => formatMoney(money(amountMinor, order.currency), lang, country);
+const title = t(lang, 'admin.orders.detailTitle', { number: order.number });
+// The timeline is stored oldest first; the screen shows the newest change first.
+const timeline = [...events].reverse();
+// The states the owner may still set from here; the form is left out when there are none.
+const targets = MANUAL_ORDER_TARGETS.filter((to) => canTransition(order.status, to));
+const whatsapp = whatsappLink(order.customer.phone, '');
+const address = Object.values(order.shippingAddress).filter(Boolean).join(', ');
+// A failed message is accented; every other state is neutral.
+const messageTone = (status: string): 'warn' | 'muted' => (status === 'failed' ? 'warn' : 'muted');
+const productLabel = t(lang, 'admin.products.columnName');
+const quantityLabel = t(lang, 'cart.quantity');
+const itemColumns = [productLabel, quantityLabel, labels.total];
+const messageColumns = [labels.date, messageLabels.template, messageLabels.channel, messageLabels.status];
+const totals: [string, number][] = [
+  [t(lang, 'cart.subtotal'), order.subtotalMinor],
+  [invoiceLabels.tax, order.taxMinor],
+  [t(lang, 'order.shipping'), order.shippingMinor],
+];
+// Shared classes: a definition list with labels in one column and values in the other, and a panel heading.
+const DL = 'grid grid-cols-[auto_1fr] items-baseline gap-x-4 gap-y-2 text-sm';
+const HEADING = 'text-base font-semibold';
+---
+
+<AdminLayout title={title} locale={lang} storeName={general.storeName}>
+  <a href={ADMIN_PATHS.orders} class={LINK_BUTTON}>
+    {labels.back}
+  </a>
+  <div class="flex flex-col gap-1">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-2xl font-semibold">{title}</h1>
+      <StatusBadge label={labels.states[order.status]} tone={ORDER_STATUS_TONE[order.status]} />
+    </div>
+    <p class="text-text/70 text-sm">{when(order.createdAt)}</p>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <section class={PANEL} aria-label={labels.customerTitle}>
+      <h2 class={HEADING}>{labels.customerTitle}</h2>
+      <p class="font-semibold wrap-break-word">{order.customer.name}</p>
+      <dl class={DL}>
+        <dt>{t(lang, 'admin.common.email')}</dt>
+        <dd class="wrap-break-word">{order.customer.email}</dd>
+        <dt>{t(lang, 'admin.messages.phone')}</dt>
+        <dd>{order.customer.phone}</dd>
+      </dl>
+      {whatsapp && (
+        <a href={whatsapp} target="_blank" rel="noopener noreferrer" class={BUTTON}>
+          {t(lang, 'admin.messages.replyWhatsApp')}
+        </a>
+      )}
+    </section>
+
+    {address && (
+      <section class={PANEL} aria-label={labels.shipping}>
+        <h2 class={HEADING}>{labels.shipping}</h2>
+        <p class="text-sm wrap-break-word">{address}</p>
+        {order.trackingCode && (
+          <dl class={DL}>
+            <dt>{labels.tracking}</dt>
+            <dd class="break-all">{order.trackingCode}</dd>
+          </dl>
+        )}
+      </section>
+    )}
+
+    <section class="flex flex-col gap-2 md:col-span-2" aria-label={labels.items}>
+      <h2 class={HEADING}>{labels.items}</h2>
+      <DataTable>
+        <thead>
+          <tr>
+            {itemColumns.map((column) => (
+              <th scope="col">{column}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {order.items.map((item) => (
+            <tr>
+              <td data-label={productLabel}>
+                <span class="flex min-w-0 flex-col">
+                  <span class="font-semibold wrap-break-word">{item.productName}</span>
+                  {item.variantLabel && <span class="text-text/70 text-sm">{item.variantLabel}</span>}
+                </span>
+              </td>
+              <td data-label={quantityLabel}>{item.quantity}</td>
+              <td data-label={labels.total}>{price(item.lineTotalMinor)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </DataTable>
+    </section>
+
+    <section class={PANEL} aria-label={labels.totals}>
+      <h2 class={HEADING}>{labels.totals}</h2>
+      <dl class={DL}>
+        {totals.map(([label, amount]) => (
+          <>
+            <dt>{label}</dt>
+            <dd>{price(amount)}</dd>
+          </>
+        ))}
+        <dt class="font-semibold">{labels.total}</dt>
+        <dd class="font-semibold">{price(order.totalMinor)}</dd>
+      </dl>
+    </section>
+
+    <section class={PANEL} aria-label={labels.paymentTitle}>
+      <h2 class={HEADING}>{labels.paymentTitle}</h2>
+      <dl class={DL}>
+        <dt>{labels.method}</dt>
+        <dd>{labels.methods[order.paymentMethod]}</dd>
+        {order.paymentReference && (
+          <>
+            <dt>{labels.reference}</dt>
+            <dd class="break-all">{order.paymentReference}</dd>
+          </>
+        )}
+        {order.paidAt && (
+          <>
+            <dt>{labels.states.paid}</dt>
+            <dd>{when(order.paidAt)}</dd>
+          </>
+        )}
+      </dl>
+    </section>
+
+    {targets.length > 0 && (
+      <section class={PANEL} aria-label={labels.changeTitle}>
+        <h2 class={HEADING}>{labels.changeTitle}</h2>
+        <OrderStatusForm
+          client:load
+          orderNumber={order.number}
+          targets={targets}
+          labels={labels}
+          errors={errorTexts}
+        />
+      </section>
+    )}
+
+    <section class={PANEL} aria-label={labels.invoiceTitle}>
+      <h2 class={HEADING}>{labels.invoiceTitle}</h2>
+      {invoice ? (
+        <>
+          <p class="font-semibold">{formatInvoiceNumber(invoice.series, invoice.number)}</p>
+          <dl class={DL}>
+            <dt>{invoiceLabels.status}</dt>
+            <dd>{invoiceLabels.statuses[invoice.status]}</dd>
+            <dt>{invoiceLabels.issued}</dt>
+            <dd>{when(invoice.issuedAt)}</dd>
+          </dl>
+          {invoice.status === 'void' && invoice.voidReason && (
+            <p class="text-sm">{t(lang, 'admin.invoices.voidedBecause', { reason: invoice.voidReason })}</p>
+          )}
+          <div class="flex flex-wrap items-start gap-3">
+            <a href={`${ADMIN_PATHS.invoices}/${invoice.id}`} class={BUTTON}>
+              {labels.viewInvoice}
+            </a>
+            {invoice.status === 'issued' && (
+              <PostAction
+                client:visible
+                url={`/api/admin/invoices/${invoice.id}/resend`}
+                label={labels.resendInvoice}
+                busyLabel={labels.resending}
+                doneLabel={labels.resent}
+                errorLabel={errorTexts.generic}
+                reload={false}
+              />
+            )}
+          </div>
+        </>
+      ) : (
+        <p class="text-text/70 text-sm">{labels.noInvoice}</p>
+      )}
+    </section>
+
+    <section class={PANEL} aria-label={labels.timeline}>
+      <h2 class={HEADING}>{labels.timeline}</h2>
+      {timeline.length === 0 ? (
+        <p class="text-text/70 text-sm">{labels.noEvents}</p>
+      ) : (
+        <ol class="flex flex-col gap-3 text-sm">
+          {timeline.map((event) => (
+            <li class="border-text/15 flex flex-col gap-0.5 border-l-2 pl-3">
+              <span class="font-semibold break-all">{event.type}</span>
+              <time datetime={event.createdAt}>{when(event.createdAt)}</time>
+              {event.note && <span class="wrap-break-word">{event.note}</span>}
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+
+    <section class="flex flex-col gap-2 md:col-span-2" aria-label={labels.messagesSent}>
+      <h2 class={HEADING}>{labels.messagesSent}</h2>
+      {messages.length === 0 ? (
+        <p class="text-text/70 text-sm">{labels.noMessages}</p>
+      ) : (
+        <DataTable>
+          <thead>
+            <tr>
+              {messageColumns.map((column) => (
+                <th scope="col">{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {messages.map((message) => (
+              <tr>
+                <td data-label={labels.date}>{when(message.createdAt)}</td>
+                <td data-label={messageLabels.template}>
+                  <code class="text-xs break-all">{message.templateKey}</code>
+                </td>
+                <td data-label={messageLabels.channel}>{messageLabels.channels[message.channel]}</td>
+                <td data-label={messageLabels.status}>
+                  <span class="flex min-w-0 flex-col items-start gap-1">
+                    <StatusBadge
+                      label={messageLabels.states[message.status]}
+                      tone={messageTone(message.status)}
+                    />
+                    {message.error && (
+                      <span class="text-accent text-xs wrap-break-word">{message.error}</span>
+                    )}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </DataTable>
+      )}
+    </section>
+  </div>
+</AdminLayout>

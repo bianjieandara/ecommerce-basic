@@ -78,6 +78,17 @@ export class D1FailedJobRepository implements FailedJobRepository {
     return result.meta.changes > 0;
   }
 
+  async resolveMany(ids: string[], resolution: 'retried' | 'discarded', nowIso: string): Promise<number> {
+    if (ids.length === 0) return 0;
+    const result = await statement(
+      this.db,
+      `UPDATE failed_jobs SET resolution = ?, resolved_at = ?
+       WHERE resolved_at IS NULL AND id IN (SELECT value FROM json_each(?))`,
+      [resolution, nowIso, JSON.stringify(ids)],
+    ).run();
+    return result.meta.changes;
+  }
+
   async findUnresolvedByNotificationKey(idempotencyKey: string): Promise<FailedJob[]> {
     const rows = await queryAll<FailedJobRow>(
       this.db,
