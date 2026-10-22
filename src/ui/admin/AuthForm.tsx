@@ -150,7 +150,7 @@ export default function AuthForm(props: AuthFormProps) {
     return (
       <div role="status" class="rounded-brand bg-surface flex flex-col gap-3 p-4">
         <p class="text-sm">{labels.done}</p>
-        <a href={ADMIN_PATHS.login} class="font-semibold underline">
+        <a href={ADMIN_PATHS.login} class="inline-flex min-h-11 items-center font-semibold underline">
           {labels.signIn}
         </a>
       </div>
@@ -204,7 +204,7 @@ export default function AuthForm(props: AuthFormProps) {
         {status === 'sending' ? labels.submitting : labels.submit}
       </button>
       {mode === 'login' && (
-        <a href={ADMIN_PATHS.forgotPassword} class="text-sm underline">
+        <a href={ADMIN_PATHS.forgotPassword} class="inline-flex min-h-11 items-center text-sm underline">
           {labels.forgot}
         </a>
       )}

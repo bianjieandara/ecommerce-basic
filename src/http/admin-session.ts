@@ -2,6 +2,7 @@
 // http development uses a plain name, because browsers refuse Secure cookies on plain http.
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 
+/** Cookie lifetime in seconds; keep in step with SESSION_DAYS in application/identity/sessions.ts. */
 export const SESSION_MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
 
 /** Admin paths in the dashboard area, and nothing else: a `next` value must stay inside it. */

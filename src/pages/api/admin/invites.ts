@@ -4,6 +4,7 @@ import { inviteAdminInput } from '@/application/identity/schemas';
 import { DomainError } from '@/domain/shared/errors';
 import { defineEndpoint } from '@/http/define-endpoint';
 
+/** Invites another admin. Only owners may invite. */
 export const POST = defineEndpoint({
   method: 'POST',
   input: inviteAdminInput,

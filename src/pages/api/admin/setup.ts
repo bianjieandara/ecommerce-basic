@@ -5,6 +5,7 @@ import { DomainError } from '@/domain/shared/errors';
 import { clientOf, sessionResponse } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 
+/** Creates the first owner and starts their session. Rate limited per IP. */
 export const POST = defineEndpoint({
   method: 'POST',
   input: setupOwnerInput,

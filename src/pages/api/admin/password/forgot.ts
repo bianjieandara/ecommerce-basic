@@ -4,6 +4,7 @@ import { forgotPasswordInput } from '@/application/identity/schemas';
 import { clientOf } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 
+/** Requests a password reset link. Always answers the same way. */
 export const POST = defineEndpoint({
   method: 'POST',
   input: forgotPasswordInput,

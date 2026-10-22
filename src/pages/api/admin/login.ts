@@ -4,6 +4,7 @@ import { loginInput } from '@/application/identity/schemas';
 import { clientOf, sessionResponse } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 
+/** Signs an admin in and starts their session. */
 export const POST = defineEndpoint({
   method: 'POST',
   input: loginInput,

@@ -38,6 +38,9 @@ function adminHeaders(response: Response): Response {
   return response;
 }
 
+/**
+ * Runs before every request: attaches the container and the admin session, then guards the admin area.
+ */
 export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.requestId = crypto.randomUUID();
   const app = createContainer(getEnv(), getExecutionContext(context.locals));

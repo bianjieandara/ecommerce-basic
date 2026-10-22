@@ -3,6 +3,7 @@
 import { resetPasswordInput } from '@/application/identity/schemas';
 import { defineEndpoint } from '@/http/define-endpoint';
 
+/** Sets a new password from a reset or invitation link. */
 export const POST = defineEndpoint({
   method: 'POST',
   input: resetPasswordInput,

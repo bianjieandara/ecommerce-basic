@@ -4,6 +4,7 @@ import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { sessionTokenOf, signedOutResponse } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 
+/** Ends the session and redirects to sign-in. */
 export const POST = defineEndpoint({
   method: 'POST',
   handler: async ({ context }) => {
