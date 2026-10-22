@@ -10,6 +10,7 @@ import type { OrderRepository } from '../ports/ordering';
 import type { Clock } from '../ports/platform';
 import type { PaymentConfirmation, PaymentEventLog } from '../ports/payments';
 import type { NotificationService } from '../notifications/notification-service';
+import type { OrderLinks } from './order-links';
 import { loadOrderPresentation, orderSections } from './order-sections';
 
 /** Dependencies of ConfirmPayment. */
@@ -19,6 +20,7 @@ export interface ConfirmPaymentDeps {
   notifications: NotificationService;
   settings: SettingsRepository;
   jobs: JobQueue;
+  links: OrderLinks;
   evaluateStock: EvaluateStockChanges;
   clock: Clock;
   siteUrl: string;
@@ -117,7 +119,7 @@ export class ConfirmPayment {
   }
 
   /**
-   * Queues the customer message for a change. The order link is left out: only the hash is stored after checkout.
+   * Queues the customer message for a change. The order link carries the email key, rebuilt from the stored hash.
    * @param order Order before the change.
    * @param key Message to send.
    */
@@ -133,7 +135,7 @@ export class ConfirmPayment {
       context: orderSections(order, order.locale, {
         siteUrl: this.deps.siteUrl,
         presentation: await loadOrderPresentation(this.deps.settings),
-        accessKey: null,
+        accessKey: await this.deps.links.keyFor(order),
       }),
     });
   }

@@ -13,6 +13,7 @@ import { CapturePayment } from '@/application/ordering/capture-payment';
 import { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
 import { GetOrderStatus } from '@/application/ordering/get-order-status';
+import { OrderLinks } from '@/application/ordering/order-links';
 import { PlaceOrder } from '@/application/ordering/place-order';
 import { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
 import { IssueInvoice } from '@/application/invoicing/issue-invoice';
@@ -83,13 +84,15 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
   const pdf = new BrowserRunPdfRenderer(env.BROWSER);
   const pdfDeps = { invoices, settings, pdf, media, clock };
   const issueInvoice = new IssueInvoice({ orders, invoices, settings, jobs, legal, clock, ids });
-  const renderInvoicePdf = new RenderInvoicePdf({ ...pdfDeps, orders, notifications, siteUrl });
+  const links = new OrderLinks({ orders, hasher });
+  const renderInvoicePdf = new RenderInvoicePdf({ ...pdfDeps, orders, notifications, links, siteUrl });
   const issueLegalInvoice = new IssueLegalInvoice({ invoices, legal, clock });
   const expireStaleOrders = new ExpireStaleOrders({
     orders,
     notifications,
     settings,
     evaluateStock,
+    links,
     clock,
     siteUrl,
   });
@@ -118,6 +121,7 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     settings,
     jobs,
     evaluateStock,
+    links,
     clock,
     siteUrl,
   });

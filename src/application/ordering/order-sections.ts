@@ -66,7 +66,7 @@ export async function loadOrderPresentation(settings: SettingsRepository): Promi
 export interface OrderSectionsOptions {
   siteUrl: string;
   presentation: OrderPresentation;
-  /** Access key for the order link. Null when the message should carry no link. */
+  /** Key for the order link: the checkout key, or the email key from OrderLinks. Null leaves the link out. */
   accessKey: string | null;
 }
 

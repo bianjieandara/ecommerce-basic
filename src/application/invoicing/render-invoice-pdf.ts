@@ -9,6 +9,7 @@ import type { MediaStorage } from '../ports/media';
 import type { OrderRepository } from '../ports/ordering';
 import type { Clock } from '../ports/platform';
 import type { NotificationService } from '../notifications/notification-service';
+import type { OrderLinks } from '../ordering/order-links';
 import { loadOrderPresentation, orderSections } from '../ordering/order-sections';
 
 /**
@@ -60,6 +61,7 @@ export async function storePdf(deps: PdfStoreDeps, invoice: Invoice): Promise<Ar
 export interface RenderInvoicePdfDeps extends PdfStoreDeps {
   orders: OrderRepository;
   notifications: NotificationService;
+  links: OrderLinks;
   siteUrl: string;
 }
 
@@ -99,7 +101,7 @@ export class RenderInvoicePdf {
         ...orderSections(order, order.locale, {
           siteUrl: this.deps.siteUrl,
           presentation: await loadOrderPresentation(this.deps.settings),
-          accessKey: null,
+          accessKey: await this.deps.links.keyFor(order),
         }),
         invoice: { number: formatInvoiceNumber(invoice.series, invoice.number), url: '' },
       },

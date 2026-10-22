@@ -5,6 +5,7 @@ import type { SettingsRepository } from '../ports/content';
 import type { OrderRepository } from '../ports/ordering';
 import type { Clock } from '../ports/platform';
 import type { NotificationService } from '../notifications/notification-service';
+import type { OrderLinks } from './order-links';
 import { loadOrderPresentation, orderSections } from './order-sections';
 
 /** Dependencies of ExpireStaleOrders. */
@@ -13,6 +14,7 @@ export interface ExpireStaleOrdersDeps {
   notifications: NotificationService;
   settings: SettingsRepository;
   evaluateStock: EvaluateStockChanges;
+  links: OrderLinks;
   clock: Clock;
   siteUrl: string;
 }
@@ -52,7 +54,7 @@ export class ExpireStaleOrders {
         context: orderSections(order, order.locale, {
           siteUrl: this.deps.siteUrl,
           presentation,
-          accessKey: null,
+          accessKey: await this.deps.links.keyFor(order),
         }),
       });
     }

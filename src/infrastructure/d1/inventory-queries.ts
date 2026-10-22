@@ -28,7 +28,8 @@ import { PRODUCT_NAME_SQL, VARIANT_LABEL_SQL, textSearch, whereClause } from './
 const SORTS: Record<InventoryFilter['sort'], { sql: string; needsLocale: boolean }> = {
   name: { sql: `${PRODUCT_NAME_SQL} COLLATE NOCASE, v.product_id, v.position, v.id`, needsLocale: true },
   stock_asc: { sql: 'v.stock, v.product_id, v.position, v.id', needsLocale: false },
-  stock_desc: { sql: 'v.stock DESC, v.product_id, v.position, v.id', needsLocale: false },
+  // Every column is reversed, so the stock index (migration 0002) can be read backwards.
+  stock_desc: { sql: 'v.stock DESC, v.product_id DESC, v.position DESC, v.id DESC', needsLocale: false },
   value_desc: {
     sql: 'v.stock * COALESCE(v.price_minor, p.base_price_minor) DESC, v.product_id, v.position, v.id',
     needsLocale: false,
