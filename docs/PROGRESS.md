@@ -12,7 +12,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [x] Stage 7 — Public storefront: home, catalog with filters, product
 - [x] Stage 8 — Cart
 - [x] Stage 9 — Notifications: engine, email templates, multichannel service
-- [ ] Stage 10 — Checkout, payments, orders (card payments now go through dLocal Go and pass in its sandbox; open: a PayPal sandbox payment approved by a buyer)
+- [x] Stage 10 — Checkout, payments, orders (card payments through dLocal Go and PayPal pass in their sandboxes; `PAYPAL_WEBHOOK_ID` is set when the store has a public URL)
 - [x] Stage 11 — Invoicing
 - [x] Stage 12 — Content pages, contact, reviews
 - [x] Stage 13 — Admin foundation and authentication
