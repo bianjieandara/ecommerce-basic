@@ -34,7 +34,12 @@ export async function queueInvoiceEmail(
     key: 'invoice_issued',
     reference,
     orderId: order.id,
-    recipient: { email: order.customer.email, locale: order.locale },
+    recipient: {
+      email: order.customer.email,
+      locale: order.locale,
+      phone: order.customer.phone,
+      whatsappOptIn: order.customer.whatsappOptIn,
+    },
     context: {
       ...orderSections(order, order.locale, {
         siteUrl: deps.siteUrl,

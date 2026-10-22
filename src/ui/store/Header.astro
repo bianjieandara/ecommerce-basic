@@ -56,7 +56,7 @@ const otherHref = alternates[other] ?? (other === 'es' ? '/es/' : '/en/');
         aria-label={t(locale, 'nav.cart')}
       >
         <Icon name="cart" />
-        <CartBadge client:idle />
+        <CartBadge client:only="preact" />
       </a>
     </div>
   </div>

@@ -537,3 +537,10 @@ The user chose dLocal Go as the card gateway. Everywhere the plan says Stripe, r
 - **Banner state is client-side.** The page cache keys on path only, so the server renders the banner from settings alone; the browser reads the consent cookie and hides or shows the banner. A consented visitor may see it briefly before hydration.
 - **Storefront outage.** The analytics step called app.platform.analytics, which the container did not define, so every storefront HTML page returned 500. The step now records through the container's analytics writer and cannot fail a page.
 - **Known gaps:** the Analytics Engine purchase write, real Meta calls (the tokens are not set), and the storefront browser check of the Accept flow.
+
+## 2026-10-22 — Consent at checkout, WhatsApp call sites, cart islands
+
+- **Consent is recorded at checkout.** The checkout endpoint reads the buyer's own consent cookie; the request body cannot claim consent. The order stores the flag (marketing_consent). Purchase events go to Meta only for orders with the flag set, so the earlier gap is closed for buyers who consent.
+- **WhatsApp notices carry the phone and the opt-in.** Order received, cancelled, invoice, and back-in-stock notices pass both. The low-stock store alert is sent when any alert channel is chosen, so a WhatsApp-only setting still queues the message; the e-mail is sent only when e-mail is chosen.
+- **Cart islands render on the client only.** The server cannot know the saved cart, so the badge and drawer were rendering an empty cart and then hydrating a different one. Both are client-only now; the cart badge is no longer server rendered.
+- **Reports check.** The 30-day revenue on the sales page matches an independent SQL sum (22 orders, 53,700 minor). The CSV is text/csv with a header row.

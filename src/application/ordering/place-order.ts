@@ -41,7 +41,10 @@ export class PlaceOrder {
    * @returns The order number, the payment step and the order page.
    * @throws DomainError with the code of the first problem found.
    */
-  async execute(input: PlaceOrderInput, client: { ip: string | null }): Promise<PlacedOrder> {
+  async execute(
+    input: PlaceOrderInput,
+    client: { ip: string | null; marketingConsent: boolean },
+  ): Promise<PlacedOrder> {
     if (!(await this.deps.botVerifier.verify(input.turnstileToken, client.ip))) {
       throw new DomainError('BOT_CHECK_FAILED', 'The security check failed');
     }
@@ -127,6 +130,7 @@ export class PlaceOrder {
       note: input.note,
       attribution: input.attribution,
       billing: billingRecord(input.billing),
+      marketingConsent: client.marketingConsent,
       expiresAt,
       createdAt: nowIso,
       items,
@@ -184,8 +188,7 @@ export class PlaceOrder {
     const order: Order = {
       id,
       number: placed.number,
-      // Checkout does not record marketing consent yet, so no purchase is sent to Meta for this order.
-      marketingConsent: false,
+      marketingConsent: client.marketingConsent,
       status: 'pending_payment',
       paymentMethod: input.paymentMethod,
       paymentReference: initiation.kind === 'redirect' ? (initiation.providerReference ?? null) : null,
@@ -214,7 +217,12 @@ export class PlaceOrder {
         key: 'order_received',
         reference: id,
         orderId: id,
-        recipient: { email: input.customer.email, locale: input.locale },
+        recipient: {
+          email: input.customer.email,
+          locale: input.locale,
+          phone: input.customer.phone,
+          whatsappOptIn: input.whatsappOptIn,
+        },
         context: orderSections(order, input.locale, { siteUrl: this.deps.siteUrl, presentation, accessKey }),
       });
       await this.deps.notifications.notify({

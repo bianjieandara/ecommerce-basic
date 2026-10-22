@@ -101,7 +101,7 @@ const consentLabels = {
     <WhatsAppFloat number={contact.whatsappNumber} message={contact.whatsappMessage} locale={locale} />
   )}
   <CartDrawer
-    client:idle
+    client:only="preact"
     locale={locale}
     currency={currency}
     country={country}

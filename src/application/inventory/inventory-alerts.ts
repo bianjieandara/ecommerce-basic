@@ -41,7 +41,8 @@ export class InventoryAlerts {
       this.deps.settings.get('contact'),
       this.deps.settings.get('checkout'),
     ]);
-    if (!inventory.lowStockAlerts || !inventory.lowStockAlertChannels.includes('email')) return;
+    if (!inventory.lowStockAlerts || inventory.lowStockAlertChannels.length === 0) return;
+    // The store e-mail is sent only when e-mail is a chosen channel; a WhatsApp-only setting still queues the WhatsApp message.
     const rows = (
       await this.deps.inventory.findVariants(
         variantIds,
@@ -53,7 +54,12 @@ export class InventoryAlerts {
     await this.deps.notifications.notify({
       key: 'low_stock_store',
       reference: alertId,
-      recipient: { email: checkout.orderNotificationEmail || contact.email, locale: general.defaultLocale },
+      recipient: {
+        email: inventory.lowStockAlertChannels.includes('email')
+          ? checkout.orderNotificationEmail || contact.email
+          : undefined,
+        locale: general.defaultLocale,
+      },
       context: { stock: { count: rows.length, items: rows.map(toStockRow) } },
     });
   }
@@ -91,7 +97,12 @@ export class InventoryAlerts {
           return this.deps.notifications.notify({
             key: 'back_in_stock',
             reference: `${variantId}:${restockedAt}`,
-            recipient: { email: subscriber.email, locale: subscriber.locale },
+            recipient: {
+              email: subscriber.email,
+              locale: subscriber.locale,
+              phone: subscriber.phone ?? undefined,
+              whatsappOptIn: subscriber.whatsappOptIn,
+            },
             context: {
               product: {
                 name: row.productName,

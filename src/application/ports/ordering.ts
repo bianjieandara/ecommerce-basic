@@ -24,6 +24,8 @@ export interface NewOrder {
   note: string;
   attribution: Record<string, string>;
   billing: Record<string, string>;
+  /** Whether the buyer agreed to marketing at checkout (from the consent cookie). */
+  marketingConsent: boolean;
   expiresAt: string | null;
   createdAt: string;
   items: OrderItem[];
