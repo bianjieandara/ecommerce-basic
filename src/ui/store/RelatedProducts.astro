@@ -1,0 +1,31 @@
+---
+// "You may also like" row of the product page: products from the same categories, as a carousel of cards. Renders nothing when
+// there are none, so a product alone in its category shows no empty heading.
+import Carousel from '@/ui/components/Carousel.astro';
+import { t } from '@/ui/i18n';
+import type { ProductCardDto } from '@/application/dto/catalog-dto';
+import type { StoreView } from '@/ui/lib/store-view';
+import ProductCard from './ProductCard.astro';
+
+interface Props {
+  products: ProductCardDto[];
+  view: StoreView;
+}
+
+const { products, view } = Astro.props;
+---
+
+{products.length > 0 && (
+  <section class="mt-12 flex flex-col gap-4" aria-labelledby="related-heading">
+    <h2 id="related-heading" class="text-xl font-semibold">
+      {t(view.locale, 'product.related')}
+    </h2>
+    <Carousel label={t(view.locale, 'product.related')}>
+      {products.map((product) => (
+        <div class="w-44 shrink-0 snap-start sm:w-56">
+          <ProductCard product={product} view={view} />
+        </div>
+      ))}
+    </Carousel>
+  </section>
+)}

@@ -19,6 +19,7 @@ import { loadFacets } from './catalog-facets';
 import { loadFeed } from './catalog-feed';
 import { buildWhere, newCutoff, orderByFor, type CatalogQueryOptions } from './catalog-filters';
 import { loadProductBySlug } from './catalog-product-detail';
+import { loadCategoryAlternates, loadRelatedProductIds } from './catalog-related';
 import { toPrefixQuery } from './catalog-text';
 import { loadQuoteVariants } from './catalog-variants';
 import { queryAll, queryFirst } from './d1-client';
@@ -154,6 +155,14 @@ export class D1CatalogQueryService implements CatalogQueryService {
     );
     const byId = new Map(rows.map((row) => [row.id, toCard(row, cutoff)]));
     return ids.map((id) => byId.get(id)).filter((card): card is ProductCardDto => card !== undefined);
+  }
+
+  async listRelatedProducts(locale: Locale, productId: string, limit: number): Promise<ProductCardDto[]> {
+    return this.listProductsByIds(locale, await loadRelatedProductIds(this.db, productId, locale, limit));
+  }
+
+  getCategoryAlternates(categoryId: string): Promise<Partial<Record<Locale, string>>> {
+    return loadCategoryAlternates(this.db, categoryId);
   }
 
   listForFeed(locale: Locale): Promise<FeedItemDto[]> {

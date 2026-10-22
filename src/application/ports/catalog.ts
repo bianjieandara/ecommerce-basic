@@ -28,6 +28,10 @@ export interface CatalogQueryService {
   /** Variants by id, used to re-price a cart on the server. The only trusted price source. */
   getQuoteVariants(variantIds: string[], locale: Locale): Promise<QuoteVariantDto[]>;
   listProductsByIds(locale: Locale, ids: string[]): Promise<ProductCardDto[]>;
+  /** Cards of active products that share a category with a product, best matches first. Never includes the product itself. */
+  listRelatedProducts(locale: Locale, productId: string, limit: number): Promise<ProductCardDto[]>;
+  /** Slug of a category in every language that has one, for the language switch on category pages. */
+  getCategoryAlternates(categoryId: string): Promise<Partial<Record<Locale, string>>>;
   listForFeed(locale: Locale): Promise<FeedItemDto[]>;
 }
 
