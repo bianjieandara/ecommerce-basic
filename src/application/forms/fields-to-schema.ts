@@ -45,14 +45,17 @@ function fieldSchema(field: FieldDescriptor, options: SchemaOptions): z.ZodType 
       let number = z.number();
       if (field.min !== undefined) number = number.min(field.min);
       if (field.max !== undefined) number = number.max(field.max);
-      return number;
+      return field.nullable ? number.nullable() : number;
     }
     case 'boolean':
       return z.boolean();
     case 'select': {
       const allowed = field.options.map((option) => option.value);
-      return z.string().refine((value) => allowed.includes(value), 'Unknown option');
+      const choice = z.string().refine((value) => allowed.includes(value), 'Unknown option');
+      return field.nullable ? choice.nullable() : choice;
     }
+    case 'object':
+      return fieldsToSchema(field.fields, options);
     case 'multiselect': {
       const allowed = field.options.map((option) => option.value);
       return z.array(z.string().refine((value) => allowed.includes(value), 'Unknown option'));

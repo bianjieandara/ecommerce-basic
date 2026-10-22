@@ -9,12 +9,12 @@ import StatusBadge from '@/ui/admin/StatusBadge.astro';
 import { LINK_BUTTON } from '@/ui/admin/lib/classes';
 import { formatDateTime } from '@/domain/shared/format';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { ADMIN_LIST_PAGE_SIZE } from '@/http/admin-lists';
 import { positiveInteger } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
 import { t } from '@/ui/i18n';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 
-const PAGE_SIZE = 25;
 const admin = Astro.locals.admin;
 if (!admin) return Astro.redirect(ADMIN_PATHS.login);
 const lang = admin.locale;
@@ -22,7 +22,10 @@ const app = Astro.locals.app;
 const store = await loadStoreContext(app);
 const { country, timezone, storeName } = store.general;
 const params = Astro.url.searchParams;
-const result = await app.adminOps.reads.messages.list(positiveInteger(params.get('page')), PAGE_SIZE);
+const result = await app.adminOps.reads.messages.list(
+  positiveInteger(params.get('page')),
+  ADMIN_LIST_PAGE_SIZE,
+);
 
 const head = {
   from: t(lang, 'admin.messages.from'),

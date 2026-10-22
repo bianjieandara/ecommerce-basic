@@ -28,6 +28,8 @@ export interface CheckoutFormProps {
   cartHref: string;
   continueHref: string;
   labels: CheckoutLabels;
+  /** Whether the checkout asks for the buyer's company name and tax ID, for the invoice. */
+  askTaxId: boolean;
 }
 
 /**
@@ -124,6 +126,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
               : null,
           paymentMethod: method,
           note: field('note'),
+          billing: props.askTaxId ? { legalName: field('legalName'), taxId: field('taxId') } : null,
           attribution: readAttribution(),
           turnstileToken: turnstile.token(),
         }),
@@ -220,6 +223,22 @@ export default function CheckoutForm(props: CheckoutFormProps) {
             <textarea name="note" rows={3} maxLength={500} class={inputClass} />
           </label>
         </section>
+
+        {props.askTaxId && (
+          <section class="flex flex-col gap-3" aria-labelledby="checkout-invoice">
+            <h2 id="checkout-invoice" class="text-lg font-semibold">
+              {labels.invoiceData}
+            </h2>
+            <label class="flex flex-col gap-1 text-sm">
+              {labels.legalName}
+              <input name="legalName" autoComplete="organization" class={inputClass} />
+            </label>
+            <label class="flex flex-col gap-1 text-sm">
+              {labels.taxId}
+              <input name="taxId" class={inputClass} />
+            </label>
+          </section>
+        )}
 
         <section class="flex flex-col gap-3" aria-labelledby="checkout-payment">
           <h2 id="checkout-payment" class="text-lg font-semibold">

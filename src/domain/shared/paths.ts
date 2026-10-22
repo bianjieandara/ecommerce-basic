@@ -57,4 +57,6 @@ export const ADMIN_PATHS = {
   messages: '/admin/messages',
   notificationLog: '/admin/notification-log',
   jobs: '/admin/jobs',
+  settings: '/admin/settings',
+  pages: '/admin/pages',
 } as const;

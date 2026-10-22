@@ -17,6 +17,18 @@ import {
 } from './place-order-support';
 export type { PlaceOrderDeps, PlacedOrder } from './place-order-support';
 
+/**
+ * The billing details the buyer typed, without the empty ones. They go on the order, and from there onto its invoice.
+ * @param input Billing details from the checkout, or null when none were asked for.
+ * @returns The details that were filled in.
+ */
+function billingRecord(input: { legalName: string; taxId: string } | null): Record<string, string> {
+  const record: Record<string, string> = {};
+  if (input?.legalName) record.legalName = input.legalName;
+  if (input?.taxId) record.taxId = input.taxId;
+  return record;
+}
+
 /** Places orders from checkout requests. */
 export class PlaceOrder {
   /** @param deps Repositories, gateways and services. */
@@ -114,6 +126,7 @@ export class PlaceOrder {
       shippingAddress: address,
       note: input.note,
       attribution: input.attribution,
+      billing: billingRecord(input.billing),
       expiresAt,
       createdAt: nowIso,
       items,

@@ -1,0 +1,99 @@
+---
+// Invoice panel of one order: the invoice's number, status and actions, or a note that none was issued yet. A paid order with no
+// invoice gets the action that issues one, when the store's invoicing is on.
+import PostAction from '@/ui/admin/PostAction.tsx';
+import { BUTTON, DETAIL_LIST, HEADING, PANEL } from '@/ui/admin/lib/classes';
+import type { Invoice } from '@/application/ports/invoicing';
+import { formatInvoiceNumber } from '@/domain/invoicing/invoice';
+import { formatDateTime } from '@/domain/shared/format';
+import type { Locale } from '@/domain/shared/locale';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { pickNamespace, t } from '@/ui/i18n';
+
+/** Props of the invoice panel. */
+interface Props {
+  /** The order's invoice, or null when none was issued. */
+  invoice: Invoice | null;
+  /** Order number; the issue action is addressed by it. */
+  orderNumber: number;
+  /** Whether the invoice can be issued now: the order is paid, has none, and invoicing is on. */
+  canIssue: boolean;
+  /** Link to the stored invoice PDF for the owner to download, or null when there is none. */
+  pdfHref: string | null;
+  /** Language of the labels and dates. */
+  locale: Locale;
+  /** Store country, for the date format. */
+  country: string;
+  /** Store time zone, for the date format. */
+  timezone: string;
+}
+
+const { invoice, orderNumber, canIssue, pdfHref, locale, country, timezone } = Astro.props;
+const labels = pickNamespace(locale, 'admin').orders;
+const invoiceLabels = pickNamespace(locale, 'admin').invoices;
+const errorTexts = pickNamespace(locale, 'errors');
+const when = (iso: string) => formatDateTime(iso, locale, country, timezone);
+---
+
+<section class={PANEL} aria-label={labels.invoiceTitle}>
+  <h2 class={HEADING}>{labels.invoiceTitle}</h2>
+  {invoice ? (
+    <>
+      <p class="font-semibold">{formatInvoiceNumber(invoice.series, invoice.number)}</p>
+      <dl class={DETAIL_LIST}>
+        <dt>{invoiceLabels.status}</dt>
+        <dd>{invoiceLabels.statuses[invoice.status]}</dd>
+        <dt>{invoiceLabels.issued}</dt>
+        <dd>{when(invoice.issuedAt)}</dd>
+      </dl>
+      {invoice.status === 'void' && invoice.voidReason && (
+        <p class="text-sm">{t(locale, 'admin.invoices.voidedBecause', { reason: invoice.voidReason })}</p>
+      )}
+      <div class="flex flex-wrap items-start gap-3">
+        <a href={`${ADMIN_PATHS.invoices}/${invoice.id}`} class={BUTTON}>
+          {labels.viewInvoice}
+        </a>
+        {invoice.status === 'issued' && (
+          <PostAction
+            client:visible
+            url={`/api/admin/invoices/${invoice.id}/resend`}
+            label={labels.resendInvoice}
+            busyLabel={labels.resending}
+            doneLabel={labels.resent}
+            errorLabel={errorTexts.generic}
+            reload={false}
+          />
+        )}
+        {pdfHref && (
+          <a href={pdfHref} target="_blank" rel="noopener noreferrer" class={BUTTON}>
+            {labels.downloadPdf}
+          </a>
+        )}
+        <PostAction
+          client:visible
+          url={`/api/admin/invoices/${invoice.id}/pdf`}
+          label={labels.regeneratePdf}
+          busyLabel={labels.regeneratingPdf}
+          doneLabel={labels.pdfQueued}
+          errorLabel={errorTexts.generic}
+          reload={false}
+        />
+      </div>
+    </>
+  ) : (
+    <div class="flex flex-col items-start gap-3">
+      <p class="text-text/70 text-sm">{labels.noInvoice}</p>
+      {canIssue && (
+        <PostAction
+          client:visible
+          url={`/api/admin/orders/${orderNumber}/invoice`}
+          label={labels.issueInvoice}
+          busyLabel={labels.issuingInvoice}
+          doneLabel={labels.invoiceIssued}
+          errorLabel={errorTexts.generic}
+          reload
+        />
+      )}
+    </div>
+  )}
+</section>

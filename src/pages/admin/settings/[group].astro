@@ -1,0 +1,56 @@
+---
+// One settings group, edited with the schema form. Only owners may save; the endpoint checks the same permission.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import SchemaForm from '@/ui/admin/schema-form/SchemaForm.tsx';
+import { settingsGroupNames } from '@/ui/admin/settings-labels';
+import { LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { can } from '@/domain/identity/role';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import type { SettingsGroup } from '@/application/content/settings-schemas';
+import { settingsFormFields } from '@/application/content/settings-fields';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const names = settingsGroupNames(lang);
+const requested = Astro.params.group ?? '';
+if (!Object.hasOwn(names, requested)) return new Response(t(lang, 'errors.NOT_FOUND'), { status: 404 });
+const group = requested as SettingsGroup;
+const canEdit = can(admin.role, 'settings.manage');
+const values = await app.settings.get(group);
+const library = await app.mediaLibrary.list(1, 100);
+const media = library.items.map((asset) => ({ id: asset.id, label: asset.originalName }));
+const fields = settingsFormFields(group);
+const labels = {
+  save: t(lang, 'admin.form.save'),
+  saving: t(lang, 'admin.form.saving'),
+  saved: t(lang, 'admin.form.saved'),
+  failed: t(lang, 'admin.form.failed'),
+  none: t(lang, 'admin.form.none'),
+  invalid: t(lang, 'admin.form.invalid'),
+};
+---
+
+<AdminLayout title={names[group]} locale={lang} storeName={store.general.storeName}>
+  <a href={ADMIN_PATHS.settings} class={LINK_BUTTON}>
+    {t(lang, 'admin.settings.back')}
+  </a>
+  <h1 class="text-2xl font-semibold">{names[group]}</h1>
+  {canEdit ? (
+    <SchemaForm
+      client:load
+      fields={fields}
+      values={values}
+      locale={lang}
+      saveUrl={`/api/admin/settings/${group}`}
+      media={media}
+      labels={labels}
+    />
+  ) : (
+    <p class="text-text/70 text-sm">{t(lang, 'errors.FORBIDDEN')}</p>
+  )}
+</AdminLayout>

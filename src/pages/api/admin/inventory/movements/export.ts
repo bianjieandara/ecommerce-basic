@@ -1,7 +1,8 @@
 // Ledger export: the movements that match the filters, newest first, as CSV.
 import { toCsv } from '@/application/documents/csv';
 import { csvResponse } from '@/http/csv-response';
-import { EXPORT_ROW_LIMIT, movementFilterFrom } from '@/http/admin-inventory-page';
+import { movementFilterFrom } from '@/http/admin-inventory-page';
+import { EXPORT_ROW_LIMIT } from '@/http/admin-lists';
 import { requireAdmin } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 

@@ -10,11 +10,13 @@ import { can } from '@/domain/identity/role';
 import { formatDateTime } from '@/domain/shared/format';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { totalPagesFor } from '@/domain/shared/pagination';
+import { ADMIN_LIST_PAGE_SIZE } from '@/http/admin-lists';
 import { positiveInteger } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
 import { t } from '@/ui/i18n';
+import { cutText } from '@/ui/lib/cut-text';
+import { notificationLabel } from '@/ui/lib/notification-labels';
 
-const PAGE_SIZE = 25;
 const ERROR_CHARS = 120;
 const admin = Astro.locals.admin;
 if (!admin) return Astro.redirect(ADMIN_PATHS.login);
@@ -24,8 +26,8 @@ const store = await loadStoreContext(app);
 const { country, timezone, storeName } = store.general;
 const params = Astro.url.searchParams;
 const page = positiveInteger(params.get('page'));
-const result = await app.adminOps.reads.notificationLog.list(page, PAGE_SIZE);
-const totalPages = totalPagesFor(result.total, PAGE_SIZE);
+const result = await app.adminOps.reads.notificationLog.list(page, ADMIN_LIST_PAGE_SIZE);
+const totalPages = totalPagesFor(result.total, ADMIN_LIST_PAGE_SIZE);
 // Display guard only: the retry endpoint checks the same permission itself.
 const isOwner = can(admin.role, 'jobs.manage');
 
@@ -38,13 +40,8 @@ const TONE = {
   failed: 'warn',
   skipped: 'muted',
 } as const;
-/** Shortens an error to `max` characters, ellipsis included, so one long error cannot stretch the table. */
-const cut = (text: string | null, max: number) =>
-  text && text.length > max ? `${text.slice(0, max - 1)}…` : (text ?? '—');
-
 const head = {
-  // admin.notifications has no time label yet; "Date" from the orders namespace stands in until one is added.
-  time: t(lang, 'admin.orders.date'),
+  time: t(lang, 'admin.notifications.time'),
   channel: t(lang, 'admin.notifications.channel'),
   template: t(lang, 'admin.notifications.template'),
   recipient: t(lang, 'admin.notifications.recipient'),
@@ -79,7 +76,10 @@ const errorLabel = t(lang, 'errors.generic');
             <td data-label={head.time}>{formatDateTime(entry.createdAt, lang, country, timezone)}</td>
             <td data-label={head.channel}>{t(lang, `admin.notifications.channels.${entry.channel}`)}</td>
             <td data-label={head.template}>
-              <code class="break-all text-xs">{entry.templateKey}</code>
+              <span class="flex min-w-0 flex-col gap-1">
+                <span>{notificationLabel(lang, entry.templateKey)}</span>
+                <code class="text-text/70 break-all text-xs">{entry.templateKey}</code>
+              </span>
             </td>
             <td data-label={head.recipient} class="break-all">
               {entry.recipient}
@@ -91,7 +91,7 @@ const errorLabel = t(lang, 'errors.generic');
               />
             </td>
             <td data-label={head.error} class="wrap-break-word">
-              {cut(entry.error, ERROR_CHARS)}
+              {cutText(entry.error, ERROR_CHARS)}
             </td>
             <td>
               {entry.status === 'failed' &&

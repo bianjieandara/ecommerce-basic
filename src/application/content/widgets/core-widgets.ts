@@ -1,8 +1,6 @@
 // The widget definitions shipped with the template, with the fields each one exposes to admins in the page builder.
-import type { LocalizedText } from '@/domain/shared/localized-text';
+import { bilingual as text } from '@/domain/shared/localized-text';
 import type { WidgetDefinition } from './widget-types';
-
-const text = (es: string, en: string): LocalizedText => ({ es, en });
 
 /** Every core widget definition, in the order shown in the admin picker. */
 export const CORE_WIDGETS: WidgetDefinition[] = [

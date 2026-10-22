@@ -28,7 +28,7 @@ export function placeOrderStatements(db: D1Database, draft: NewOrder): Placement
            shipping_address_json, customer_note, tracking_code, attribution_json, stock_released, expires_at, paid_at,
            created_at, updated_at)
          VALUES (?, (SELECT last_number FROM order_counter WHERE id = 1), ?, 'pending_payment', ?, NULL, ?, ?, ?, ?, ?,
-           ?, ?, ?, ?, ?, ?, 0, '{}', ?, ?, ?, ?, NULL, ?, 0, ?, NULL, ?, ?)`,
+           ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, NULL, ?, 0, ?, NULL, ?, ?)`,
       [
         draft.id,
         draft.accessKeyHash,
@@ -44,6 +44,7 @@ export function placeOrderStatements(db: D1Database, draft: NewOrder): Placement
         draft.customer.email,
         draft.customer.phone,
         boolToInt(draft.customer.whatsappOptIn),
+        JSON.stringify(draft.billing),
         draft.shippingMethodId,
         draft.shippingMethodName,
         JSON.stringify(draft.shippingAddress),

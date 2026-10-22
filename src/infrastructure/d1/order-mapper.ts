@@ -32,6 +32,8 @@ export interface OrderRow {
   expires_at: string | null;
   paid_at: string | null;
   tracking_code: string | null;
+  attribution_json: string;
+  billing_json: string;
   created_at: string;
   updated_at: string;
 }
@@ -107,6 +109,8 @@ export function toOrder(row: OrderRow, items: OrderItem[]): Order {
     expiresAt: row.expires_at,
     paidAt: row.paid_at,
     trackingCode: row.tracking_code,
+    attribution: parseJson<Record<string, string>>(row.attribution_json, {}),
+    billing: parseJson<Record<string, string>>(row.billing_json, {}),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

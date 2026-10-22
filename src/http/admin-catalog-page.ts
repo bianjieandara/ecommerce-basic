@@ -10,10 +10,8 @@ import type { Locale } from '@/domain/shared/locale';
 import { PATHS } from '@/domain/shared/paths';
 import { orderTree } from '@/ui/admin/lib/category-order';
 import type { AttributeOption, CategoryOption, MediaOption } from '@/ui/admin/catalog-options';
+import { ADMIN_LIST_PAGE_SIZE } from './admin-lists';
 import { positiveInteger } from './list-query';
-
-/** Products per page in the admin list. */
-const PAGE_SIZE = 25;
 
 /**
  * Reads the product list filters from the query string. Unknown values fall back to "everything".
@@ -29,7 +27,7 @@ export function productFilterFrom(params: URLSearchParams): AdminProductFilter {
     onSale: params.get('sale') === '1',
     outOfStock: params.get('stock') === '1',
     page: positiveInteger(params.get('page')),
-    pageSize: PAGE_SIZE,
+    pageSize: ADMIN_LIST_PAGE_SIZE,
   };
 }
 

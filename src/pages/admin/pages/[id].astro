@@ -1,0 +1,94 @@
+---
+// One page in the builder: its texts, its publication and its sections, in the order they show on the store.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import PageBuilder from '@/ui/admin/pages/PageBuilder.tsx';
+import { LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { getWidgetDefinitions } from '@/application/content/widgets/registry';
+import { findEditablePage } from '@/application/content/system-page-view';
+import { pickText } from '@/domain/shared/localized-text';
+import { ADMIN_PATHS, PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const defaultLocale = store.general.defaultLocale;
+const page = await findEditablePage(app.pages, Astro.params.id ?? '', new Date().toISOString());
+if (!page) return new Response(t(lang, 'errors.NOT_FOUND'), { status: 404 });
+const library = await app.mediaLibrary.list(1, 100);
+const media = library.items.map((asset) => ({ id: asset.id, label: asset.originalName }));
+const widgets = getWidgetDefinitions().map((definition) => ({
+  type: definition.type,
+  label: definition.label,
+  fields: definition.fields,
+  defaults: definition.defaults,
+}));
+const previewHref = page.slug === 'home' ? PATHS.home(defaultLocale) : PATHS.page(defaultLocale, page.slug);
+const pageValue = {
+  id: page.id,
+  slug: page.slug,
+  kind: page.kind,
+  title: page.title,
+  seoTitle: page.seoTitle,
+  seoDescription: page.seoDescription,
+  isPublished: page.isPublished,
+  sections: page.sections,
+};
+const labels = {
+  pageFields: t(lang, 'admin.pages.pageFields'),
+  pageTitle: t(lang, 'admin.pages.pageTitle'),
+  seoTitle: t(lang, 'admin.pages.seoTitle'),
+  seoDescription: t(lang, 'admin.pages.seoDescription'),
+  published: t(lang, 'admin.pages.published'),
+  systemPage: t(lang, 'admin.pages.systemPageNote'),
+  sections: t(lang, 'admin.pages.sections'),
+  noSections: t(lang, 'admin.pages.noSections'),
+  addSection: t(lang, 'admin.pages.addSection'),
+  addButton: t(lang, 'admin.pages.addButton'),
+  preview: t(lang, 'admin.pages.preview'),
+  delete: t(lang, 'admin.pages.delete'),
+  confirmDelete: t(lang, 'admin.pages.confirmDelete'),
+  confirmRemove: t(lang, 'admin.pages.confirmRemove'),
+  deleteFailed: t(lang, 'admin.pages.deleteFailed'),
+  shown: t(lang, 'admin.pages.shown'),
+  edit: t(lang, 'admin.pages.edit'),
+  close: t(lang, 'admin.pages.close'),
+  moveUp: t(lang, 'admin.pages.moveUp'),
+  moveDown: t(lang, 'admin.pages.moveDown'),
+  duplicate: t(lang, 'admin.pages.duplicate'),
+  remove: t(lang, 'admin.pages.remove'),
+  unknown: t(lang, 'admin.pages.unknownBlock'),
+  save: t(lang, 'admin.form.save'),
+  saving: t(lang, 'admin.form.saving'),
+  saved: t(lang, 'admin.form.saved'),
+  failed: t(lang, 'admin.form.failed'),
+  none: t(lang, 'admin.form.none'),
+  invalid: t(lang, 'admin.form.invalid'),
+};
+---
+
+<AdminLayout
+  title={pickText(page.title, lang, defaultLocale)}
+  locale={lang}
+  storeName={store.general.storeName}
+>
+  <a href={ADMIN_PATHS.pages} class={LINK_BUTTON}>
+    {t(lang, 'admin.pages.back')}
+  </a>
+  <h1 class="text-2xl font-semibold wrap-break-word">{pickText(page.title, lang, defaultLocale)}</h1>
+  <PageBuilder
+    client:load
+    page={pageValue}
+    widgets={widgets}
+    media={media}
+    locale={lang}
+    saveUrl={`/api/admin/pages/${page.id}`}
+    deleteUrl={`/api/admin/pages/${page.id}/delete`}
+    backHref={ADMIN_PATHS.pages}
+    previewHref={previewHref}
+    labels={labels}
+  />
+</AdminLayout>

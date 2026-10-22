@@ -10,11 +10,12 @@ import { can } from '@/domain/identity/role';
 import { formatDateTime } from '@/domain/shared/format';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { totalPagesFor } from '@/domain/shared/pagination';
+import { ADMIN_LIST_PAGE_SIZE } from '@/http/admin-lists';
 import { positiveInteger } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
 import { t } from '@/ui/i18n';
+import { cutText } from '@/ui/lib/cut-text';
 
-const PAGE_SIZE = 25;
 const ERROR_CHARS = 200;
 const admin = Astro.locals.admin;
 if (!admin) return Astro.redirect(ADMIN_PATHS.login);
@@ -26,22 +27,19 @@ const params = Astro.url.searchParams;
 const page = positiveInteger(params.get('page'));
 // Display guard only: the endpoints check the same permission. Editors never reach the read, so no payload is loaded for them.
 const result = can(admin.role, 'jobs.manage')
-  ? await app.adminOps.reads.failedJobs.list(page, PAGE_SIZE)
+  ? await app.adminOps.reads.failedJobs.list(page, ADMIN_LIST_PAGE_SIZE)
   : null;
-
-/** Shortens an error to `max` characters, ellipsis included, so one long error cannot stretch the table. */
-const cut = (text: string | null, max: number) =>
-  text && text.length > max ? `${text.slice(0, max - 1)}…` : (text ?? '—');
 
 const head = {
   job: t(lang, 'admin.jobs.job'),
   attempts: t(lang, 'admin.jobs.attempts'),
   failedAt: t(lang, 'admin.jobs.failedAt'),
   error: t(lang, 'admin.jobs.error'),
-  // admin.jobs has no status label yet; "Status" from the orders namespace stands in until one is added.
-  status: t(lang, 'admin.orders.status'),
+  status: t(lang, 'admin.jobs.status'),
 };
 const dataLabel = t(lang, 'admin.jobs.data');
+// The backlog is read only for owners, like the failed jobs themselves; null means the platform did not report it.
+const backlog = result === null ? null : await app.adminOps.reads.queueBacklog.count();
 const errorLabel = t(lang, 'errors.generic');
 ---
 
@@ -52,6 +50,11 @@ const errorLabel = t(lang, 'errors.generic');
     <p class="text-text/70 text-sm">{t(lang, 'admin.jobs.ownerOnly')}</p>
   ) : (
     <>
+      <p class="text-text/70 text-sm">
+        {backlog === null
+          ? t(lang, 'admin.jobs.backlogUnavailable')
+          : t(lang, 'admin.jobs.backlog', { count: backlog })}
+      </p>
       {result.items.length === 0 ? (
         <p class="text-text/70 text-sm">{t(lang, 'admin.jobs.empty')}</p>
       ) : (
@@ -77,7 +80,7 @@ const errorLabel = t(lang, 'errors.generic');
                   <td data-label={head.attempts}>{job.attempts}</td>
                   <td data-label={head.failedAt}>{formatDateTime(job.createdAt, lang, country, timezone)}</td>
                   <td data-label={head.error} class="wrap-break-word">
-                    {cut(job.error, ERROR_CHARS)}
+                    {cutText(job.error, ERROR_CHARS)}
                   </td>
                   <td data-label={head.status}>
                     {unresolved ? (
@@ -92,7 +95,7 @@ const errorLabel = t(lang, 'errors.generic');
                     {/* One column: on phones the payload takes the full card width and the buttons sit below it. */}
                     <div class="flex min-w-0 flex-1 flex-col gap-2">
                       <details class="min-w-0">
-                        <summary class="inline-flex min-h-11 cursor-pointer items-center text-sm font-semibold underline">
+                        <summary class="inline-flex min-h-11 min-w-11 cursor-pointer items-center text-sm font-semibold underline">
                           {dataLabel}
                         </summary>
                         {/* set:text keeps the JSON exactly as stringified; template whitespace would show inside the <pre>. */}
@@ -138,7 +141,7 @@ const errorLabel = t(lang, 'errors.generic');
         path={ADMIN_PATHS.jobs}
         params={params}
         page={page}
-        totalPages={totalPagesFor(result.total, PAGE_SIZE)}
+        totalPages={totalPagesFor(result.total, ADMIN_LIST_PAGE_SIZE)}
       />
     </>
   )}

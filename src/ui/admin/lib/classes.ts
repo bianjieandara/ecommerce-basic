@@ -8,6 +8,10 @@ export const BUTTON_PRIMARY =
 export const LINK_BUTTON = 'inline-flex min-h-11 items-center px-2 text-sm font-semibold underline';
 export const ERROR_TEXT = 'text-accent text-sm';
 export const PANEL = 'rounded-brand bg-surface flex flex-col gap-4 p-4';
+/** Heading of a panel or a section on an admin screen. */
+export const HEADING = 'text-base font-semibold';
+/** A definition list: labels in one column, values in the other. */
+export const DETAIL_LIST = 'grid grid-cols-[auto_1fr] items-baseline gap-x-4 gap-y-2 text-sm';
 /** Card around an admin table. */
 export const TABLE_WRAP = 'rounded-brand bg-surface overflow-hidden';
 /** Base classes of a status badge; a tone from BADGE_TONE is added to them. */

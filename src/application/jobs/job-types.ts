@@ -38,6 +38,15 @@ export type NotifyEmailPayload = z.infer<typeof notifyEmailPayload>;
 /** Payload of the invoice jobs that work on an existing invoice. */
 export const invoiceJobPayload = z.object({ invoiceId: z.string().min(1).max(64) });
 
+/**
+ * Payload of invoice.render_pdf: the invoice, and whether a stored PDF is replaced. The job queued after issuing leaves
+ * `regenerate` out; an admin's request for a fresh copy sets it.
+ */
+export const invoiceRenderPayload = z.object({
+  invoiceId: z.string().min(1).max(64),
+  regenerate: z.boolean().optional(),
+});
+
 /** Payload of invoice.issue: the paid order to issue an invoice for. */
 export const invoiceIssuePayload = z.object({ orderId: z.string().min(1).max(64) });
 
@@ -66,7 +75,7 @@ export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
   'maintenance.purge': maintenancePurgePayload,
   'notify.email': notifyEmailPayload,
   'invoice.issue': invoiceIssuePayload,
-  'invoice.render_pdf': invoiceJobPayload,
+  'invoice.render_pdf': invoiceRenderPayload,
   'invoice.legal_issue': invoiceJobPayload,
   'inventory.low_stock_alert': lowStockAlertPayload,
   'inventory.back_in_stock': backInStockPayload,

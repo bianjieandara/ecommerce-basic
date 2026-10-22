@@ -19,6 +19,9 @@ export interface CheckoutLabels {
   countryCode: string;
   note: string;
   whatsappOptIn: string;
+  invoiceData: string;
+  legalName: string;
+  taxId: string;
   placeOrder: string;
   placing: string;
   subtotal: string;

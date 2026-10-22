@@ -1,6 +1,7 @@
 ---
-// Server-rendered SVG line chart with no client JavaScript. The data is also printed as a list for screen readers.
-// Used by the dashboard (14-day revenue) and reports; `compact` gives the sparkline variant.
+// Server-rendered SVG line chart with no client JavaScript. The plot keeps a margin for its labels, so the first and last points are
+// never cut off; the data is also printed as a list for screen readers. Used by the dashboard (14-day revenue) and reports; `compact`
+// gives the sparkline variant, which has no labels or gridlines.
 interface Point {
   label: string;
   value: number;
@@ -9,7 +10,7 @@ interface Point {
 interface Props {
   title: string;
   points: Point[];
-  /** Formats a value for the accessible list and the chart label. */
+  /** Formats a value for the axis, the tooltips and the accessible list. */
   format?: (value: number) => string;
   compact?: boolean;
   class?: string;
@@ -22,27 +23,67 @@ const {
   compact = false,
   class: className = '',
 } = Astro.props;
+// Margins inside the viewBox: the left one holds the value labels, the bottom one the labels of the first and last points.
 const width = 320;
-const height = compact ? 48 : 160;
+const height = compact ? 48 : 176;
+const left = compact ? 4 : 56;
+const right = 8;
+const top = 8;
+const bottom = compact ? 4 : 24;
+const plotWidth = width - left - right;
+const plotHeight = height - top - bottom;
 const max = Math.max(1, ...points.map((point) => point.value));
-const step = points.length > 1 ? width / (points.length - 1) : 0;
-const coords = points.map((point, index) => ({
-  x: index * step,
-  y: height - (point.value / max) * (height - 8) - 4,
-}));
+const step = points.length > 1 ? plotWidth / (points.length - 1) : 0;
+const yOf = (value: number) => top + plotHeight - (value / max) * plotHeight;
+const coords = points.map((point, index) => ({ x: left + index * step, y: yOf(point.value) }));
 const path = coords
   .map((coord, index) => `${index === 0 ? 'M' : 'L'}${coord.x.toFixed(1)},${coord.y.toFixed(1)}`)
   .join(' ');
+// Gridlines at zero, half and the top of the scale, each with its value. The sparkline has none.
+const ticks = compact ? [] : [0, max / 2, max].map((value) => ({ value, y: yOf(value) }));
+const showEnds = !compact && points.length > 1;
 ---
 
 <figure class={`w-full ${className}`}>
   <svg viewBox={`0 0 ${width} ${height}`} class="h-auto w-full" role="img" aria-label={title}>
+    {ticks.map((tick) => (
+      <g>
+        <line
+          x1={left}
+          x2={width - right}
+          y1={tick.y}
+          y2={tick.y}
+          stroke="currentColor"
+          stroke-opacity="0.15"
+        />
+        <text x={left - 6} y={tick.y + 3} text-anchor="end" font-size="9" fill="currentColor" opacity="0.7">
+          {format(tick.value)}
+        </text>
+      </g>
+    ))}
     <path d={path} fill="none" stroke="var(--brand-primary)" stroke-width="2" stroke-linejoin="round" />
     {coords.map((coord, index) => (
       <circle cx={coord.x} cy={coord.y} r="3" fill="var(--brand-primary)">
         <title>{`${points[index]?.label}: ${format(points[index]?.value ?? 0)}`}</title>
       </circle>
     ))}
+    {showEnds && (
+      <>
+        <text x={left} y={height - 6} font-size="9" fill="currentColor" opacity="0.7">
+          {points[0]?.label}
+        </text>
+        <text
+          x={width - right}
+          y={height - 6}
+          text-anchor="end"
+          font-size="9"
+          fill="currentColor"
+          opacity="0.7"
+        >
+          {points[points.length - 1]?.label}
+        </text>
+      </>
+    )}
   </svg>
   {!compact && (
     <figcaption class="sr-only">

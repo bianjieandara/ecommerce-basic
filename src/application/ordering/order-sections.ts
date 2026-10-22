@@ -11,7 +11,7 @@ import type { Order } from '../dto/order-dto';
 import type { CheckoutSettings, GeneralSettings, TaxSettings } from '../dto/settings-dto';
 import type { NotificationSections } from '../notifications/context';
 import type { SettingsRepository } from '../ports/content';
-import type { PaymentMethod } from '../ports/payments';
+import { PAYMENT_METHODS, type PaymentMethod } from '../ports/payments';
 
 /** Payment method names as customers read them. */
 const METHOD_NAMES: Record<PaymentMethod, Record<Locale, string>> = {
@@ -21,6 +21,22 @@ const METHOD_NAMES: Record<PaymentMethod, Record<Locale, string>> = {
   bank_transfer: { es: 'Transferencia bancaria', en: 'Bank transfer' },
   cash_on_delivery: { es: 'Pago contra entrega', en: 'Cash on delivery' },
 };
+
+/** Whether a stored value is a payment method this version knows. */
+function isPaymentMethod(value: string): value is PaymentMethod {
+  return (PAYMENT_METHODS as readonly string[]).includes(value);
+}
+
+/**
+ * The name of a payment method for a customer message. A method stored before the gateway change has no name, so its stored value is
+ * used: the message still goes out, and the customer sees how the order was recorded.
+ * @param method Method as stored.
+ * @param locale Language of the message.
+ * @returns The name.
+ */
+function methodName(method: string, locale: Locale): string {
+  return isPaymentMethod(method) ? METHOD_NAMES[method][locale] : method;
+}
 
 /** Store values that every order message needs. */
 export interface OrderPresentation {
@@ -108,7 +124,7 @@ export function orderSections(
       number: String(order.number),
       status: order.status,
       total: price(order.totalMinor),
-      paymentMethod: METHOD_NAMES[order.paymentMethod][locale],
+      paymentMethod: methodName(order.paymentMethod, locale),
       url: link,
       trackingCode: order.trackingCode ?? '',
       note: order.note,

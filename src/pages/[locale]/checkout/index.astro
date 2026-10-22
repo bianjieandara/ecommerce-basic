@@ -22,6 +22,7 @@ const store = await loadStoreContext(app);
 const view = storeViewFor(store, lang);
 const contact = contactFor(store, lang);
 const title = t(lang, 'checkout.title');
+const invoicing = await app.settings.get('invoicing');
 const labels = {
   contact: t(lang, 'checkout.contact'),
   delivery: t(lang, 'checkout.delivery'),
@@ -38,6 +39,9 @@ const labels = {
   countryCode: t(lang, 'checkout.countryCode'),
   note: t(lang, 'checkout.note'),
   whatsappOptIn: t(lang, 'checkout.whatsappOptIn'),
+  legalName: t(lang, 'checkout.legalName'),
+  invoiceData: t(lang, 'checkout.invoiceData'),
+  taxId: t(lang, 'checkout.taxId'),
   placeOrder: t(lang, 'checkout.placeOrder'),
   placing: t(lang, 'checkout.placing'),
   subtotal: t(lang, 'cart.subtotal'),
@@ -96,6 +100,7 @@ const labels = {
     cartHref={PATHS.cart(lang)}
     continueHref={PATHS.shop(lang)}
     labels={labels}
+    askTaxId={invoicing.enabled && invoicing.askBuyerTaxId}
   />
 </StoreLayout>
 <TurnstileScript />

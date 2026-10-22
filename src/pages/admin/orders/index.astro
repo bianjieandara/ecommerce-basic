@@ -1,21 +1,35 @@
 ---
 // Admin order list: newest first, filtered in the URL by status, payment method, a date range and a search text. The filters are
-// read once here and reused by the paging, so a filtered list pages through the same orders.
+// read once here and reused by the paging, so a filtered list pages through the same orders. "New since your last visit" lists the
+// orders created after the previous visit to this list.
 import AdminLayout from '@/ui/layouts/AdminLayout.astro';
 import AdminPager from '@/ui/admin/AdminPager.astro';
 import DataTable from '@/ui/admin/DataTable.astro';
+import ListToolbar from '@/ui/admin/ListToolbar.astro';
 import StatusBadge from '@/ui/admin/StatusBadge.astro';
-import { BUTTON, BUTTON_PRIMARY, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { BUTTON, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
 import { ORDER_STATUS_TONE } from '@/ui/admin/orders/OrderStatusForm.tsx';
 import type { AdminOrderFilter } from '@/application/ports/order-admin';
 import { PAYMENT_METHODS } from '@/application/ports/payments';
 import { ORDER_STATUSES } from '@/domain/ordering/order-status';
-import { dayAfterStartUtc, dayStartUtc } from '@/domain/shared/day-bounds';
 import { formatDateTime, formatMoney } from '@/domain/shared/format';
 import { money } from '@/domain/shared/money';
+import { totalPagesFor } from '@/domain/shared/pagination';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { ADMIN_LIST_PAGE_SIZE } from '@/http/admin-lists';
 import { positiveInteger } from '@/http/list-query';
-import { pickNamespace } from '@/ui/i18n';
+import { dayRangeBounds, filterDay } from '@/http/store-days';
+import { pickNamespace, t } from '@/ui/i18n';
+
+/** A stored visit time when it is a valid date, otherwise null. */
+const validInstant = (value: string | undefined): string | null =>
+  value && !Number.isNaN(Date.parse(value)) ? new Date(value).toISOString() : null;
+/** The later of the given instants, ignoring the missing ones. */
+const laterOf = (...values: (string | null)[]): string | null =>
+  values
+    .filter((value): value is string => value !== null)
+    .sort()
+    .at(-1) ?? null;
 
 const admin = Astro.locals.admin;
 if (!admin) return Astro.redirect(ADMIN_PATHS.login);
@@ -24,25 +38,49 @@ const app = Astro.locals.app;
 const general = await app.settings.get('general');
 const labels = pickNamespace(lang, 'admin').orders;
 const params = Astro.url.searchParams;
-const PAGE_SIZE = 25;
-
-/** A calendar day from the query (YYYY-MM-DD), or null. Same rule as the other admin lists. */
-const dayOf = (value: string | null): string | null =>
-  value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
-const fromDay = dayOf(params.get('from'));
-const toDay = dayOf(params.get('to'));
+const fromDay = filterDay(params.get('from'));
+const toDay = filterDay(params.get('to'));
+const bounds = dayRangeBounds(fromDay, toDay, general.timezone);
 // Unknown values are ignored rather than refused, so an old or edited link still shows a list.
 const filter: AdminOrderFilter = {
   status: ORDER_STATUSES.find((value) => value === params.get('status')) ?? null,
   paymentMethod: PAYMENT_METHODS.find((value) => value === params.get('method')) ?? null,
-  // Days follow the store's clock: the range runs from the start of the first day to the start of the day after the last.
-  from: fromDay ? dayStartUtc(fromDay, general.timezone) : null,
-  to: toDay ? dayAfterStartUtc(toDay, general.timezone) : null,
+  // Days follow the store's clock; see dayRangeBounds.
+  from: bounds.from,
+  to: bounds.to,
   search: (params.get('q') ?? '').trim().slice(0, 80) || null,
 };
+
+// "New since your last visit": two cookies hold the time of the last normal visit and of the visit before it. A normal visit
+// counts the orders since the last one, then moves both on. "New only" lists the orders since the visit before that one.
+const isNewOnly = params.get('new') === '1';
+const visitCookie = {
+  path: '/admin/orders',
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: 'lax',
+  httpOnly: true,
+} as const;
+const lastVisit = validInstant(Astro.cookies.get('orders_last_visit')?.value);
+const previousVisit = validInstant(Astro.cookies.get('orders_previous_visit')?.value);
+const now = new Date().toISOString();
+if (isNewOnly) {
+  filter.from = laterOf(previousVisit ?? now, bounds.from);
+} else {
+  Astro.cookies.set('orders_previous_visit', lastVisit ?? '', visitCookie);
+  Astro.cookies.set('orders_last_visit', now, visitCookie);
+}
+const newSinceCount =
+  !isNewOnly && lastVisit
+    ? (await app.adminOps.reads.orders.list({ ...filter, from: laterOf(lastVisit, bounds.from) }, 1, 1)).total
+    : 0;
+const newOnlyParams = new URLSearchParams(params);
+newOnlyParams.set('new', '1');
+newOnlyParams.delete('page');
+const newOnlyHref = `${ADMIN_PATHS.orders}?${newOnlyParams.toString()}`;
+
 const page = positiveInteger(params.get('page'));
-const result = await app.adminOps.reads.orders.list(filter, page, PAGE_SIZE);
-const totalPages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
+const result = await app.adminOps.reads.orders.list(filter, page, ADMIN_LIST_PAGE_SIZE);
+const totalPages = totalPagesFor(result.total, ADMIN_LIST_PAGE_SIZE);
 const pagingParams = new URLSearchParams(params);
 pagingParams.delete('page');
 ---
@@ -50,15 +88,12 @@ pagingParams.delete('page');
 <AdminLayout title={labels.title} locale={lang} storeName={general.storeName}>
   <h1 class="text-2xl font-semibold">{labels.title}</h1>
 
-  <form
-    method="get"
+  <ListToolbar
     action={ADMIN_PATHS.orders}
-    class="rounded-brand bg-surface flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap sm:items-end"
+    search={filter.search ?? ''}
+    labels={{ search: labels.search, apply: labels.filter, clear: labels.clear }}
+    clearHref={ADMIN_PATHS.orders}
   >
-    <label class={`${LABEL} sm:min-w-64 sm:flex-1`}>
-      {labels.search}
-      <input type="search" name="q" value={filter.search ?? ''} maxlength="80" class={FIELD} />
-    </label>
     <label class={`${LABEL} sm:w-48`}>
       {labels.status}
       <select name="status" class={FIELD}>
@@ -93,15 +128,19 @@ pagingParams.delete('page');
       {labels.to}
       <input type="date" name="to" value={toDay ?? ''} class={FIELD} />
     </label>
-    <div class="flex gap-2">
-      <button type="submit" class={BUTTON_PRIMARY}>
-        {labels.filter}
-      </button>
-      <a href={ADMIN_PATHS.orders} class={BUTTON}>
-        {labels.clear}
-      </a>
-    </div>
-  </form>
+  </ListToolbar>
+
+  {isNewOnly ? (
+    <p class="text-sm">{t(lang, 'admin.orders.newSinceVisit', { count: result.total })}</p>
+  ) : (
+    lastVisit && (
+      <p class="text-sm">
+        <a href={newOnlyHref} class={BUTTON}>
+          {t(lang, 'admin.orders.newSinceVisit', { count: newSinceCount })}
+        </a>
+      </p>
+    )
+  )}
 
   <DataTable>
     <thead>
@@ -134,7 +173,7 @@ pagingParams.delete('page');
           <td data-label={labels.total}>
             {formatMoney(money(row.totalMinor, row.currency), lang, general.country)}
           </td>
-          <td data-label={labels.payment}>{labels.methods[row.paymentMethod]}</td>
+          <td data-label={labels.payment}>{labels.methods[row.paymentMethod] ?? row.paymentMethod}</td>
           <td data-label={labels.status}>
             <StatusBadge label={labels.states[row.status]} tone={ORDER_STATUS_TONE[row.status]} />
           </td>

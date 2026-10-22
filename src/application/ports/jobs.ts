@@ -40,6 +40,11 @@ export interface JobQueue {
   enqueueMany(jobs: { type: JobType; payload: unknown; options?: EnqueueOptions }[]): Promise<void>;
 }
 
+/** How many jobs wait in the queue. Null when the platform does not report it, as the local runtime does not. */
+export interface QueueBacklog {
+  count(): Promise<number | null>;
+}
+
 /** A job that exhausted its retries. */
 export interface FailedJob {
   id: string;

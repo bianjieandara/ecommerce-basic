@@ -1,0 +1,61 @@
+---
+// Pages of the store: the system pages every store has, and the custom pages the admin adds. Each one opens in the builder.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import NewPageForm from '@/ui/admin/pages/NewPageForm.tsx';
+import { pickText } from '@/domain/shared/localized-text';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { SYSTEM_PAGE_SLUGS } from '@/domain/content/page';
+import { defaultPageRecord } from '@/application/content/system-page-view';
+import { PANEL } from '@/ui/admin/lib/classes';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const defaultLocale = store.general.defaultLocale;
+// Every system page is listed, saved or not: one that was never saved shows its code default.
+const now = new Date().toISOString();
+const saved = await app.pages.list();
+const systemPages = SYSTEM_PAGE_SLUGS.map(
+  (slug) => saved.find((page) => page.slug === slug) ?? defaultPageRecord(slug, now),
+);
+const pages = [...systemPages, ...saved.filter((page) => page.kind === 'custom')];
+const newPageLabels = {
+  heading: t(lang, 'admin.pages.newPage'),
+  slug: t(lang, 'admin.pages.pageAddress'),
+  title: t(lang, 'admin.pages.pageTitle'),
+  create: t(lang, 'admin.pages.create'),
+  creating: t(lang, 'admin.pages.creating'),
+  failed: t(lang, 'admin.pages.createFailed'),
+  invalid: t(lang, 'admin.form.invalid'),
+  none: t(lang, 'admin.form.none'),
+};
+---
+
+<AdminLayout title={t(lang, 'admin.pages.title')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.pages.title')}</h1>
+  <ul class="flex flex-col gap-3">
+    {pages.map((page) => (
+      <li>
+        <a href={`${ADMIN_PATHS.pages}/${page.id}`} class={`${PANEL} min-h-11`}>
+          <span class="font-semibold wrap-break-word">{pickText(page.title, lang, defaultLocale)}</span>
+          <span class="text-text/70 text-sm">
+            /{page.slug}
+            {page.kind === 'system' && ` · ${t(lang, 'admin.pages.systemPage')}`}
+            {` · ${page.isPublished ? t(lang, 'admin.pages.published') : t(lang, 'admin.pages.draft')}`}
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <NewPageForm
+    client:load
+    locale={lang}
+    createUrl="/api/admin/pages"
+    editBase={ADMIN_PATHS.pages}
+    labels={newPageLabels}
+  />
+</AdminLayout>

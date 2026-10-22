@@ -4,7 +4,8 @@ import { toCsv } from '@/application/documents/csv';
 import { CURRENCIES } from '@/domain/shared/currency';
 import { majorTextFromMinor } from '@/domain/shared/money';
 import { csvResponse } from '@/http/csv-response';
-import { EXPORT_ROW_LIMIT, inventoryFilterFrom } from '@/http/admin-inventory-page';
+import { inventoryFilterFrom } from '@/http/admin-inventory-page';
+import { EXPORT_ROW_LIMIT } from '@/http/admin-lists';
 import { requireAdmin } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 

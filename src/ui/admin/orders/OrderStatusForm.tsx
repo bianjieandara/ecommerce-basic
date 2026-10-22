@@ -90,7 +90,7 @@ export default function OrderStatusForm(props: OrderStatusFormProps) {
       <label class="flex min-h-11 items-center gap-3 text-sm">
         <input
           type="checkbox"
-          class="size-5"
+          class="size-11"
           checked={notify}
           onChange={(event) => setNotify(event.currentTarget.checked)}
         />

@@ -93,6 +93,8 @@ export function renderInvoiceHtml(invoice: Invoice, options: InvoiceDocumentOpti
   const number = formatInvoiceNumber(invoice.series, invoice.number);
   const color = escapeHtml(options.primaryColor);
   const buyerAddress = Object.values(invoice.buyer.address).filter(Boolean).map(text).join('<br>');
+  // A company buyer is invoiced under its legal name and tax ID; a private buyer has neither, so the contact name stands.
+  const buyerTaxId = invoice.buyer.taxId ? `${L.taxId}: ${text(invoice.buyer.taxId)}<br>` : '';
   const lineRows = invoice.lines
     .map(
       (line) =>
@@ -165,8 +167,8 @@ ${watermark}
   </div>
   <div>
     <div class="label">${L.buyer}</div>
-    <strong>${text(invoice.buyer.name)}</strong><br>
-    ${buyerAddress}<br>
+    <strong>${text(invoice.buyer.legalName || invoice.buyer.name)}</strong><br>
+    ${buyerTaxId}${buyerAddress}<br>
     ${text(invoice.buyer.email)} · ${text(invoice.buyer.phone)}
   </div>
 </section>

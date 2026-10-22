@@ -44,6 +44,7 @@ import type { PayPalGateway } from '@/infrastructure/payments/paypal-gateway';
 import type { DLocalGoGateway } from '@/infrastructure/payments/dlocalgo-gateway';
 import type { Pbkdf2PasswordHasher } from '@/infrastructure/security/security-adapters';
 import type { CatalogAdmin } from './admin-catalog';
+import type { ContentAdmin } from './admin-content';
 import type { InventoryServices } from './inventory';
 import type { AdminOperations } from './admin-operations';
 import type { MediaLibrary } from '@/application/media/media-library';
@@ -98,6 +99,7 @@ export interface Container {
   inviteAdmin: InviteAdmin;
   /** Admin catalog: products, categories, attributes and the product list. */
   catalogAdmin: CatalogAdmin;
+  contentAdmin: ContentAdmin;
   /** Image library: uploads of resized variants, listing and removal. */
   mediaLibrary: MediaLibrary;
   /** Inventory: manual adjustments, CSV import, the ledger, alerts and back-in-stock subscriptions. */

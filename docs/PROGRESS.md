@@ -18,7 +18,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [x] Stage 13 — Admin foundation and authentication
 - [x] Stage 14 — Admin catalog and media
 - [x] Stage 15 — Inventory module
-- [ ] Stage 16 — Admin orders, invoices, messages, dashboard, ops
+- [x] Stage 16 — Admin orders, invoices, messages, dashboard, ops
 - [ ] Stage 17 — Admin content: page builder, settings, email templates, users
 - [ ] Stage 18 — WhatsApp Cloud API adapter and templates
 - [ ] Stage 19 — Tracking, consent and Meta marketing

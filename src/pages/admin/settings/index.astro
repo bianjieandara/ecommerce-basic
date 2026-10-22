@@ -1,0 +1,30 @@
+---
+// The store settings, one group per card. Editing a group needs the settings permission, which only owners hold.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import { settingsGroupNames } from '@/ui/admin/settings-labels';
+import { PANEL } from '@/ui/admin/lib/classes';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import type { SettingsGroup } from '@/application/content/settings-schemas';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const store = await loadStoreContext(Astro.locals.app);
+const names = settingsGroupNames(lang);
+const groups = Object.keys(names) as SettingsGroup[];
+---
+
+<AdminLayout title={t(lang, 'admin.settings.title')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.settings.title')}</h1>
+  <ul class="grid gap-3 sm:grid-cols-2">
+    {groups.map((group) => (
+      <li>
+        <a href={`${ADMIN_PATHS.settings}/${group}`} class={`${PANEL} min-h-11 font-semibold`}>
+          {names[group]}
+        </a>
+      </li>
+    ))}
+  </ul>
+</AdminLayout>

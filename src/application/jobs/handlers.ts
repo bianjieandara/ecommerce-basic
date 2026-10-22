@@ -15,6 +15,7 @@ import {
   expireStaleOrdersPayload,
   invoiceIssuePayload,
   invoiceJobPayload,
+  invoiceRenderPayload,
   lowStockAlertPayload,
   maintenancePurgePayload,
   notifyEmailPayload,
@@ -59,7 +60,8 @@ export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, 
       await deps.issueInvoice.executeIfAutomatic(invoiceIssuePayload.parse(payload).orderId);
     },
     'invoice.render_pdf': async (payload) => {
-      await deps.renderInvoicePdf.execute(invoiceJobPayload.parse(payload).invoiceId);
+      const input = invoiceRenderPayload.parse(payload);
+      await deps.renderInvoicePdf.execute(input.invoiceId, input.regenerate === true);
     },
     'reviews.refresh': async () => {
       await deps.reviews.refresh();

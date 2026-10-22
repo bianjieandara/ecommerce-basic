@@ -31,6 +31,7 @@ import { CloudflareRateLimiter, TurnstileVerifier } from '@/infrastructure/secur
 import { CryptoIdGenerator, SystemClock, WebCryptoHasher } from '@/infrastructure/system/system-adapters';
 import { logEvent } from '@/infrastructure/system/logger';
 import { createCatalogAdmin, createMediaLibrary } from './admin-catalog';
+import { createContentAdmin } from './admin-content';
 import { createInventory } from './inventory';
 import { createAdminOperations } from './admin-operations';
 import { createIdentity } from './identity';
@@ -174,6 +175,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     notifications,
     orders,
     invoices,
+    issueInvoice: orderingServices.issueInvoice,
     failedJobs,
     notificationLog,
     messages: contactMessages,
@@ -206,6 +208,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     reviews,
     ...identity,
     catalogAdmin,
+    contentAdmin: createContentAdmin(env, { settings, clock, ids }),
     mediaLibrary,
     inventory,
     platform: {

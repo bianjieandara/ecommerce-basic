@@ -22,6 +22,7 @@ export interface NewOrder {
   shippingAddress: Record<string, string>;
   note: string;
   attribution: Record<string, string>;
+  billing: Record<string, string>;
   expiresAt: string | null;
   createdAt: string;
   items: OrderItem[];

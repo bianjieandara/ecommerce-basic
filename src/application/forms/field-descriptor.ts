@@ -26,7 +26,7 @@ interface LocalizedField {
   max?: number;
 }
 
-/** Numeric field with optional bounds. */
+/** Numeric field with optional bounds. `nullable` lets the form send an empty value as null. */
 interface NumberField {
   name: string;
   kind: 'number';
@@ -34,6 +34,7 @@ interface NumberField {
   min?: number;
   max?: number;
   step?: number;
+  nullable?: boolean;
 }
 
 /** Field descriptor for every supported form control. */
@@ -42,7 +43,15 @@ export type FieldDescriptor =
   | LocalizedField
   | NumberField
   | { name: string; kind: 'boolean'; label: LocalizedText }
-  | { name: string; kind: 'select' | 'multiselect'; label: LocalizedText; options: FieldOption[] }
+  | {
+      name: string;
+      kind: 'select' | 'multiselect';
+      label: LocalizedText;
+      options: FieldOption[];
+      nullable?: boolean;
+    }
+  /** A group of fields stored as one object, such as the social links of the contact settings. */
+  | { name: string; kind: 'object'; label: LocalizedText; fields: FieldDescriptor[] }
   | { name: string; kind: 'image'; label: LocalizedText }
   | { name: string; kind: 'images' | 'productIds' | 'categoryIds'; label: LocalizedText; max?: number }
   | { name: string; kind: 'link'; label: LocalizedText }

@@ -101,8 +101,8 @@ export class IssueInvoice {
         name: order.customer.name,
         email: order.customer.email,
         phone: order.customer.phone,
-        taxId: null,
-        legalName: null,
+        taxId: order.billing?.taxId || null,
+        legalName: order.billing?.legalName || null,
         address: order.shippingAddress,
       },
       lines: order.items.map((item) => ({

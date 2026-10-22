@@ -15,6 +15,15 @@ function isDay(value: string | null): value is string {
 }
 
 /**
+ * A filter day that exists, for a form to show again; null for a missing or invalid one.
+ * @param value Text from the query string.
+ * @returns The day, or null.
+ */
+export function filterDay(value: string | null): string | null {
+  return isDay(value) ? value : null;
+}
+
+/**
  * Turns the first and last day of a filter into instants. The first day starts at its first instant; the last day runs until
  * the first instant of the next day, so it is included in full.
  * @param from First day, or any text (a missing or invalid day means no lower bound).

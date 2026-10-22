@@ -64,11 +64,12 @@ export class RenderInvoicePdf {
    * stored the PDF: a customer's download can store it before this job runs, and the email must still go out. Repeats are
    * safe because the notification key is built from the invoice, so a second run queues nothing.
    * @param invoiceId Invoice id.
+   * @param regenerate Renders again even when a PDF is stored, for an admin who asks for a fresh copy.
    */
-  async execute(invoiceId: string): Promise<void> {
+  async execute(invoiceId: string, regenerate = false): Promise<void> {
     const invoice = await this.deps.invoices.findById(invoiceId);
     if (!invoice) return;
-    if (!invoice.pdfKey) await storePdf(this.deps, invoice);
+    if (regenerate || !invoice.pdfKey) await storePdf(this.deps, invoice);
     // A voided invoice is not announced as a new invoice.
     if (invoice.status === 'issued') await this.notifyCustomer(invoice);
   }

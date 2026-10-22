@@ -42,7 +42,10 @@ const canVoid = invoice.status === 'issued' && can(admin.role, 'invoices.void');
     <dl class="rounded-brand bg-surface grid grid-cols-2 gap-2 p-4 text-sm">
       <dt class="text-text/70">{labels.order}</dt>
       <dd>
-        <a href={`${ADMIN_PATHS.orders}/${invoice.orderNumber}`} class="underline">
+        <a
+          href={`${ADMIN_PATHS.orders}/${invoice.orderNumber}`}
+          class="inline-flex min-h-11 min-w-11 items-center underline"
+        >
           {invoice.orderNumber}
         </a>
       </dd>

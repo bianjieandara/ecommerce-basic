@@ -51,6 +51,10 @@ export interface Order {
   paidAt: string | null;
   /** Carrier tracking code, set when the order ships. Empty means none yet. */
   trackingCode: string | null;
+  /** Where the order came from: UTM values and the like, as the checkout captured them. Absent when nothing was captured. */
+  attribution?: Record<string, string>;
+  /** Billing details the buyer gave at checkout, for the invoice. Absent when none were given. */
+  billing?: Record<string, string>;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,0 +1,67 @@
+---
+// Messages the store sent for one order, newest first: the template, the channel and whether it arrived. A failed message stands out.
+import DataTable from '@/ui/admin/DataTable.astro';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { HEADING } from '@/ui/admin/lib/classes';
+import type { NotificationLogEntry } from '@/application/ports/notifications';
+import { formatDateTime } from '@/domain/shared/format';
+import type { Locale } from '@/domain/shared/locale';
+import { pickNamespace } from '@/ui/i18n';
+import { notificationLabel } from '@/ui/lib/notification-labels';
+
+/** Props of the messages table. */
+interface Props {
+  /** Messages queued for the order, newest first. */
+  entries: NotificationLogEntry[];
+  /** Language of the labels and dates. */
+  locale: Locale;
+  /** Store country, for the date format. */
+  country: string;
+  /** Store time zone, for the date format. */
+  timezone: string;
+}
+
+const { entries, locale, country, timezone } = Astro.props;
+const labels = pickNamespace(locale, 'admin').orders;
+const messageLabels = pickNamespace(locale, 'admin').notifications;
+const columns = [labels.date, messageLabels.template, messageLabels.channel, messageLabels.status];
+/** A failed message is accented; every other state is neutral. */
+const tone = (status: string): 'warn' | 'muted' => (status === 'failed' ? 'warn' : 'muted');
+---
+
+<section class="flex flex-col gap-2 md:col-span-2" aria-label={labels.messagesSent}>
+  <h2 class={HEADING}>{labels.messagesSent}</h2>
+  {entries.length === 0 ? (
+    <p class="text-text/70 text-sm">{labels.noMessages}</p>
+  ) : (
+    <DataTable>
+      <thead>
+        <tr>
+          {columns.map((column) => (
+            <th scope="col">{column}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {entries.map((message) => (
+          <tr>
+            <td data-label={labels.date}>{formatDateTime(message.createdAt, locale, country, timezone)}</td>
+            <td data-label={messageLabels.template}>
+              <span class="flex min-w-0 flex-col gap-1">
+                <span>{notificationLabel(locale, message.templateKey)}</span>
+                <code class="text-text/70 text-xs break-all">{message.templateKey}</code>
+              </span>
+            </td>
+            <td data-label={messageLabels.channel}>{messageLabels.channels[message.channel]}</td>
+            <td data-label={messageLabels.status}>
+              <span class="flex min-w-0 flex-col items-start gap-1">
+                <StatusBadge label={messageLabels.states[message.status]} tone={tone(message.status)} />
+                {message.error && <span class="text-accent text-xs wrap-break-word">{message.error}</span>}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </DataTable>
+  )}
+</section>

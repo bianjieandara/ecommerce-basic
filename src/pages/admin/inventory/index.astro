@@ -8,7 +8,8 @@ import CsvImport from '@/ui/admin/inventory/CsvImport.tsx';
 import { BUTTON, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { categoryOptions } from '@/http/admin-catalog-page';
-import { EXPORT_ROW_LIMIT, INVENTORY_PAGE_SIZE, inventoryFilterFrom } from '@/http/admin-inventory-page';
+import { inventoryFilterFrom } from '@/http/admin-inventory-page';
+import { ADMIN_LIST_PAGE_SIZE, EXPORT_ROW_LIMIT } from '@/http/admin-lists';
 import { listHref } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
 import { pickNamespace, t } from '@/ui/i18n';
@@ -20,7 +21,7 @@ const app = Astro.locals.app;
 const store = await loadStoreContext(app);
 const params = Astro.url.searchParams;
 const inventory = await app.settings.get('inventory');
-const filter = inventoryFilterFrom(params, lang, inventory.defaultLowStockThreshold, INVENTORY_PAGE_SIZE);
+const filter = inventoryFilterFrom(params, lang, inventory.defaultLowStockThreshold, ADMIN_LIST_PAGE_SIZE);
 const [result, totals, categories] = await Promise.all([
   app.inventory.queries.listRows(filter),
   app.inventory.queries.totals(),

@@ -8,6 +8,9 @@ import { ChangeOrderStatus } from '@/application/ordering/change-order-status';
 import { OrderLinks } from '@/application/ordering/order-links';
 import { MarkMessageRead } from '@/application/content/mark-message-read';
 import { InvoiceDocumentForAdmin } from '@/application/invoicing/invoice-document-admin';
+import type { IssueInvoice } from '@/application/invoicing/issue-invoice';
+import { IssueOrderInvoice } from '@/application/invoicing/issue-order-invoice';
+import { RegenerateInvoicePdf } from '@/application/invoicing/regenerate-invoice-pdf';
 import { ResendInvoice } from '@/application/invoicing/resend-invoice';
 import { DiscardFailedJob } from '@/application/jobs/discard-failed-job';
 import { RetryFailedJob } from '@/application/jobs/retry-failed-job';
@@ -19,12 +22,13 @@ import type { AdminInvoiceQueries } from '@/application/ports/invoice-admin';
 import type { InvoiceRepository } from '@/application/ports/invoicing';
 import type { AdminOrderQueries } from '@/application/ports/order-admin';
 import type { OrderRepository } from '@/application/ports/ordering';
-import type { FailedJobRepository, JobQueue } from '@/application/ports/jobs';
+import type { FailedJobRepository, JobQueue, QueueBacklog } from '@/application/ports/jobs';
 import type { NotificationLogRepository } from '@/application/ports/notifications';
 import type { Clock, Hasher } from '@/application/ports/platform';
 import { D1DashboardQueries } from '@/infrastructure/d1/dashboard-queries';
 import { D1InvoiceAdminQueries } from '@/infrastructure/d1/invoice-admin-queries';
 import { D1OrderAdminQueries } from '@/infrastructure/d1/order-admin-queries';
+import { CloudflareQueueBacklog } from '@/infrastructure/queues/cloudflare-queue-backlog';
 import { logEvent } from '@/infrastructure/system/logger';
 
 /** Read-only views of the stores, for the admin pages. Each one exposes reads only. */
@@ -36,6 +40,10 @@ export interface AdminReads {
   failedJobs: Pick<FailedJobRepository, 'list' | 'get'>;
   notificationLog: Pick<NotificationLogRepository, 'list' | 'get' | 'listForOrder'>;
   messages: Pick<ContactMessageRepository, 'list'>;
+  /** Backlog of the job queue, for the failed-jobs page. */
+  queueBacklog: QueueBacklog;
+  /** Access keys of the customer's order link, for the copy-link action on the order screen. */
+  orderLinks: Pick<OrderLinks, 'keyFor'>;
 }
 
 /** The admin operations the container exposes. */
@@ -44,6 +52,8 @@ export interface AdminOperations {
   dashboard: GetDashboard;
   changeOrderStatus: ChangeOrderStatus;
   resendInvoice: ResendInvoice;
+  issueOrderInvoice: IssueOrderInvoice;
+  regenerateInvoicePdf: RegenerateInvoicePdf;
   invoiceDocument: InvoiceDocumentForAdmin;
   retryFailedJob: RetryFailedJob;
   discardFailedJob: DiscardFailedJob;
@@ -60,6 +70,7 @@ export interface AdminOperationsDeps {
   notifications: NotificationService;
   orders: OrderRepository;
   invoices: InvoiceRepository;
+  issueInvoice: IssueInvoice;
   failedJobs: FailedJobRepository;
   notificationLog: NotificationLogRepository;
   messages: ContactMessageRepository;
@@ -89,6 +100,8 @@ export function createAdminOperations(env: Env, deps: AdminOperationsDeps): Admi
       failedJobs: deps.failedJobs,
       notificationLog: deps.notificationLog,
       messages: deps.messages,
+      orderLinks: links,
+      queueBacklog: new CloudflareQueueBacklog(env.JOBS),
     },
     dashboard: new GetDashboard({ settings: deps.settings, queries: dashboardQueries, clock: deps.clock }),
     changeOrderStatus: new ChangeOrderStatus({
@@ -110,6 +123,12 @@ export function createAdminOperations(env: Env, deps: AdminOperationsDeps): Admi
       links,
       clock: deps.clock,
       siteUrl: deps.siteUrl,
+    }),
+    issueOrderInvoice: new IssueOrderInvoice({ orders: deps.orders, issueInvoice: deps.issueInvoice }),
+    regenerateInvoicePdf: new RegenerateInvoicePdf({
+      invoices: deps.invoices,
+      jobs: deps.jobs,
+      clock: deps.clock,
     }),
     invoiceDocument: new InvoiceDocumentForAdmin({ invoices: deps.invoices, settings: deps.settings }),
     retryFailedJob: new RetryFailedJob({ failedJobs: deps.failedJobs, jobs: deps.jobs, clock: deps.clock }),

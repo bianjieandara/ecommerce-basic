@@ -46,6 +46,13 @@ export const placeOrderInput = z.object({
   address: shippingAddressInput.nullable().default(null),
   paymentMethod: z.enum(PAYMENT_METHODS),
   note: z.string().trim().max(500).default(''),
+  billing: z
+    .object({
+      legalName: z.string().trim().max(200).default(''),
+      taxId: z.string().trim().max(40).default(''),
+    })
+    .nullable()
+    .default(null),
   attribution: z
     .record(z.string().max(40), z.string().max(200))
     .refine((value) => Object.keys(value).length <= MAX_ATTRIBUTION_FIELDS, 'Too many attribution fields')

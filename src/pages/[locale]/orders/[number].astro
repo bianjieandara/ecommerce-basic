@@ -6,8 +6,9 @@ import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 import { money } from '@/domain/shared/money';
 import { PATHS } from '@/domain/shared/paths';
-import { t } from '@/ui/i18n';
+import { pickNamespace, t } from '@/ui/i18n';
 import { renderMarkdown } from '@/ui/lib/markdown';
+import { orderEventLabel } from '@/ui/lib/order-event-label';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { loadStoreContext } from '@/http/store-context';
 import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
@@ -32,19 +33,9 @@ const title = found
   ? t(lang, 'order.number', { number: String(found.order.number) })
   : t(lang, 'order.viewOrder');
 const price = (amountMinor: number) => formatMoney(money(amountMinor, view.currency), lang, view.country);
+// Orders stored before a gateway change may carry a method with no label any more; such a line is left out.
+const checkoutMethods = pickNamespace(lang, 'checkout').methods;
 
-const EVENT_TYPES = [
-  'placed',
-  'payment_confirmed',
-  'payment_failed',
-  'payment_expired',
-  'payment_start_failed',
-  'expired',
-  'cancelled',
-  'refunded',
-] as const;
-const isEventType = (value: string): value is (typeof EVENT_TYPES)[number] =>
-  (EVENT_TYPES as readonly string[]).includes(value);
 const pending = found?.order.status === 'pending_payment';
 const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsappMessage} #${number}`) : '';
 ---
@@ -144,7 +135,7 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
         <h2 id="order-payment" class="text-lg font-semibold">
           {t(lang, 'order.paymentMethod')}
         </h2>
-        <p>{t(lang, `checkout.methods.${found.order.paymentMethod}`)}</p>
+        {checkoutMethods[found.order.paymentMethod] && <p>{checkoutMethods[found.order.paymentMethod]}</p>}
         {Object.values(found.order.shippingAddress).some(Boolean) && (
           <>
             <h3 class="pt-2 font-semibold">{t(lang, 'order.address')}</h3>
@@ -159,9 +150,7 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
         </h2>
         <ol class="flex flex-col gap-2">
           {found.events.map((event) => (
-            <li class="border-text/10 border-l-2 pl-3">
-              {isEventType(event.type) ? t(lang, `order.events.${event.type}`) : event.type}
-            </li>
+            <li class="border-text/10 border-l-2 pl-3">{orderEventLabel(lang, event.type)}</li>
           ))}
         </ol>
       </section>

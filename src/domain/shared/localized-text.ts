@@ -31,3 +31,13 @@ export function pickText(text: Partial<LocalizedText> | undefined, locale: Local
 export function sameTextInAllLocales(value: string): LocalizedText {
   return { es: value, en: value };
 }
+
+/**
+ * Builds a LocalizedText from one string per language. Definitions of blocks and fields use it for their labels.
+ * @param es Spanish text.
+ * @param en English text.
+ * @returns The localized text.
+ */
+export function bilingual(es: string, en: string): LocalizedText {
+  return { es, en };
+}

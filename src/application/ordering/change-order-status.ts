@@ -2,6 +2,7 @@
 // the timeline with the admin who made it, and stock given back goes to the stock alerts. The customer hears of the move when
 // asked to; a message that fails to queue is reported, never turned into an error for a change that was committed.
 import { can } from '@/domain/identity/role';
+import { statusEventType } from '@/domain/ordering/order-events';
 import { assertTransition, type ManualOrderTarget } from '@/domain/ordering/order-status';
 import { DomainError } from '@/domain/shared/errors';
 import type { EvaluateStockChanges } from '../inventory/evaluate-stock-changes';
@@ -77,7 +78,7 @@ export class ChangeOrderStatus {
       return { status: 'paid' };
     }
 
-    const event = { type: `status_${input.to}`, note: input.note, actor: actor.id, at: nowIso };
+    const event = { type: statusEventType(input.to), note: input.note, actor: actor.id, at: nowIso };
     if (input.to === 'cancelled') {
       const released = await this.deps.orders.cancelAndReleaseStock(order.id, order.status, event);
       if (!released.cancelled) throw new DomainError('INVALID_STATE', CHANGED_MEANWHILE);
