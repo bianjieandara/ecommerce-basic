@@ -1,5 +1,5 @@
 // RenderInvoicePdf: turns an issued invoice into a PDF, stores it in R2 and then emails it to the customer. It is the
-// invoice.render_pdf job. A repeat finds the PDF already stored and does nothing.
+// invoice.render_pdf job. A repeat finds the PDF already stored and sends the email only if it was not queued yet.
 import { formatInvoiceNumber } from '@/domain/invoicing/invoice';
 import { pickText } from '@/domain/shared/localized-text';
 import { renderInvoiceHtml } from '../documents/invoice-document';
@@ -69,14 +69,17 @@ export class RenderInvoicePdf {
   constructor(private readonly deps: RenderInvoicePdfDeps) {}
 
   /**
-   * Renders the PDF of an invoice that has none yet, then queues the customer email.
+   * Renders the PDF of an invoice that has none yet, then queues the customer email. The email does not depend on who
+   * stored the PDF: a customer's download can store it before this job runs, and the email must still go out. Repeats are
+   * safe because the notification key is built from the invoice, so a second run queues nothing.
    * @param invoiceId Invoice id.
    */
   async execute(invoiceId: string): Promise<void> {
     const invoice = await this.deps.invoices.findById(invoiceId);
-    if (!invoice || invoice.pdfKey) return;
-    await storePdf(this.deps, invoice);
-    await this.notifyCustomer(invoice);
+    if (!invoice) return;
+    if (!invoice.pdfKey) await storePdf(this.deps, invoice);
+    // A voided invoice is not announced as a new invoice.
+    if (invoice.status === 'issued') await this.notifyCustomer(invoice);
   }
 
   /**
