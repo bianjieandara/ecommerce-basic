@@ -9,6 +9,8 @@ export interface ProductCardDto {
   shortDescription: string;
   categoryName: string;
   imageKey: string | null;
+  /** Sizes of the first picture, smallest first, for the card's srcset. Empty without a picture. */
+  imageVariants: { width: number; key: string }[];
   secondImageKey: string | null;
   minPriceMinor: number;
   maxPriceMinor: number;

@@ -34,7 +34,9 @@ const renderers: Record<string, typeof HeroCarousel> = {
 
 {sections
   .filter((section) => section.enabled)
-  .map((section) => {
+  .map((section, index) => {
     const Renderer = renderers[section.type];
-    return Renderer ? <Renderer section={section} data={data} view={view} whatsapp={whatsapp} /> : null;
+    return Renderer ? (
+      <Renderer section={section} data={data} view={view} whatsapp={whatsapp} first={index === 0} />
+    ) : null;
   })}

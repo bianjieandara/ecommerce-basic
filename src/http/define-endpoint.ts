@@ -6,6 +6,7 @@ import { MAX_UPLOAD_BYTES } from '@/domain/media/media-asset';
 import { DomainError } from '@/domain/shared/errors';
 import type { RateLimitBucket } from '@/application/ports/platform';
 import { errorResponse } from './errors';
+import { bumpPageCache } from './page-cache';
 
 /** Largest JSON body accepted by an endpoint. */
 const MAX_JSON_BYTES = 64 * 1024;
@@ -50,7 +51,7 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
             : undefined;
       const input = options.input ? parse(options.input, raw) : (undefined as z.infer<S>);
       const data = await options.handler({ input, context });
-      if (options.invalidatesCache) await context.locals.app.platform.pageCache.bump();
+      if (options.invalidatesCache) await bumpPageCache(context.locals.app.platform.pageCache, requestId);
       // A handler that needs more than JSON (for example a session cookie) returns its own Response.
       if (data instanceof Response) return data;
       return Response.json({ ok: true, data }, { headers: { 'Cache-Control': 'no-store' } });

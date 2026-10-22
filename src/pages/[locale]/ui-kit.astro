@@ -49,6 +49,7 @@ const points = [1, 2, 3, 4, 5, 6, 7].map((value) => ({ label: String(value), val
   canonical={new URL(PATHS.shop(lang), Astro.url.origin).toString()}
   noindex={true}
   themeCss={themeToCss(store.theme)}
+  fontPreset={store.theme.fontPreset}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >

@@ -5,7 +5,7 @@ import ProductCard from '@/ui/store/ProductCard.astro';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import type { WidgetProps } from './types';
 
-const { section, data, view } = Astro.props as WidgetProps;
+const { section, data, view, first = false } = Astro.props as WidgetProps;
 const config = section.config as { title?: LocalizedText; layout?: 'carousel' | 'grid' };
 const products = data.productsBySection[section.id] ?? [];
 const title = pickText(config.title, view.locale, 'es');
@@ -16,16 +16,21 @@ const title = pickText(config.title, view.locale, 'es');
     <h2 class="text-xl font-semibold">{title}</h2>
     {config.layout === 'grid' ? (
       <ul class="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {products.map((product) => (
+        {products.map((product, index) => (
           <li>
-            <ProductCard product={product} view={view} />
+            <ProductCard product={product} view={view} eager={first && index < 2} />
           </li>
         ))}
       </ul>
     ) : (
       <Carousel label={title} autoplay={0} slideBasis="62%">
-        {products.map((product) => (
-          <ProductCard product={product} view={view} />
+        {products.map((product, index) => (
+          <ProductCard
+            product={product}
+            view={view}
+            eager={first && index < 2}
+            sizes="(min-width: 768px) 25vw, 62vw"
+          />
         ))}
       </Carousel>
     )}

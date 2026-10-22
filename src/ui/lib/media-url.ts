@@ -17,7 +17,7 @@ export function mediaUrl(key: string, publicBase = ''): string {
  * @param publicBase Optional public base URL.
  * @returns srcset text, for example "/media/... 480w, /media/... 960w".
  */
-export function buildSrcSet(variants: MediaVariant[], publicBase = ''): string {
+export function buildSrcSet(variants: Pick<MediaVariant, 'width' | 'key'>[], publicBase = ''): string {
   return [...variants]
     .sort((a, b) => a.width - b.width)
     .map((variant) => `${mediaUrl(variant.key, publicBase)} ${variant.width}w`)

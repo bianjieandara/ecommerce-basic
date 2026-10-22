@@ -86,6 +86,7 @@ const labels = {
   canonical={new URL(PATHS.checkout(lang), Astro.url.origin).toString()}
   noindex={true}
   themeCss={themeToCss(store.theme)}
+  fontPreset={store.theme.fontPreset}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >

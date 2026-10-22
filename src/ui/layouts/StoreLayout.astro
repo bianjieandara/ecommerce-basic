@@ -26,6 +26,7 @@ interface Props {
   ogType?: 'website' | 'product';
   jsonLd?: JsonLd[];
   themeCss?: string;
+  fontPreset?: 'inter' | 'manrope' | 'playfair';
   webAnalyticsToken?: string;
   currency?: CurrencyCode;
   country?: string;
@@ -51,6 +52,7 @@ const {
   ogType,
   jsonLd,
   themeCss,
+  fontPreset,
   webAnalyticsToken,
   contact = { email: '', address: '', whatsappNumber: '', whatsappMessage: '', showWhatsappFloat: false },
   currency = 'USD',
@@ -71,6 +73,7 @@ const {
   ogType={ogType}
   jsonLd={jsonLd}
   themeCss={themeCss}
+  fontPreset={fontPreset}
   webAnalyticsToken={webAnalyticsToken}
 >
   <Header storeName={storeName} locale={locale} alternates={alternates} />

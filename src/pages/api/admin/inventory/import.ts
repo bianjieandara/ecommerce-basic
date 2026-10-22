@@ -3,6 +3,7 @@
 import { importStockInput } from '@/application/inventory/schemas';
 import { requireAdmin } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
+import { bumpPageCache } from '@/http/page-cache';
 
 export const POST = defineEndpoint({
   method: 'POST',
@@ -16,7 +17,7 @@ export const POST = defineEndpoint({
       { dryRun },
     );
     // Only an applied import changes what the storefront shows; a preview must not flush the page cache.
-    if (!dryRun) await context.locals.app.platform.pageCache.bump();
+    if (!dryRun) await bumpPageCache(context.locals.app.platform.pageCache, context.locals.requestId);
     return result;
   },
 });

@@ -7,8 +7,9 @@ import { DomainError } from '@/domain/shared/errors';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { sessionTokenOf } from '@/http/admin-session';
 import { errorResponse } from '@/http/errors';
+import { withPageCache } from '@/http/page-cache';
 import { withSecurityHeaders } from '@/http/security-headers';
-import { getEnv, getExecutionContext } from '@/infrastructure/cloudflare/env';
+import { getEnv, getExecutionContext, readSecret } from '@/infrastructure/cloudflare/env';
 
 /** Admin pages anyone may open. */
 const PUBLIC_ADMIN_PAGES = new Set<string>([
@@ -40,14 +41,10 @@ function adminHeaders(response: Response): Response {
 }
 
 /**
- * Attaches the container and the admin session, then guards the admin area.
+ * Resolves the admin session and guards the admin area. Storefront requests go straight to the page.
  */
 const handle = defineMiddleware(async (context, next) => {
-  context.locals.requestId = crypto.randomUUID();
-  const app = createContainer(getEnv(), getExecutionContext(context.locals));
-  context.locals.app = app;
-  context.locals.admin = null;
-
+  const app = context.locals.app;
   const path = context.url.pathname;
   const isAdminPage = path === ADMIN_PATHS.dashboard || path.startsWith('/admin/');
   const isAdminApi = path.startsWith('/api/admin/');
@@ -70,8 +67,32 @@ const handle = defineMiddleware(async (context, next) => {
   return adminHeaders(await next());
 });
 
-/** Runs before every request; whatever answers it gets the security headers. */
+/**
+ * Runs before every request: attaches the container, serves cached storefront pages, and gives whatever answers the
+ * security headers. The cache sits outside the admin guard on purpose: only storefront paths are ever cached, and a cached
+ * page answers without a database read. Analytics (when it exists) must be counted before this point so a HIT still counts.
+ */
 export const onRequest = defineMiddleware(async (context, next) => {
-  const response = await handle(context, next);
-  return withSecurityHeaders(response as Response, context.url);
+  context.locals.requestId = crypto.randomUUID();
+  const executionContext = getExecutionContext(context.locals);
+  const app = createContainer(getEnv(), executionContext);
+  context.locals.app = app;
+  context.locals.admin = null;
+
+  const render = async () => (await handle(context, next)) as Response;
+  // Off in `astro dev` (edits to the local database must show at once) and wherever the PAGE_CACHE var says 'off'.
+  const cacheOn = !import.meta.env.DEV && executionContext !== null && readSecret('PAGE_CACHE') !== 'off';
+  const response = cacheOn
+    ? await withPageCache(
+        {
+          request: context.request,
+          url: context.url,
+          version: () => app.platform.pageCache.current(),
+          buildId: __BUILD_ID__,
+          waitUntil: (work) => executionContext.waitUntil(work),
+        },
+        render,
+      )
+    : await render();
+  return withSecurityHeaders(response, context.url);
 });

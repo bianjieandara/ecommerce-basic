@@ -50,6 +50,7 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
   canonical={new URL(PATHS.shop(lang), Astro.url.origin).toString()}
   noindex={true}
   themeCss={themeToCss(store.theme)}
+  fontPreset={store.theme.fontPreset}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >

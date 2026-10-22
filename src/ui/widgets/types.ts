@@ -15,4 +15,6 @@ export interface WidgetProps {
   data: SectionData;
   view: StoreView;
   whatsapp: WhatsAppContact;
+  /** True for the first section of the page, which is what the visitor sees first: its images load at once. */
+  first?: boolean;
 }

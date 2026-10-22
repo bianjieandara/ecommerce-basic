@@ -18,6 +18,20 @@ export function toPrefixQuery(term: string): string | null {
 }
 
 /**
+ * Stored variants a card may use: every size up to 960 px (the whole set when none is that small), smallest first, so the
+ * browser picks the size for its screen from `srcset`.
+ * @param json Stored variants JSON.
+ * @returns Width and key of each size.
+ */
+export function cardImageVariants(json: string | null): { width: number; key: string }[] {
+  const variants = parseJson<{ width: number; key: string }[]>(json, [])
+    .map(({ width, key }) => ({ width, key }))
+    .sort((a, b) => a.width - b.width);
+  const small = variants.filter((variant) => variant.width <= 960);
+  return small.length > 0 ? small : variants.slice(0, 1);
+}
+
+/**
  * Picks the URL of the largest stored variant at or below 960 px, for cards.
  * @param json Stored variants JSON.
  * @returns Storage key or null.

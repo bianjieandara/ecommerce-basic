@@ -3,7 +3,7 @@
 import Badge from '@/ui/components/Badge.astro';
 import Price from '@/ui/components/Price.astro';
 import { t } from '@/ui/i18n';
-import { mediaUrl } from '@/ui/lib/media-url';
+import { buildSrcSet, mediaUrl } from '@/ui/lib/media-url';
 import { routes } from '@/ui/lib/routes';
 import type { ProductCardDto } from '@/application/dto/catalog-dto';
 import type { StoreView } from '@/ui/lib/store-view';
@@ -11,9 +11,19 @@ import type { StoreView } from '@/ui/lib/store-view';
 interface Props {
   product: ProductCardDto;
   view: StoreView;
+  /** The first cards of a page: loaded at once and with high priority, because one of them is the largest paint. */
+  eager?: boolean;
+  /** How wide the tile is at each breakpoint; the default matches the shop grid (2, 3 and 4 columns). */
+  sizes?: string;
 }
 
-const { product, view } = Astro.props;
+const {
+  product,
+  view,
+  eager = false,
+  sizes = '(min-width: 1280px) 23vw, (min-width: 768px) 31vw, 46vw',
+} = Astro.props;
+const srcset = product.imageVariants.length > 1 ? buildSrcSet(product.imageVariants) : undefined;
 const href = routes.product(view.locale, product.slug);
 ---
 
@@ -22,10 +32,13 @@ const href = routes.product(view.locale, product.slug);
     {product.imageKey ? (
       <img
         src={mediaUrl(product.imageKey)}
+        srcset={srcset}
+        sizes={srcset ? sizes : undefined}
         alt=""
         width="480"
         height="480"
-        loading="lazy"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
         decoding="async"
         class="aspect-square w-full object-cover transition duration-300 group-hover:scale-[1.02]"
       />

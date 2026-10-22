@@ -1,7 +1,7 @@
 // Product cards of the storefront: the one SELECT that lists them and the mapping to the DTO. Listings and "products by id"
 // share both, so a card looks the same wherever it is shown.
 import type { ProductCardDto } from '@/application/dto/catalog-dto';
-import { cardImageKey } from './catalog-text';
+import { cardImageKey, cardImageVariants } from './catalog-text';
 
 /** Row of a product card query. */
 export interface CardRow {
@@ -63,6 +63,7 @@ export function toCard(row: CardRow, cutoff: string): ProductCardDto {
     shortDescription: row.short_description,
     categoryName: row.category_name ?? '',
     imageKey: cardImageKey(row.image_variants),
+    imageVariants: cardImageVariants(row.image_variants),
     secondImageKey: cardImageKey(row.second_image_variants),
     minPriceMinor: row.min_price_minor,
     maxPriceMinor: row.max_price_minor,

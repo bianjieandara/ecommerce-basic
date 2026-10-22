@@ -32,6 +32,7 @@ const orderHref =
   canonical={new URL(PATHS.checkoutCancel(lang), Astro.url.origin).toString()}
   noindex={true}
   themeCss={themeToCss(store.theme)}
+  fontPreset={store.theme.fontPreset}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >

@@ -34,6 +34,7 @@ const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(s
   canonical={new URL(PATHS.page(lang, slug), Astro.url.origin).toString()}
   defaultLocale={store.general.defaultLocale}
   themeCss={themeToCss(store.theme)}
+  fontPreset={store.theme.fontPreset}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >

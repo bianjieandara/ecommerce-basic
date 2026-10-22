@@ -63,6 +63,7 @@ const formLabels = {
   canonical={new URL(PATHS.contact(lang), Astro.url.origin).toString()}
   defaultLocale={store.general.defaultLocale}
   themeCss={themeToCss(store.theme)}
+  fontPreset={store.theme.fontPreset}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >

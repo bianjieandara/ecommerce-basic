@@ -25,6 +25,9 @@ export default defineConfig({
   build: { inlineStylesheets: 'auto' },
   security: { checkOrigin: true },
   vite: {
+    // Names this build. The page cache key includes it, so pages cached by an older deploy (which point at asset files the
+    // new deploy no longer has) are never served.
+    define: { __BUILD_ID__: JSON.stringify(Date.now().toString(36)) },
     plugins: [tailwindcss()],
     resolve: {
       alias: {

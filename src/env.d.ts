@@ -11,3 +11,6 @@ declare namespace App {
     admin: import('@/application/ports/identity').AdminUser | null;
   }
 }
+
+/** Id of the current build, replaced at build time (see `define` in astro.config.mjs). */
+declare const __BUILD_ID__: string;

@@ -48,6 +48,7 @@
   "vars": {
     "CLIENT_SLUG": "demo",
     "PUBLIC_SITE_URL": "http://localhost:4321",
+    "PAGE_CACHE": "on",
     "PUBLIC_MEDIA_BASE_URL": "",
     "EMAIL_FROM": "Store <orders@example.com>",
     "EMAIL_TRANSPORT": "cloudflare",

@@ -30,6 +30,7 @@ const title = t(lang, 'cart.title');
   canonical={new URL(PATHS.cart(lang), Astro.url.origin).toString()}
   noindex={true}
   themeCss={themeToCss(store.theme)}
+  fontPreset={store.theme.fontPreset}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >

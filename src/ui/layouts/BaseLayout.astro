@@ -5,6 +5,13 @@ import '@/ui/styles/global.css';
 import { DEFAULT_LOCALE, type Locale } from '@/domain/shared/locale';
 import type { JsonLd } from '@/ui/lib/structured-data';
 import SeoHead from './SeoHead.astro';
+// The Latin subset of each preset, as hashed asset URLs. Preloading the one the store uses stops the text from changing
+// width when the web font replaces the fallback (that shift was most of the shop page's layout shift).
+import interFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import manropeFont from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+import playfairFont from '@fontsource-variable/playfair-display/files/playfair-display-latin-wght-normal.woff2?url';
+
+const FONT_FILES = { inter: interFont, manrope: manropeFont, playfair: playfairFont } as const;
 
 interface Props {
   title: string;
@@ -24,6 +31,8 @@ interface Props {
   jsonLd?: JsonLd[];
   /** Theme CSS (:root block) built from settings. Empty uses the defaults in global.css. */
   themeCss?: string;
+  /** Font preset of the theme; its main font file is preloaded. */
+  fontPreset?: keyof typeof FONT_FILES;
   /** Web Analytics token (Cloudflare Web Analytics). Empty means no beacon. */
   webAnalyticsToken?: string;
 }
@@ -41,6 +50,7 @@ const {
   ogType = 'website',
   jsonLd = [],
   themeCss = '',
+  fontPreset,
   webAnalyticsToken = '',
 } = Astro.props;
 ---
@@ -67,6 +77,9 @@ const {
     />
     <meta name="theme-color" content="#111111" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {fontPreset && (
+      <link rel="preload" as="font" type="font/woff2" href={FONT_FILES[fontPreset]} crossorigin />
+    )}
     {themeCss && <style set:html={themeCss} />}
     {webAnalyticsToken && (
       <script

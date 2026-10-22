@@ -51,6 +51,7 @@ const data = await loadSectionData(
     { email: contact.email, address: contact.address },
   )}
   themeCss={themeToCss(store.theme)}
+  fontPreset={store.theme.fontPreset}
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >
