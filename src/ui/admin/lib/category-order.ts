@@ -31,3 +31,25 @@ export function orderTree<T extends TreeNode>(items: T[]): { item: T; depth: num
   visit(null, 0);
   return result;
 }
+
+/**
+ * The full order that results from swapping an item with its neighbour among its siblings.
+ * @param items All items.
+ * @param id Item to move.
+ * @param step -1 to move up, 1 to move down.
+ * @returns Ids in the new display order, or null when the item cannot move that way.
+ */
+export function swappedOrder<T extends TreeNode>(items: T[], id: string, step: -1 | 1): string[] | null {
+  const item = items.find((candidate) => candidate.id === id);
+  if (!item) return null;
+  const siblings = items
+    .filter((candidate) => candidate.parentId === item.parentId)
+    .sort((a, b) => a.position - b.position);
+  const other = siblings[siblings.findIndex((candidate) => candidate.id === id) + step];
+  if (!other) return null;
+  const positions = new Map(items.map((candidate) => [candidate.id, candidate.position] as const));
+  positions.set(item.id, other.position);
+  positions.set(other.id, item.position);
+  const reordered = items.map((candidate) => ({ ...candidate, position: positions.get(candidate.id) ?? 0 }));
+  return orderTree(reordered).map((entry) => entry.item.id);
+}

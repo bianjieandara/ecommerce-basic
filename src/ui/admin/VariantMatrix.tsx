@@ -1,9 +1,10 @@
-// Variants of one product: generate the combinations of chosen attribute values, then edit each variant's identity, prices,
-// stock and flags. Stored variants are deactivated rather than removed, so their stock history stays intact.
+// Variants of one product: generate the combinations of chosen attribute values, then edit each variant. Stored variants
+// are deactivated rather than removed, so their stock history stays intact.
 import { useState } from 'preact/hooks';
-import { BUTTON, FIELD, LABEL, LINK_BUTTON, PANEL } from './lib/classes';
+import { BUTTON, PANEL } from './lib/classes';
 import type { AttributeOption, MediaOption } from './catalog-options';
 import { blankVariant, type VariantForm } from './product-form';
+import VariantRow from './VariantRow';
 import type { AdminLabels } from './ProductFields';
 
 /** Props of the variant matrix. */
@@ -39,7 +40,7 @@ function combinations(groups: string[][]): string[][] {
 }
 
 /**
- * Variant editor with the attribute combination generator.
+ * Variant list with the attribute combination generator.
  * @param props Variants, attributes, images and strings.
  */
 export default function VariantMatrix(props: VariantMatrixProps) {
@@ -136,121 +137,16 @@ export default function VariantMatrix(props: VariantMatrixProps) {
 
       <ul class="flex flex-col gap-3">
         {variants.map((variant, index) => (
-          <li
-            class={`rounded-brand border-text/15 flex flex-col gap-3 border p-3 ${variant.isActive ? '' : 'opacity-60'}`}
-          >
-            <div class="flex items-center justify-between gap-2">
-              <p class="font-semibold">
-                {variant.attributeValueIds.map((id) => labelOf.get(id) ?? '').join(' / ') ||
-                  labels.product.simpleProduct}
-              </p>
-              <button type="button" class={LINK_BUTTON} onClick={() => drop(index)}>
-                {variant.id === null
-                  ? labels.product.remove
-                  : variant.isActive
-                    ? labels.product.deactivate
-                    : labels.product.restore}
-              </button>
-            </div>
-            <div class="grid gap-3 sm:grid-cols-3">
-              <label class={LABEL}>
-                {labels.product.sku}
-                <input
-                  class={FIELD}
-                  value={variant.sku}
-                  onInput={(e) => patch(index, { sku: e.currentTarget.value })}
-                />
-              </label>
-              <label class={LABEL}>
-                {labels.product.barcode}
-                <input
-                  class={FIELD}
-                  value={variant.barcode}
-                  onInput={(e) => patch(index, { barcode: e.currentTarget.value })}
-                />
-              </label>
-              <label class={LABEL}>
-                {labels.product.stock}
-                <input
-                  class={FIELD}
-                  inputMode="numeric"
-                  value={variant.stock}
-                  onInput={(e) => patch(index, { stock: e.currentTarget.value })}
-                />
-              </label>
-              <label class={LABEL}>
-                {labels.product.price} ({currency})
-                <input
-                  class={FIELD}
-                  inputMode="decimal"
-                  placeholder={labels.product.priceHint}
-                  value={variant.price}
-                  onInput={(e) => patch(index, { price: e.currentTarget.value })}
-                />
-              </label>
-              <label class={LABEL}>
-                {labels.product.compareAt} ({currency})
-                <input
-                  class={FIELD}
-                  inputMode="decimal"
-                  value={variant.compareAt}
-                  onInput={(e) => patch(index, { compareAt: e.currentTarget.value })}
-                />
-              </label>
-              <label class={LABEL}>
-                {labels.product.cost} ({currency})
-                <input
-                  class={FIELD}
-                  inputMode="decimal"
-                  value={variant.cost}
-                  onInput={(e) => patch(index, { cost: e.currentTarget.value })}
-                />
-              </label>
-              <label class={LABEL}>
-                {labels.product.threshold}
-                <input
-                  class={FIELD}
-                  inputMode="numeric"
-                  placeholder={String(defaultThreshold)}
-                  value={variant.threshold}
-                  onInput={(e) => patch(index, { threshold: e.currentTarget.value })}
-                />
-              </label>
-              <label class={LABEL}>
-                {labels.product.image}
-                <select
-                  class={FIELD}
-                  value={variant.imageMediaId ?? ''}
-                  onChange={(e) => patch(index, { imageMediaId: e.currentTarget.value || null })}
-                >
-                  <option value="">{labels.product.noImage}</option>
-                  {images.map((image) => (
-                    <option value={image.id}>{image.name}</option>
-                  ))}
-                </select>
-              </label>
-              <div class="flex flex-col gap-2 text-sm">
-                <label class="flex min-h-11 items-center gap-2">
-                  <input
-                    type="checkbox"
-                    class="size-5"
-                    checked={variant.track}
-                    onChange={(e) => patch(index, { track: e.currentTarget.checked })}
-                  />
-                  {labels.product.track}
-                </label>
-                <label class="flex min-h-11 items-center gap-2">
-                  <input
-                    type="checkbox"
-                    class="size-5"
-                    checked={variant.isActive}
-                    onChange={(e) => patch(index, { isActive: e.currentTarget.checked })}
-                  />
-                  {labels.product.active}
-                </label>
-              </div>
-            </div>
-          </li>
+          <VariantRow
+            variant={variant}
+            label={variant.attributeValueIds.map((id) => labelOf.get(id) ?? '').join(' / ')}
+            currency={currency}
+            defaultThreshold={defaultThreshold}
+            images={images}
+            labels={labels}
+            onPatch={(change) => patch(index, change)}
+            onDrop={() => drop(index)}
+          />
         ))}
       </ul>
       <button type="button" class={BUTTON} onClick={() => setVariants([...variants, blankVariant()])}>

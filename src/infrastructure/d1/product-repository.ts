@@ -1,55 +1,17 @@
 // D1 side of the product aggregate: loads a product with everything it owns, and saves it in one batch.
 import type { ProductRepository, ProductSaveContext } from '@/application/ports/catalog';
 import type { StockChange } from '@/application/ports/inventory';
-import {
-  type Product,
-  type ProductStatus,
-  type ProductTranslation,
-  type ProductVariant,
-} from '@/domain/catalog/product';
+import type { Product, ProductStatus } from '@/domain/catalog/product';
 import { DomainError } from '@/domain/shared/errors';
-import type { Locale } from '@/domain/shared/locale';
 import { isCheckViolation, isUniqueViolation, queryAll, queryFirst, statement } from './d1-client';
+import {
+  toProduct,
+  toVariant,
+  type ProductRow,
+  type TranslationRow,
+  type VariantRow,
+} from './product-mapper';
 import { productStatements } from './product-statements';
-
-/** Row of products. */
-interface ProductRow {
-  id: string;
-  status: ProductStatus;
-  base_price_minor: number;
-  compare_at_price_minor: number | null;
-  tax_rate_bp: number | null;
-  is_featured: number;
-  created_at: string;
-  updated_at: string;
-}
-
-/** Row of product_translations. */
-interface TranslationRow {
-  locale: Locale;
-  name: string;
-  slug: string;
-  short_description: string;
-  description_md: string;
-  seo_title: string;
-  seo_description: string;
-}
-
-/** Row of product_variants. */
-interface VariantRow {
-  id: string;
-  sku: string | null;
-  barcode: string | null;
-  price_minor: number | null;
-  compare_at_price_minor: number | null;
-  cost_minor: number | null;
-  stock: number;
-  track_inventory: number;
-  low_stock_threshold: number | null;
-  image_media_id: string | null;
-  position: number;
-  is_active: number;
-}
 
 /** D1-backed product repository. */
 export class D1ProductRepository implements ProductRepository {
@@ -191,79 +153,4 @@ export class D1ProductRepository implements ProductRepository {
       };
     });
   }
-}
-
-/**
- * Maps the rows of one product to the domain aggregate. A language without text keeps empty fields.
- * @param row Product row.
- * @param texts Translation rows.
- * @param categoryIds Category ids.
- * @param imageIds Image ids in display order.
- * @param variants Variants with their attribute values.
- * @returns The aggregate.
- */
-function toProduct(
-  row: ProductRow,
-  texts: TranslationRow[],
-  categoryIds: string[],
-  imageIds: string[],
-  variants: ProductVariant[],
-): Product {
-  const translations: Record<Locale, ProductTranslation> = { es: emptyTranslation(), en: emptyTranslation() };
-  for (const text of texts) {
-    translations[text.locale] = {
-      name: text.name,
-      slug: text.slug,
-      shortDescription: text.short_description,
-      descriptionMd: text.description_md,
-      seoTitle: text.seo_title,
-      seoDescription: text.seo_description,
-    };
-  }
-  return {
-    id: row.id,
-    status: row.status,
-    basePriceMinor: row.base_price_minor,
-    compareAtPriceMinor: row.compare_at_price_minor,
-    taxRateBp: row.tax_rate_bp,
-    isFeatured: row.is_featured === 1,
-    translations,
-    categoryIds,
-    imageIds,
-    variants,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-/**
- * Maps a variant row to the domain shape.
- * @param row Variant row.
- * @param attributeValueIds Attribute value ids of the variant.
- * @returns The variant.
- */
-function toVariant(row: VariantRow, attributeValueIds: string[]): ProductVariant {
-  return {
-    id: row.id,
-    sku: row.sku,
-    barcode: row.barcode,
-    priceMinor: row.price_minor,
-    compareAtPriceMinor: row.compare_at_price_minor,
-    costMinor: row.cost_minor,
-    stock: row.stock,
-    trackInventory: row.track_inventory === 1,
-    lowStockThreshold: row.low_stock_threshold,
-    imageMediaId: row.image_media_id,
-    position: row.position,
-    isActive: row.is_active === 1,
-    attributeValueIds,
-  };
-}
-
-/**
- * A translation with no text, used for languages the product does not have yet.
- * @returns Empty fields.
- */
-function emptyTranslation(): ProductTranslation {
-  return { name: '', slug: '', shortDescription: '', descriptionMd: '', seoTitle: '', seoDescription: '' };
 }
