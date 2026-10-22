@@ -23,11 +23,22 @@ export interface StripeSession {
   payment_status: string;
 }
 
-/** The parts of a Stripe event this adapter reads. */
+/** The parts of a Charge this adapter reads (the object of charge.refunded). */
+export interface StripeCharge {
+  id: string;
+  payment_intent: string | null;
+  amount: number;
+  amount_refunded: number;
+  currency: string;
+  /** True only when the whole charge has been refunded. */
+  refunded: boolean;
+}
+
+/** The parts of a Stripe event this adapter reads. The object is a Checkout Session, or a Charge for refund events. */
 export interface StripeEvent {
   id: string;
   type: string;
-  data: { object: StripeSession };
+  data: { object: StripeSession | StripeCharge };
 }
 
 /** Input of initiate(). Stripe needs only the order, the access key and the site URL. */
@@ -158,12 +169,56 @@ export class StripeGateway implements PaymentGateway {
   }
 
   /**
+   * Turns a verified Stripe event into a payment confirmation, looking up the order's session when the event is about a
+   * charge. Use this from the webhook; parseEvent covers the session events on their own.
+   * @param event Parsed event body.
+   * @returns The confirmation, or null for events the store does not act on.
+   * @throws DomainError PAYMENT_PROVIDER_ERROR when the lookup fails, so the webhook answers an error and Stripe retries.
+   */
+  async confirmationFor(event: StripeEvent): Promise<PaymentConfirmation | null> {
+    if (event.type !== 'charge.refunded') return this.parseEvent(event);
+    const charge = event.data.object as StripeCharge;
+    // Only a full refund moves the order to refunded. A partial one leaves the order paid, for the store to settle by hand.
+    if (!charge.refunded || !charge.payment_intent) return null;
+    const sessionId = await this.sessionIdForPaymentIntent(charge.payment_intent);
+    if (!sessionId) return null;
+    return {
+      provider: 'stripe',
+      eventId: event.id,
+      providerReference: sessionId,
+      outcome: 'refunded',
+      amountMinor: charge.amount_refunded,
+      currency: charge.currency.toUpperCase(),
+    };
+  }
+
+  /**
+   * Finds the Checkout Session that created a payment, because orders store the session id, not the payment intent.
+   * @param paymentIntentId Payment intent of the refunded charge.
+   * @returns The session id, or null when Stripe has no session for it (a payment made outside this store).
+   * @throws DomainError PAYMENT_PROVIDER_ERROR when Stripe does not answer.
+   */
+  private async sessionIdForPaymentIntent(paymentIntentId: string): Promise<string | null> {
+    if (!this.secretKey) return null;
+    const url = `${API_BASE}/checkout/sessions?${new URLSearchParams({ payment_intent: paymentIntentId, limit: '1' })}`;
+    const response = await this.fetcher(url, { headers: { authorization: `Bearer ${this.secretKey}` } });
+    const data = (await response.json()) as { data?: { id?: string }[]; error?: { message?: string } };
+    if (!response.ok) {
+      throw new DomainError(
+        'PAYMENT_PROVIDER_ERROR',
+        `Stripe error: ${data.error?.message ?? response.status}`,
+      );
+    }
+    return data.data?.[0]?.id ?? null;
+  }
+
+  /**
    * Turns a verified Stripe event into a payment confirmation. Events the store does not act on return null.
    * @param event Parsed event body.
    * @returns The confirmation, or null.
    */
   parseEvent(event: StripeEvent): PaymentConfirmation | null {
-    const session = event.data.object;
+    const session = event.data.object as StripeSession;
     const confirm = (outcome: PaymentConfirmation['outcome']): PaymentConfirmation => ({
       provider: 'stripe',
       eventId: event.id,

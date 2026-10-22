@@ -14,8 +14,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       nowSeconds,
     );
     if (!signed) return Response.json({ ok: false, error: { code: 'INVALID_SIGNATURE' } }, { status: 400 });
-    const event = JSON.parse(raw) as Parameters<typeof app.providers.stripe.parseEvent>[0];
-    const confirmation = app.providers.stripe.parseEvent(event);
+    const event = JSON.parse(raw) as Parameters<typeof app.providers.stripe.confirmationFor>[0];
+    const confirmation = await app.providers.stripe.confirmationFor(event);
     if (confirmation) await app.confirmPayment.execute(confirmation);
     return Response.json({ ok: true });
   } catch (error) {
