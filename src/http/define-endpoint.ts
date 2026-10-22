@@ -4,6 +4,7 @@ import type { APIContext, APIRoute } from 'astro';
 import { z } from 'zod';
 import { MAX_UPLOAD_BYTES } from '@/domain/media/media-asset';
 import { DomainError } from '@/domain/shared/errors';
+import type { RateLimitBucket } from '@/application/ports/platform';
 import { errorResponse } from './errors';
 
 /** Largest JSON body accepted by an endpoint. */
@@ -21,6 +22,11 @@ export interface EndpointOptions<S extends z.ZodType, R> {
   body?: 'json' | 'form';
   /** Set on admin changes: the page cache is invalidated once the handler succeeds. */
   invalidatesCache?: boolean;
+  /**
+   * Limits requests per client IP before anything else runs, so a flood is turned away without parsing its body. A bucket name
+   * uses that bucket; `{ bucket, scope }` keeps its own counter, for an endpoint that must not share one with the others.
+   */
+  rateLimit?: RateLimitBucket | { bucket: RateLimitBucket; scope: string };
   handler: (context: { input: z.infer<S>; context: APIContext }) => Promise<R>;
 }
 
@@ -34,6 +40,7 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
   return async (context) => {
     const requestId = context.locals.requestId;
     try {
+      if (options.rateLimit) await enforceRateLimit(context, options.rateLimit);
       // Endpoints without an input schema never read the body, so a plain form post (sign-out) works too.
       const raw =
         options.method === 'GET'
@@ -96,4 +103,21 @@ function parse<S extends z.ZodType>(schema: S, raw: unknown): z.infer<S> {
     );
   }
   return result.data;
+}
+
+/**
+ * Turns the request away when the client IP has used up its limit.
+ * @param context Astro context of the request.
+ * @param limit Bucket, or bucket and scope.
+ * @throws DomainError RATE_LIMITED.
+ */
+async function enforceRateLimit(
+  context: APIContext,
+  limit: NonNullable<EndpointOptions<z.ZodType, unknown>['rateLimit']>,
+): Promise<void> {
+  const { bucket, scope } = typeof limit === 'string' ? { bucket: limit, scope: null } : limit;
+  const ip = context.request.headers.get('CF-Connecting-IP') ?? 'unknown';
+  if (!(await context.locals.app.platform.rateLimiter.allow(bucket, scope ? `${scope}:${ip}` : ip))) {
+    throw new DomainError('RATE_LIMITED', 'Too many attempts. Please wait a moment.');
+  }
 }

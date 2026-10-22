@@ -7,6 +7,7 @@ import { availablePaymentMethods } from '@/application/ordering/payment-methods'
 
 export const POST = defineEndpoint({
   method: 'POST',
+  rateLimit: 'api',
   input: quoteCartInput,
   handler: async ({ input, context }) => {
     const app = context.locals.app;

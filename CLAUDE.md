@@ -1,6 +1,10 @@
 # Working rules for this repository
 
-Before any task, read `docs/IMPLEMENTATION_PLAN.md` and `docs/PROGRESS.md`. Work in stage order.
+Before any task, read `docs/PROGRESS.md` (30 lines) and work in stage order. Then read only what the task needs:
+
+- **The plan** (`docs/IMPLEMENTATION_PLAN.md`, about 26,000 tokens) is not read whole. Find your stage with `grep -n "^### Stage" docs/IMPLEMENTATION_PLAN.md` and read that section. Its conventions (sections 3 and 4) are already summarized below. Sections 5 and 6 (data model, contracts) describe the original design and can lag behind the code: when they differ from `src/` or `db/migrations/`, the code is right.
+- **`docs/DECISIONS.md`** is a log, not a manual. Do not read it whole; `grep -n` it for the topic you are touching, and add an entry when you change or deviate from something.
+- **`docs/ARCHITECTURE.md`** (35 lines) is worth reading once.
 
 ## Code rules
 

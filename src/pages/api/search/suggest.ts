@@ -14,12 +14,9 @@ const LIMIT = 6;
 
 export const GET = defineEndpoint({
   method: 'GET',
+  rateLimit: 'api',
   handler: async ({ context }) => {
     const app = context.locals.app;
-    const ip = context.request.headers.get('CF-Connecting-IP');
-    if (!(await app.platform.rateLimiter.allow('api', ip ?? 'unknown'))) {
-      throw new DomainError('RATE_LIMITED', 'Too many attempts. Please wait a moment.');
-    }
     const locale = context.url.searchParams.get('locale') ?? '';
     if (!isLocale(locale)) throw new DomainError('VALIDATION_FAILED', 'Unknown language');
     const term = (context.url.searchParams.get('q') ?? '').trim();
