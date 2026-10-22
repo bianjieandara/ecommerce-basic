@@ -128,17 +128,22 @@ export class IssueInvoice {
       }
       throw error;
     }
-    await this.deps.jobs.enqueue(
-      'invoice.render_pdf',
-      { invoiceId: invoice.id },
-      { idempotencyKey: `invoice-pdf:${invoice.id}` },
-    );
-    if (this.deps.legal.isEnabled()) {
+    // The invoice is committed: a failed enqueue is logged and the caller (a payment) still succeeds.
+    try {
       await this.deps.jobs.enqueue(
-        'invoice.legal_issue',
+        'invoice.render_pdf',
         { invoiceId: invoice.id },
-        { idempotencyKey: `invoice-legal:${invoice.id}` },
+        { idempotencyKey: `invoice-pdf:${invoice.id}` },
       );
+      if (this.deps.legal.isEnabled()) {
+        await this.deps.jobs.enqueue(
+          'invoice.legal_issue',
+          { invoiceId: invoice.id },
+          { idempotencyKey: `invoice-legal:${invoice.id}` },
+        );
+      }
+    } catch (error) {
+      console.error('invoice.enqueue_failed', { invoiceId: invoice.id, error: String(error) });
     }
     return invoice;
   }

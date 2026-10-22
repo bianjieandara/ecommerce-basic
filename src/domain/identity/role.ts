@@ -1,7 +1,10 @@
 // Admin roles and the permission map. Permissions are checked by use cases, not by the UI, so hiding a button is never the only guard.
 
-/** Admin roles. Owners can do everything; editors manage the day-to-day store. */
-export type Role = 'owner' | 'editor';
+/** Admin roles, the one closed set. Owners can do everything; editors manage the day-to-day store. */
+export const ROLES = ['owner', 'editor'] as const;
+
+/** An admin role. Forms and zod schemas derive from ROLES. */
+export type Role = (typeof ROLES)[number];
 
 /** Named permissions used by use cases and endpoints. */
 export type Permission =

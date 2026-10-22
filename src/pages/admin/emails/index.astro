@@ -1,0 +1,45 @@
+---
+// Notification emails: every email the store sends, with its audience, whether its copy is customized and whether it is sent.
+// Each one opens in the editor.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { PANEL } from '@/ui/admin/lib/classes';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+import { notificationLabel } from '@/ui/lib/notification-labels';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const entries = await app.emailTemplates.list();
+---
+
+<AdminLayout title={t(lang, 'admin.emails.title')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.emails.title')}</h1>
+  <p class="text-text/70 text-sm">{t(lang, 'admin.emails.intro')}</p>
+  <ul class="flex flex-col gap-3">
+    {entries.map(({ definition, override }) => (
+      <li>
+        <a href={`/admin/emails/${definition.key}`} class={`${PANEL} min-h-11`}>
+          <span class="font-semibold wrap-break-word">{notificationLabel(lang, definition.key)}</span>
+          <span class="flex flex-wrap items-center gap-2 text-sm">
+            <span class="text-text/70">{t(lang, `admin.emails.audience.${definition.audience}`)}</span>
+            <StatusBadge
+              label={override ? t(lang, 'admin.emails.customized') : t(lang, 'admin.emails.standard')}
+              tone={override ? 'ok' : 'muted'}
+            />
+            <StatusBadge
+              label={
+                override && !override.enabled ? t(lang, 'admin.emails.off') : t(lang, 'admin.emails.sending')
+              }
+              tone={override && !override.enabled ? 'warn' : 'ok'}
+            />
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</AdminLayout>

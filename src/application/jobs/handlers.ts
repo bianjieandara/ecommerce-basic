@@ -7,6 +7,9 @@ import type { ReviewsService } from '../content/reviews-service';
 import type { InventoryAlerts } from '../inventory/inventory-alerts';
 import type { ExpireStaleOrders } from '../ordering/expire-orders';
 import type { SendNotificationEmail } from '../notifications/send-notification-email';
+import type { DailyRollup } from '../reports/jobs/daily-rollup';
+import type { PurgeOldRecords } from '../reports/jobs/purge';
+import type { WeeklySummary } from '../reports/jobs/weekly-summary';
 import type { FailedJobRepository, JobType } from '../ports/jobs';
 import type { Clock } from '../ports/platform';
 import type { JobHandler } from './dispatcher';
@@ -20,22 +23,24 @@ import {
   maintenancePurgePayload,
   notifyEmailPayload,
 } from './job-types';
+import { dailyRollupPayload, weeklySummaryPayload } from '../reports/jobs/payloads';
 
 /** Dependencies the implemented handlers need. */
 export interface JobHandlerDeps {
   failedJobs: FailedJobRepository;
   clock: Clock;
   sendNotificationEmail: SendNotificationEmail;
+  notifyWhatsapp: JobHandler;
   expireStaleOrders: ExpireStaleOrders;
   issueInvoice: IssueInvoice;
   renderInvoicePdf: RenderInvoicePdf;
   issueLegalInvoice: IssueLegalInvoice;
   reviews: ReviewsService;
   inventoryAlerts: InventoryAlerts;
+  dailyRollup: DailyRollup;
+  purgeOldRecords: PurgeOldRecords;
+  weeklySummary: WeeklySummary;
 }
-
-/** Milliseconds in one day. */
-const DAY_MS = 86_400_000;
 
 /**
  * Builds the handlers implemented so far. Other job types are listed as pending in job-types.ts.
@@ -44,10 +49,17 @@ const DAY_MS = 86_400_000;
  */
 export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, JobHandler>> {
   return {
+    'notify.whatsapp': deps.notifyWhatsapp,
     'maintenance.purge': async (payload) => {
       const input = maintenancePurgePayload.parse(payload);
-      const cutoff = new Date(deps.clock.now().getTime() - input.resolvedFailedJobsOlderThanDays * DAY_MS);
-      await deps.failedJobs.purgeResolvedBefore(cutoff.toISOString());
+      await deps.purgeOldRecords.execute(input.resolvedFailedJobsOlderThanDays);
+    },
+    'analytics.daily_rollup': async (payload) => {
+      await deps.dailyRollup.execute(dailyRollupPayload.parse(payload).day ?? null);
+    },
+    'reports.weekly_summary': async (payload) => {
+      weeklySummaryPayload.parse(payload);
+      await deps.weeklySummary.execute();
     },
     'notify.email': async (payload) => {
       await deps.sendNotificationEmail.execute(notifyEmailPayload.parse(payload));

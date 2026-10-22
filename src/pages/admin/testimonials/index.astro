@@ -1,0 +1,65 @@
+---
+// Testimonials: the reviews the storefront testimonials widget shows. Each one is edited in place on this screen.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import TestimonialManager from '@/ui/admin/testimonials/TestimonialManager.tsx';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { SUPPORTED_LOCALES } from '@/domain/shared/locale';
+import type { LocalizedText } from '@/domain/shared/localized-text';
+import { loadStoreContext } from '@/http/store-context';
+import { t, type DotPath } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const items = await app.testimonials.listAll();
+// Option labels are translated in both languages: the form is in the admin's language, the stored value is the code.
+const both = (key: DotPath, params?: Record<string, number>): LocalizedText => ({
+  es: t('es', key, params),
+  en: t('en', key, params),
+});
+const ratingOptions = [1, 2, 3, 4, 5].map((count) => ({
+  value: String(count),
+  label: both('admin.testimonials.ratingOption', { count }),
+}));
+const localeOptions = SUPPORTED_LOCALES.map((code) => ({
+  value: code,
+  label: both(`admin.testimonials.locales.${code}`),
+}));
+const labels = {
+  add: t(lang, 'admin.testimonials.add'),
+  edit: t(lang, 'admin.testimonials.edit'),
+  close: t(lang, 'admin.testimonials.close'),
+  authorName: t(lang, 'admin.testimonials.authorName'),
+  rating: t(lang, 'admin.testimonials.rating'),
+  body: t(lang, 'admin.testimonials.body'),
+  locale: t(lang, 'admin.testimonials.locale'),
+  visible: t(lang, 'admin.testimonials.visible'),
+  position: t(lang, 'admin.testimonials.position'),
+  shown: t(lang, 'admin.testimonials.shown'),
+  hidden: t(lang, 'admin.testimonials.hidden'),
+  empty: t(lang, 'admin.testimonials.empty'),
+  save: t(lang, 'admin.form.save'),
+  saving: t(lang, 'admin.form.saving'),
+  delete: t(lang, 'admin.testimonials.delete'),
+  confirmDelete: t(lang, 'admin.testimonials.confirmDelete'),
+  failed: t(lang, 'admin.form.failed'),
+  invalid: t(lang, 'admin.form.invalid'),
+  none: t(lang, 'admin.form.none'),
+};
+---
+
+<AdminLayout title={t(lang, 'admin.testimonials.title')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.testimonials.title')}</h1>
+  <TestimonialManager
+    client:load
+    items={items}
+    locale={lang}
+    defaultLocale={store.general.defaultLocale}
+    apiBase="/api/admin/testimonials"
+    ratingOptions={ratingOptions}
+    localeOptions={localeOptions}
+    labels={labels}
+  />
+</AdminLayout>

@@ -1,0 +1,30 @@
+---
+// KPI cards of a report: the value of the period, and the change against the period before when there is one.
+import type { ReportKpi } from '@/application/reports/view';
+import { t } from '@/ui/i18n';
+import { formatCell, formatChange, type FormatContext } from './report-format';
+
+interface Props {
+  kpis: ReportKpi[];
+  format: FormatContext;
+}
+
+const { kpis, format } = Astro.props;
+const lang = format.lang;
+---
+
+<ul class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+  {kpis.map((kpi) => (
+    <li class="rounded-brand bg-surface flex min-w-0 flex-col gap-1 p-4">
+      <span class="text-text/70 text-sm">{t(lang, `admin.reports.${kpi.label}`)}</span>
+      <strong class="text-xl font-semibold break-words">{formatCell(kpi.value, format)}</strong>
+      {kpi.previous !== null && (
+        <span class="text-text/70 text-xs">
+          {kpi.changeBp === null ? t(lang, 'admin.reports.changeNone') : formatChange(kpi.changeBp, format)}
+          {' · '}
+          {t(lang, 'admin.reports.vsPrevious')}
+        </span>
+      )}
+    </li>
+  ))}
+</ul>

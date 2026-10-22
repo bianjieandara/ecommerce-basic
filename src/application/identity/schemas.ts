@@ -1,7 +1,10 @@
 // Admin identity inputs. Passwords are at least 12 characters: the store is run by people who can lose access, and short
 // passwords are the usual way in.
 import { z } from 'zod';
+import { ROLES } from '@/domain/identity/role';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';
+
+const roleInput = z.enum(ROLES);
 
 /** Shortest password accepted for an admin account. */
 export const MIN_PASSWORD_LENGTH = 12;
@@ -40,6 +43,13 @@ export const resetPasswordInput = z.object({
 export const inviteAdminInput = z.object({
   email: z.email().max(254),
   name: z.string().trim().min(2).max(120),
-  role: z.enum(['owner', 'editor']),
+  role: roleInput,
   locale: z.enum(SUPPORTED_LOCALES).default('es'),
 });
+
+/** A change to one admin account (owners only). At least one of the two fields must be given. */
+export const manageUserInput = z
+  .object({ role: roleInput.optional(), isActive: z.boolean().optional() })
+  .refine((value) => value.role !== undefined || value.isActive !== undefined, {
+    message: 'Give a role or an active flag',
+  });

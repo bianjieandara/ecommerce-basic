@@ -35,6 +35,8 @@ export interface Testimonial {
 export interface TestimonialRepository {
   listVisible(): Promise<Testimonial[]>;
   listAll(): Promise<Testimonial[]>;
+  /** One testimonial by id, so an update keeps the stored creation time. */
+  findById(id: string): Promise<Testimonial | null>;
   save(testimonial: Testimonial): Promise<void>;
   delete(id: string): Promise<void>;
 }

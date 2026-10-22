@@ -1,0 +1,36 @@
+---
+// WhatsApp: the connection to Meta and one card per message. Owners manage it; an editor sees the forbidden text instead, because
+// a wrong template reaches customers and needs an owner's review.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import WhatsAppConnection from '@/ui/admin/whatsapp/WhatsAppConnection.astro';
+import WhatsAppTemplateManager from '@/ui/admin/whatsapp/WhatsAppTemplateManager.tsx';
+import { whatsappLabels } from '@/ui/admin/whatsapp/whatsapp-labels';
+import { can } from '@/domain/identity/role';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const labels = whatsappLabels(lang);
+// Display guard only: every template use case checks the same permission itself.
+const allowed = can(admin.role, 'settings.manage');
+const overview = allowed ? await app.whatsapp.templates.overview(admin) : null;
+---
+
+<AdminLayout title={labels.title} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{labels.title}</h1>
+  {overview ? (
+    <>
+      <p class="text-text/70 text-sm">{labels.intro}</p>
+      <WhatsAppConnection connection={overview.connection} labels={labels} />
+      <WhatsAppTemplateManager client:load entries={overview.entries} labels={labels} />
+    </>
+  ) : (
+    <p role="alert" class="text-accent text-sm">
+      {labels.forbidden}
+    </p>
+  )}
+</AdminLayout>

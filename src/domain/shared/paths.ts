@@ -46,6 +46,7 @@ export const ADMIN_PATHS = {
   resetPassword: '/admin/reset-password',
   acceptInvite: '/admin/accept-invite',
   reports: '/admin/reports',
+  whatsapp: '/admin/whatsapp',
   products: '/admin/products',
   categories: '/admin/categories',
   attributes: '/admin/attributes',
@@ -59,4 +60,8 @@ export const ADMIN_PATHS = {
   jobs: '/admin/jobs',
   settings: '/admin/settings',
   pages: '/admin/pages',
+  emails: '/admin/emails',
+  shipping: '/admin/shipping',
+  testimonials: '/admin/testimonials',
+  users: '/admin/users',
 } as const;

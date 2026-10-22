@@ -1,0 +1,82 @@
+---
+// Shipping methods offered at checkout: one card per method, each saved on its own, and a card at the end that adds one.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import ShippingManager from '@/ui/admin/shipping/ShippingManager.tsx';
+import type { FieldDescriptor } from '@/application/forms/field-descriptor';
+import { can } from '@/domain/identity/role';
+import { CURRENCIES } from '@/domain/shared/currency';
+import type { LocalizedText } from '@/domain/shared/localized-text';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t, type DotPath } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const canEdit = can(admin.role, 'content.edit');
+const methods = canEdit ? await app.shipping.listAll() : [];
+const exponent = CURRENCIES[store.general.currency].exponent;
+const nextPosition = Math.min(999, methods.reduce((max, method) => Math.max(max, method.position), -1) + 1);
+
+/**
+ * A label in both languages, for field descriptors the island renders in the admin's own language.
+ * @param key Dictionary key of the label.
+ * @returns The text in each language.
+ */
+const both = (key: DotPath): LocalizedText => ({ es: t('es', key), en: t('en', key) });
+const fields: FieldDescriptor[] = [
+  {
+    name: 'kind',
+    kind: 'select',
+    label: both('admin.shipping.kind'),
+    options: [
+      { value: 'flat', label: both('admin.shipping.kindFlat') },
+      { value: 'pickup', label: both('admin.shipping.kindPickup') },
+    ],
+  },
+  { name: 'name', kind: 'localizedText', label: both('admin.shipping.name'), required: true, max: 80 },
+  { name: 'description', kind: 'localizedTextarea', label: both('admin.shipping.description'), max: 300 },
+  { name: 'position', kind: 'number', label: both('admin.shipping.position'), min: 0, max: 999, step: 1 },
+  { name: 'isActive', kind: 'boolean', label: both('admin.shipping.active') },
+];
+const labels = {
+  hint: t(lang, 'admin.shipping.hint'),
+  empty: t(lang, 'admin.shipping.empty'),
+  save: t(lang, 'admin.form.save'),
+  saving: t(lang, 'admin.form.saving'),
+  saved: t(lang, 'admin.form.saved'),
+  failed: t(lang, 'admin.form.failed'),
+  none: t(lang, 'admin.form.none'),
+  invalid: t(lang, 'admin.form.invalid'),
+  delete: t(lang, 'admin.shipping.delete'),
+  confirmDelete: t(lang, 'admin.shipping.confirmDelete'),
+  addMethod: t(lang, 'admin.shipping.addMethod'),
+  untitled: t(lang, 'admin.shipping.untitled'),
+  inactive: t(lang, 'admin.shipping.inactive'),
+  price: t(lang, 'admin.shipping.price'),
+  priceHint: t(lang, 'admin.shipping.priceHint'),
+  freeOver: t(lang, 'admin.shipping.freeOver'),
+  freeOverHint: t(lang, 'admin.shipping.freeOverHint'),
+  pickupNote: t(lang, 'admin.shipping.pickupNote'),
+};
+---
+
+<AdminLayout title={t(lang, 'admin.shipping.title')} locale={lang} storeName={store.general.storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.shipping.title')}</h1>
+  {canEdit ? (
+    <ShippingManager
+      client:load
+      methods={methods}
+      locale={lang}
+      exponent={exponent}
+      nextPosition={nextPosition}
+      fields={fields}
+      labels={labels}
+      errorTexts={pickNamespace(lang, 'errors')}
+    />
+  ) : (
+    <p class="text-text/70 text-sm">{t(lang, 'errors.FORBIDDEN')}</p>
+  )}
+</AdminLayout>

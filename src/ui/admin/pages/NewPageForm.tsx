@@ -53,7 +53,10 @@ export default function NewPageForm(props: NewPageFormProps) {
       return;
     }
     setStatus('failed');
-    setErrors(issueMessages(result.details, labels.invalid));
+    // A taken address comes back as CONFLICT without field issues, so the address field is marked here.
+    setErrors(
+      result.code === 'CONFLICT' ? { slug: labels.invalid } : issueMessages(result.details, labels.invalid),
+    );
   }
 
   return (

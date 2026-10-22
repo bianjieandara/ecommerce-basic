@@ -24,6 +24,8 @@ export const DEFAULT_SYSTEM_PAGES: DefaultPage[] = [
           title: { es: 'Destacados', en: 'Featured' },
           source: 'featured',
           limit: 8,
+          categoryIds: [],
+          productIds: [],
           layout: 'carousel',
         },
       },

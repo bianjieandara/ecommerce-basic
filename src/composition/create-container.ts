@@ -16,6 +16,17 @@ import { D1InvoiceRepository } from '@/infrastructure/d1/invoice-repository';
 import { D1NotificationLogRepository } from '@/infrastructure/d1/notification-log-repository';
 import { D1OrderRepository } from '@/infrastructure/d1/order-repository';
 import { D1PageRepository } from '@/infrastructure/d1/page-repository';
+import { D1TestimonialRepository } from '@/infrastructure/d1/testimonial-repository';
+import { TranslateText } from '@/application/ai/translate-text';
+import { createWhatsApp } from './whatsapp';
+import { BuildReport } from '@/application/reports/build-report';
+import { DailyRollup } from '@/application/reports/jobs/daily-rollup';
+import { PurgeOldRecords } from '@/application/reports/jobs/purge';
+import { WeeklySummary } from '@/application/reports/jobs/weekly-summary';
+import { PendingTrafficBreakdowns } from '@/application/reports/traffic-breakdowns';
+import { D1ReportMaintenance } from '@/infrastructure/d1/reports-maintenance';
+import { D1ReportsQueries } from '@/infrastructure/d1/reports-queries';
+import { WorkersAiTranslator } from '@/infrastructure/ai/workers-ai-translator';
 import { D1PaymentEventLog } from '@/infrastructure/d1/payment-event-log';
 import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-repository';
 import { D1SettingsRepository } from '@/infrastructure/d1/settings-repository';
@@ -82,12 +93,22 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     ids,
     siteUrl,
   });
+  const attachmentLoader = new InvoiceAttachments(invoices, media);
   const sendNotificationEmail = new SendNotificationEmail({
     templates: emailTemplateRepository,
     logs: notificationLog,
     sender: email,
     clock,
-    attachments: new InvoiceAttachments(invoices, media),
+    attachments: attachmentLoader,
+  });
+  const whatsapp = createWhatsApp(env, {
+    settings,
+    logs: notificationLog,
+    jobs: jobQueue,
+    attachments: attachmentLoader,
+    clock,
+    ids,
+    siteUrl,
   });
 
   const rateLimiter = new CloudflareRateLimiter({ auth: env.RL_AUTH, forms: env.RL_FORMS, api: env.RL_API });
@@ -146,16 +167,28 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
       evaluateStock: inventory.evaluateStock,
       siteUrl,
     });
+  const reportMaintenance = new D1ReportMaintenance(env.DB);
+  const reportQueries = new D1ReportsQueries(env.DB);
+  const reports = new BuildReport({
+    settings,
+    queries: reportQueries,
+    traffic: new PendingTrafficBreakdowns(), // Stage 19 replaces this with the Analytics Engine reader
+    clock,
+  });
   const handlers = buildJobHandlers({
     failedJobs,
     clock,
     sendNotificationEmail,
+    notifyWhatsapp: whatsapp.notifyWhatsapp,
     expireStaleOrders: orderingServices.expireStaleOrders,
     issueInvoice: orderingServices.issueInvoice,
     renderInvoicePdf,
     issueLegalInvoice,
     reviews,
     inventoryAlerts: inventory.alerts,
+    dailyRollup: new DailyRollup({ settings, maintenance: reportMaintenance, clock }),
+    purgeOldRecords: new PurgeOldRecords({ maintenance: reportMaintenance, clock }),
+    weeklySummary: new WeeklySummary({ settings, queries: reportQueries, notifications, clock, siteUrl }),
   });
 
   const background: BackgroundTasks = {
@@ -183,32 +216,37 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     evaluateStock: inventory.evaluateStock,
     siteUrl,
   });
+  const emailTemplates = new EmailTemplateService({
+    templates: emailTemplateRepository,
+    settings,
+    clock,
+    siteUrl,
+  });
   return {
     adminOps,
     config: { siteUrl, turnstileSiteKey: env.TURNSTILE_SITE_KEY },
     settings,
     pages: new D1PageRepository(env.DB),
+    testimonials: new D1TestimonialRepository(env.DB),
     shipping: new D1ShippingMethodRepository(env.DB),
     media,
     catalog: ({ newDays }) => new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() }),
     failedJobs,
     jobQueue,
     jobs: new JobDispatcher({ failedJobs, handlers, log: logEvent }),
-    scheduler: new JobScheduler({ jobs: jobQueue, cache, clock }),
+    scheduler: new JobScheduler({ jobs: jobQueue, cache, clock, settings }),
+    reports,
     notifications,
-    emailTemplates: new EmailTemplateService({
-      templates: emailTemplateRepository,
-      settings,
-      clock,
-      siteUrl,
-    }),
+    emailTemplates,
     ...orderingServices,
     providers: { dlocalgo, paypal },
     submitContact,
     reviews,
     ...identity,
     catalogAdmin,
-    contentAdmin: createContentAdmin(env, { settings, clock, ids }),
+    contentAdmin: createContentAdmin(env, { settings, clock, ids, notifications, emailTemplates }),
+    translate: new TranslateText({ translator: new WorkersAiTranslator(env.AI) }),
+    whatsapp: whatsapp.services,
     mediaLibrary,
     inventory,
     platform: {

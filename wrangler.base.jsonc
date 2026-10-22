@@ -38,6 +38,7 @@
   "triggers": { "crons": ["__CRON__"] },
   "send_email": [{ "name": "EMAIL" }],
   "browser": { "binding": "BROWSER", "remote": true },
+  "ai": { "binding": "AI" },
   "analytics_engine_datasets": [{ "binding": "EVENTS", "dataset": "__AE_DATASET__" }],
   "analytics": { "binding": "ANALYTICS_SQL", "remote": true },
   "ratelimits": [
@@ -47,8 +48,8 @@
   ],
   "vars": {
     "CLIENT_SLUG": "demo",
-    "PUBLIC_SITE_URL": "http://localhost:4321",
     "PAGE_CACHE": "on",
+    "PUBLIC_SITE_URL": "http://localhost:4321",
     "PUBLIC_MEDIA_BASE_URL": "",
     "EMAIL_FROM": "Store <orders@example.com>",
     "EMAIL_TRANSPORT": "cloudflare",

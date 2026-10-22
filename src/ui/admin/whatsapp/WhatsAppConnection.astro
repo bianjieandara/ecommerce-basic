@@ -1,0 +1,43 @@
+---
+// Connection panel of the WhatsApp screen: which Meta settings are set. Only flags are shown; ids and tokens are never printed.
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import { PANEL, HEADING } from '@/ui/admin/lib/classes';
+import type { WhatsAppConnectionStatus } from '@/application/ports/whatsapp';
+import type { WhatsAppLabels } from './whatsapp-labels';
+
+interface Props {
+  connection: WhatsAppConnectionStatus;
+  labels: WhatsAppLabels;
+}
+
+const { connection, labels } = Astro.props;
+const rows = [
+  { label: labels.connection.phoneNumberId, set: connection.phoneNumberIdConfigured },
+  { label: labels.connection.wabaId, set: connection.wabaIdConfigured },
+  { label: labels.connection.token, set: connection.tokenConfigured },
+  { label: labels.connection.graphVersion, set: connection.graphVersionConfigured },
+  { label: labels.connection.appSecret, set: connection.appSecretConfigured },
+  { label: labels.connection.verifyToken, set: connection.verifyTokenConfigured },
+  { label: labels.connection.appId, set: connection.appIdConfigured },
+];
+const ready = rows.slice(0, 6).every((row) => row.set);
+---
+
+<section class={PANEL} aria-labelledby="whatsapp-connection">
+  <h2 id="whatsapp-connection" class={HEADING}>
+    {labels.connection.heading}
+  </h2>
+  <p class="text-text/70 text-sm">{labels.connection.note}</p>
+  <ul class="flex flex-col gap-2 text-sm">
+    {rows.map((row) => (
+      <li class="flex flex-wrap items-center justify-between gap-2">
+        <span>{row.label}</span>
+        <StatusBadge
+          label={row.set ? labels.connection.configured : labels.connection.missing}
+          tone={row.set ? 'ok' : 'warn'}
+        />
+      </li>
+    ))}
+  </ul>
+  <p class="text-sm font-semibold">{ready ? labels.connection.readyText : labels.connection.notReadyText}</p>
+</section>

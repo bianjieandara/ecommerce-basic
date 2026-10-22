@@ -1,0 +1,7 @@
+﻿---
+// /admin/reports: the first report, so the tabs have a place to start.
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+
+if (!Astro.locals.admin) return Astro.redirect(ADMIN_PATHS.login);
+return Astro.redirect(`${ADMIN_PATHS.reports}/sales`);
+---

@@ -1,0 +1,79 @@
+---
+// One notification email in the editor: its copy in each language, the placeholders it may use, whether it is sent, a live
+// preview and a test to the admin's own address. An unknown key is a 404.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import EmailEditor from '@/ui/admin/emails/EmailEditor.tsx';
+import { LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { can } from '@/domain/identity/role';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { isEmailKey } from '@/application/notifications/email-schemas';
+import { GLOBAL_EMAIL_VARIABLES } from '@/application/notifications/email/definition';
+import { copyFor } from '@/application/notifications/render-email';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+import { notificationLabel } from '@/ui/lib/notification-labels';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const key = Astro.params.key ?? '';
+if (!isEmailKey(key)) return new Response(t(lang, 'errors.NOT_FOUND'), { status: 404 });
+const { definition, override } = await app.emailTemplates.get(key);
+const copies = { es: copyFor(override, definition, 'es'), en: copyFor(override, definition, 'en') };
+const labels = {
+  subject: t(lang, 'admin.emails.subject'),
+  body: t(lang, 'admin.emails.body'),
+  placeholders: t(lang, 'admin.emails.placeholders'),
+  placeholdersHelp: t(lang, 'admin.emails.placeholdersHelp'),
+  variables: t(lang, 'admin.emails.variables'),
+  blocks: t(lang, 'admin.emails.blocks'),
+  enabled: t(lang, 'admin.emails.enabled'),
+  enabledHelp: t(lang, 'admin.emails.enabledHelp'),
+  save: t(lang, 'admin.form.save'),
+  saving: t(lang, 'admin.form.saving'),
+  saved: t(lang, 'admin.form.saved'),
+  failed: t(lang, 'admin.form.failed'),
+  invalid: t(lang, 'admin.emails.invalid'),
+  forbidden: t(lang, 'errors.FORBIDDEN'),
+  restore: t(lang, 'admin.emails.restore'),
+  restoring: t(lang, 'admin.emails.restoring'),
+  confirmRestore: t(lang, 'admin.emails.confirmRestore'),
+  restored: t(lang, 'admin.emails.restored'),
+  test: t(lang, 'admin.emails.test'),
+  testing: t(lang, 'admin.emails.testing'),
+  testSent: t(lang, 'admin.emails.testSent'),
+  testFailed: t(lang, 'admin.emails.testFailed'),
+  testHelp: t(lang, 'admin.emails.testHelp'),
+  preview: t(lang, 'admin.emails.preview'),
+  previewLoading: t(lang, 'admin.emails.previewLoading'),
+  previewFailed: t(lang, 'admin.emails.previewFailed'),
+  previewTitle: t(lang, 'admin.emails.previewTitle'),
+  customized: t(lang, 'admin.emails.customized'),
+  standard: t(lang, 'admin.emails.standard'),
+  languages: { es: t(lang, 'admin.emails.languages.es'), en: t(lang, 'admin.emails.languages.en') },
+};
+---
+
+<AdminLayout title={notificationLabel(lang, key)} locale={lang} storeName={store.general.storeName}>
+  <a href="/admin/emails" class={LINK_BUTTON}>
+    {t(lang, 'admin.emails.back')}
+  </a>
+  <h1 class="text-2xl font-semibold wrap-break-word">{notificationLabel(lang, key)}</h1>
+  <p class="text-text/70 text-sm">{t(lang, `admin.emails.audience.${definition.audience}`)}</p>
+  <EmailEditor
+    client:load
+    emailKey={key}
+    locale={lang}
+    variables={[...GLOBAL_EMAIL_VARIABLES, ...definition.variables]}
+    blocks={[...definition.blocks]}
+    copies={copies}
+    defaults={definition.defaults}
+    enabled={override?.enabled ?? true}
+    customized={override !== null}
+    canDisable={definition.audience === 'customer' || can(admin.role, 'emails.disable_store_alerts')}
+    testAddress={admin.email}
+    labels={labels}
+  />
+</AdminLayout>

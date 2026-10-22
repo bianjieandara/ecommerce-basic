@@ -5,6 +5,7 @@ import { SUPPORTED_LOCALES } from '@/domain/shared/locale';
 import type { NotificationContext } from '../notifications/context';
 import type { JobType } from '../ports/jobs';
 import { NOTIFICATION_KEYS, type EmailAttachmentRef } from '../ports/notifications';
+import { dailyRollupPayload, weeklySummaryPayload } from '../reports/jobs/payloads';
 
 /** Payload of the orders.expire_stale job (no input; the scheduler sends an empty object). */
 export const expireStaleOrdersPayload = z.looseObject({});
@@ -73,6 +74,8 @@ export const backInStockPayload = z.object({
 export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
   'orders.expire_stale': expireStaleOrdersPayload,
   'maintenance.purge': maintenancePurgePayload,
+  'analytics.daily_rollup': dailyRollupPayload,
+  'reports.weekly_summary': weeklySummaryPayload,
   'notify.email': notifyEmailPayload,
   'invoice.issue': invoiceIssuePayload,
   'invoice.render_pdf': invoiceRenderPayload,
@@ -82,9 +85,4 @@ export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
 };
 
 /** Job types whose handlers are added in later stages. Dispatching one logs and acknowledges it. */
-export const PENDING_JOB_TYPES: readonly JobType[] = [
-  'notify.whatsapp',
-  'marketing.meta_capi',
-  'reports.weekly_summary',
-  'analytics.daily_rollup',
-];
+export const PENDING_JOB_TYPES: readonly JobType[] = ['marketing.meta_capi'];

@@ -2,6 +2,8 @@
 // jobs are due. Each periodic job is enqueued at most once per period, using a KV marker as the guard.
 import type { CacheStore, Clock } from '../ports/platform';
 import type { JobQueue, JobType } from '../ports/jobs';
+import type { SettingsRepository } from '../ports/content';
+import { weeklySummaryDue } from '../reports/jobs/weekly-due';
 
 /** A periodic job: how often it runs (in hours) and what it is called in the markers. */
 interface PeriodicJob {
@@ -25,7 +27,9 @@ export class JobScheduler {
   /**
    * @param deps Queue, marker cache and clock.
    */
-  constructor(private readonly deps: { jobs: JobQueue; cache: CacheStore; clock: Clock }) {}
+  constructor(
+    private readonly deps: { jobs: JobQueue; cache: CacheStore; clock: Clock; settings: SettingsRepository },
+  ) {}
 
   /**
    * Called on every cron tick.
@@ -46,5 +50,11 @@ export class JobScheduler {
       await this.deps.cache.putJson(marker, true, job.periodHours * 3600 + MARKER_SLACK_SECONDS);
       await this.deps.jobs.enqueue(job.type, job.payload, { idempotencyKey: marker });
     }
+
+    // The weekly summary is due on one configured weekday and hour of the store's time zone; its key is that moment.
+    const general = await this.deps.settings.get('general');
+    const reports = await this.deps.settings.get('reports');
+    const weeklyKey = weeklySummaryDue(reports, now.toISOString(), general.timezone);
+    if (weeklyKey) await this.deps.jobs.enqueue('reports.weekly_summary', {}, { idempotencyKey: weeklyKey });
   }
 }

@@ -1,9 +1,11 @@
 // Email template administration: lists the defaults with their overrides, validates and saves edited copy, restores a
 // default, and renders previews from sample data. The admin editor and the DEV preview use these methods.
+import { can, type Permission } from '@/domain/identity/role';
 import { DomainError } from '@/domain/shared/errors';
 import { SUPPORTED_LOCALES, type Locale } from '@/domain/shared/locale';
 import type { LocalizedText } from '@/domain/shared/localized-text';
 import type { SettingsRepository } from '../ports/content';
+import type { AdminUser } from '../ports/identity';
 import type { EmailTemplateOverride, EmailTemplateRepository, NotificationKey } from '../ports/notifications';
 import type { Clock } from '../ports/platform';
 import { emptyContext, loadStoreSection, type NotificationSections } from './context';
@@ -29,24 +31,50 @@ export interface EmailTemplateServiceDeps {
 }
 
 /**
- * Throws when a copy uses a variable or block its email does not allow.
- * @param definition Email the copy belongs to.
- * @param copy Subject and body to check.
- * @throws DomainError VALIDATION_FAILED, with the list of problems in `details`.
+ * One refused field. The path is `subject.<locale>` or `body.<locale>`, so the editor shows it on the right language tab.
+ * The message is for logs and tests; the editor shows its own translated text for every refused field.
  */
-function assertValid(definition: EmailDefinition, copy: EmailCopy): void {
+interface CopyIssue {
+  path: string;
+  message: string;
+}
+
+/**
+ * Lists the placeholders of one language's subject and body that the email does not allow.
+ * @param definition Email the copy belongs to.
+ * @param locale Language of the copy.
+ * @param copy Subject and body to check.
+ * @returns The refused fields; empty when the copy is valid.
+ */
+function copyIssues(definition: EmailDefinition, locale: Locale, copy: EmailCopy): CopyIssue[] {
   const rules = rulesFor(definition);
-  const problems = [
-    ...new Set([
-      ...validateTemplate(copy.subject, rules, 'subject'),
-      ...validateTemplate(copy.body, rules, 'body'),
-    ]),
-  ];
-  if (problems.length > 0) {
+  return (['subject', 'body'] as const).flatMap((field) =>
+    validateTemplate(copy[field], rules, field).map((message) => ({ path: `${field}.${locale}`, message })),
+  );
+}
+
+/**
+ * Throws when any field was refused.
+ * @param issues Refused fields, from copyIssues.
+ * @throws DomainError VALIDATION_FAILED with the issues by path.
+ */
+function assertNoIssues(issues: CopyIssue[]): void {
+  if (issues.length > 0) {
     throw new DomainError('VALIDATION_FAILED', 'The email uses placeholders that are not allowed', {
-      problems,
+      issues,
     });
   }
+}
+
+/**
+ * Throws unless the actor holds the permission.
+ * @param actor The signed-in admin.
+ * @param permission Permission the action needs.
+ * @throws DomainError FORBIDDEN
+ */
+function requirePermission(actor: AdminUser, permission: Permission): void {
+  if (!can(actor.role, permission))
+    throw new DomainError('FORBIDDEN', 'You do not have permission to do this.');
 }
 
 /** Email template use cases. */
@@ -73,19 +101,28 @@ export class EmailTemplateService {
   }
 
   /**
-   * Validates an edited email in every language, then saves it.
+   * Validates an edited email in every language, then saves it. Turning off a store or admin email is a separate
+   * permission: those emails tell the team about orders and stock, so an editor may change their copy but not stop them.
+   * @param actor The signed-in admin.
    * @param key Notification key.
    * @param input Subject and body per language, and whether the email is sent.
-   * @throws DomainError VALIDATION_FAILED when a placeholder is unknown or not allowed for the email.
+   * @throws DomainError FORBIDDEN, or VALIDATION_FAILED when a placeholder is unknown or not allowed for the email.
    */
   async save(
+    actor: AdminUser,
     key: NotificationKey,
     input: { subject: LocalizedText; body: LocalizedText; enabled: boolean },
   ): Promise<void> {
+    requirePermission(actor, 'emails.edit');
     const definition = EMAIL_DEFINITIONS[key];
-    for (const locale of SUPPORTED_LOCALES) {
-      assertValid(definition, { subject: input.subject[locale], body: input.body[locale] });
+    if (!input.enabled && definition.audience !== 'customer') {
+      requirePermission(actor, 'emails.disable_store_alerts');
     }
+    assertNoIssues(
+      SUPPORTED_LOCALES.flatMap((locale) =>
+        copyIssues(definition, locale, { subject: input.subject[locale], body: input.body[locale] }),
+      ),
+    );
     await this.deps.templates.save({
       key,
       subject: input.subject,
@@ -97,9 +134,12 @@ export class EmailTemplateService {
 
   /**
    * Removes the override, so the code default is used again.
+   * @param actor The signed-in admin.
    * @param key Notification key.
+   * @throws DomainError FORBIDDEN
    */
-  async restore(key: NotificationKey): Promise<void> {
+  async restore(actor: AdminUser, key: NotificationKey): Promise<void> {
+    requirePermission(actor, 'emails.edit');
     await this.deps.templates.delete(key);
   }
 
@@ -118,11 +158,12 @@ export class EmailTemplateService {
    * @param locale Language to render.
    * @param draft Copy to preview instead of the saved one.
    * @returns The rendered email.
+   * @throws DomainError VALIDATION_FAILED when the copy uses a placeholder the email does not allow.
    */
   async preview(key: NotificationKey, locale: Locale, draft?: EmailCopy): Promise<RenderedEmail> {
     const definition = EMAIL_DEFINITIONS[key];
     const copy = draft ?? copyFor(await this.deps.templates.find(key), definition, locale);
-    assertValid(definition, copy);
+    assertNoIssues(copyIssues(definition, locale, copy));
     const store = await loadStoreSection(this.deps.settings, this.deps.siteUrl);
     const context = { ...emptyContext(locale, store), ...(await this.sample(locale)), locale, store };
     return renderEmail(copy, context);

@@ -1,5 +1,6 @@
 // Ordering ports. Placing an order is one D1 batch: counter, order, items, stock and ledger succeed or fail together.
 import type { OrderStatus } from '@/domain/ordering/order-status';
+import type { ShippingKind } from '@/domain/ordering/shipping';
 import type { CustomerDetails, Order, OrderItem } from '../dto/order-dto';
 import type { StockChange } from './inventory';
 import type { PaymentMethod } from './payments';
@@ -91,15 +92,16 @@ export interface OrderRepository {
   listEvents(orderId: string): Promise<OrderEvent[]>;
 }
 
-/** Checkout shipping methods. */
+/** Checkout shipping methods. `position` orders the methods in the checkout list. */
 export interface ShippingMethodRecord {
   id: string;
-  kind: 'flat' | 'pickup';
+  kind: ShippingKind;
   name: { es: string; en: string };
   description: { es: string; en: string };
   priceMinor: number;
   freeOverMinor: number | null;
   isActive: boolean;
+  position: number;
 }
 
 /** Persistence for shipping methods. */

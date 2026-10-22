@@ -1,8 +1,14 @@
 // Shipping cost rules. Pickup is always free; a flat rate is waived when the subtotal reaches the threshold.
 
+/** Kinds of shipping method. A pickup is collected by the customer, so it never charges. */
+export const SHIPPING_KINDS = ['flat', 'pickup'] as const;
+
+/** One kind of shipping method. */
+export type ShippingKind = (typeof SHIPPING_KINDS)[number];
+
 /** The parts of a shipping method that decide its price. */
 export interface ShippingRule {
-  kind: 'flat' | 'pickup';
+  kind: ShippingKind;
   priceMinor: number;
   freeOverMinor: number | null;
 }

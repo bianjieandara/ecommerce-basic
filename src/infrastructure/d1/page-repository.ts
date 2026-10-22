@@ -2,7 +2,8 @@
 import type { Page } from '@/domain/content/page';
 import type { LocalizedText } from '@/domain/shared/localized-text';
 import type { PageRepository } from '@/application/ports/content';
-import { parseJson, queryAll, queryFirst, statement } from './d1-client';
+import { DomainError } from '@/domain/shared/errors';
+import { isUniqueViolation, parseJson, queryAll, queryFirst, statement } from './d1-client';
 
 /** One row of the pages table. */
 interface PageRow {
@@ -53,6 +54,21 @@ export class D1PageRepository implements PageRepository {
   }
 
   async save(page: Page): Promise<void> {
+    try {
+      await this.write(page);
+    } catch (error) {
+      // Two creates can pass the address check at once; the unique slug then decides, and the loser gets a clean conflict.
+      if (isUniqueViolation(error))
+        throw new DomainError('CONFLICT', 'That address is already used by a page');
+      throw error;
+    }
+  }
+
+  /**
+   * Writes one page row, inserting it or updating the row with the same id.
+   * @param page Page to write.
+   */
+  private async write(page: Page): Promise<void> {
     await statement(
       this.db,
       `INSERT INTO pages (id, slug, kind, title_json, seo_title_json, seo_description_json, sections_json, is_published, updated_at)

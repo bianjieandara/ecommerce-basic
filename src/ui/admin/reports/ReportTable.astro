@@ -1,0 +1,55 @@
+---
+// One table of a report, with its CSV link. Cells carry their column's name, so the phone layout reads as cards.
+import DataTable from '@/ui/admin/DataTable.astro';
+import { BUTTON } from '@/ui/admin/lib/classes';
+import type { ReportTable as Table } from '@/application/reports/view';
+import { t } from '@/ui/i18n';
+import { formatCell, type FormatContext } from './report-format';
+
+interface Props {
+  table: Table;
+  format: FormatContext;
+  /** Link to the CSV file of this table. */
+  csvHref: string;
+}
+
+const { table, format, csvHref } = Astro.props;
+const lang = format.lang;
+const headers = table.columns.map((key) => t(lang, `admin.reports.${key}`));
+---
+
+<section class="flex flex-col gap-3">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h2 class="text-base font-semibold">{t(lang, `admin.reports.${table.title}`)}</h2>
+    <a href={csvHref} class={BUTTON}>
+      {t(lang, 'admin.reports.csv')}
+    </a>
+  </div>
+  {table.rows.length === 0 ? (
+    <p class="text-text/70 text-sm">{t(lang, 'admin.reports.emptyTable')}</p>
+  ) : (
+    <DataTable>
+      <thead>
+        <tr>
+          {headers.map((header) => (
+            <th scope="col">{header}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {table.rows.map((row) => (
+          <tr>
+            {row.map((cell, index) => (
+              <td data-label={headers[index]} class="wrap-break-word">
+                {formatCell(cell, format)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </DataTable>
+  )}
+  {table.total > table.rows.length && (
+    <p class="text-text/70 text-sm">{t(lang, 'admin.reports.truncated', { count: table.rows.length })}</p>
+  )}
+</section>

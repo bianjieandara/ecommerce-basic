@@ -1,0 +1,26 @@
+---
+// The reports as a row of links, the current one marked. Narrow screens scroll the row sideways instead of wrapping it.
+import { REPORT_KINDS, type ReportKind } from '@/application/reports/view';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import type { Locale } from '@/domain/shared/locale';
+import { t } from '@/ui/i18n';
+
+interface Props {
+  lang: Locale;
+  current: ReportKind;
+}
+
+const { lang, current } = Astro.props;
+---
+
+<nav class="-mx-4 flex gap-1 overflow-x-auto px-4" aria-label={t(lang, 'admin.reports.title')}>
+  {REPORT_KINDS.map((kind) => (
+    <a
+      href={`${ADMIN_PATHS.reports}/${kind}`}
+      aria-current={kind === current ? 'page' : undefined}
+      class={`inline-flex min-h-11 shrink-0 items-center rounded-full px-3 text-sm font-semibold ${kind === current ? 'bg-surface' : ''}`}
+    >
+      {t(lang, `admin.reports.kinds.${kind}`)}
+    </a>
+  ))}
+</nav>

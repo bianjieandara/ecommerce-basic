@@ -160,7 +160,8 @@ export default function SchemaControl(props: SchemaControlProps) {
               step={field.step}
               onInput={(event) => {
                 const raw = event.currentTarget.value;
-                onChange(raw === '' && field.nullable ? null : Number(raw));
+                // An empty box is sent as null: the server refuses it for a required number instead of storing 0.
+                onChange(raw === '' ? null : Number(raw));
               }}
             />
           </label>

@@ -19,6 +19,8 @@
     "precf-typegen": "node scripts/use-client.mjs",
     "client:new": "node scripts/new-client.mjs",
     "client:secrets": "node scripts/client-secrets.mjs",
+    "deploy:client": "node scripts/deploy-client.mjs",
+    "deploy:all": "node scripts/deploy-all.mjs",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:seed:local": "wrangler d1 execute DB --local --file=db/seed/dev.sql"
   },

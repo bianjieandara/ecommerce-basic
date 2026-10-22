@@ -1,0 +1,56 @@
+---
+// One report screen body: KPI cards, the chart, the tables with their CSV links, and the notes. Every report renders through it.
+import LineChart from '@/ui/components/charts/LineChart.astro';
+import type { ReportView as View } from '@/application/reports/view';
+import { formatMoney, formatNumber, formatDate } from '@/domain/shared/format';
+import { money } from '@/domain/shared/money';
+import { t } from '@/ui/i18n';
+import ReportKpis from './ReportKpis.astro';
+import ReportTable from './ReportTable.astro';
+import type { FormatContext } from './report-format';
+
+interface Props {
+  view: View;
+  format: FormatContext;
+  /** Path of this report's CSV endpoint, without the query. */
+  csvPath: string;
+  /** The period and filters of the screen, as a query string (without "?"), so each file covers what the screen shows. */
+  query: string;
+}
+
+const { view, format, csvPath, query } = Astro.props;
+const lang = format.lang;
+const chart = view.chart;
+const formatPoint = (value: number) =>
+  chart?.unit === 'money'
+    ? formatMoney(money(value, format.currency), lang, format.country)
+    : formatNumber(value, lang, format.country);
+const chartPoints = (chart?.points ?? []).map((point) => ({
+  label: formatDate(`${point.label}T12:00:00Z`, lang, format.country, format.timeZone),
+  value: point.value,
+}));
+const csvHref = (table: string) => `${csvPath}?${query}${query ? '&' : ''}table=${encodeURIComponent(table)}`;
+---
+
+<ReportKpis kpis={view.kpis} format={format} />
+
+{chart && (
+  <section class="rounded-brand bg-surface flex flex-col gap-3 p-4">
+    <h2 class="text-base font-semibold">{t(lang, `admin.reports.${chart.title}`)}</h2>
+    <LineChart title={t(lang, `admin.reports.${chart.title}`)} points={chartPoints} format={formatPoint} />
+  </section>
+)}
+
+{view.tables.map((table) => (
+  <section class="rounded-brand bg-surface flex flex-col gap-3 p-4">
+    <ReportTable table={table} format={format} csvHref={csvHref(table.id)} />
+  </section>
+))}
+
+{view.notes.length > 0 && (
+  <ul class="text-text/70 flex flex-col gap-1 text-sm">
+    {view.notes.map((note) => (
+      <li>{t(lang, `admin.reports.${note.key}`, note.params)}</li>
+    ))}
+  </ul>
+)}

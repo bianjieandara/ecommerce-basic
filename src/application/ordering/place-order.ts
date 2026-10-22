@@ -173,7 +173,12 @@ export class PlaceOrder {
         : new DomainError('PAYMENT_PROVIDER_ERROR', 'The payment could not be started');
     }
     if (initiation.kind === 'redirect' && initiation.providerReference) {
-      await this.deps.orders.setPaymentReference(id, initiation.providerReference, nowIso);
+      // The provider already accepted the payment, so a failure here must not turn the checkout into an error.
+      try {
+        await this.deps.orders.setPaymentReference(id, initiation.providerReference, nowIso);
+      } catch (error) {
+        console.error('order.payment_reference_failed', { orderId: id, error: String(error) });
+      }
     }
 
     const order: Order = {
@@ -201,24 +206,29 @@ export class PlaceOrder {
       updatedAt: nowIso,
     };
     const presentation = orderPresentation(general, tax, checkout);
-    await this.deps.notifications.notify({
-      key: 'order_received',
-      reference: id,
-      orderId: id,
-      recipient: { email: input.customer.email, locale: input.locale },
-      context: orderSections(order, input.locale, { siteUrl: this.deps.siteUrl, presentation, accessKey }),
-    });
-    await this.deps.notifications.notify({
-      key: 'order_alert_store',
-      reference: id,
-      orderId: id,
-      recipient: { email: checkout.orderNotificationEmail || contact.email, locale: general.defaultLocale },
-      context: orderSections(order, general.defaultLocale, {
-        siteUrl: this.deps.siteUrl,
-        presentation,
-        accessKey: null,
-      }),
-    });
+    // The order is committed: a failed notification is logged, and the checkout still answers with the order.
+    try {
+      await this.deps.notifications.notify({
+        key: 'order_received',
+        reference: id,
+        orderId: id,
+        recipient: { email: input.customer.email, locale: input.locale },
+        context: orderSections(order, input.locale, { siteUrl: this.deps.siteUrl, presentation, accessKey }),
+      });
+      await this.deps.notifications.notify({
+        key: 'order_alert_store',
+        reference: id,
+        orderId: id,
+        recipient: { email: checkout.orderNotificationEmail || contact.email, locale: general.defaultLocale },
+        context: orderSections(order, general.defaultLocale, {
+          siteUrl: this.deps.siteUrl,
+          presentation,
+          accessKey: null,
+        }),
+      });
+    } catch (error) {
+      console.error('order.notify_failed', { orderId: id, error: String(error) });
+    }
 
     return {
       number: placed.number,

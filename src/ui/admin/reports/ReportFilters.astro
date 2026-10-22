@@ -1,0 +1,73 @@
+﻿---
+// The period and grouping of a report: two dates, a grouping when the report has one, and shortcuts to the last 7, 30 and 90
+// days. A plain GET form, so the filtered view can be bookmarked and the CSV link carries the same query.
+import { BUTTON_PRIMARY, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { GRAINS, type Grain } from '@/application/reports/ports';
+import { t } from '@/ui/i18n';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  lang: Locale;
+  action: string;
+  from: string;
+  to: string;
+  /** Grouping shown and chosen, or null for reports that have none. */
+  grain: Grain | null;
+  /** The shortcut periods, each ending today. */
+  shortcuts: {
+    last7: { from: string; to: string };
+    last30: { from: string; to: string };
+    last90: { from: string; to: string };
+  };
+}
+
+const { lang, action, from, to, grain, shortcuts } = Astro.props;
+const shortcutLinks = [
+  { label: t(lang, 'admin.reports.range.last7'), range: shortcuts.last7 },
+  { label: t(lang, 'admin.reports.range.last30'), range: shortcuts.last30 },
+  { label: t(lang, 'admin.reports.range.last90'), range: shortcuts.last90 },
+];
+---
+
+<form
+  method="get"
+  action={action}
+  class="rounded-brand bg-surface grid gap-3 p-4 sm:grid-cols-4 sm:items-end"
+>
+  <label class={LABEL}>
+    {t(lang, 'admin.reports.range.from')}
+    <input type="date" name="from" value={from} class={FIELD} />
+  </label>
+  <label class={LABEL}>
+    {t(lang, 'admin.reports.range.to')}
+    <input type="date" name="to" value={to} class={FIELD} />
+  </label>
+  {grain && (
+    <label class={LABEL}>
+      {t(lang, 'admin.reports.grain.label')}
+      <select name="grain" class={FIELD}>
+        {GRAINS.map((value) => (
+          <option value={value} selected={value === grain}>
+            {t(lang, `admin.reports.grain.${value}`)}
+          </option>
+        ))}
+      </select>
+    </label>
+  )}
+  <div class="flex flex-wrap gap-2">
+    <button type="submit" class={BUTTON_PRIMARY}>
+      {t(lang, 'admin.reports.range.apply')}
+    </button>
+  </div>
+</form>
+
+<nav class="flex flex-wrap gap-1" aria-label={t(lang, 'admin.reports.range.apply')}>
+  {shortcutLinks.map((item) => (
+    <a
+      href={`${action}?from=${item.range.from}&to=${item.range.to}${grain ? `&grain=${grain}` : ''}`}
+      class={LINK_BUTTON}
+    >
+      {item.label}
+    </a>
+  ))}
+</nav>

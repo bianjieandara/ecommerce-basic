@@ -1,0 +1,49 @@
+---
+// Admin accounts, owners only: the invitation form and the table with role, active and delete controls. Editors get the
+// forbidden text and no list; the endpoints check the same permission.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import UserManager from '@/ui/admin/users/UserManager.tsx';
+import { can } from '@/domain/identity/role';
+import { formatDateTime } from '@/domain/shared/format';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadStoreContext } from '@/http/store-context';
+import { pickNamespace, t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const store = await loadStoreContext(app);
+const { country, timezone, storeName } = store.general;
+// Display guard only: the endpoints check the same permission. Editors never reach the read, so no account data is loaded for them.
+const users = can(admin.role, 'users.manage') ? await app.adminUsers.list() : null;
+const rows = (users ?? []).map((user) => ({
+  id: user.id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  isActive: user.isActive,
+  lastLogin: user.lastLoginAt
+    ? formatDateTime(user.lastLoginAt, lang, country, timezone)
+    : t(lang, 'admin.users.neverSignedIn'),
+}));
+---
+
+<AdminLayout title={t(lang, 'admin.users.title')} locale={lang} storeName={storeName}>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.users.title')}</h1>
+  {users === null ? (
+    <p class="text-text/70 text-sm">{t(lang, 'errors.FORBIDDEN')}</p>
+  ) : (
+    <>
+      <p class="text-text/70 text-sm">{t(lang, 'admin.users.intro')}</p>
+      <UserManager
+        client:load
+        users={rows}
+        selfId={admin.id}
+        locale={lang}
+        labels={pickNamespace(lang, 'admin').users}
+        errors={pickNamespace(lang, 'errors')}
+      />
+    </>
+  )}
+</AdminLayout>

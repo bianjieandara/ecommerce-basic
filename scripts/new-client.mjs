@@ -1,25 +1,30 @@
-// Provisions one client: D1 database, R2 bucket, KV namespace and queues (with DLQ), then writes clients/<slug>/client.jsonc.
-// Usage: node scripts/new-client.mjs <slug>
-import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, copyFileSync, writeFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+// Provisions one client: D1 database, KV namespace, queues (with DLQ) and R2 bucket, then writes clients/<slug>/client.jsonc.
+// Usage: node scripts/new-client.mjs <slug> [--account-id <32-hex>]
+// Without --account-id the resources go to the account of `wrangler login`. With it, the client gets its own account and
+// the token is read from .secrets/<slug>.env (see docs/NEW_CLIENT.md).
+import { existsSync, mkdirSync, copyFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readJsonc } from './use-client.mjs';
+import { ROOT, allocateRateLimitBase, assertSlug, cloudflareEnv } from './lib/clients.mjs';
+import { createIfMissing, runStep } from './lib/run.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SLUG_PATTERN = /^[a-z0-9-]{2,30}$/;
 const DEFAULT_CRON = '*/15 * * * *';
+const ACCOUNT_ID_PATTERN = /^[0-9a-f]{32}$/;
 
 /**
- * Runs a Wrangler command and returns its combined output. Throws when it fails.
- * @param {string[]} args Arguments after `wrangler`.
- * @returns {string} Combined stdout and stderr.
+ * Reads the command line: one slug and an optional --account-id.
+ * @param {string[]} argv Arguments after the script name.
+ * @returns {{ slug: string, accountId: string | null }} Parsed values; the slug is validated.
  */
-export function runWrangler(args) {
-  const result = spawnSync(`npx wrangler ${args.join(' ')}`, { cwd: ROOT, shell: true, encoding: 'utf8' });
-  const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
-  if (result.status !== 0) throw new Error(`wrangler ${args.join(' ')} failed:\n${output}`);
-  return output;
+export function parseArgs(argv) {
+  const flag = argv.indexOf('--account-id');
+  const accountId = flag === -1 ? null : (argv[flag + 1] ?? null);
+  if (accountId !== null && !ACCOUNT_ID_PATTERN.test(accountId))
+    throw new Error('--account-id must be the 32-character hex id of the Cloudflare account.');
+  const positional = argv.filter((arg, i) => !arg.startsWith('--') && (flag === -1 || i !== flag + 1));
+  if (positional.length !== 1)
+    throw new Error('Usage: node scripts/new-client.mjs <slug> [--account-id <32-hex>]');
+  return { slug: assertSlug(positional[0]), accountId };
 }
 
 /**
@@ -36,102 +41,70 @@ export function parseId(output, pattern, label) {
 }
 
 /**
- * Allocates the next rate-limit namespace base (1000, 1010, 1020, ...) so no two clients share counters.
- * @param {string} clientsDir Absolute path to the clients folder.
- * @returns {number} Base value for the new client.
- */
-export function nextRateLimitBase(clientsDir) {
-  const used = readdirSync(clientsDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && entry.name !== '_default')
-    .map((entry) => join(clientsDir, entry.name, 'client.jsonc'))
-    .filter((path) => existsSync(path))
-    .map((path) => Number(readJsonc(path).rateLimitNamespaceBase));
-  return used.length === 0 ? 1000 : Math.max(...used) + 10;
-}
-
-/**
- * Runs a create command and treats "already exists" as success, so re-running the script is safe.
- * @param {string[]} args Arguments after `wrangler`.
- */
-export function ensureCreated(args) {
-  try {
-    runWrangler(args);
-  } catch (error) {
-    // Queues report "is already taken"; buckets and other resources report "already exists".
-    if (!/already (exists|taken)|is taken/i.test(String(error.message))) throw error;
-  }
-}
-
-/**
- * Reads a JSON array printed by `wrangler ... --json`, skipping Wrangler's banner lines.
- * @param {string[]} args Arguments after `wrangler`.
+ * Runs a Wrangler command that prints JSON (possibly after a banner) and parses the array.
+ * @param {string[]} args Arguments after `npx wrangler`.
+ * @param {NodeJS.ProcessEnv} env Environment for the child process.
  * @returns {any[]} Parsed array.
  */
-export function listJson(args) {
-  const output = runWrangler(args);
+function listJson(args, env) {
+  const result = runStep({ command: 'npx', args: ['wrangler', ...args], env, capture: true });
+  if (!result.ok) throw new Error(`wrangler ${args.join(' ')} failed:\n${result.output}`);
+  const { output } = result;
   return JSON.parse(output.slice(output.indexOf('['), output.lastIndexOf(']') + 1));
 }
 
 /**
  * Returns the D1 database id, creating the database first when it does not exist.
- * @param {string} name Database name.
+ * @param {string} name Database name, for example "demo-db".
+ * @param {NodeJS.ProcessEnv} env Environment for the child process.
  * @returns {string} Database id.
  */
-export function ensureD1(name) {
-  const found = listJson(['d1', 'list', '--json']).find((db) => db.name === name);
+export function ensureD1(name, env) {
+  const found = listJson(['d1', 'list', '--json'], env).find((db) => db.name === name);
   if (found) return found.uuid ?? found.id;
-  return parseId(runWrangler(['d1', 'create', name]), /database_id["']?\s*[:=]\s*"([^"]+)"/, 'D1');
+  const result = runStep({ command: 'npx', args: ['wrangler', 'd1', 'create', name], env, capture: true });
+  if (!result.ok) throw new Error(`wrangler d1 create ${name} failed:\n${result.output}`);
+  return parseId(result.output, /database_id["']?\s*[:=]\s*"([^"]+)"/, 'D1');
 }
 
 /**
  * Returns the KV namespace id, creating the namespace first when it does not exist.
+ * `wrangler kv namespace create <name>` uses the name as the exact title, so the match is exact too: a suffix match
+ * could attach another client's namespace to this client.
  * @param {string} title Namespace title, for example "demo-cache".
+ * @param {NodeJS.ProcessEnv} env Environment for the child process.
  * @returns {string} Namespace id.
  */
-export function ensureKv(title) {
-  const found = listJson(['kv', 'namespace', 'list']).find(
-    (ns) => ns.title === title || ns.title?.endsWith(`-${title}`),
-  );
+export function ensureKv(title, env) {
+  const found = listJson(['kv', 'namespace', 'list'], env).find((ns) => ns.title === title);
   if (found) return found.id;
-  return parseId(
-    runWrangler(['kv', 'namespace', 'create', title]),
-    /\bid["']?\s*[:=]\s*"([0-9a-f]{32})"/,
-    'KV',
-  );
+  const result = runStep({
+    command: 'npx',
+    args: ['wrangler', 'kv', 'namespace', 'create', title],
+    env,
+    capture: true,
+  });
+  if (!result.ok) throw new Error(`wrangler kv namespace create ${title} failed:\n${result.output}`);
+  return parseId(result.output, /\bid["']?\s*[:=]\s*"([0-9a-f]{32})"/, 'KV');
 }
 
-/** CLI entry: provisions resources and writes the client config. */
-function main() {
-  const slug = process.argv[2];
-  if (!slug || !SLUG_PATTERN.test(slug))
-    throw new Error('Usage: node scripts/new-client.mjs <slug> (a-z, 0-9, -; 2-30 chars)');
-
-  const clientDir = join(ROOT, 'clients', slug);
-  if (existsSync(clientDir)) throw new Error(`clients/${slug} already exists`);
-
-  const d1Name = `${slug}-db`;
-  const bucket = `${slug}-media`;
-  const kvName = `${slug}-cache`;
-  const queue = `${slug}-jobs`;
-  const dlq = `${slug}-jobs-dlq`;
-
-  console.log(`[new-client] creating resources for "${slug}" in the active Cloudflare account`);
-  // R2 goes last: it must be enabled once in the Cloudflare dashboard before the first bucket can be created.
-  const d1Id = ensureD1(d1Name);
-  const kvId = ensureKv(kvName);
-  ensureCreated(['queues', 'create', queue]);
-  ensureCreated(['queues', 'create', dlq]);
-
-  const client = {
+/**
+ * Builds the client.jsonc object for a freshly provisioned client. Defaults are safe for a first run: sandbox payments,
+ * no custom domain, and the placeholder site URL until the owner sets the real one.
+ * @param {object} p Provisioned values.
+ * @returns {object} Client configuration.
+ */
+export function buildClientConfig({ slug, accountId, d1Id, kvId, rateLimitNamespaceBase }) {
+  return {
     slug,
     workerName: `${slug}-store`,
-    accountId: null,
-    d1: { name: d1Name, id: d1Id },
-    r2: { bucket },
+    accountId,
+    d1: { name: `${slug}-db`, id: d1Id },
+    r2: { bucket: `${slug}-media` },
     kv: { id: kvId },
-    queue: { name: queue, dlq },
+    queue: { name: `${slug}-jobs`, dlq: `${slug}-jobs-dlq` },
     analyticsDataset: `${slug.replace(/-/g, '_')}_events`,
-    rateLimitNamespaceBase: nextRateLimitBase(join(ROOT, 'clients')),
+    rateLimitNamespaceBase,
     cron: DEFAULT_CRON,
     customDomains: [],
     vars: {
@@ -146,7 +119,30 @@ function main() {
       META_GRAPH_VERSION: '',
     },
   };
+}
 
+/** CLI entry: provisions the resources and writes the client config. */
+function main() {
+  const { slug, accountId } = parseArgs(process.argv.slice(2));
+  const clientDir = join(ROOT, 'clients', slug);
+  if (existsSync(clientDir)) throw new Error(`clients/${slug} already exists`);
+
+  const env = cloudflareEnv(slug, accountId);
+  const where = accountId ? `account ${accountId}` : 'the account of `wrangler login`';
+  console.log(`[new-client] creating resources for "${slug}" in ${where}`);
+
+  const d1Id = ensureD1(`${slug}-db`, env);
+  const kvId = ensureKv(`${slug}-cache`, env);
+  createIfMissing({ args: ['queues', 'create', `${slug}-jobs`], env });
+  createIfMissing({ args: ['queues', 'create', `${slug}-jobs-dlq`], env });
+
+  const client = buildClientConfig({
+    slug,
+    accountId,
+    d1Id,
+    kvId,
+    rateLimitNamespaceBase: allocateRateLimitBase(join(ROOT, 'clients')),
+  });
   mkdirSync(join(clientDir, 'extensions'), { recursive: true });
   writeFileSync(join(clientDir, 'client.jsonc'), JSON.stringify(client, null, 2) + '\n');
   copyFileSync(
@@ -157,17 +153,26 @@ function main() {
     `[new-client] wrote clients/${slug}/client.jsonc (rate-limit base ${client.rateLimitNamespaceBase})`,
   );
 
+  // R2 goes last: it must be enabled once in the Cloudflare dashboard before the first bucket can be created.
   try {
-    ensureCreated(['r2', 'bucket', 'create', bucket]);
-    console.log(`[new-client] R2 bucket ${bucket} ready`);
+    createIfMissing({ args: ['r2', 'bucket', 'create', client.r2.bucket], env });
+    console.log(`[new-client] R2 bucket ${client.r2.bucket} ready`);
   } catch (error) {
+    const reason = String(error.message)
+      .split('\n')
+      .find((line) => line.trim() && !line.includes('failed:'));
+    console.warn(`[new-client] R2 bucket NOT created: ${reason ?? error.message}`);
     console.warn(
-      `[new-client] R2 bucket NOT created: ${String(error.message).split('\n')[2] ?? error.message}`,
-    );
-    console.warn(
-      `[new-client] Enable R2 in the Cloudflare dashboard, then run: npx wrangler r2 bucket create ${bucket}`,
+      `[new-client] Enable R2 in the Cloudflare dashboard, then run: npx wrangler r2 bucket create ${client.r2.bucket}`,
     );
   }
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  try {
+    main();
+  } catch (error) {
+    console.error(`[new-client] ${error.message}`);
+    process.exitCode = 1;
+  }
+}

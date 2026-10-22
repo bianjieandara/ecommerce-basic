@@ -1,0 +1,61 @@
+---
+// One report for the period and filters in the URL. The screen and the CSV files below each table come from the same read.
+import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import ReportFilters from '@/ui/admin/reports/ReportFilters.astro';
+import ReportTabs from '@/ui/admin/reports/ReportTabs.astro';
+import ReportBody from '@/ui/admin/reports/ReportView.astro';
+import { formatDate } from '@/domain/shared/format';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { isReportKind } from '@/application/reports/build-report';
+import { GRAIN_REPORTS } from '@/application/reports/report-definitions';
+import { lastDays } from '@/application/reports/ranges';
+import { reportRequestFrom } from '@/application/reports/request';
+import { loadStoreContext } from '@/http/store-context';
+import { t } from '@/ui/i18n';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect(ADMIN_PATHS.login);
+const lang = admin.locale;
+const app = Astro.locals.app;
+const requested = Astro.params.report ?? '';
+if (!isReportKind(requested)) return Astro.redirect(`${ADMIN_PATHS.reports}/sales`);
+const kind = requested;
+const store = await loadStoreContext(app);
+const result = await app.reports.execute(kind, reportRequestFrom(Astro.url.searchParams), lang);
+const hasGrain = GRAIN_REPORTS.includes(kind);
+const format = { lang, country: result.country, currency: result.currency, timeZone: result.timeZone };
+const query = new URLSearchParams({
+  from: result.range.from,
+  to: result.range.to,
+  ...(hasGrain ? { grain: result.grain } : {}),
+}).toString();
+const shortcuts = {
+  last7: lastDays(result.today, 7),
+  last30: lastDays(result.today, 30),
+  last90: lastDays(result.today, 90),
+};
+const title = t(lang, `admin.reports.kinds.${kind}`);
+const period = `${formatDate(`${result.range.from}T12:00:00Z`, lang, result.country, result.timeZone)} – ${formatDate(`${result.range.to}T12:00:00Z`, lang, result.country, result.timeZone)}`;
+---
+
+<AdminLayout
+  title={`${title} · ${t(lang, 'admin.reports.title')}`}
+  locale={lang}
+  storeName={store.general.storeName}
+>
+  <h1 class="text-2xl font-semibold">{t(lang, 'admin.reports.title')}</h1>
+  <ReportTabs lang={lang} current={kind} />
+  <ReportFilters
+    lang={lang}
+    action={`${ADMIN_PATHS.reports}/${kind}`}
+    from={result.range.from}
+    to={result.range.to}
+    grain={hasGrain ? result.grain : null}
+    shortcuts={shortcuts}
+  />
+  <div class="flex flex-col gap-1">
+    <h2 class="text-xl font-semibold">{title}</h2>
+    <p class="text-text/70 text-sm">{period}</p>
+  </div>
+  <ReportBody view={result.view} format={format} csvPath={`/api/admin/reports/${kind}.csv`} query={query} />
+</AdminLayout>

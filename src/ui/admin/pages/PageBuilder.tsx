@@ -9,6 +9,7 @@ import { BUTTON, BUTTON_PRIMARY, FIELD, HEADING, LABEL, LINK_BUTTON, PANEL } fro
 import { issueMessages } from '@/ui/admin/lib/issue-messages';
 import type { MediaChoice } from '@/ui/admin/schema-form/SchemaControl';
 import SchemaControl from '@/ui/admin/schema-form/SchemaControl';
+import { completeSection } from './complete-section';
 import SectionEditor, { type SectionEditorLabels, type SectionValue } from './SectionEditor';
 
 /** A widget the builder can add, with its fields and the settings a new section starts with. */
@@ -99,13 +100,16 @@ function moved<T>(list: T[], index: number, step: -1 | 1): T[] {
  */
 export default function PageBuilder(props: PageBuilderProps) {
   const { labels } = props;
+  // A page without SEO texts stores {}, but the save wants both languages, so the builder starts them empty.
   const [meta, setMeta] = useState<Record<string, unknown>>({
     title: props.page.title,
-    seoTitle: props.page.seoTitle,
-    seoDescription: props.page.seoDescription,
+    seoTitle: { es: '', en: '', ...props.page.seoTitle },
+    seoDescription: { es: '', en: '', ...props.page.seoDescription },
     isPublished: props.page.isPublished,
   });
-  const [sections, setSections] = useState<SectionValue[]>(props.page.sections);
+  const [sections, setSections] = useState<SectionValue[]>(() =>
+    props.page.sections.map((section) => completeSection(section, props.widgets)),
+  );
   const [widgetType, setWidgetType] = useState(props.widgets[0]?.type ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'failed'>('idle');

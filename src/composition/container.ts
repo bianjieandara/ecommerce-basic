@@ -36,7 +36,7 @@ import type { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
 import type { IssueInvoice } from '@/application/invoicing/issue-invoice';
 import type { VoidInvoice } from '@/application/invoicing/void-invoice';
 import type { MediaStorage } from '@/application/ports/media';
-import type { PageRepository, SettingsRepository } from '@/application/ports/content';
+import type { PageRepository, SettingsRepository, TestimonialRepository } from '@/application/ports/content';
 import type { LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoicing';
 import type { EmailTemplateService } from '@/application/notifications/email-template-service';
 import type { NotificationService } from '@/application/notifications/notification-service';
@@ -45,6 +45,9 @@ import type { DLocalGoGateway } from '@/infrastructure/payments/dlocalgo-gateway
 import type { Pbkdf2PasswordHasher } from '@/infrastructure/security/security-adapters';
 import type { CatalogAdmin } from './admin-catalog';
 import type { ContentAdmin } from './admin-content';
+import type { TranslateText } from '@/application/ai/translate-text';
+import type { WhatsAppServices } from './whatsapp';
+import type { BuildReport } from '@/application/reports/build-report';
 import type { InventoryServices } from './inventory';
 import type { AdminOperations } from './admin-operations';
 import type { MediaLibrary } from '@/application/media/media-library';
@@ -55,6 +58,7 @@ export interface Container {
   config: { siteUrl: string; turnstileSiteKey: string };
   settings: SettingsRepository;
   pages: PageRepository;
+  testimonials: TestimonialRepository;
   shipping: ShippingMethodRepository;
   /** Cart quoting (server-side prices). newDays comes from the catalog settings. */
   quoteCart: (options: { newDays: number }) => QuoteCart;
@@ -100,6 +104,11 @@ export interface Container {
   /** Admin catalog: products, categories, attributes and the product list. */
   catalogAdmin: CatalogAdmin;
   contentAdmin: ContentAdmin;
+  translate: TranslateText;
+  /** Reports: the sales, product, tax, inventory, customer and funnel views. */
+  reports: BuildReport;
+  /** WhatsApp: admin templates, Meta submit and sync, and the webhook. */
+  whatsapp: WhatsAppServices;
   /** Image library: uploads of resized variants, listing and removal. */
   mediaLibrary: MediaLibrary;
   /** Inventory: manual adjustments, CSV import, the ledger, alerts and back-in-stock subscriptions. */
