@@ -50,8 +50,18 @@ export class CloudflareEmailSender implements EmailSender {
  * and invitation emails can be followed while developing.
  */
 export class ConsoleEmailSender implements EmailSender {
-  async send(message: { to: string; subject: string; text?: string }): Promise<{ messageId: string }> {
-    console.log(`[email:dev] to=${message.to} subject=${message.subject}\n${message.text ?? ''}`);
+  async send(message: {
+    to: string;
+    subject: string;
+    text?: string;
+    attachments?: EmailAttachment[];
+  }): Promise<{ messageId: string }> {
+    // Attachments are listed by name and size, so a developer can see that an email carries its PDF without a mailbox.
+    const files = (message.attachments ?? []).map(
+      (file) => `${file.filename} (${file.content.byteLength} bytes)`,
+    );
+    const attached = files.length > 0 ? ` attachments=[${files.join(', ')}]` : '';
+    console.log(`[email:dev] to=${message.to} subject=${message.subject}${attached}\n${message.text ?? ''}`);
     return { messageId: `dev-${Date.now()}` };
   }
 }
