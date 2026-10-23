@@ -19,9 +19,9 @@
   "analyticsDataset": "demo_events",
   "rateLimitNamespaceBase": 1000,
   "cron": "*/15 * * * *",
-  "customDomains": [],
+  "customDomains": ["ecommerce.relion-app.com"],
   "vars": {
-    "PUBLIC_SITE_URL": "http://localhost:4321",
+    "PUBLIC_SITE_URL": "https://ecommerce.relion-app.com",
     "EMAIL_FROM": "Store <orders@example.com>",
     "PAYPAL_ENV": "sandbox",
     "DLOCALGO_ENV": "sandbox",
