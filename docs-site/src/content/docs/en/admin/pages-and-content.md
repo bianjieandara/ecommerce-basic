@@ -31,7 +31,7 @@ list at the bottom and press **Add**.
 
 | Section                       | What it shows                                                             |
 | ----------------------------- | ------------------------------------------------------------------------- |
-| **Hero carousel**             | Large slides with a title, a subtitle and a button.                        |
+| **Hero carousel**             | Large slides with a background picture, a title, a subtitle and a button.  |
 | **Featured products**         | A row or grid of products you choose, or the ones marked *Featured*.       |
 | **Category grid**             | Tiles that lead to categories.                                            |
 | **Trust badges**              | Short reasons to buy (secure payment, fast shipping, returns).             |

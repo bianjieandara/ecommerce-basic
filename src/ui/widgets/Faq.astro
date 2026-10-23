@@ -1,0 +1,30 @@
+---
+// Frequently asked questions: each one opens and closes without JavaScript. Answers are Markdown, rendered with raw HTML
+// escaped, like every other text block.
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { renderMarkdown } from '@/ui/lib/markdown';
+import type { WidgetProps } from './types';
+
+const { section, view } = Astro.props as WidgetProps;
+const config = section.config as { items?: { question: LocalizedText; answer: LocalizedText }[] };
+const items = (config.items ?? []).map((item) => ({
+  question: pickText(item.question, view.locale, 'es'),
+  answerHtml: renderMarkdown(pickText(item.answer, view.locale, 'es')),
+}));
+---
+
+{items.length > 0 && (
+  <div class="flex max-w-3xl flex-col gap-2" data-reveal>
+    {items.map((item) => (
+      <details class="group rounded-brand bg-surface px-5 py-1">
+        <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 font-medium">
+          {item.question}
+          <span class="text-xl transition group-open:rotate-45" aria-hidden="true">
+            +
+          </span>
+        </summary>
+        <div class="pb-4 leading-relaxed [&_p]:my-2" set:html={item.answerHtml} />
+      </details>
+    ))}
+  </div>
+)}

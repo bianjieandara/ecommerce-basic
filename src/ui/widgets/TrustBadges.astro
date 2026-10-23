@@ -7,14 +7,20 @@ import type { WidgetProps } from './types';
 
 const { section, view } = Astro.props as WidgetProps;
 const config = section.config as { items?: { icon: IconName; text: LocalizedText }[] };
-const items = config.items ?? [];
+// Pages saved by an earlier version named the returns icon "return"; its name is now "returns".
+const items = (config.items ?? []).map((item) => ({
+  ...item,
+  icon: (item.icon as string) === 'return' ? ('returns' as IconName) : item.icon,
+}));
 ---
 
 {items.length > 0 && (
-  <ul class="grid grid-cols-2 gap-4 md:grid-cols-4" data-reveal>
+  <ul class="grid grid-cols-2 gap-x-3 gap-y-5 md:grid-cols-4 md:gap-6" data-reveal>
     {items.map((item) => (
-      <li class="flex items-center gap-3 rounded-brand bg-surface p-3 text-sm">
-        <Icon name={item.icon} size={22} />
+      <li class="flex flex-col items-center gap-3 text-center text-sm font-medium md:flex-row md:text-left">
+        <span class="flex size-12 shrink-0 items-center justify-center rounded-full bg-surface">
+          <Icon name={item.icon} size={22} />
+        </span>
         <span>{pickText(item.text, view.locale, 'es')}</span>
       </li>
     ))}

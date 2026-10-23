@@ -3,6 +3,8 @@
 import Carousel from '@/ui/components/Carousel.astro';
 import ProductCard from '@/ui/store/ProductCard.astro';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { t } from '@/ui/i18n';
+import { routes } from '@/ui/lib/routes';
 import type { WidgetProps } from './types';
 
 const { section, data, view, first = false } = Astro.props as WidgetProps;
@@ -12,8 +14,16 @@ const title = pickText(config.title, view.locale, 'es');
 ---
 
 {products.length > 0 && (
-  <section class="flex flex-col gap-4" data-reveal>
-    <h2 class="text-xl font-semibold">{title}</h2>
+  <section class="flex flex-col gap-5" data-reveal>
+    <div class="flex items-end justify-between gap-4">
+      <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h2>
+      <a
+        href={routes.shop(view.locale)}
+        class="inline-flex min-h-11 items-center text-sm font-medium underline-offset-4 hover:underline"
+      >
+        {t(view.locale, 'nav.shop')} →
+      </a>
+    </div>
     {config.layout === 'grid' ? (
       <ul class="grid grid-cols-2 gap-4 md:grid-cols-4">
         {products.map((product, index) => (

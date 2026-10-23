@@ -1,0 +1,50 @@
+---
+// Promo banner: one wide picture with a headline, a line of text and a button, for an offer or a campaign.
+import SectionPicture from '@/ui/components/SectionPicture.astro';
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { localizedHref } from '@/ui/lib/localized-href';
+import type { WidgetProps } from './types';
+
+const { section, view, data } = Astro.props as WidgetProps;
+const config = section.config as {
+  image?: string | null;
+  title?: LocalizedText;
+  text?: LocalizedText;
+  cta?: { href: string; label: LocalizedText } | null;
+  align?: 'left' | 'center';
+};
+const image = config.image ? data.media?.[config.image] : undefined;
+const centered = config.align === 'center';
+---
+
+<section
+  data-reveal
+  class={`relative flex min-h-72 items-center overflow-hidden rounded-brand md:min-h-96 ${image ? 'bg-text text-white' : 'bg-primary text-on-primary'}`}
+>
+  {image && (
+    <>
+      <SectionPicture
+        image={image}
+        sizes="(min-width: 1152px) 1152px, 100vw"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+      <div class="absolute inset-0 bg-black/45" />
+    </>
+  )}
+  <div
+    class={`relative flex w-full flex-col gap-4 p-6 md:p-12 ${centered ? 'items-center text-center' : 'items-start'}`}
+  >
+    <h2 class="max-w-xl text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+      {pickText(config.title, view.locale, 'es')}
+    </h2>
+    <p class="max-w-lg opacity-90">{pickText(config.text, view.locale, 'es')}</p>
+    {config.cta && (
+      <a
+        href={localizedHref(view.locale, config.cta.href)}
+        class="inline-flex min-h-12 items-center rounded-full bg-white px-7 font-semibold text-black transition hover:bg-white/90"
+      >
+        {pickText(config.cta.label, view.locale, 'es')}
+      </a>
+    )}
+  </div>
+</section>

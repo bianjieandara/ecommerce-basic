@@ -116,6 +116,15 @@ export class MediaLibrary {
   }
 
   /**
+   * Reads several assets at once, for pages that show pictures chosen in the admin.
+   * @param ids Asset ids; unknown ids are left out of the result.
+   * @returns The assets found, in no particular order.
+   */
+  getMany(ids: string[]): Promise<MediaAsset[]> {
+    return ids.length > 0 ? this.deps.media.findManyByIds(ids) : Promise.resolve([]);
+  }
+
+  /**
    * Deletes an asset and its stored sizes. Refused while a product, a category or a testimonial still uses it.
    * @param id Asset id.
    * @throws DomainError NOT_FOUND, or CONFLICT while the asset is in use.

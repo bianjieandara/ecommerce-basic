@@ -8,14 +8,17 @@ interface Props {
   autoplay?: number;
   /** Slides per view on small screens, as a CSS basis (for example "85%"). */
   slideBasis?: string;
+  /** One slide at a time on every screen size, for banners. Without it a laptop shows three slides side by side. */
+  single?: boolean;
   class?: string;
 }
 
-const { label, autoplay = 6000, slideBasis = '85%', class: className = '' } = Astro.props;
+const { label, autoplay = 6000, slideBasis = '85%', single = false, class: className = '' } = Astro.props;
 ---
 
 <section
   data-carousel
+  data-carousel-single={single ? '' : undefined}
   data-autoplay={autoplay}
   aria-roledescription="carousel"
   aria-label={label}
@@ -62,6 +65,9 @@ const { label, autoplay = 6000, slideBasis = '85%', class: className = '' } = As
   @media (min-width: 768px) {
     :global([data-carousel-track] > *) {
       flex-basis: calc((100% - 2 * 1rem) / 3);
+    }
+    :global([data-carousel-single] [data-carousel-track] > *) {
+      flex-basis: 100%;
     }
   }
 </style>

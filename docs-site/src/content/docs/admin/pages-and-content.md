@@ -31,7 +31,7 @@ la lista del final y pulsa **Añadir**.
 
 | Sección                       | Qué muestra                                                                 |
 | ----------------------------- | --------------------------------------------------------------------------- |
-| **Carrusel principal**        | Diapositivas grandes con título, subtítulo y un botón.                       |
+| **Carrusel principal**        | Diapositivas grandes con una imagen de fondo, un título, un subtítulo y un botón. |
 | **Productos destacados**      | Una fila o cuadrícula de productos que eliges, o los marcados como *Destacado*. |
 | **Cuadrícula de categorías**  | Mosaicos que llevan a las categorías.                                        |
 | **Banner promocional**        | Un aviso destacado para una oferta o una campaña.                            |

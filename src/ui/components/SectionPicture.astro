@@ -1,0 +1,33 @@
+---
+// A picture chosen in the admin for a page section: the sizes the media library made, served with srcset so a phone downloads
+// the small file. Width and height are always set, so the layout does not move while it loads.
+import type { SectionImage } from '@/http/page-content';
+import { buildSrcSet, mediaUrl } from '@/ui/lib/media-url';
+
+interface Props {
+  image: SectionImage;
+  /** Display widths per breakpoint, for example "(min-width: 768px) 50vw, 100vw". */
+  sizes: string;
+  /** Loaded at once with high priority, for the picture the visitor sees first. */
+  eager?: boolean;
+  class?: string;
+}
+
+const { image, sizes, eager = false, class: className = '' } = Astro.props;
+const largest = image.variants.at(-1);
+---
+
+{largest && (
+  <img
+    src={mediaUrl(largest.key)}
+    srcset={buildSrcSet(image.variants)}
+    sizes={sizes}
+    alt={image.alt}
+    width={image.width}
+    height={image.height}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : undefined}
+    decoding="async"
+    class={className}
+  />
+)}

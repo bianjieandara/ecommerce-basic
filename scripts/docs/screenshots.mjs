@@ -193,10 +193,12 @@ for (const device of Object.keys(DEVICES)) {
         await wait(700);
       }
       // A full-page capture would repeat the floating tab bar and chat button in the middle of the page, so hide them.
+      // Sections fade in as they scroll into view; a capture that never scrolls would show them empty.
       if (shot.full)
         await browser.evaluate(
-          "document.querySelectorAll('.fixed').forEach((e) => { e.style.display = 'none' })",
+          "document.querySelectorAll('.fixed').forEach((e) => { e.style.display = 'none' }); document.querySelectorAll('[data-reveal]').forEach((e) => e.classList.add('is-visible'))",
         );
+      if (shot.full) await wait(900);
       await browser.shot(`${OUT}/${shot.name}.png`, { fullPage: Boolean(shot.full) });
       console.log('✓', shot.name);
     }

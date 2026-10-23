@@ -1,6 +1,8 @@
 ---
-// Category tiles. Shows the chosen categories, or every active category when none is chosen.
+// Category tiles. Shows the chosen categories, or every active category when none is chosen. A category with a picture gets
+// a photo tile with its name on a gradient; one without gets a plain tile.
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { mediaUrl } from '@/ui/lib/media-url';
 import { routes } from '@/ui/lib/routes';
 import type { WidgetProps } from './types';
 
@@ -12,16 +14,32 @@ const categories =
 ---
 
 {categories.length > 0 && (
-  <section class="flex flex-col gap-4" data-reveal>
-    <h2 class="text-xl font-semibold">{pickText(config.title, view.locale, 'es')}</h2>
-    <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+  <section class="flex flex-col gap-5" data-reveal>
+    <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">
+      {pickText(config.title, view.locale, 'es')}
+    </h2>
+    <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
       {categories.map((category) => (
         <li>
           <a
             href={routes.category(view.locale, category.slug)}
-            class="flex min-h-24 items-end rounded-brand bg-surface p-4 font-semibold hover:bg-primary-soft"
+            class="group relative flex aspect-4/5 items-end overflow-hidden rounded-brand bg-surface p-4 font-semibold md:aspect-4/3 md:p-6 md:text-lg"
           >
-            {category.name}
+            {category.imageKey && (
+              <>
+                <img
+                  src={mediaUrl(category.imageKey)}
+                  alt=""
+                  width="960"
+                  height="960"
+                  loading="lazy"
+                  decoding="async"
+                  class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+                <span class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+              </>
+            )}
+            <span class={`relative ${category.imageKey ? 'text-white' : ''}`}>{category.name}</span>
           </a>
         </li>
       ))}

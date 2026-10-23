@@ -1,0 +1,34 @@
+---
+// Image gallery: the chosen pictures as a grid of squares, or as a row to swipe.
+import Carousel from '@/ui/components/Carousel.astro';
+import SectionPicture from '@/ui/components/SectionPicture.astro';
+import { t } from '@/ui/i18n';
+import type { WidgetProps } from './types';
+
+const { section, view, data } = Astro.props as WidgetProps;
+const config = section.config as { images?: string[]; layout?: 'grid' | 'carousel' };
+const images = (config.images ?? []).flatMap((id) => (data.media?.[id] ? [data.media[id]] : []));
+const square = 'aspect-square w-full rounded-brand object-cover';
+---
+
+{images.length > 0 && (
+  <div data-reveal>
+    {config.layout === 'carousel' ? (
+      <Carousel label={t(view.locale, 'nav.home')} autoplay={0} slideBasis="70%">
+        {images.map((image) => (
+          <div class="w-[var(--slide-basis)] shrink-0 snap-start md:w-1/3">
+            <SectionPicture image={image} sizes="(min-width: 768px) 33vw, 70vw" class={square} />
+          </div>
+        ))}
+      </Carousel>
+    ) : (
+      <ul class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+        {images.map((image) => (
+          <li>
+            <SectionPicture image={image} sizes="(min-width: 768px) 25vw, 50vw" class={square} />
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+)}

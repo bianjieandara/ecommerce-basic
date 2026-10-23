@@ -17,6 +17,7 @@ import type {
 } from '@/application/dto/catalog-dto';
 import { cardSelect, toCard, type CardRow } from './catalog-cards';
 import { loadFacets } from './catalog-facets';
+import { cardImageKey } from './catalog-text';
 import { loadFeed } from './catalog-feed';
 import { loadSitemapCatalog } from './catalog-sitemap';
 import { buildWhere, newCutoff, orderByFor, type CatalogQueryOptions } from './catalog-filters';
@@ -99,11 +100,12 @@ export class D1CatalogQueryService implements CatalogQueryService {
       slug: string;
       name: string;
       description: string;
-      image_media_id: string | null;
+      image_variants: string | null;
     }>(
       this.db,
-      `SELECT c.id, ct.slug, ct.name, ct.description, c.image_media_id
+      `SELECT c.id, ct.slug, ct.name, ct.description, m.variants_json AS image_variants
        FROM categories c JOIN category_translations ct ON ct.category_id = c.id AND ct.locale = ?
+       LEFT JOIN media_assets m ON m.id = c.image_media_id
        WHERE c.is_active = 1 ORDER BY c.position`,
       [locale],
     );
@@ -112,19 +114,34 @@ export class D1CatalogQueryService implements CatalogQueryService {
       slug: row.slug,
       name: row.name,
       description: row.description,
-      imageKey: null,
+      imageKey: cardImageKey(row.image_variants),
     }));
   }
 
   async getCategoryBySlug(locale: Locale, slug: string): Promise<CategoryDto | null> {
-    const row = await queryFirst<{ id: string; slug: string; name: string; description: string }>(
+    const row = await queryFirst<{
+      id: string;
+      slug: string;
+      name: string;
+      description: string;
+      image_variants: string | null;
+    }>(
       this.db,
-      `SELECT c.id, ct.slug, ct.name, ct.description
+      `SELECT c.id, ct.slug, ct.name, ct.description, m.variants_json AS image_variants
        FROM categories c JOIN category_translations ct ON ct.category_id = c.id AND ct.locale = ?
+       LEFT JOIN media_assets m ON m.id = c.image_media_id
        WHERE c.is_active = 1 AND ct.slug = ?`,
       [locale, slug],
     );
-    return row ? { ...row, imageKey: null } : null;
+    return row
+      ? {
+          id: row.id,
+          slug: row.slug,
+          name: row.name,
+          description: row.description,
+          imageKey: cardImageKey(row.image_variants),
+        }
+      : null;
   }
 
   async suggest(locale: Locale, term: string, limit: number): Promise<SearchSuggestionDto[]> {

@@ -52,7 +52,7 @@ const href = routes.product(view.locale, product.slug);
       </span>
     )}
   </a>
-  <div class="flex flex-wrap gap-1">
+  <div class="flex min-h-6 flex-wrap gap-1">
     {product.isOnSale && <Badge tone="danger">{t(view.locale, 'product.onSale')}</Badge>}
     {product.isNew && <Badge tone="success">{t(view.locale, 'product.new')}</Badge>}
     {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}

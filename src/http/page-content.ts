@@ -15,10 +15,21 @@ export interface PageContent {
   sections: WidgetInstance[];
 }
 
+/** A picture chosen in the admin for a section, with the sizes the storefront can serve. */
+export interface SectionImage {
+  width: number;
+  height: number;
+  /** Description for the page language; empty when none was written. */
+  alt: string;
+  variants: { width: number; key: string }[];
+}
+
 /** Data loaded for the widgets of one page, keyed by section id. */
 export interface SectionData {
   productsBySection: Record<string, ProductCardDto[]>;
   categories: CategoryDto[];
+  /** Pictures used by the sections (hero slides, banners, galleries), by media id. */
+  media?: Record<string, SectionImage>;
   /**
    * Visible testimonials in the admin's order, shared by every testimonials section on the page.
    * Optional because a page with no stored or default content has no sections to load them for.
@@ -115,5 +126,48 @@ export async function loadSectionData(
     const query = parseCatalogQuery(params, locale, options);
     productsBySection[section.id] = (await service.listProducts(query, limit)).items;
   }
-  return { productsBySection, categories, testimonials };
+  return {
+    productsBySection,
+    categories,
+    testimonials,
+    media: await loadSectionImages(app, enabled, locale),
+  };
+}
+
+/**
+ * Reads the pictures the enabled sections use, in one query.
+ * @param app Request container.
+ * @param sections Enabled sections.
+ * @param locale Page language, for the picture descriptions.
+ * @returns The pictures by media id.
+ */
+async function loadSectionImages(
+  app: Container,
+  sections: WidgetInstance[],
+  locale: Locale,
+): Promise<Record<string, SectionImage>> {
+  const ids = new Set<string>();
+  const add = (value: unknown) => {
+    if (typeof value === 'string' && value !== '') ids.add(value);
+  };
+  for (const section of sections) {
+    const config = section.config as { slides?: { image?: unknown }[]; image?: unknown; images?: unknown };
+    if (section.type === 'hero_carousel') for (const slide of config.slides ?? []) add(slide.image);
+    if (section.type === 'promo_banner') add(config.image);
+    if (section.type === 'image_gallery' && Array.isArray(config.images)) config.images.forEach(add);
+  }
+  const assets = await app.mediaLibrary.getMany([...ids]);
+  return Object.fromEntries(
+    assets.map((asset) => [
+      asset.id,
+      {
+        width: asset.width,
+        height: asset.height,
+        alt: asset.alt[locale] ?? '',
+        variants: [...asset.variants]
+          .sort((a, b) => a.width - b.width)
+          .map(({ width, key }) => ({ width, key })),
+      },
+    ]),
+  );
 }

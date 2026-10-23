@@ -6,8 +6,9 @@
 // Environment: DOCS_BASE (store URL), DOCS_STATE (wrangler persist folder, default .wrangler/docs-state), see shared.mjs.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
-import { openBrowser } from './chrome.mjs';
-import { BASE, post, sql, TURNSTILE_TEST_TOKEN } from './shared.mjs';
+import { addCategoryPictures, addProductPictures } from './pictures.mjs';
+import { addHomePage } from './home-content.mjs';
+import { post, sql, TURNSTILE_TEST_TOKEN } from './shared.mjs';
 
 const ACCOUNT_FILE = '.wrangler/docs-admin.json';
 
@@ -44,99 +45,6 @@ async function ownerCookie() {
     .join('; ');
   writeFileSync('.wrangler/docs-cookie.txt', cookie);
   return cookie;
-}
-
-/** Colour and symbol of each seed product's picture. */
-const LOOKS = {
-  'prod-tee': ['#1d4ed8', '#93c5fd', '👕'],
-  'prod-hoodie': ['#7c3aed', '#c4b5fd', '🧥'],
-  'prod-cap': ['#b91c1c', '#fca5a5', '🧢'],
-  'prod-bottle': ['#047857', '#6ee7b7', '🍶'],
-  'prod-mug': ['#b45309', '#fcd34d', '☕'],
-  'prod-candle': ['#be185d', '#f9a8d4', '🕯️'],
-  'prod-pillow': ['#0e7490', '#67e8f9', '🛋️'],
-  'prod-tote': ['#4d7c0f', '#bef264', '👜'],
-  'prod-notebook': ['#334155', '#cbd5e1', '📓'],
-  'prod-sticker': ['#c2410c', '#fdba74', '⭐'],
-  'prod-blanket': ['#6d28d9', '#ddd6fe', '🧶'],
-  'prod-plant': ['#15803d', '#86efac', '🪴'],
-};
-
-/**
- * Draws a product picture in Chrome and returns it as 960 px and 480 px JPEGs.
- * @param browser Chrome session.
- * @param name Product name written on the picture.
- * @param look Dark colour, light colour and symbol.
- * @returns The two sizes as byte buffers.
- */
-async function drawPicture(browser, name, [dark, light, symbol]) {
-  const html = `<body style="margin:0;width:960px;height:960px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:linear-gradient(135deg,${light},${dark});font-family:Segoe UI,Arial,sans-serif;color:#fff"><div style="font-size:360px;line-height:1">${symbol}</div><div style="font-size:56px;font-weight:700;text-shadow:0 2px 12px #0006">${name}</div></body>`;
-  const sizes = {};
-  for (const [width, scale] of [
-    [960, 1],
-    [480, 0.5],
-  ]) {
-    await browser.cdp('Emulation.setDeviceMetricsOverride', {
-      width: 960,
-      height: 960,
-      deviceScaleFactor: scale,
-      mobile: false,
-    });
-    await browser.goto(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`, 400);
-    const path = `.wrangler/docs-pic-${width}.jpg`;
-    await browser.shot(path, { format: 'jpeg', quality: 82 });
-    sizes[width] = readFileSync(path);
-  }
-  return sizes;
-}
-
-/**
- * Uploads one picture to the media library.
- * @param cookie Admin session.
- * @param name Original file name.
- * @param sizes Bytes per width.
- * @returns The new media asset id.
- */
-async function upload(cookie, name, sizes) {
-  const form = new FormData();
-  form.set('originalName', `${name}.jpg`);
-  form.set('width', '960');
-  form.set('height', '960');
-  for (const [width, bytes] of Object.entries(sizes)) {
-    form.set(`size-${width}`, new File([bytes], `${width}.jpg`, { type: 'image/jpeg' }));
-  }
-  const response = await fetch(`${BASE}/api/admin/media`, {
-    method: 'POST',
-    headers: { cookie, origin: BASE },
-    body: form,
-  });
-  const json = await response.json();
-  if (!json.ok) throw new Error(`Upload failed: ${JSON.stringify(json.error)}`);
-  return json.data.id ?? json.data.asset?.id;
-}
-
-/**
- * Gives every seed product its picture, unless it has one.
- * @param cookie Admin session.
- */
-async function addPictures(cookie) {
-  const products = sql(
-    `SELECT p.id, t.name FROM products p JOIN product_translations t ON t.product_id = p.id AND t.locale = 'en'
-       WHERE NOT EXISTS (SELECT 1 FROM product_images i WHERE i.product_id = p.id) ORDER BY p.id`,
-  );
-  if (products.length === 0) return;
-  const browser = await openBrowser({ port: 9411, width: 960, height: 960 });
-  try {
-    for (const product of products) {
-      const look = LOOKS[product.id] ?? ['#334155', '#cbd5e1', '📦'];
-      const mediaId = await upload(cookie, product.name, await drawPicture(browser, product.name, look));
-      sql(
-        `INSERT INTO product_images (product_id, media_id, position) VALUES ('${product.id}', '${mediaId}', 0)`,
-      );
-    }
-  } finally {
-    browser.close();
-  }
 }
 
 /** Shoppers who place the demo orders. */
@@ -285,7 +193,9 @@ async function addTestimonials(cookie) {
 
 const cookie = await ownerCookie();
 console.log('signed in as the demo owner');
-await addPictures(cookie);
+await addProductPictures(cookie);
+await addCategoryPictures(cookie);
+await addHomePage(cookie);
 console.log('pictures added');
 await addOrders(cookie);
 console.log('orders added');

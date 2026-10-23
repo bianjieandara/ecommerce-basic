@@ -7,7 +7,10 @@ import type { StoreView } from '@/ui/lib/store-view';
 import type { WhatsAppContact } from './types';
 import CategoryGrid from './CategoryGrid.astro';
 import FeaturedProducts from './FeaturedProducts.astro';
+import Faq from './Faq.astro';
 import HeroCarousel from './HeroCarousel.astro';
+import ImageGallery from './ImageGallery.astro';
+import PromoBanner from './PromoBanner.astro';
 import RichText from './RichText.astro';
 import Testimonials from './Testimonials.astro';
 import TrustBadges from './TrustBadges.astro';
@@ -27,6 +30,9 @@ const renderers: Record<string, typeof HeroCarousel> = {
   hero_carousel: HeroCarousel,
   featured_products: FeaturedProducts,
   category_grid: CategoryGrid,
+  promo_banner: PromoBanner,
+  image_gallery: ImageGallery,
+  faq: Faq,
   rich_text: RichText,
   testimonials: Testimonials,
   trust_badges: TrustBadges,
@@ -38,7 +44,16 @@ const renderers: Record<string, typeof HeroCarousel> = {
   .filter((section) => section.enabled)
   .map((section, index) => {
     const Renderer = renderers[section.type];
-    return Renderer ? (
+    if (!Renderer) return null;
+    const node = (
       <Renderer section={section} data={data} view={view} whatsapp={whatsapp} first={index === 0} />
-    ) : null;
+    );
+    // The first two sections are what a visitor sees without scrolling, so they appear without the scroll-reveal fade.
+    return index < 2 ? (
+      <div class="contents" data-no-reveal>
+        {node}
+      </div>
+    ) : (
+      node
+    );
   })}

@@ -54,6 +54,14 @@
   transform: none;
 }
 
+/* The first sections of a page are on screen at once. They must not wait for a script to show them: that delays the largest
+   paint by seconds on a slow phone (SectionRenderer marks them). */
+[data-no-reveal] [data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
 .animate-slide-up {
   animation: slide-up 0.4s ease both;
 }
