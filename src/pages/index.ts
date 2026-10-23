@@ -1,4 +1,4 @@
-// Root URL: sends the visitor to their language (cookie, then browser preference, then the store default).
+// Root URL: sends the visitor to their chosen language (cookie), otherwise to the store default language.
 import type { APIRoute } from 'astro';
 import { loadStoreContext, resolveLocale } from '@/http/store-context';
 import { PATHS } from '@/domain/shared/paths';

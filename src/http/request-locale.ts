@@ -1,5 +1,5 @@
-// Language of a request for pages with no store context (error pages): the URL's language prefix wins, then the usual
-// cookie / browser / default order of resolveLocale.
+// Language of a request for pages with no store context (error pages): the URL's language prefix wins, then the cookie
+// and default order of resolveLocale.
 import { isLocale, type Locale } from '@/domain/shared/locale';
 import { resolveLocale } from './store-context';
 

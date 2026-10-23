@@ -10,7 +10,10 @@ import { BASE, post, sql, TURNSTILE_TEST_TOKEN } from './shared.mjs';
 const LANG = process.env.DOCS_LANG ?? 'es';
 const OTHER = LANG === 'es' ? 'en' : 'es';
 /** Slugs differ per language: the demo catalog has Spanish and English addresses. */
-const SLUGS = LANG === 'es' ? { tee: 'camiseta-clasica', category: 'camisetas' } : { tee: 'classic-tee', category: 'apparel' };
+const SLUGS =
+  LANG === 'es'
+    ? { tee: 'camiseta-clasica', category: 'camisetas' }
+    : { tee: 'classic-tee', category: 'apparel' };
 const OUT = `docs-site/src/assets/screens/${LANG}`;
 const DEVICES = {
   phone: { width: 390, height: 844, scale: 2, mobile: true },

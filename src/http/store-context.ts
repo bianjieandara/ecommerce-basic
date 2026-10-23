@@ -35,7 +35,8 @@ export async function loadStoreContext(app: Container): Promise<StoreContext> {
 }
 
 /**
- * Chooses the request language: the `locale` cookie first, then the browser's preference, then the store default.
+ * Chooses the request language: the `locale` cookie the visitor picked, then the store default. The browser's
+ * Accept-Language header is ignored on purpose: a store set to Spanish must not switch to English for an English browser.
  * @param request Incoming request.
  * @param defaultLocale Store default language.
  * @returns A supported locale.
@@ -43,10 +44,5 @@ export async function loadStoreContext(app: Container): Promise<StoreContext> {
 export function resolveLocale(request: Request, defaultLocale: Locale = DEFAULT_LOCALE): Locale {
   const cookie = /(?:^|;\s*)locale=(es|en)(?:;|$)/.exec(request.headers.get('cookie') ?? '')?.[1];
   if (cookie && isLocale(cookie)) return cookie;
-  const accepted = request.headers.get('accept-language') ?? '';
-  for (const part of accepted.split(',')) {
-    const code = part.trim().slice(0, 2).toLowerCase();
-    if (isLocale(code)) return code;
-  }
   return defaultLocale;
 }
