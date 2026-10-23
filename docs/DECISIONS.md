@@ -668,3 +668,9 @@ What was checked beyond the first round: every admin API route without a session
 - **The sign-in redirect keeps the query string.** `next` carries `path + search`, and `safeAdminPath` accepts `/admin?...`; it still refuses anything outside `/admin`.
 - **Tests moved into the repo:** `npm run test:access` (anonymous access to every admin route; editor, deactivated, expired and unknown sessions) and `npm run test:consent` (Pixel off before a choice and after "Only necessary", on after "Accept", choice persists).
 - **Left open on purpose:** refunds stay recorded, not made (a refund call or a PayPal refund handler moves money and cannot be checked without live refunds); the dev-only `braces` finding (no patched release on npm); real email, WhatsApp and Meta round trips (need the client's accounts); a deployment (needs the owner's login).
+
+## 2026-10-23 — Demo login uses Cloudflare's test Turnstile secret
+
+- **Why.** The demo's login page loads the test Turnstile site key (`1x00000000000000000000AA`), but the Worker had a real Turnstile secret, so every login failed the bot check before the password was read. The demo owner could not sign in.
+- **What.** The demo Worker's `TURNSTILE_SECRET_KEY` secret is now Cloudflare's test secret (`1x0000000000000000000000000000000AA`), which matches the test site key. Login works.
+- **Consequence.** The public login page has no real bot protection on the demo. This is for the demo and the template only. A real store needs a Turnstile widget of its own: its site key in `clients/<slug>/client.jsonc` and its secret set with `wrangler secret put TURNSTILE_SECRET_KEY`.
