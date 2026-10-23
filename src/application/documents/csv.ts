@@ -78,8 +78,10 @@ export function parseCsv(text: string): string[][] {
  * @param rows Cells per row, in header order.
  * @returns The file text, with a byte-order mark and CRLF line endings.
  */
-export function toCsv(header: string[], rows: CsvCell[][]): string {
-  const lines = [header, ...rows].map((cells) => cells.map(csvField).join(','));
+export function toCsv(header: string[], rows: CsvCell[][], delimiter: ',' | ';' = ','): string {
+  const lines = [header, ...rows].map((cells) =>
+    cells.map((cell) => csvField(cell, delimiter)).join(delimiter),
+  );
   return `${BOM}${lines.join('\r\n')}\r\n`;
 }
 
@@ -98,11 +100,14 @@ export function unguardCell(cell: string): string {
 /**
  * Formats one cell: quotes it when needed, and guards text that starts like a formula.
  * @param cell Cell value.
+ * @param delimiter Column separator; a cell holding it is quoted too.
  * @returns The cell as written in the file.
  */
-function csvField(cell: CsvCell): string {
+function csvField(cell: CsvCell, delimiter: ',' | ';'): string {
   if (cell === null) return '';
   if (typeof cell === 'number') return String(cell);
   const guarded = FORMULA_START.test(cell) ? `'${cell}` : cell;
-  return /[",\r\n]/.test(guarded) ? `"${guarded.replaceAll('"', '""')}"` : guarded;
+  // Quote only what the delimiter or the record structure would break: a decimal comma is fine in a semicolon file.
+  const quote = guarded.includes(delimiter) || /["\r\n]/.test(guarded);
+  return quote ? `"${guarded.replaceAll('"', '""')}"` : guarded;
 }

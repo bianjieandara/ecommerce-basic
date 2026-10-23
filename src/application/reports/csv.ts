@@ -17,20 +17,29 @@ export interface ReportCsv {
  * @param exponent Decimal digits of the store currency.
  * @returns The value written to the file.
  */
-function csvCell(cell: CellValue, exponent: number): CsvCell {
+function csvCell(cell: CellValue, exponent: number, decimal: '.' | ','): CsvCell {
   switch (cell.kind) {
     case 'money':
-      return majorTextFromMinor(cell.minor, exponent);
+      return majorTextFromMinor(cell.minor, exponent).replace('.', decimal);
     case 'count':
       return cell.value;
     case 'bp':
-      return (cell.value / 100).toFixed(2);
+      return (cell.value / 100).toFixed(2).replace('.', decimal);
     case 'text':
     case 'day':
       return cell.value;
     case 'empty':
       return null;
   }
+}
+
+/**
+ * The decimal character for a separator. A semicolon file is read by a Spanish-locale spreadsheet, which expects a comma.
+ * @param separator Column separator of the file.
+ * @returns The decimal character.
+ */
+function decimalOf(separator: ',' | ';' | undefined): '.' | ',' {
+  return separator === ';' ? ',' : '.';
 }
 
 /**
@@ -47,6 +56,8 @@ export function reportCsv(
     to: string;
     currency: CurrencyCode;
     label: (key: ReportTextKey) => string;
+    /** ';' for Spanish-locale Excel, which reads a comma as the decimal point and a semicolon as the column separator. */
+    separator?: ',' | ';';
   },
 ): ReportCsv | null {
   const table =
@@ -57,7 +68,8 @@ export function reportCsv(
     filename: `${view.kind}-${table.id}-${options.from}-${options.to}.csv`,
     text: toCsv(
       table.columns.map(options.label),
-      table.rows.map((row) => row.map((cell) => csvCell(cell, exponent))),
+      table.rows.map((row) => row.map((cell) => csvCell(cell, exponent, decimalOf(options.separator)))),
+      options.separator ?? ',',
     ),
   };
 }

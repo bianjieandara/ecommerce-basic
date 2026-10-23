@@ -24,6 +24,7 @@ export const GET = defineEndpoint({
       to: result.range.to,
       currency: result.currency,
       label: (key: ReportTextKey) => t(admin.locale, `admin.reports.${key}`),
+      separator: context.url.searchParams.get('sep') === ';' ? ';' : ',',
     });
     if (!file) throw new DomainError('NOT_FOUND', 'Unknown table');
     return csvResponse(file.text, file.filename);

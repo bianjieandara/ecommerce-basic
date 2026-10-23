@@ -263,6 +263,7 @@ export const es: Dictionary = {
         month: 'Mes',
       },
       csv: 'Descargar CSV',
+      csvExcelEs: 'Descargar CSV para Excel en español',
       vsPrevious: 'vs periodo anterior',
       changeNone: '—',
       emptyTable: 'Nada en este periodo.',

@@ -21,9 +21,14 @@ const headers = table.columns.map((key) => t(lang, `admin.reports.${key}`));
 <section class="flex flex-col gap-3">
   <div class="flex flex-wrap items-center justify-between gap-3">
     <h2 class="text-base font-semibold">{t(lang, `admin.reports.${table.title}`)}</h2>
-    <a href={csvHref} class={BUTTON}>
-      {t(lang, 'admin.reports.csv')}
-    </a>
+    <div class="flex flex-wrap gap-2">
+      <a href={csvHref} class={BUTTON}>
+        {t(lang, 'admin.reports.csv')}
+      </a>
+      <a href={`${csvHref}&sep=%3B`} class={BUTTON}>
+        {t(lang, 'admin.reports.csvExcelEs')}
+      </a>
+    </div>
   </div>
   {table.rows.length === 0 ? (
     <p class="text-text/70 text-sm">{t(lang, 'admin.reports.emptyTable')}</p>

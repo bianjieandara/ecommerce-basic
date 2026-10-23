@@ -262,6 +262,7 @@ export const en = {
         month: 'Month',
       },
       csv: 'Download CSV',
+      csvExcelEs: 'Download CSV for Spanish Excel',
       vsPrevious: 'vs previous period',
       changeNone: '—',
       emptyTable: 'Nothing in this period.',
