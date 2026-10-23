@@ -98,6 +98,7 @@ export const storeFieldDefinitions = {
         option('inter', 'Inter', 'Inter'),
         option('manrope', 'Manrope', 'Manrope'),
         option('playfair', 'Playfair Display', 'Playfair Display'),
+        option('editorial', 'Editorial (Playfair + Manrope)', 'Editorial (Playfair + Manrope)'),
       ],
     },
     radius: {

@@ -17,6 +17,15 @@ const FONT_VALUES: Record<SettingsMap['theme']['fontPreset'], string> = {
   inter: "'Inter Variable'",
   manrope: "'Manrope Variable'",
   playfair: "'Playfair Display Variable'",
+  editorial: "'Manrope Variable'",
+};
+
+/** Font family of headings per preset. Only "editorial" pairs a different heading face with the body font. */
+const DISPLAY_FONT_VALUES: Record<SettingsMap['theme']['fontPreset'], string> = {
+  inter: FONT_VALUES.inter,
+  manrope: FONT_VALUES.manrope,
+  playfair: FONT_VALUES.playfair,
+  editorial: "'Playfair Display Variable'",
 };
 
 /**
@@ -36,6 +45,9 @@ export function themeToCss(theme: SettingsMap['theme']): string {
     `--brand-primary-soft:color-mix(in srgb,${primary} 12%,white)`,
     `--brand-radius:${RADIUS_VALUES[theme.radius]}`,
     `--brand-font:${FONT_VALUES[theme.fontPreset]}`,
+    `--brand-font-display:${DISPLAY_FONT_VALUES[theme.fontPreset]}`,
   ];
-  return `:root{${declarations.join(';')}}`;
+  // ":root:root" outranks the defaults in global.css. The bundled stylesheet is linked after this inline block, so at equal
+  // specificity its defaults would win and the store's colours and fonts would never show.
+  return `:root:root{${declarations.join(';')}}`;
 }

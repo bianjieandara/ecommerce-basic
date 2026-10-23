@@ -7,7 +7,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { addCategoryPictures, addProductPictures } from './pictures.mjs';
-import { addHomePage } from './home-content.mjs';
+import { addHomePage, applyDemoTheme } from './home-content.mjs';
 import { post, sql, TURNSTILE_TEST_TOKEN } from './shared.mjs';
 
 const ACCOUNT_FILE = '.wrangler/docs-admin.json';
@@ -195,6 +195,7 @@ const cookie = await ownerCookie();
 console.log('signed in as the demo owner');
 await addProductPictures(cookie);
 await addCategoryPictures(cookie);
+await applyDemoTheme(cookie);
 await addHomePage(cookie);
 console.log('pictures added');
 await addOrders(cookie);

@@ -140,3 +140,28 @@ export async function addHomePage(cookie) {
   );
   if (!saved.json?.ok) throw new Error(`Could not save the home page: ${JSON.stringify(saved.json?.error)}`);
 }
+
+/**
+ * Gives the demo store an editorial look: warm paper background, oxblood buttons, a serif for headings. A template starts
+ * neutral; this is what an owner gets by choosing colours and the "Editorial" typeface in Settings > Theme.
+ * @param cookie Admin session.
+ */
+export async function applyDemoTheme(cookie) {
+  const response = await post(
+    '/api/admin/settings/theme',
+    {
+      values: {
+        colorPrimary: '#7a2e1d',
+        colorOnPrimary: '#fffaf3',
+        colorAccent: '#b8461a',
+        colorBackground: '#faf6ef',
+        colorSurface: '#f0e8da',
+        colorText: '#2b211b',
+        fontPreset: 'editorial',
+        radius: 'sm',
+      },
+    },
+    cookie,
+  );
+  if (response.status !== 200) throw new Error(`Could not save the theme: ${JSON.stringify(response.json)}`);
+}

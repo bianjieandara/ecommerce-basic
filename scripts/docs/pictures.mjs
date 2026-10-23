@@ -30,9 +30,9 @@ export const CATEGORY_LOOKS = {
 
 /** Hero banners: palette and symbols. The left side stays free for the headline. */
 export const HERO_LOOKS = [
-  ['#1e3a8a', '#60a5fa', ['👕', '🧥', '🧢']],
-  ['#065f46', '#34d399', ['🪴', '🕯️', '🛋️']],
-  ['#9a3412', '#fbbf24', ['☕', '👜', '🍶']],
+  ['#3b1810', '#c8784a', ['👕', '🧥', '🧢']],
+  ['#26301f', '#a9b88a', ['🪴', '🕯️', '🛋️']],
+  ['#4a2f17', '#e3b873', ['☕', '👜', '🍶']],
 ];
 
 const STUDIO_SHADOW = 'filter:drop-shadow(0 28px 28px rgba(0,0,0,.28))';

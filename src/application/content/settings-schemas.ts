@@ -78,7 +78,7 @@ export const themeSettings = z.object({
   colorBackground: hexColor('#ffffff'),
   colorSurface: hexColor('#f5f5f5'),
   colorText: hexColor('#111111'),
-  fontPreset: z.enum(['inter', 'manrope', 'playfair']).default('inter'),
+  fontPreset: z.enum(['inter', 'manrope', 'playfair', 'editorial']).default('inter'),
   radius: z.enum(['none', 'sm', 'md', 'lg', 'full']).default('md'),
 });
 

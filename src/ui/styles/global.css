@@ -26,6 +26,14 @@
   --brand-text: #111111;
   --brand-radius: 0.5rem;
   --brand-font: 'Inter Variable';
+  --brand-font-display: 'Inter Variable';
+}
+
+/* Page and section titles use the display face, which equals the body face except in the "editorial" preset. Smaller
+   headings (product names, card titles) stay in the body face: a thin serif is hard to read at that size. */
+h1,
+h2 {
+  font-family: var(--brand-font-display), ui-serif, Georgia, serif;
 }
 
 @view-transition {

@@ -12,7 +12,13 @@ import interFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.
 import manropeFont from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
 import playfairFont from '@fontsource-variable/playfair-display/files/playfair-display-latin-wght-normal.woff2?url';
 
-const FONT_FILES = { inter: interFont, manrope: manropeFont, playfair: playfairFont } as const;
+// "editorial" preloads the heading face: headings are the largest text on the page, so they decide the layout shift.
+const FONT_FILES = {
+  inter: interFont,
+  manrope: manropeFont,
+  playfair: playfairFont,
+  editorial: playfairFont,
+} as const;
 
 interface Props {
   title: string;
