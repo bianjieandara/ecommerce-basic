@@ -19,6 +19,8 @@ export interface GraphConfig {
   version: string | null;
   /** System-user access token (WHATSAPP_TOKEN). Never logged or returned. */
   token: string | null;
+  /** Graph API address. Defaults to Meta; META_GRAPH_BASE_URL points it at a test double in local runs. */
+  baseUrl?: string | null;
 }
 
 /** Options of one request. */
@@ -71,7 +73,8 @@ export class MetaGraphClient {
       throw new DomainError('INVALID_STATE', 'Meta Graph is not configured.', { reason: 'NOT_CONNECTED' });
     }
     // Built by concatenation: upload session ids contain colons, which `new URL(path, base)` would read as a scheme.
-    const url = new URL(`https://graph.facebook.com/${this.config.version}/${path}`);
+    const base = this.config.baseUrl ?? 'https://graph.facebook.com';
+    const url = new URL(`${base}/${this.config.version}/${path}`);
     for (const [name, value] of Object.entries(request.query ?? {})) url.searchParams.set(name, value);
 
     const headers = new Headers(request.headers);

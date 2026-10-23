@@ -4,8 +4,12 @@
 /** A double-brace placeholder, including partials ({{> block}}). Braces inside it are not allowed, so nesting is not matched. */
 const PLACEHOLDER = /\{\{[^{}]*\}\}/g;
 
-/** A mask token written by maskPlaceholders. The index refers to the placeholder list. */
-const MASK_TOKEN = /__PH(\d+)__/g;
+/**
+ * A mask token written by maskPlaceholders: "Q", the index, "Q". The index refers to the placeholder list.
+ * Tried against the Workers AI model: underscores and brackets were dropped or changed (the placeholder was lost),
+ * while letters around digits came back unchanged in every sample.
+ */
+const MASK_TOKEN = /Q(\d+)Q/g;
 
 /** Result of masking: the text with tokens in place of placeholders, and the original placeholders in order. */
 export interface MaskedText {
@@ -22,7 +26,7 @@ export function maskPlaceholders(text: string): MaskedText {
   const placeholders: string[] = [];
   const masked = text.replace(PLACEHOLDER, (match) => {
     placeholders.push(match);
-    return `__PH${placeholders.length - 1}__`;
+    return `Q${placeholders.length - 1}Q`;
   });
   return { masked, placeholders };
 }
@@ -30,7 +34,7 @@ export function maskPlaceholders(text: string): MaskedText {
 /**
  * Puts the original placeholders back into a translated text.
  * Returns null when the translator changed the tokens: a token missing, repeated or unknown means the placeholders are not
- * intact, and the caller must not use the text. A literal "__PHn__" typed by the author also counts as unknown, so it is refused too.
+ * intact, and the caller must not use the text. A literal "QnQ" typed by the author also counts as unknown, so it is refused too.
  * @param translated Translator output that came from masked text.
  * @param placeholders Placeholders returned by maskPlaceholders.
  * @returns The text with the placeholders restored, or null when they are not intact.

@@ -54,5 +54,9 @@ export function connectionStatusOf(settings: MetaSettings): WhatsAppConnectionSt
  * @returns Version and token, each null when unset.
  */
 export function readCapiSettings(): GraphConfig {
-  return { version: readSecret('META_GRAPH_VERSION'), token: readSecret('META_CAPI_TOKEN') };
+  return {
+    version: readSecret('META_GRAPH_VERSION'),
+    token: readSecret('META_CAPI_TOKEN'),
+    baseUrl: readSecret('META_GRAPH_BASE_URL'),
+  };
 }

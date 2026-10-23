@@ -14,6 +14,7 @@ import {
   PANEL,
 } from '@/ui/admin/lib/classes';
 import { issueMessages } from '@/ui/admin/lib/issue-messages';
+import { EmailFieldTranslate } from './EmailFieldTranslate';
 import { EmailInsertPanel } from './EmailInsertPanel';
 import { EmailPreview } from './EmailPreview';
 import type { EmailEditorProps } from './email-editor-types';
@@ -60,12 +61,13 @@ export default function EmailEditor(props: EmailEditorProps) {
   const bodyError = errors[`body.${lang}`];
 
   /**
-   * Changes one field of the draft on screen. An earlier save's refusals no longer apply once the copy changes.
+   * Changes one field of a draft. An earlier save's refusals no longer apply once the copy changes.
    * @param field Subject or body.
    * @param value New text.
+   * @param code Language of the draft; the one on screen unless given.
    */
-  function updateDraft(field: 'subject' | 'body', value: string): void {
-    setDrafts((previous) => ({ ...previous, [lang]: { ...previous[lang], [field]: value } }));
+  function updateDraft(field: 'subject' | 'body', value: string, code: Locale = lang): void {
+    setDrafts((previous) => ({ ...previous, [code]: { ...previous[code], [field]: value } }));
     setSaveErrors({});
   }
 
@@ -182,6 +184,13 @@ export default function EmailEditor(props: EmailEditorProps) {
               </span>
             )}
           </label>
+          <EmailFieldTranslate
+            locale={props.locale}
+            from={lang}
+            field="subject"
+            text={draft.subject}
+            onFill={updateDraft}
+          />
           <label class={LABEL}>
             <span class="font-semibold">{labels.body}</span>
             <textarea
@@ -198,6 +207,13 @@ export default function EmailEditor(props: EmailEditorProps) {
               </span>
             )}
           </label>
+          <EmailFieldTranslate
+            locale={props.locale}
+            from={lang}
+            field="body"
+            text={draft.body}
+            onFill={updateDraft}
+          />
         </section>
 
         <EmailInsertPanel

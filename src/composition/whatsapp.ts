@@ -19,6 +19,7 @@ import { MetaWebhookAuth } from '@/infrastructure/meta/meta-signature';
 import { WhatsAppCloudSender } from '@/infrastructure/meta/whatsapp-cloud-sender';
 import { MetaTemplateCatalog } from '@/infrastructure/meta/whatsapp-template-catalog';
 import { logEvent } from '@/infrastructure/system/logger';
+import { readSecret } from '@/infrastructure/cloudflare/env';
 
 /** The WhatsApp services the container exposes: admin templates, Meta submit and sync, and the webhook. */
 export interface WhatsAppServices {
@@ -50,7 +51,11 @@ export function createWhatsApp(
   deps: WhatsAppDeps,
 ): { services: WhatsAppServices; notifyWhatsapp: JobHandler } {
   const meta = readMetaSettings();
-  const graph = new MetaGraphClient({ version: meta.graphVersion, token: meta.token });
+  const graph = new MetaGraphClient({
+    version: meta.graphVersion,
+    token: meta.token,
+    baseUrl: readSecret('META_GRAPH_BASE_URL'),
+  });
   const templates = new D1WhatsAppTemplateRepository(env.DB);
   const sender = new WhatsAppCloudSender(graph, meta.phoneNumberId);
   const catalog = new MetaTemplateCatalog(graph, meta.wabaId, meta.appId);

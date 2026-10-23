@@ -1,7 +1,7 @@
 {
   "slug": "demo",
   "workerName": "demo-store",
-  "accountId": "ec9019b98b852dc29c0d43042d3ad8bf",
+  "accountId": null,
   "d1": {
     "name": "demo-db",
     "id": "22f27fe6-c0c8-4f25-9274-91b2094ae7e8",

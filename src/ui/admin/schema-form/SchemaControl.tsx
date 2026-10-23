@@ -2,8 +2,10 @@
 // expects: an empty choice of a nullable field becomes null, and an object field holds its nested values.
 import type { FieldDescriptor } from '@/application/forms/field-descriptor';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
-import { SUPPORTED_LOCALES, type Locale } from '@/domain/shared/locale';
-import { ERROR_TEXT, FIELD, LABEL } from '@/ui/admin/lib/classes';
+import type { Locale } from '@/domain/shared/locale';
+import { FIELD, LABEL } from '@/ui/admin/lib/classes';
+import { refused, Shell } from './field-shell';
+import LocalizedControl from './LocalizedControl';
 
 /** One image offered by an image field. */
 export interface MediaChoice {
@@ -31,30 +33,6 @@ export interface SchemaControlProps {
   /** Messages of the fields the server refused, by path. */
   errors: Record<string, string>;
   onChange: (value: unknown) => void;
-}
-
-/**
- * Whether the server refused the field, or one of its parts (a language of a localized field, a nested value).
- * @param errors Messages keyed by path.
- * @param path Dotted path of the field.
- * @returns True when a message is keyed by the path or below it.
- */
-function refused(errors: Record<string, string>, path: string): boolean {
-  return Object.keys(errors).some((key) => key === path || key.startsWith(`${path}.`));
-}
-
-/**
- * Shows one field and its message, if the server refused it.
- * @param props Field label, message and control.
- * @returns The field.
- */
-function Shell(props: { error?: string; children: unknown }) {
-  return (
-    <div class="flex flex-col gap-1">
-      {props.children}
-      {props.error && <p class={ERROR_TEXT}>{props.error}</p>}
-    </div>
-  );
 }
 
 /**
@@ -116,35 +94,18 @@ export default function SchemaControl(props: SchemaControlProps) {
       );
     case 'localizedText':
     case 'localizedTextarea':
-    case 'localizedMarkdown': {
-      const texts = (value ?? {}) as Partial<LocalizedText>;
+    case 'localizedMarkdown':
       return (
         <Shell error={error}>
-          <fieldset class="flex flex-col gap-2">
-            <legend class="mb-1 text-sm font-semibold">{label}</legend>
-            {SUPPORTED_LOCALES.map((code) => (
-              <label class={LABEL} key={code}>
-                {code.toUpperCase()}
-                {field.kind === 'localizedText' ? (
-                  <input
-                    class={FIELD}
-                    value={texts[code] ?? ''}
-                    onInput={(event) => onChange({ ...texts, [code]: event.currentTarget.value })}
-                  />
-                ) : (
-                  <textarea
-                    rows={3}
-                    class={FIELD}
-                    value={texts[code] ?? ''}
-                    onInput={(event) => onChange({ ...texts, [code]: event.currentTarget.value })}
-                  />
-                )}
-              </label>
-            ))}
-          </fieldset>
+          <LocalizedControl
+            label={label}
+            multiline={field.kind !== 'localizedText'}
+            texts={(value ?? {}) as Partial<LocalizedText>}
+            locale={locale}
+            onChange={onChange}
+          />
         </Shell>
       );
-    }
     case 'number':
       return (
         <Shell error={error}>
