@@ -6,7 +6,7 @@ import { isLocale } from '@/domain/shared/locale';
 import { PATHS } from '@/domain/shared/paths';
 import { loadStoreContext } from '@/http/store-context';
 import { loadPageContent, loadSectionData } from '@/http/page-content';
-import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
+import { buildTitle, catalogOptionsFor, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
 import { themeToCss } from '@/ui/lib/theme-css';
 
 const { locale, slug } = Astro.params;
@@ -24,8 +24,8 @@ const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(s
 ---
 
 <StoreLayout
-  title={buildTitle(store, lang, page.title)}
-  description={page.title}
+  title={buildTitle(store, lang, page.seoTitle || page.title)}
+  description={metaDescription(store, lang, page.seoDescription)}
   locale={lang}
   storeName={store.general.storeName}
   currency={view.currency}

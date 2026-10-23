@@ -128,7 +128,7 @@ export default function AttributeManager(props: AttributeManagerProps) {
               <span class="font-semibold">
                 {item.name[locale] || item.name.es || item.name.en || item.code}
               </span>
-              <span class="text-text/60 ml-2 text-xs">{item.values.length}</span>
+              <span class="text-text/70 ml-2 text-xs">{item.values.length}</span>
             </span>
             <button type="button" class={LINK_BUTTON} onClick={() => edit(item)}>
               {labels.common.edit}

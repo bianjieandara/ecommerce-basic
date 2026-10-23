@@ -3,11 +3,10 @@
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import SectionRenderer from '@/ui/widgets/SectionRenderer.astro';
 import { isLocale } from '@/domain/shared/locale';
-import { pickText } from '@/domain/shared/localized-text';
 import { PATHS } from '@/domain/shared/paths';
 import { loadStoreContext } from '@/http/store-context';
 import { loadPageContent, loadSectionData } from '@/http/page-content';
-import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
+import { buildTitle, catalogOptionsFor, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
 import { homeStructuredData } from '@/ui/lib/storefront-seo';
 import { t } from '@/ui/i18n';
 import { themeToCss } from '@/ui/lib/theme-css';
@@ -32,8 +31,8 @@ const data = await loadSectionData(
 ---
 
 <StoreLayout
-  title={buildTitle(store, view.locale, '')}
-  description={pickText(store.seo.defaultDescription, view.locale, 'es') || store.general.storeName}
+  title={buildTitle(store, view.locale, page.seoTitle)}
+  description={metaDescription(store, view.locale, page.seoDescription)}
   locale={view.locale}
   storeName={store.general.storeName}
   currency={view.currency}
@@ -56,6 +55,8 @@ const data = await loadSectionData(
   contact={contact}
 >
   <div class="flex flex-col gap-12">
+    {/* The sections use h2 headings, so the page's one h1 is the store name, for screen readers and search engines. */}
+    <h1 class="sr-only">{store.general.storeName}</h1>
     <SectionRenderer
       sections={page.sections}
       data={data}

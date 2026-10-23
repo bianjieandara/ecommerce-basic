@@ -134,7 +134,7 @@ const category = product.categories[0];
     </div>
 
     <div class="flex flex-col gap-5">
-      <nav aria-label="breadcrumb" class="text-sm text-text/60">
+      <nav aria-label="breadcrumb" class="text-sm text-text/70">
         <a
           href={PATHS.shop(lang)}
           class="-my-3.5 inline-flex min-h-11 min-w-11 items-center justify-center underline"
@@ -167,7 +167,7 @@ const category = product.categories[0];
           locale={lang}
           country={view.country}
         />
-        <span class="text-sm text-text/60">{taxLabel}</span>
+        <span class="text-sm text-text/70">{taxLabel}</span>
       </div>
 
       <p class={`text-sm font-medium ${inStock ? 'text-emerald-800' : 'text-accent'}`}>
@@ -190,7 +190,7 @@ const category = product.categories[0];
                       selected?.id === variant.id
                         ? 'border-primary bg-primary-soft font-semibold'
                         : 'border-text/20',
-                      available ? '' : 'opacity-50 line-through',
+                      available ? '' : 'opacity-70 line-through',
                     ]}
                   >
                     {variant.variantLabel}

@@ -14,15 +14,15 @@ domain  <-  application  <-  infrastructure
 src/worker.ts (entrypoint): fetch -> Astro, queue -> job dispatcher, scheduled -> scheduler
 ```
 
-| Layer             | Path                    | May import                                               | Must not import                                                                            |
-| ----------------- | ----------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Domain            | `src/domain/`           | nothing outside `domain`                                 | application, infrastructure, http, ui, composition, Astro, Cloudflare, Preact, Stripe, zod |
-| Application       | `src/application/`      | `domain`, `zod`, `micromark`                             | infrastructure, http, ui, composition, Astro, Cloudflare, Preact, Stripe                   |
-| Infrastructure    | `src/infrastructure/`   | `domain`, `application`                                  | http, ui, composition                                                                      |
-| HTTP              | `src/http/`             | `application`, `domain`, `composition` types             | ui                                                                                         |
-| Composition       | `src/composition/`      | everything below it                                      | pages, ui                                                                                  |
-| UI and pages      | `src/ui/`, `src/pages/` | `domain`, `application` (types/DTOs), `ui`, `locals.app` | infrastructure, composition                                                                |
-| Client extensions | `clients/**`            | `domain`, `application`, `ui`                            | infrastructure, composition                                                                |
+| Layer             | Path                    | May import                                               | Must not import                                                                               |
+| ----------------- | ----------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Domain            | `src/domain/`           | nothing outside `domain`                                 | application, infrastructure, http, ui, composition, Astro, Cloudflare, Preact, dLocal Go, zod |
+| Application       | `src/application/`      | `domain`, `zod`, `micromark`                             | infrastructure, http, ui, composition, Astro, Cloudflare, Preact, dLocal Go                   |
+| Infrastructure    | `src/infrastructure/`   | `domain`, `application`                                  | http, ui, composition                                                                         |
+| HTTP              | `src/http/`             | `application`, `domain`, `composition` types             | ui                                                                                            |
+| Composition       | `src/composition/`      | everything below it                                      | pages, ui                                                                                     |
+| UI and pages      | `src/ui/`, `src/pages/` | `domain`, `application` (types/DTOs), `ui`, `locals.app` | infrastructure, composition                                                                   |
+| Client extensions | `clients/**`            | `domain`, `application`, `ui`                            | infrastructure, composition                                                                   |
 
 ESLint enforces these rules (`eslint.config.js`). A violation fails `npm run check`.
 

@@ -67,7 +67,7 @@ export default function CartDrawer(props: CartDrawerProps) {
                 <li class="flex items-start justify-between gap-3 text-sm">
                   <div>
                     <p class="font-medium">{line.name}</p>
-                    {line.variantLabel && <p class="text-text/60">{line.variantLabel}</p>}
+                    {line.variantLabel && <p class="text-text/70">{line.variantLabel}</p>}
                     <p>
                       {line.quantity} ×{' '}
                       {formatMoney(money(line.unitPriceMinor, props.currency), props.locale, props.country)}

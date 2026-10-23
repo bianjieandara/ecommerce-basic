@@ -33,6 +33,6 @@ const onSale = compareAtMinor !== null && compareAtMinor > amountMinor;
   {from && <span class="text-sm text-text/70">{locale === 'es' ? 'Desde' : 'From'}</span>}
   <span class="font-semibold text-text">{formatMoney(current, locale, country)}</span>
   {onSale && compareAtMinor !== null && (
-    <s class="text-sm text-text/60">{formatMoney(money(compareAtMinor, currency), locale, country)}</s>
+    <s class="text-sm text-text/70">{formatMoney(money(compareAtMinor, currency), locale, country)}</s>
   )}
 </p>

@@ -141,7 +141,7 @@ export default function CategoryManager(props: CategoryManagerProps) {
             style={{ paddingLeft: `${1 + depth * 1.25}rem` }}
           >
             <span class="mr-auto font-semibold">{nameOf(item) || '—'}</span>
-            {!item.isActive && <span class="text-text/60 text-xs">{labels.categories.inactive}</span>}
+            {!item.isActive && <span class="text-text/70 text-xs">{labels.categories.inactive}</span>}
             <button
               type="button"
               class={LINK_BUTTON}

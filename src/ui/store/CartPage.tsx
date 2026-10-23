@@ -157,7 +157,7 @@ export default function CartPage(props: CartPageProps) {
             <li class="border-text/10 flex gap-3 border-b pb-4">
               <div class="flex min-w-0 flex-1 flex-col gap-1">
                 <p class="font-medium">{line.name}</p>
-                {line.variantLabel && <p class="text-text/60 text-sm">{line.variantLabel}</p>}
+                {line.variantLabel && <p class="text-text/70 text-sm">{line.variantLabel}</p>}
                 <p class="text-sm">{fmt(line.unitPriceMinor)}</p>
               </div>
               <div class="flex flex-col items-end gap-2">

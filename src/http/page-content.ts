@@ -9,9 +9,13 @@ import { parseCatalogQuery, type CatalogOptions } from '@/domain/catalog/catalog
 import type { Locale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 
-/** Title and sections of a page, ready to render. */
+/** Title, search-engine text and sections of a page, ready to render. */
 export interface PageContent {
   title: string;
+  /** Title for search engines in the page language; empty when the owner wrote none. */
+  seoTitle: string;
+  /** Description for search engines in the page language; empty when the owner wrote none. */
+  seoDescription: string;
   sections: WidgetInstance[];
 }
 
@@ -55,12 +59,20 @@ export async function loadPageContent(
   const stored = await app.pages.findBySlug(slug);
   if (stored) {
     if (!stored.isPublished) return null;
-    return { title: pickText(stored.title, locale, 'es'), sections: stored.sections };
+    return {
+      title: pickText(stored.title, locale, 'es'),
+      // No fallback to the other language: a Spanish description on an English page is worse than the store default.
+      seoTitle: stored.seoTitle[locale] ?? '',
+      seoDescription: stored.seoDescription[locale] ?? '',
+      sections: stored.sections,
+    };
   }
   const fallback = DEFAULT_SYSTEM_PAGES.find((page) => page.slug === slug);
   if (!fallback) return null;
   return {
     title: pickText(fallback.title, locale, 'es'),
+    seoTitle: '',
+    seoDescription: '',
     sections: fallback.sections.map((section, index) => ({
       id: `${slug}-${index}`,
       type: section.type,

@@ -14,7 +14,7 @@ import { whatsappLink } from '@/ui/lib/whatsapp';
 import { themeToCss } from '@/ui/lib/theme-css';
 import { loadStoreContext } from '@/http/store-context';
 import { loadPageContent, loadSectionData } from '@/http/page-content';
-import { buildTitle, catalogOptionsFor, contactFor, storeViewFor } from '@/http/storefront';
+import { buildTitle, catalogOptionsFor, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
 
 const { locale } = Astro.params;
 if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
@@ -54,7 +54,8 @@ const formLabels = {
 ---
 
 <StoreLayout
-  title={buildTitle(store, lang, title)}
+  title={buildTitle(store, lang, page?.seoTitle || title)}
+  description={metaDescription(store, lang, page?.seoDescription ?? '')}
   locale={lang}
   storeName={store.general.storeName}
   currency={view.currency}
@@ -166,11 +167,11 @@ const formLabels = {
                   {review.author} · {review.rating}/5
                 </p>
                 <p>{review.text}</p>
-                <p class="text-text/60 text-xs">{review.relativeTime}</p>
+                <p class="text-text/70 text-xs">{review.relativeTime}</p>
               </li>
             ))}
           </ul>
-          <p class="text-text/60 text-xs">{t(lang, 'contact.googleAttribution')}</p>
+          <p class="text-text/70 text-xs">{t(lang, 'contact.googleAttribution')}</p>
           {reviews.mapsUri && (
             <a href={reviews.mapsUri} rel="noopener" class="text-sm underline">
               {t(lang, 'contact.writeReview')}

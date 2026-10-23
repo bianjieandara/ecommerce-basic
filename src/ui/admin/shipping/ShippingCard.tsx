@@ -64,7 +64,7 @@ function AmountField(props: {
           onInput={(event) => props.onInput(event.currentTarget.value)}
         />
       </label>
-      <p class="text-text/60 text-xs">{props.hint}</p>
+      <p class="text-text/70 text-xs">{props.hint}</p>
       {props.error && <p class={ERROR_TEXT}>{props.error}</p>}
     </div>
   );
@@ -127,7 +127,7 @@ export default function ShippingCard(props: ShippingCardProps) {
     <section class={PANEL} aria-label={title}>
       <header class="flex flex-wrap items-center justify-between gap-2">
         <h2 class="text-base font-semibold wrap-break-word">{title}</h2>
-        {!draft.isActive && <span class="text-text/60 text-xs">{labels.inactive}</span>}
+        {!draft.isActive && <span class="text-text/70 text-xs">{labels.inactive}</span>}
       </header>
       <form
         class="flex flex-col gap-4"
