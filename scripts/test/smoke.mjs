@@ -53,7 +53,8 @@ for (const lang of ['es', 'en']) {
   await get(`/${lang}/contact`);
   await get(`/${lang}/shop?q=tee`);
   await get(`/${lang}/shop?min=10&max=30&sort=price_asc`);
-  await get(`/${lang}/shop?page=999`, { expect: [200, 404] });
+  // A page past the last one sends the visitor to the last real page (see test:filters for the exact target).
+  await get(`/${lang}/shop?page=999`, { expect: 301 });
   await get(`/${lang}/products/no-such-product`, { expect: 404 });
   await get(`/${lang}/p/no-such-page`, { expect: 404 });
   await get(`/${lang}/no-such-route`, { expect: 404 });
@@ -99,7 +100,6 @@ const adminPages = [
   `/admin/orders/${ids.order}`,
   '/admin/invoices',
   `/admin/invoices/${ids.invoice}`,
-  '/admin/messages',
   '/admin/pages',
   `/admin/pages/${ids.page}`,
   '/admin/settings',

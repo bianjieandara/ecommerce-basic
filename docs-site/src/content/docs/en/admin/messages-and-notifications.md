@@ -1,26 +1,9 @@
 ---
 title: Messages and notifications
-description: Customer messages, the log of every email sent, and what to do when something fails.
+description: The log of everything the store sends, and what to do when something fails.
 sidebar:
   order: 7
 ---
-
-## Contact messages
-
-:::note
-The store's contact page has no form now: people write on WhatsApp or by email, and those messages do not pass through the admin.
-This list only fills up if the store gets a form again; until then it will be empty.
-:::
-
-Whatever someone writes in a contact form arrives under **Messages**, newest first. The dashboard shows how many are unread.
-
-![Contact messages](../../../../assets/screens/en/admin-messages.png)
-
-- **Reply by e-mail** opens your email program addressed to the person.
-- **Mark as read** removes the unread marker so the dashboard count stays honest.
-
-The visitor automatically receives a short "we got your message" reply, and the store's own address receives an alert, both in
-the language of the page they wrote from.
 
 ## The message log
 

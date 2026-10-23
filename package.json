@@ -23,6 +23,7 @@
     "deploy:all": "node scripts/deploy-all.mjs",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "docs:store": "node scripts/docs/store.mjs",
+    "test:all": "node scripts/test/all.mjs",
     "test:smoke": "node scripts/test/smoke.mjs",
     "test:webhooks": "node scripts/test/webhooks.mjs",
     "test:access": "node scripts/test/access.mjs",

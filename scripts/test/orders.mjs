@@ -39,6 +39,15 @@ const orderRow = (n) =>
 
 /** Waits for background jobs (invoice, notifications) to settle. */
 const settle = () => wait(3500);
+/** Polls until a condition holds (background jobs batch for up to 5 seconds), or the time is up. */
+async function until(condition, ms = 25000) {
+  const stop = Date.now() + ms;
+  while (Date.now() < stop) {
+    if (await condition()) return true;
+    await wait(500);
+  }
+  return Boolean(await condition());
+}
 
 // A product with plenty of stock for the run, and one with exactly one unit for the race.
 const VARIANT = 'var-bottle';
@@ -58,7 +67,7 @@ async function place(overrides = {}) {
     rateWindow = Date.now();
     placed = 1;
   }
-  return post('/api/checkout', {
+  const body = {
     locale: 'en',
     items: [{ variantId: VARIANT, quantity: 1 }],
     customer: { name: 'Orders Tester', email: EMAIL, phone: '+57 300 555 0142' },
@@ -71,7 +80,16 @@ async function place(overrides = {}) {
     attribution: {},
     turnstileToken: TURNSTILE_TEST_TOKEN,
     ...overrides,
-  });
+  };
+  let answer = await post('/api/checkout', body);
+  // Another test may have used the minute's form budget just before this one: wait the window out and try once more.
+  if (answer.status === 429) {
+    await wait(62000);
+    rateWindow = Date.now();
+    placed = 1;
+    answer = await post('/api/checkout', body);
+  }
+  return answer;
 }
 let placed = 0;
 const numberOf = (r) => Number(/orders\/(\d+)/.exec(r.json?.data?.orderPath ?? '')?.[1] ?? 0);
@@ -293,7 +311,11 @@ async function main() {
 
   const refundNumber = numberOf(await place());
   await status(refundNumber, 'paid');
-  await settle();
+  // The invoice is issued by a background job. A refund within a few seconds of the payment can come first; the job then finds a
+  // refunded order and issues nothing, so the sequence here is the realistic one: refund after the invoice exists.
+  await until(
+    () => one(`SELECT COUNT(*) AS n FROM invoices WHERE order_id = '${orderRow(refundNumber).id}'`).n === 1,
+  );
   check('refund a paid order', good(await status(refundNumber, 'refunded')));
   check('a refunded order cannot be shipped', refused(await status(refundNumber, 'shipped')));
 
@@ -381,10 +403,13 @@ async function main() {
 
   // =========================================================================================================== invoices
   console.log('invoices');
-  const numbers = sql('SELECT number FROM invoices ORDER BY number').map((r) => r.number);
+  // Only this run's invoices: the demo database may have gaps from earlier runs that deleted their test orders.
+  const numbers = sql(
+    `SELECT i.number FROM invoices i JOIN orders o ON o.id = i.order_id WHERE o.customer_email = '${EMAIL}' ORDER BY i.number`,
+  ).map((r) => r.number);
   check(
-    'invoice numbers have no gaps',
-    numbers.every((n, i) => i === 0 || n === numbers[i - 1] + 1),
+    'invoice numbers of this run are consecutive',
+    numbers.length > 1 && numbers.every((n, i) => i === 0 || n === numbers[i - 1] + 1),
     numbers.join(','),
   );
   check('resend an invoice', good(await admin(`/api/admin/invoices/${inv.id}/resend`, {})));
@@ -498,6 +523,14 @@ async function main() {
 
   // ============================================================================================= admin account management
   console.log('admin accounts');
+  // The store log still holds the links of earlier runs, so the one to use is the first that appears after this invitation.
+  const logTokens = () =>
+    [
+      ...readFileSync('.wrangler/docs-store.log', 'utf8').matchAll(
+        /accept-invite\?token=([A-Za-z0-9_-]{20,})/g,
+      ),
+    ].map((m) => m[1]);
+  const tokensBefore = new Set(logTokens());
   const invite = await admin('/api/admin/invites', {
     email: 'orders-test-invite@example.com',
     name: 'Invited Editor',
@@ -531,9 +564,9 @@ async function main() {
       }),
     ),
   );
-  await settle();
-  const log = readFileSync('.wrangler/docs-store.log', 'utf8');
-  const token = [...log.matchAll(/accept-invite\?token=([A-Za-z0-9_-]{20,})/g)].map((m) => m[1]).pop();
+  const newToken = () => logTokens().find((t) => !tokensBefore.has(t));
+  await until(() => Boolean(newToken()));
+  const token = newToken();
   check('the invitation email carries a one-time link', Boolean(token));
   const newUser = one(
     "SELECT id, is_active AS a, role FROM admin_users WHERE email = 'orders-test-invite@example.com'",

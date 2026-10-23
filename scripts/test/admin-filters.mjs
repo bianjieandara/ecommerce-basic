@@ -395,7 +395,8 @@ const movements = sql(
 const readMovements = (html) =>
   [
     ...html.matchAll(
-      /data-label="SKU">([^<]*)<\/td><td data-label="Change"><strong>([^<]*)<\/strong><\/td><td data-label="Stock after">(-?\d+)/g,
+      // By column position, not by label: the labels follow the admin's language, which another run may have switched.
+      /<td data-label="[^"]*">([^<]*)<\/td><td data-label="[^"]*"><strong>([^<]*)<\/strong><\/td><td data-label="[^"]*">(-?\d+)/g,
     ),
   ].map((m) => `${m[1]}|${m[2].replace('−', '-').replace('+', '')}|${m[3]}`);
 /** Compares one movement filter by the multiset of rows. */

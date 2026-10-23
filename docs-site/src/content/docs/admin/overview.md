@@ -30,7 +30,6 @@ La primera pantalla muestra cómo va la tienda ahora mismo.
 - **Hoy, Últimos 7 días, Últimos 30 días:** pedidos recibidos, pedidos pagados, ventas, impuestos y pedido promedio.
 - **Pedidos por preparar:** pedidos pagados que aún hay que preparar o enviar. Pulsa **Pedidos abiertos**.
 - **Agotados** y **Stock bajo:** productos que hay que reponer.
-- **Mensajes sin leer:** mensajes de contacto (la tienda no tiene formulario ahora, así que suele estar en cero).
 - **Mensajes fallidos** y **Trabajos fallidos:** correos o tareas que no salieron. Deberían estar en **0**; mira
   [Mensajes y notificaciones](/admin/messages-and-notifications/).
 - Un gráfico con las ventas de los últimos 14 días y los productos más vendidos.
@@ -42,7 +41,7 @@ En el celular las mismas tarjetas se apilan en una columna.
 ## El menú
 
 La barra superior tiene una entrada por área: **Productos, Categorías, Atributos, Multimedia, Inventario, Pedidos, Facturas,
-Mensajes, Registro de mensajes, Trabajos fallidos, Configuración, Páginas, Correos, Envíos, Testimonios, Usuarios, WhatsApp** y
+Registro de mensajes, Trabajos fallidos, Configuración, Páginas, Correos, Envíos, Testimonios, Usuarios, WhatsApp** y
 **Reportes**. Esta guía sigue el mismo orden.
 
 ## Roles: quién puede hacer qué

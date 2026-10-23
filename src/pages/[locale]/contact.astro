@@ -43,7 +43,10 @@ const candidates: (Card | null)[] = [
     ? {
         icon: 'chat',
         label: t(lang, 'contact.whatsApp'),
-        value: store.contact.whatsappNumber,
+        // Digits only are stored; a leading "+" makes them read as a phone number.
+        value: /^\d+$/.test(store.contact.whatsappNumber.trim())
+          ? `+${store.contact.whatsappNumber.trim()}`
+          : store.contact.whatsappNumber,
         href: whatsappHref,
         primary: true,
       }

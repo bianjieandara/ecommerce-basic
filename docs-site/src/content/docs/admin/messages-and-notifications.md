@@ -1,27 +1,9 @@
 ---
 title: Mensajes y notificaciones
-description: Mensajes de clientes, el registro de todo lo enviado y qué hacer cuando algo falla.
+description: El registro de todo lo que la tienda envía y qué hacer cuando algo falla.
 sidebar:
   order: 7
 ---
-
-## Mensajes de contacto
-
-:::note
-La página de contacto de la tienda no tiene formulario ahora: la gente escribe por WhatsApp o por correo, y esos mensajes no pasan
-por el panel. Esta lista solo se llena si la tienda vuelve a tener un formulario; hasta entonces estará vacía.
-:::
-
-Lo que alguien escriba en un formulario de contacto llega a **Mensajes**, el más reciente primero. El panel muestra cuántos están
-sin leer.
-
-![Mensajes de contacto](../../../assets/screens/es/admin-messages.png)
-
-- **Responder por correo** abre tu programa de correo dirigido a la persona (y **Responder por WhatsApp** si dejó su teléfono).
-- **Marcar como leído** quita la marca de «sin leer» para que el contador del panel sea honesto.
-
-La persona recibe automáticamente una respuesta breve de «recibimos tu mensaje», y el correo de la tienda recibe un aviso, ambos en
-el idioma de la página desde la que escribió.
 
 ## El registro de mensajes
 

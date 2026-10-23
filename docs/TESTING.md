@@ -25,11 +25,19 @@ client's accounts. A template release never has to wait for level 3 or 4.
 npm run check                 # types, ESLint, Prettier
 npm run build                 # production build into dist/
 npm run docs:store            # the demo store on http://localhost:4400 (leave it running)
-npm run docs:data             # in another terminal: products, pictures, home page, orders, messages
+npm run docs:data             # in another terminal: products, pictures, home page, orders
 npm run test:smoke            # about 2 minutes, 180+ checks
 npm run test:webhooks -- whatsapp-verify
 npm run test:access           # anonymous access to every admin route; an editor against owner-only screens
 npm run test:consent          # the Pixel stays off until the visitor accepts (needs Chrome)
+npm run test:crawl            # every link, image, script and tag on about 300 pages
+npm run test:filters          # every storefront filter, sort, page and count against the database
+npm run test:admin-filters    # the filters and searches of the admin lists
+npm run test:admin-actions    # every admin create, edit, delete, setting and email
+npm run test:flows            # cart, checkout, search and forms in Chrome
+npm run test:orders           # order lifecycle, stock, invoices, reports, accounts
+npm run test:keyboard         # keyboard, dialogs and focus rings in Chrome
+npm run test:all              # all of the above, one after the other (about 25 minutes)
 ```
 
 `docs:store` serves the production build with its own database in `.wrangler/docs-state`, so it never touches development data.
@@ -45,7 +53,7 @@ processes whose command line mentions `docs-state`.
 - every admin page with a session, and that every one of them refuses an anonymous visitor;
 - every email template page and its preview;
 - the checkout for all five payment methods (bank transfer, cash on delivery, WhatsApp, dLocal Go, PayPal), the private order
-  link (with and without its key), the contact form, cart validation;
+  link (with and without its key), the contact page, cart validation;
 - the three webhook endpoints refuse an unsigned call;
 - an order marked paid produces an invoice, and its PDF downloads only with the right key;
 - the sales report matches a direct count in the database, the CSV opens in Excel (UTF-8 BOM), and every product in the feed has
@@ -60,6 +68,43 @@ actions, and that a deactivated user, an expired session and a made-up token are
 **`npm run test:consent`** ([scripts/test/consent.mjs](../scripts/test/consent.mjs)) drives Chrome through the consent banner with a
 made-up Pixel id: nothing reaches Meta before a choice, "Only necessary" keeps the Pixel off, "Accept" loads it, and the choice
 persists. It restores the marketing settings afterwards.
+
+**`npm run test:crawl`** ([scripts/test/crawl.mjs](../scripts/test/crawl.mjs)) follows every internal link, image, stylesheet, script and
+language alternate from the home pages and from the admin (with the owner's session), about 300 pages. Per page: status, one `<title>`,
+one `<h1>`, a meta description (public pages), `alt` on every image, no duplicate ids, no empty links, `rel="noopener"` on new-tab links,
+canonical and `hreflang` tags. It only makes GET requests and never follows sign-out. Filter combinations are sampled, not all visited.
+
+**`npm run test:filters`** ([scripts/test/filters.mjs](../scripts/test/filters.mjs)) takes an independent snapshot of the catalog from
+the database, computes what each filter state must show, and compares it with the real pages in both languages and in each
+"out-of-stock products" mode (normal, last, hide): every sort, category, attribute value, two values of one attribute (OR) and of two
+attributes (AND), stock, sale and new flags, price ranges (also typed backwards), search words (with accents and upper case), 12
+seeded random combinations per language, the products on every page in order, the total, the facet counts, the live count API, the
+canonical redirects, nonsense in the URL, pages past the end, indexing rules, and that a draft product disappears everywhere.
+
+**`npm run test:admin-filters`** ([scripts/test/admin-filters.mjs](../scripts/test/admin-filters.mjs)) does the same for the admin
+lists (orders, products, inventory, invoices, stock movements) and checks that the log lists page correctly, including very long
+searches and `%` or `_` typed as text.
+
+**`npm run test:admin-actions`** ([scripts/test/admin-actions.mjs](../scripts/test/admin-actions.mjs)) runs every write action as the
+owner with valid input (and reads the effect back from the database and the storefront), invalid input, duplicates and "in use"
+cases: categories (parents, hiding, reorder, delete), attributes, products (draft, publish, edit with a stock change in the ledger,
+duplicate, archive), inventory (adjust, set, CSV preview and import, export), shipping (free-over thresholds, pickup is never charged),
+testimonials, pages (publish, SEO text, escaped scripts), every settings group, and email overrides with their preview.
+
+**`npm run test:flows`** ([scripts/test/flows.mjs](../scripts/test/flows.mjs)) drives Chrome as a shopper: product options, quantity,
+add to cart, the cart page, checkout validation and a real order, the order page and its key, the search overlay, the language
+switch, the contact page links, the back-in-stock form and the filter panel in the page itself. Its records are removed afterwards.
+
+**`npm run test:orders`** ([scripts/test/orders.mjs](../scripts/test/orders.mjs)) places orders (valid, invalid, price tampering, three
+buyers for the last unit), walks every status an owner can set and the ones that must be refused, checks the stock and ledger after
+each step, two identical changes at the same moment, the expiry job, invoices (numbers without gaps, the void rule), CSV exports for
+formula injection, every report with eight ranges, and the whole admin account flow: invite, accept with the emailed link, sign in,
+deactivate, promote, delete, and the last-owner protections. It paces itself around the form rate limit.
+
+**`npm run test:keyboard`** ([scripts/test/keyboard.mjs](../scripts/test/keyboard.mjs)) presses real keys in Chrome: the skip link is
+the first Tab stop, every Tab stop of six pages shows a focus ring, the search overlay and the cart drawer open from the keyboard,
+trap focus, close with Escape and give focus back, the cookie banner works from the keyboard, and the filter drawer opens and closes
+on a phone.
 
 **`npm run test:webhooks`** ([scripts/test/webhooks.mjs](../scripts/test/webhooks.mjs)) sends correctly signed and wrongly signed
 webhook calls to the demo store:
