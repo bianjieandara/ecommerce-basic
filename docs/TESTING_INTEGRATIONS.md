@@ -59,7 +59,9 @@ error, and dLocal Go retries every 10 minutes for up to 30 days.
   reused. The API allows 100 requests a minute per IP and endpoint (429 afterwards).
 
 **Not documented by dLocal Go:** test data for local methods (PIX, vouchers, bank transfer), a pending test card, a way to force a
-cancelled or expired payment, a dashboard button to resend a webhook, and idempotency keys (a duplicate `order_id` is error 5009).
+cancelled or expired payment, a dashboard button to resend a webhook, and idempotency keys (a duplicate `order_id` is refused with error
+5009). The store sends `<order number>-<first 8 characters of the order id>` as `order_id`, so a reused number (a reset database, two
+stores on one sandbox account) no longer clashes.
 
 | Symptom                                 | Likely cause                                                               |
 | --------------------------------------- | -------------------------------------------------------------------------- |
@@ -67,6 +69,23 @@ cancelled or expired payment, a dashboard button to resend a webhook, and idempo
 | Paid but the order stays pending        | The webhook did not arrive (no public URL) and the customer did not return |
 | Webhook answers 400 `INVALID_SIGNATURE` | Wrong secret key, or the body was changed before verification              |
 | 429 from dLocal Go                      | More than 100 requests a minute from one IP                                |
+
+### A payment for a cancelled order
+
+A customer can pay after the order was cancelled or expired. The store does not reopen it (its stock may be sold), logs
+`payment.late_for_cancelled_order`, and emails the store team (`payment_late_store`, to the order-notification address) so they can
+refund. This was run end to end against the dLocal Go sandbox:
+
+1. Place a card order. Before paying, cancel it in `/admin/orders/<number>`.
+2. Open the dLocal Go payment page (the redirect from checkout). Choose **Tarjeta**, then use `4111 1111 1111 1111`, any future expiry, any
+   CVV, any name, document type **CC** and any number. The card fields are hosted frames, so type into them with a real keyboard.
+   The page carries an invisible reCAPTCHA; a visible challenge has to be solved by a person.
+3. dLocal Go sends the buyer back to the store's configured public address (`PUBLIC_SITE_URL`), which on a local store is another host.
+   That is expected. Deliver the notification yourself: `npm run test:webhooks -- dlocalgo DP-<id>` (the id is in
+   `orders.payment_reference`).
+4. Expect: the order is still `cancelled`; the store log has `payment.late_for_cancelled_order`; one email "Payment received for a
+   cancelled order" went out (printed by the console transport). Run the same command again: no second email, because the alert is
+   keyed on the provider event.
 
 ## PayPal
 
@@ -222,9 +241,9 @@ stay off until it is set: use a current version (Meta's examples currently show 
 Settings > Marketing holds `metaPixelId`, `metaCapiEnabled`, `metaTestEventCode`, the consent banner mode and the feed options.
 The Conversions API token is the secret `META_CAPI_TOKEN`.
 
-> **Status.** Stage 19 (consent, tracking, Meta) was still being finished when this guide was written. The behaviour described
-> below is the one in the plan's "Done when". Where a step does not behave that way, that is a defect to fix in the template, not a
-> mistake in the test. Only the body shape, the hashing and the feed checks have been run against the code so far.
+> **Status.** The consent behaviour below is checked by `npm run test:consent` in a real browser: with a Pixel id set, nothing reaches
+> Meta before a choice, "Only necessary" keeps it off, "Accept" loads it (`consent=v1.m1`), and the choice survives navigation.
+> The browser-to-server deduplication and match quality need a real Pixel and are checked in Events Manager.
 
 **1. Consent (locally, no account)**
 
@@ -261,14 +280,20 @@ code. Hashes are sent only when the customer gave marketing consent at checkout.
 
 **4. The product feed**
 
-1. Locally: `npm run test:smoke` validates every item (see TESTING.md). Open `/feeds/products.xml?locale=en` to read it.
-2. Required fields in both Meta and Google: `g:id` (up to 50 characters), `g:title` (up to 150), `g:description` (up to 5000),
-   `g:link`, `g:image_link`, `g:availability` (`in_stock`, `out_of_stock`, `preorder`, `backorder`) and `g:price` as `12.00 USD`
-   ([Google spec](https://support.google.com/merchants/answer/7052112)). Variants share `g:item_group_id`.
+1. Locally: `npm run test:smoke` validates every item of both feeds (see TESTING.md). Open `/feeds/products.xml?locale=en` to read one.
+2. Required fields in both Meta and Google: an id (up to 50 characters), `title` (up to 150), `description` (up to 5000), `link`,
+   `g:image_link`, `g:availability` and `g:price` as `12.00 USD` ([Google spec](https://support.google.com/merchants/answer/7052112)).
+   In an RSS 2.0 feed `title`, `description` and `link` are plain tags and the rest carry the `g:` prefix, as the store writes them.
+   Variants share `g:item_group_id`.
+   **One URL per service, because they spell availability differently.** Meta wants `in stock` and `out of stock`; Google's
+   specification lists `in_stock`, `out_of_stock`, `preorder` and `backorder`. `/feeds/products.xml?locale=en` is the Meta feed (the
+   default) and `/feeds/products.xml?locale=en&target=google` is the Google feed. Whether Google also accepts the spaced form was not
+   confirmed from its pages, which is why its URL uses the spelling of its specification. Merchant Center's diagnostics still have the
+   last word.
 3. Meta accepts CSV, TSV, RSS XML and ATOM XML; a scheduled feed fetches at most once an hour. In Commerce Manager create a data
    source from the feed URL, then read Diagnostics: "fatal" items are not ingested, "warning" items miss a recommended field
    ([docs](https://developers.facebook.com/documentation/ads-commerce/catalog/guides/feed-api)).
-4. Google Merchant Center reads the same file; its Issue Details page lists problems per product.
+4. Google Merchant Center reads the `target=google` feed; its Issue Details page lists problems per product.
 
 **5. Analytics Engine (after deploy)**
 

@@ -25,6 +25,8 @@
     "docs:store": "node scripts/docs/store.mjs",
     "test:smoke": "node scripts/test/smoke.mjs",
     "test:webhooks": "node scripts/test/webhooks.mjs",
+    "test:access": "node scripts/test/access.mjs",
+    "test:consent": "node scripts/test/consent.mjs",
     "docs:data": "node scripts/docs/demo-data.mjs",
     "docs:screens": "node scripts/docs/screenshots.mjs",
     "docs:dev": "npm --prefix docs-site run dev",

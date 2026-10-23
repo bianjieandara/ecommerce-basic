@@ -343,40 +343,40 @@ record(
   `report ${csvOrders} orders / ${csvRevenue.toFixed(2)}; database ${direct.n} / ${(direct.total / 100).toFixed(2)}`,
 );
 
-// 12. Product feed (Meta Commerce Manager and Google Merchant Center): every item has the required fields in a valid shape.
-// In RSS 2.0 title, description and link are plain tags; the rest carry the g: prefix. Meta spells availability "in stock", Google's
-// specification "in_stock"; both are accepted here, and the guide says to read each service's diagnostics.
-const feed = await (await fetch(`${BASE}/feeds/products.xml?locale=en`)).text();
-const items = [...feed.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((match) => match[1]);
+// 12. Product feed (Meta Commerce Manager and Google Merchant Center): every item has the required fields in a valid shape, and
+// each target spells the availability the way its service expects ("in stock" for Meta, "in_stock" for Google). In RSS 2.0 title,
+// description and link are plain tags; the rest carry the g: prefix.
 const PLAIN = new Set(['title', 'description', 'link']);
 const field = (item, name) => {
   const tag = PLAIN.has(name) ? name : `g:${name}`;
   // [^] matches any character including a newline, so the text of a tag may span lines.
   return new RegExp(`<${tag}>([^]*?)</${tag}>`).exec(item)?.[1]?.trim() ?? '';
 };
-const problems = [];
-for (const item of items) {
-  for (const name of ['id', 'title', 'description', 'link', 'image_link', 'availability', 'price']) {
-    if (!field(item, name)) problems.push(`${field(item, 'id') || '?'} lacks g:${name}`);
+const SPELLINGS = { meta: ['in stock', 'out of stock'], google: ['in_stock', 'out_of_stock'] };
+for (const [target, allowed] of Object.entries(SPELLINGS)) {
+  const feed = await (await fetch(`${BASE}/feeds/products.xml?locale=en&target=${target}`)).text();
+  const items = [...feed.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((match) => match[1]);
+  const problems = [];
+  for (const item of items) {
+    const id = field(item, 'id') || '?';
+    for (const name of ['id', 'title', 'description', 'link', 'image_link', 'availability', 'price']) {
+      if (!field(item, name)) problems.push(`${id} lacks ${name}`);
+    }
+    if (!/^\d+\.\d{2} [A-Z]{3}$/.test(field(item, 'price'))) problems.push(`${id} price format`);
+    if (!allowed.includes(field(item, 'availability')))
+      problems.push(`${id} availability "${field(item, 'availability')}"`);
+    if (id.length > 50 || field(item, 'title').length > 150 || field(item, 'description').length > 5000) {
+      problems.push(`${id} length limit`);
+    }
   }
-  if (!/^\d+\.\d{2} [A-Z]{3}$/.test(field(item, 'price'))) problems.push(`${field(item, 'id')} price format`);
-  const availability = field(item, 'availability').replaceAll(' ', '_');
-  if (!['in_stock', 'out_of_stock', 'preorder', 'backorder', 'available_for_order'].includes(availability)) {
-    problems.push(`${field(item, 'id')} availability value`);
-  }
-  if (
-    field(item, 'id').length > 50 ||
-    field(item, 'title').length > 150 ||
-    field(item, 'description').length > 5000
-  ) {
-    problems.push(`${field(item, 'id')} length limit`);
-  }
+  record(
+    `product feed (${target}): ${items.length} items valid`,
+    items.length > 0 && problems.length === 0,
+    problems.slice(0, 3).join('; '),
+  );
 }
-record(
-  `product feed: ${items.length} items valid`,
-  items.length > 0 && problems.length === 0,
-  problems.slice(0, 3).join('; '),
-);
+const unknownTarget = await fetch(`${BASE}/feeds/products.xml?locale=en&target=other`);
+record('product feed refuses an unknown target', unknownTarget.status === 404, String(unknownTarget.status));
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\n${results.length - failed.length}/${results.length} passed`);

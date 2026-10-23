@@ -28,6 +28,8 @@ npm run docs:store            # the demo store on http://localhost:4400 (leave i
 npm run docs:data             # in another terminal: products, pictures, home page, orders, messages
 npm run test:smoke            # about 2 minutes, 180+ checks
 npm run test:webhooks -- whatsapp-verify
+npm run test:access           # anonymous access to every admin route; an editor against owner-only screens
+npm run test:consent          # the Pixel stays off until the visitor accepts (needs Chrome)
 ```
 
 `docs:store` serves the production build with its own database in `.wrangler/docs-state`, so it never touches development data.
@@ -50,6 +52,14 @@ processes whose command line mentions `docs-state`.
   the fields Meta and Google require, in the right shape.
 
 The form rate limit (10 requests a minute) is part of what it exercises, so the run includes a one-minute pause.
+
+**`npm run test:access`** ([scripts/test/access.mjs](../scripts/test/access.mjs)) calls every admin API route without a session (each
+must refuse), then, with temporary users, checks that an editor reaches the day-to-day screens but gets 403 on the owner-only ones and
+actions, and that a deactivated user, an expired session and a made-up token are refused. It removes its users afterwards.
+
+**`npm run test:consent`** ([scripts/test/consent.mjs](../scripts/test/consent.mjs)) drives Chrome through the consent banner with a
+made-up Pixel id: nothing reaches Meta before a choice, "Only necessary" keeps the Pixel off, "Accept" loads it, and the choice
+persists. It restores the marketing settings afterwards.
 
 **`npm run test:webhooks`** ([scripts/test/webhooks.mjs](../scripts/test/webhooks.mjs)) sends correctly signed and wrongly signed
 webhook calls to the demo store:
@@ -107,7 +117,7 @@ The plan's criteria mix what the code does with what an account allows. This tab
 | 18    | Invoice PDF arrives as a document                            | The invoice and its PDF exist and download            | An approved document template                    |
 | 18    | Delivery and read statuses update the log                    | `whatsapp-status` (forward-only, signature)           | Meta's own delivery callbacks                    |
 | 18    | Disabled or unapproved templates are skipped and logged      | Notification log shows "skipped" with the reason      | Nothing                                          |
-| 19    | Without consent no Meta request is made                      | Browser network panel on the demo store               | Nothing                                          |
+| 19    | Without consent no Meta request is made                      | `npm run test:consent` (real browser)                 | Nothing                                          |
 | 19    | With consent the Pixel fires; browser and server deduplicate | Body shape and hashing match Meta's examples          | A Pixel, a CAPI token, Test Events               |
 | 19    | Analytics Engine receives events                             | Not possible locally                                  | A deployed Worker, then the SQL API              |
 | 19    | The feed validates in Commerce Manager                       | Required fields and formats on every item             | A catalog in Commerce Manager                    |
