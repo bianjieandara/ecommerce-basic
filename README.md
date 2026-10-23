@@ -1,28 +1,50 @@
 # eBAQ ecommerce basic
 
-A multi-client online store template. Every client is a separate Cloudflare Worker with its own domain, data, admin, queue and
-analytics, all built from one codebase.
+A multi-client online store template for Cloudflare Workers. One codebase, many stores: every client gets its own Worker, domain,
+database, media bucket, job queue and analytics, so one client's data and outages never touch another's.
 
-## Overview
+Live demo: <https://ecommerce.relion-app.com/en/>
 
-- Storefront: catalog with filters, product variants, cart, checkout, invoices, content pages, reviews, WhatsApp and Meta
-  marketing (per client, optional), in Spanish and English.
-- Admin: products, media, inventory with a stock ledger, orders, invoices, messages, reports, page builder, settings, email
-  templates, users and background jobs.
-- Architecture: hexagonal (domain, application, infrastructure, HTTP, composition, UI). The layer rules are enforced by ESLint.
-  See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+## What is in the box
+
+**Storefront** (Spanish and English, mobile first)
+
+- Catalog with filters and search, product variants, gallery, reviews and stock alerts.
+- Cart, checkout and card payments through dLocal Go and PayPal; order tracking and PDF invoices.
+- Content pages built in the admin, contact form, SEO (sitemap, structured data, product feeds).
+
+**Admin**
+
+- Products, categories, attributes and media; inventory with a stock ledger.
+- Orders, invoices, customer messages, shipping, testimonials, dashboard and background-job monitor.
+- Page builder, settings, email templates, users and roles.
+
+**Platform**
+
+- Hexagonal architecture with the layer rules enforced by ESLint ([docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)).
+- Slow or external work (emails, PDFs, invoices, alerts) runs as a queued job with retries and a dead-letter queue.
+- Security headers (A+ on securityheaders.com), rate limits and Turnstile on public endpoints ([docs/SECURITY.md](./docs/SECURITY.md)).
+
+### Status
+
+Stages 0 to 17, 21 to 24 are done. Still open: WhatsApp Cloud API adapter (18), tracking, consent and Meta marketing (19), reports
+(20) and the multi-client provisioning polish (25). See [docs/PROGRESS.md](./docs/PROGRESS.md).
 
 ## Stack
 
-- Astro 7 in server mode on Cloudflare Workers, with a custom entrypoint (`src/worker.ts`) that adds queue and cron handlers.
-- Preact islands, Tailwind CSS v4, nanostores, zod v4, TypeScript (strict).
-- Cloudflare D1 (database), KV (cache), R2 (media), Queues (background jobs with a dead-letter queue), Email Service, Browser
-  Rendering (PDFs), Analytics Engine, Turnstile.
-- Payments: dLocal Go and PayPal. Messaging: Cloudflare Email Service, WhatsApp Cloud API.
+| Area      | Technology                                                                                                        |
+| --------- | ----------------------------------------------------------------------------------------------------------------- |
+| Runtime   | Astro 7 in server mode on Cloudflare Workers, custom entrypoint `src/worker.ts` (fetch, queue and cron handlers). |
+| UI        | Preact 11 islands, Tailwind CSS v4, nanostores, zod v4, TypeScript (strict).                                      |
+| Data      | Cloudflare D1 (database), KV (cache), R2 (media).                                                                 |
+| Jobs      | Cloudflare Queues with a dead-letter queue, plus a cron trigger.                                                  |
+| Platform  | Email Service, Browser Rendering (PDFs), Analytics Engine, Turnstile, Workers AI (optional helpers).              |
+| Payments  | dLocal Go and PayPal.                                                                                             |
+| Messaging | Cloudflare Email Service and the WhatsApp Cloud API.                                                              |
 
-## Local setup
+## Quick start
 
-Requirements: Node 22.23.4 or newer, and a Cloudflare login for the remote bindings.
+You need Node 22.23.4 or newer and a Cloudflare account (the dev server uses remote Browser Rendering and Analytics).
 
 ```sh
 npm install
@@ -34,7 +56,30 @@ npm run dev                      # http://localhost:4321
 ```
 
 `npm run dev` first runs `scripts/use-client.mjs`, which writes the root `wrangler.jsonc` for `CLIENT_SLUG` (default `demo`).
-Development uses remote Browser Rendering and Analytics SQL, so `astro dev` connects to Cloudflare when it starts. That is expected.
+`astro dev` connects to Cloudflare when it starts. That is expected.
+
+Before every commit run `npm run check` (types, ESLint, Prettier). Before a release also run `npm run build`.
+
+## Repository layout
+
+Counts are files tracked by git (810 files in 177 folders in total).
+
+```
+src/              607 files   the store itself
+  domain/          30         pure business rules, no framework imports
+  application/    175         use cases and ports
+  infrastructure/  78         D1, KV, R2, Queues, payments, email adapters
+  http/            20         endpoint helpers and request handling
+  composition/      9         wires adapters into use cases, one file per module
+  pages/          121         Astro routes: storefront, admin, API, feeds
+  ui/             171         components, islands, styles, i18n
+db/                 4         D1 migrations and seed data
+clients/            3         one folder per client (config and extensions)
+scripts/           14         client provisioning, deploy and docs tooling
+docs/              10         architecture, runbooks, decisions, plan
+docs-site/        152         separate Starlight site: the user guide
+public/             3         static assets
+```
 
 ## Scripts
 
@@ -52,24 +97,41 @@ Development uses remote Browser Rendering and Analytics SQL, so `astro dev` conn
 | `npm run client:secrets -- <slug>`            | Uploads `.secrets/<slug>.json` to the client's Worker.                                                                               |
 | `npm run deploy:client -- <slug> [--dry-run]` | Builds, creates missing queues, applies remote D1 migrations and deploys one client.                                                 |
 | `npm run deploy:all [-- --dry-run]`           | Deploys every client in `clients/` in turn and prints a summary. Exits 1 if any failed.                                              |
+| `npm run docs:dev` / `npm run docs:build`     | Runs or builds the user guide in `docs-site/` (port 4500).                                                                           |
 
-## Multi-client workflow
+## Adding and updating clients
 
-1. `npm run client:new -- <slug>`: resources and `clients/<slug>/client.jsonc`.
+1. `npm run client:new -- <slug>`: creates the client's resources and `clients/<slug>/client.jsonc`.
 2. Edit `client.jsonc` (domain, sender, payment mode, Turnstile key) and create `.secrets/<slug>.json`.
-3. `npm run client:secrets -- <slug>` and `npm run deploy:client -- <slug>`.
+3. `npm run client:secrets -- <slug>`, then `npm run deploy:client -- <slug>`.
 4. Open `/admin/setup` once and change `SETUP_TOKEN`.
-5. To update all clients: `git pull` and `npm run deploy:all`.
+5. To update every client: `git pull` and `npm run deploy:all`.
+
+Per-client behavior that differs from the template lives in `clients/<slug>/extensions/`, so the core stays shared.
 
 Secrets (`.secrets/`, `.dev.vars`) and generated files (`wrangler.jsonc`, `worker-configuration.d.ts`, `.astro/`) are gitignored
-and never committed. Every client's data and admin are separate; see the runbook for the full checklist.
+and never committed. [docs/NEW_CLIENT.md](./docs/NEW_CLIENT.md) has the full checklist.
 
-## Docs
+## Documentation
 
-- [docs/NEW_CLIENT.md](./docs/NEW_CLIENT.md): runbook for a new client, from provisioning to the first login, and capacity limits.
-- [docs/CUSTOMIZATION.md](./docs/CUSTOMIZATION.md): admin settings, client extensions, new adapters, and how to update clients.
-- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md): layers, dependency rules, and the main design rules.
-- [docs/JOBS.md](./docs/JOBS.md): background jobs, retries and the dead-letter queue.
-- [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md): the full plan, stage by stage.
-- [docs/DECISIONS.md](./docs/DECISIONS.md): decision log.
-- [docs/PROGRESS.md](./docs/PROGRESS.md): stage status.
+| Document                                                     | Read it for                                                        |
+| ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| [docs/NEW_CLIENT.md](./docs/NEW_CLIENT.md)                   | Runbook for a new client, from provisioning to first login.        |
+| [docs/CUSTOMIZATION.md](./docs/CUSTOMIZATION.md)             | Admin settings, client extensions, new adapters, updating clients. |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)               | Layers, dependency rules and the main design rules.                |
+| [docs/JOBS.md](./docs/JOBS.md)                               | Background jobs, retries and the dead-letter queue.                |
+| [docs/SECURITY.md](./docs/SECURITY.md)                       | Threats, protections and the checklist for new endpoints.          |
+| [docs/WHATSAPP.md](./docs/WHATSAPP.md)                       | Meta Cloud API setup and template approval.                        |
+| [docs/ANALYTICS.md](./docs/ANALYTICS.md)                     | Event shape, consent rules and Meta conversion events.             |
+| [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md) | The full plan, stage by stage.                                     |
+| [docs/DECISIONS.md](./docs/DECISIONS.md)                     | Decision log.                                                      |
+| [docs/PROGRESS.md](./docs/PROGRESS.md)                       | Stage status.                                                      |
+
+The end-user guide for store owners is a separate site in [docs-site/](./docs-site), run with `npm run docs:dev`.
+
+## Conventions
+
+- Everything is in English: code, comments and docs. User-visible text comes from `src/ui/i18n`.
+- Money is integer minor units (`*_minor`); tax rates are basis points. Never floats.
+- Pages change data only through use cases; every stock change goes through the inventory ledger.
+- Keep files under about 250 lines and search `src/` before adding a helper.

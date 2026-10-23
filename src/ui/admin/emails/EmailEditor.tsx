@@ -50,6 +50,7 @@ export default function EmailEditor(props: EmailEditorProps) {
 
   const url = `/api/admin/emails/${props.emailKey}`;
   const draft = drafts[lang];
+  const translate = { locale: props.locale, from: lang, onFill: updateDraft };
   const preview = useEmailPreview(
     `${url}/preview`,
     { locale: lang, subject: draft.subject, body: draft.body },
@@ -184,13 +185,7 @@ export default function EmailEditor(props: EmailEditorProps) {
               </span>
             )}
           </label>
-          <EmailFieldTranslate
-            locale={props.locale}
-            from={lang}
-            field="subject"
-            text={draft.subject}
-            onFill={updateDraft}
-          />
+          <EmailFieldTranslate {...translate} field="subject" text={draft.subject} />
           <label class={LABEL}>
             <span class="font-semibold">{labels.body}</span>
             <textarea
@@ -207,13 +202,7 @@ export default function EmailEditor(props: EmailEditorProps) {
               </span>
             )}
           </label>
-          <EmailFieldTranslate
-            locale={props.locale}
-            from={lang}
-            field="body"
-            text={draft.body}
-            onFill={updateDraft}
-          />
+          <EmailFieldTranslate {...translate} field="body" text={draft.body} />
         </section>
 
         <EmailInsertPanel

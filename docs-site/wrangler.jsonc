@@ -1,0 +1,11 @@
+// Static hosting for the user guide: serves the built Starlight site from dist/ at docs.relion-app.com.
+// Separate from the store's Worker config, which is generated per client.
+{
+  "name": "ecommerce-guide",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+  },
+  "routes": [{ "pattern": "docs.relion-app.com", "custom_domain": true }],
+}

@@ -6,6 +6,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
+  site: 'https://docs.relion-app.com',
   integrations: [
     starlight({
       title: { es: 'Guía de la tienda', en: 'Store guide' },

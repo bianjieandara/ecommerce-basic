@@ -1,5 +1,6 @@
 ---
-// Product tile for grids and carousels: image, status badges, name and price range.
+// Product tile for grids and carousels: a rounded tinted picture with the status badges and a price tag on it, then the
+// centred name and category.
 import Badge from '@/ui/components/Badge.astro';
 import Price from '@/ui/components/Price.astro';
 import { t } from '@/ui/i18n';
@@ -31,43 +32,58 @@ const srcset = product.imageVariants.length > 1 ? buildSrcSet(product.imageVaria
 const href = routes.product(view.locale, product.slug);
 ---
 
-<article class="group flex min-w-0 flex-col gap-2">
-  <a href={href} class="block overflow-hidden rounded-brand bg-surface" aria-hidden="true" tabindex="-1">
-    {product.imageKey ? (
-      <img
-        src={mediaUrl(product.imageKey)}
-        srcset={srcset}
-        sizes={srcset ? sizes : undefined}
-        alt=""
-        width="480"
-        height="480"
-        loading={eager ? 'eager' : 'lazy'}
-        fetchpriority={eager ? 'high' : undefined}
-        decoding="async"
-        class="aspect-square w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-      />
-    ) : (
-      <span class="flex aspect-square w-full items-center justify-center text-xs text-text/70">
-        {t(view.locale, 'product_page.noImage')}
-      </span>
-    )}
-  </a>
-  <div class="flex min-h-6 flex-wrap gap-1">
-    {product.isOnSale && <Badge tone="danger">{t(view.locale, 'product.onSale')}</Badge>}
-    {product.isNew && <Badge tone="success">{t(view.locale, 'product.new')}</Badge>}
-    {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}
-  </div>
-  <Heading class="text-sm font-medium leading-snug">
-    <a href={href} class="-my-3.5 inline-block py-3.5 hover:underline">
-      {product.name}
+<article class="group flex min-w-0 flex-col gap-3">
+  <div class="relative">
+    {/* The tint shows through the picture (multiply), so a white product shot takes on the pastel. */}
+    <a
+      href={href}
+      class="block overflow-hidden rounded-[1.75rem] bg-accent-soft"
+      aria-hidden="true"
+      tabindex="-1"
+    >
+      {product.imageKey ? (
+        <img
+          src={mediaUrl(product.imageKey)}
+          srcset={srcset}
+          sizes={srcset ? sizes : undefined}
+          alt=""
+          width="480"
+          height="480"
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : undefined}
+          decoding="async"
+          class="aspect-square w-full object-cover mix-blend-multiply transition duration-300 group-hover:scale-[1.03]"
+        />
+      ) : (
+        <span class="flex aspect-square w-full items-center justify-center text-xs text-text/70">
+          {t(view.locale, 'product_page.noImage')}
+        </span>
+      )}
     </a>
-  </Heading>
-  <Price
-    amountMinor={product.minPriceMinor}
-    compareAtMinor={product.compareAtPriceMinor}
-    currency={view.currency}
-    locale={view.locale}
-    country={view.country}
-    from={product.maxPriceMinor !== product.minPriceMinor}
-  />
+    <div class="absolute left-3 top-3 flex flex-wrap gap-1">
+      {product.isOnSale && <Badge tone="danger">{t(view.locale, 'product.onSale')}</Badge>}
+      {product.isNew && <Badge tone="success">{t(view.locale, 'product.new')}</Badge>}
+      {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}
+    </div>
+    {/* Price tag on the picture. pointer-events-none lets a tap reach the picture's link under it. */}
+    <div class="pointer-events-none absolute bottom-3 right-3 rounded-full bg-primary px-3 py-2 text-sm [&_s]:text-on-primary/70 [&_span]:text-on-primary">
+      <Price
+        amountMinor={product.minPriceMinor}
+        compareAtMinor={product.compareAtPriceMinor}
+        currency={view.currency}
+        locale={view.locale}
+        country={view.country}
+        from={product.maxPriceMinor !== product.minPriceMinor}
+        class="gap-x-2"
+      />
+    </div>
+  </div>
+  <div class="text-center">
+    <Heading class="text-sm font-medium leading-snug">
+      <a href={href} class="-my-3.5 inline-block py-3.5 hover:underline">
+        {product.name}
+      </a>
+    </Heading>
+    <p class="text-xs text-text/70">{product.categoryName}</p>
+  </div>
 </article>

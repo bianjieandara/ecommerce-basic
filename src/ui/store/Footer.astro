@@ -1,6 +1,6 @@
 ---
-// Store footer: the store's name and contact details, the main links, the legal links and the copyright. Three columns on a
-// laptop, stacked on a phone. Bottom padding leaves room for the mobile tab bar.
+// Store footer on an inverted (dark) surface: the store's name and contact details, the main links, the legal links and the
+// copyright. Three columns on a laptop, stacked on a phone. Bottom padding leaves room for the mobile tab bar.
 import { t } from '@/ui/i18n';
 import { routes } from '@/ui/lib/routes';
 import type { Locale } from '@/domain/shared/locale';
@@ -15,16 +15,17 @@ interface Props {
 
 const { storeName, locale, email = '', address = '' } = Astro.props;
 const year = new Date().getFullYear();
+// Text and background swap roles here, so links use the page background colour at reduced opacity.
 const link =
-  'inline-flex min-h-11 items-center text-sm text-text/80 underline-offset-4 hover:text-text hover:underline';
-const heading = 'text-xs font-semibold uppercase tracking-wider text-text/75';
+  'inline-flex min-h-11 items-center text-sm text-background/75 underline-offset-4 hover:text-background hover:underline';
+const heading = 'text-xs font-semibold uppercase tracking-wider text-background/75';
 ---
 
-<footer class="mt-20 border-t border-text/10 bg-surface pb-24 md:pb-10">
+<footer class="mt-20 bg-text pb-24 text-background md:pb-10">
   <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-[2fr_1fr_1fr]">
     <div class="flex flex-col gap-3">
       <p class="text-lg font-semibold tracking-tight">{storeName}</p>
-      {address && <p class="max-w-xs text-sm text-text/70">{address}</p>}
+      {address && <p class="max-w-xs text-sm text-background/70">{address}</p>}
       {email && (
         <a href={`mailto:${email}`} class={link}>
           {email}
@@ -54,8 +55,8 @@ const heading = 'text-xs font-semibold uppercase tracking-wider text-text/75';
       <ConsentSettingsLink client:idle label={t(locale, 'consent.settings')} />
     </nav>
   </div>
-  <div class="border-t border-text/10">
-    <p class="mx-auto max-w-6xl px-4 py-5 text-sm text-text/75">
+  <div class="border-t border-background/20">
+    <p class="mx-auto max-w-6xl px-4 py-5 text-sm text-background/75">
       © {year} {storeName}. {t(locale, 'footer.rights')}
     </p>
   </div>

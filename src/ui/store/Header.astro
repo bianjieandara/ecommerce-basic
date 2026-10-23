@@ -1,5 +1,6 @@
 ---
-// Sticky store header: logo, desktop navigation, search link, language switcher and the cart button with its count.
+// Store header: an optional announcement strip (it scrolls away), then the sticky bar with the logo, desktop navigation,
+// search link, language switcher and the cart button with its count.
 import Icon from '@/ui/components/Icon.astro';
 import CartBadge from './CartBadge.tsx';
 import SearchOverlay from './SearchOverlay.tsx';
@@ -11,13 +12,18 @@ interface Props {
   storeName: string;
   locale: Locale;
   alternates?: Partial<Record<Locale, string>>;
+  /** Text of the strip above the bar, in the page's language. Empty renders no strip. */
+  announcement?: string;
 }
 
-const { storeName, locale, alternates = {} } = Astro.props;
+const { storeName, locale, alternates = {}, announcement = '' } = Astro.props;
 const other: Locale = locale === 'es' ? 'en' : 'es';
 const otherHref = alternates[other] ?? (other === 'es' ? '/es/' : '/en/');
 ---
 
+{announcement && (
+  <p class="bg-primary px-4 py-2 text-center text-xs tracking-wide text-on-primary">{announcement}</p>
+)}
 <header class="sticky top-0 z-30 border-b border-text/10 bg-background/95 backdrop-blur">
   <div class="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
     <a href={routes.home(locale)} class="inline-flex min-h-11 items-center font-semibold tracking-tight">

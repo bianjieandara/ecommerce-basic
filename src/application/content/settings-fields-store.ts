@@ -34,6 +34,14 @@ export const storeFieldDefinitions = {
       max: 2,
     },
     timezone: { kind: 'text', label: bilingual('Zona horaria', 'Time zone'), required: true, max: 60 },
+    announcement: {
+      kind: 'localizedText',
+      label: bilingual(
+        'Aviso sobre el encabezado (vacío lo oculta)',
+        'Announcement above the header (empty hides it)',
+      ),
+      max: 120,
+    },
   },
   contact: {
     email: { kind: 'email', label: bilingual('Correo de contacto', 'Contact email'), max: 254 },
@@ -95,6 +103,7 @@ export const storeFieldDefinitions = {
       kind: 'select',
       label: bilingual('Tipografía', 'Typeface'),
       options: [
+        option('volt', 'Volt (Sora + Outfit)', 'Volt (Sora + Outfit)'),
         option('inter', 'Inter', 'Inter'),
         option('manrope', 'Manrope', 'Manrope'),
         option('playfair', 'Playfair Display', 'Playfair Display'),

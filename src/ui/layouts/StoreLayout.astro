@@ -28,7 +28,7 @@ interface Props {
   ogType?: 'website' | 'product';
   jsonLd?: JsonLd[];
   themeCss?: string;
-  fontPreset?: 'inter' | 'manrope' | 'playfair' | 'editorial';
+  fontPreset?: 'inter' | 'manrope' | 'playfair' | 'editorial' | 'volt';
   webAnalyticsToken?: string;
   currency?: CurrencyCode;
   country?: string;
@@ -64,7 +64,10 @@ const {
 // The marketing group is not in the page's store context. The settings table is read once per request, and the pages
 // have already read it, so this costs no extra query. Nothing here depends on the visitor's cookies: the page cache keys
 // on the path only, so the HTML must be the same for every visitor. The banner reads its choice in the browser.
-const marketing = await Astro.locals.app.settings.get('marketing');
+const [marketing, general] = await Promise.all([
+  Astro.locals.app.settings.get('marketing'),
+  Astro.locals.app.settings.get('general'),
+]);
 const marketingToolEnabled = isMarketingToolEnabled(marketing.metaPixelId, marketing.metaCapiEnabled);
 const consentLabels = {
   text: t(locale, 'consent.text'),
@@ -91,7 +94,12 @@ const consentLabels = {
   metaPixelId={marketing.metaPixelId}
   currency={currency}
 >
-  <Header storeName={storeName} locale={locale} alternates={alternates} />
+  <Header
+    storeName={storeName}
+    locale={locale}
+    alternates={alternates}
+    announcement={general.announcement[locale]}
+  />
   <main class="mx-auto min-h-[60dvh] max-w-6xl px-4 py-6">
     <slot />
   </main>

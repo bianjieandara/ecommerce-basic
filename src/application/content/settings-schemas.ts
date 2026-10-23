@@ -33,6 +33,8 @@ export const generalSettings = z.object({
   currency: z.enum(CURRENCY_CODES).default('USD'),
   country: z.string().length(2).default('CO'),
   timezone: z.string().min(1).max(60).default('America/Bogota'),
+  // One line shown in a strip above the header (a shipping offer, a sale). Empty hides the strip.
+  announcement: localized('', '', 120),
 });
 
 /** Contact details, the WhatsApp button, the map and the social links. */
@@ -74,11 +76,11 @@ export const contactSettings = z.object({
 export const themeSettings = z.object({
   colorPrimary: hexColor('#111111'),
   colorOnPrimary: hexColor('#ffffff'),
-  colorAccent: hexColor('#d62828'),
+  colorAccent: hexColor('#e03b2e'),
   colorBackground: hexColor('#ffffff'),
-  colorSurface: hexColor('#f5f5f5'),
+  colorSurface: hexColor('#f4f4f2'),
   colorText: hexColor('#111111'),
-  fontPreset: z.enum(['inter', 'manrope', 'playfair', 'editorial']).default('inter'),
+  fontPreset: z.enum(['inter', 'manrope', 'playfair', 'editorial', 'volt']).default('volt'),
   radius: z.enum(['none', 'sm', 'md', 'lg', 'full']).default('md'),
 });
 

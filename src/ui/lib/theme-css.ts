@@ -18,14 +18,16 @@ const FONT_VALUES: Record<SettingsMap['theme']['fontPreset'], string> = {
   manrope: "'Manrope Variable'",
   playfair: "'Playfair Display Variable'",
   editorial: "'Manrope Variable'",
+  volt: "'Outfit Variable'",
 };
 
-/** Font family of headings per preset. Only "editorial" pairs a different heading face with the body font. */
+/** Font family of headings per preset. Only "editorial" and "volt" pair a different heading face with the body font. */
 const DISPLAY_FONT_VALUES: Record<SettingsMap['theme']['fontPreset'], string> = {
   inter: FONT_VALUES.inter,
   manrope: FONT_VALUES.manrope,
   playfair: FONT_VALUES.playfair,
   editorial: "'Playfair Display Variable'",
+  volt: "'Sora Variable'",
 };
 
 /**
@@ -35,14 +37,18 @@ const DISPLAY_FONT_VALUES: Record<SettingsMap['theme']['fontPreset'], string> = 
  */
 export function themeToCss(theme: SettingsMap['theme']): string {
   const primary = sanitizeHex(theme.colorPrimary, '#111111');
+  const accent = sanitizeHex(theme.colorAccent, '#e03b2e');
+  const background = sanitizeHex(theme.colorBackground, '#ffffff');
   const declarations = [
     `--brand-primary:${primary}`,
     `--brand-on-primary:${sanitizeHex(theme.colorOnPrimary, '#ffffff')}`,
-    `--brand-accent:${sanitizeHex(theme.colorAccent, '#d62828')}`,
-    `--brand-background:${sanitizeHex(theme.colorBackground, '#ffffff')}`,
-    `--brand-surface:${sanitizeHex(theme.colorSurface, '#f5f5f5')}`,
+    `--brand-accent:${accent}`,
+    `--brand-background:${background}`,
+    `--brand-surface:${sanitizeHex(theme.colorSurface, '#f4f4f2')}`,
     `--brand-text:${sanitizeHex(theme.colorText, '#111111')}`,
     `--brand-primary-soft:color-mix(in srgb,${primary} 12%,white)`,
+    // The product card's image tile: a pastel of the accent over the page background.
+    `--brand-accent-soft:color-mix(in srgb,${accent} 20%,${background})`,
     `--brand-radius:${RADIUS_VALUES[theme.radius]}`,
     `--brand-font:${FONT_VALUES[theme.fontPreset]}`,
     `--brand-font-display:${DISPLAY_FONT_VALUES[theme.fontPreset]}`,
