@@ -21,13 +21,7 @@ if (!page) return Astro.rewrite('/404');
 
 const view = storeViewFor(store, locale as 'es' | 'en');
 const contact = contactFor(store, view.locale);
-const data = await loadSectionData(
-  app,
-  page.sections,
-  view.locale,
-  catalogOptionsFor(store),
-  store.catalog.newDays,
-);
+const data = await loadSectionData(app, page.sections, view.locale, catalogOptionsFor(store), store.catalog);
 ---
 
 <StoreLayout

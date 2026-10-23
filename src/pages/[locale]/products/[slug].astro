@@ -25,7 +25,7 @@ const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
-const catalog = app.catalog({ newDays: store.catalog.newDays });
+const catalog = app.catalog(store.catalog);
 const product = await catalog.getProductBySlug(lang, slug);
 if (!product) return Astro.rewrite('/404');
 const related = await catalog.listRelatedProducts(lang, product.id, 8);
@@ -42,6 +42,17 @@ const selected =
 const price = selected?.priceMinor ?? product.basePriceMinor;
 const compareAt = selected?.compareAtPriceMinor ?? product.compareAtPriceMinor;
 const inStock = selected !== null && selected.isActive && (!selected.trackInventory || selected.stock > 0);
+// How the stock is worded follows Settings > Catalog: never a number, a number only when few are left, or always.
+const { showStockOnProduct, lowStockDisplayThreshold } = store.catalog;
+const countable = selected !== null && selected.trackInventory && selected.stock > 0;
+const fewLeft = countable && selected.stock <= lowStockDisplayThreshold;
+const stockLabel = !inStock
+  ? t(lang, 'product.outOfStock')
+  : countable && showStockOnProduct !== 'never' && fewLeft
+    ? t(lang, 'product.onlyLeft', { count: selected.stock })
+    : countable && showStockOnProduct === 'always'
+      ? t(lang, 'product.unitsInStock', { count: selected.stock })
+      : t(lang, 'product.inStock');
 // Only tracked, active options with no stock take alerts: the same rule the subscription use case enforces.
 const outOfStock = selected !== null && selected.isActive && selected.trackInventory && selected.stock <= 0;
 // The settings are read only for an option that can take the form, so every other product view stays as cheap as before.
@@ -160,7 +171,7 @@ const category = product.categories[0];
       </nav>
 
       <header class="flex flex-col gap-2">
-        <h1 class="text-3xl md:text-4xl">{product.name}</h1>
+        <h1 class="text-2xl md:text-3xl">{product.name}</h1>
         <p class="text-lg text-text/70">{product.shortDescription}</p>
       </header>
 
@@ -171,7 +182,7 @@ const category = product.categories[0];
           currency={view.currency}
           locale={lang}
           country={view.country}
-          class="text-3xl"
+          class="text-2xl"
         />
         <span class="text-sm text-text/60">{taxLabel}</span>
       </div>
@@ -183,7 +194,7 @@ const category = product.categories[0];
           class={`size-2 rounded-full ${inStock ? 'bg-emerald-600' : 'bg-accent'}`}
           aria-hidden="true"
         ></span>
-        {inStock ? t(lang, 'product.inStock') : t(lang, 'product.outOfStock')}
+        {stockLabel}
       </p>
 
       {hasOptions && (

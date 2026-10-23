@@ -37,6 +37,7 @@ interface ValueRow {
  * @param query Normalized query.
  * @param valueAttribute Map from attribute value id to its attribute id.
  * @param cutoff Start of the "new" window.
+ * @param hideOutOfStock True when the store hides products that cannot be bought.
  * @returns The facets with their counts.
  */
 export async function loadFacets(
@@ -44,8 +45,9 @@ export async function loadFacets(
   query: CatalogQuery,
   valueAttribute: Map<string, string>,
   cutoff: string,
+  hideOutOfStock = false,
 ): Promise<FacetsDto> {
-  const base = (exclude: Exclusion[]) => buildWhere(query, valueAttribute, cutoff, exclude);
+  const base = (exclude: Exclusion[]) => buildWhere(query, valueAttribute, cutoff, exclude, hideOutOfStock);
   const categoryWhere = base(['category']);
   const priceWhere = base(['price']);
   const flagWhere = base(['stock', 'sale', 'new']);

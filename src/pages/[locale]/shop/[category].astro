@@ -17,7 +17,7 @@ const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
-const category = await app.catalog({ newDays: store.catalog.newDays }).getCategoryBySlug(lang, categorySlug);
+const category = await app.catalog(store.catalog).getCategoryBySlug(lang, categorySlug);
 if (!category) return Astro.rewrite('/404');
 
 const load = await loadCatalogPage(app, Astro.url, lang, categorySlug);
@@ -25,7 +25,7 @@ if ('redirectTo' in load) return Astro.redirect(load.redirectTo, 301);
 
 const view = storeViewFor(load.store, lang);
 const contact = contactFor(load.store, lang);
-const catalog = app.catalog({ newDays: load.store.catalog.newDays });
+const catalog = app.catalog(load.store.catalog);
 const categories = await catalog.listCategories(lang);
 // The language switch goes to the same category in the other language, whose slug differs.
 const slugs = await catalog.getCategoryAlternates(category.id);

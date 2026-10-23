@@ -1,6 +1,13 @@
 // Header search (Preact island). A button opens a dialog with a search box; after two letters it lists matching products. Without
 // JavaScript the header link still goes to the shop search, and pressing Enter here submits the same search form.
 import { useEffect, useRef, useState } from 'preact/hooks';
+import PreactIcon from '../components/PreactIcon';
+import {
+  SEARCH_BUTTON_CLASS,
+  SEARCH_FIELD_CLASS,
+  SEARCH_ICON_CLASS,
+  SEARCH_INPUT_CLASS,
+} from '@/ui/lib/search-field';
 
 /** Props of the search overlay. */
 export interface SearchOverlayProps {
@@ -64,27 +71,17 @@ export default function SearchOverlay(props: SearchOverlayProps) {
         aria-label={labels.open}
         onClick={() => dialog.current?.showModal()}
       >
-        <svg
-          viewBox="0 0 24 24"
-          width="22"
-          height="22"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </svg>
+        <PreactIcon name="search" size={22} />
       </button>
       <dialog
         ref={dialog}
-        class="bg-background text-text m-0 mt-0 w-full max-w-none p-4 backdrop:bg-black/40 sm:mx-auto sm:mt-12 sm:max-w-lg sm:rounded-lg"
+        class="bg-background text-text sm:rounded-card m-0 mt-0 w-full max-w-none p-4 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:max-w-xl sm:p-5"
         onClick={(event) => {
           if (event.target === dialog.current) dialog.current?.close();
         }}
       >
-        <form method="get" action={props.shopHref} class="flex items-center gap-2">
+        <form method="get" action={props.shopHref} class={SEARCH_FIELD_CLASS}>
+          <PreactIcon name="search" size={20} class={SEARCH_ICON_CLASS} />
           <input
             type="search"
             name="q"
@@ -92,23 +89,23 @@ export default function SearchOverlay(props: SearchOverlayProps) {
             placeholder={labels.placeholder}
             aria-label={labels.placeholder}
             autoComplete="off"
-            class="rounded-brand border-text/20 min-h-11 w-full border bg-white px-3"
+            class={SEARCH_INPUT_CLASS}
             onInput={(event) => setText(event.currentTarget.value)}
           />
           <button
             type="button"
-            class="min-h-11 min-w-11 shrink-0"
+            class={`${SEARCH_BUTTON_CLASS} bg-surface hover:bg-text hover:text-background`}
             aria-label={labels.close}
             onClick={() => dialog.current?.close()}
           >
-            ✕
+            <PreactIcon name="close" size={18} />
           </button>
         </form>
         {items.length > 0 && (
-          <ul class="mt-3 flex flex-col" role="listbox">
+          <ul class="mt-3 flex flex-col gap-0.5" role="listbox">
             {items.map((item) => (
               <li key={item.href}>
-                <a href={item.href} class="hover:bg-surface flex min-h-11 items-center rounded px-2">
+                <a href={item.href} class="hover:bg-surface flex min-h-12 items-center rounded-xl px-4">
                   {item.name}
                 </a>
               </li>

@@ -22,7 +22,7 @@ export const GET = defineEndpoint({
     const term = (context.url.searchParams.get('q') ?? '').trim();
     if (term.length < MIN_TERM_LENGTH) return { items: [] };
     const store = await loadStoreContext(app);
-    const rows = await app.catalog({ newDays: store.catalog.newDays }).suggest(locale, term, LIMIT);
+    const rows = await app.catalog(store.catalog).suggest(locale, term, LIMIT);
     return { items: rows.map((row) => ({ name: row.name, href: PATHS.product(locale, row.slug) })) };
   },
 });

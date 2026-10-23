@@ -54,6 +54,8 @@ export const es: Dictionary = {
   },
   product: {
     inStock: 'Disponible',
+    onlyLeft: 'Quedan solo {count}',
+    unitsInStock: '{count} disponibles',
     outOfStock: 'Agotado',
     lowStock: 'Solo quedan {count}',
     taxIncluded: 'IVA incluido',

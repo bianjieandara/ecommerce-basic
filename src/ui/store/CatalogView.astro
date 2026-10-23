@@ -10,6 +10,12 @@ import FilterPanel from './FilterPanel.astro';
 import Pagination from './Pagination.astro';
 import ProductCard from './ProductCard.astro';
 import { t } from '@/ui/i18n';
+import {
+  SEARCH_BUTTON_CLASS,
+  SEARCH_FIELD_CLASS,
+  SEARCH_ICON_CLASS,
+  SEARCH_INPUT_CLASS,
+} from '@/ui/lib/search-field';
 import type { CatalogOptions, CatalogQuery } from '@/domain/catalog/catalog-query';
 import { CATALOG_SORTS } from '@/domain/catalog/catalog-query';
 import type { CategoryDto, FacetsDto, ProductCardDto } from '@/application/dto/catalog-dto';
@@ -41,28 +47,24 @@ const activeFilters = [
 
 <section class="flex flex-col gap-10">
   <header class="flex flex-col gap-6">
-    <h1 class="text-3xl md:text-4xl">{title}</h1>
-    <form method="get" action={basePath} role="search" class="relative">
+    <h1 class="text-2xl md:text-3xl">{title}</h1>
+    <form method="get" action={basePath} role="search" class={SEARCH_FIELD_CLASS}>
       <label class="sr-only" for="catalog-search">
         {t(locale, 'shop.searchPlaceholder')}
       </label>
-      <Icon
-        name="search"
-        size={20}
-        class="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-text/50"
-      />
+      <Icon name="search" size={20} class={SEARCH_ICON_CLASS} />
       <input
         id="catalog-search"
         type="search"
         name="q"
         value={query.q ?? ''}
         placeholder={t(locale, 'shop.searchPlaceholder')}
-        class="min-h-14 w-full appearance-none rounded-full border border-text/15 bg-background pr-16 pl-12 text-base transition-colors hover:border-text/40 focus:border-text [&::-webkit-search-cancel-button]:appearance-none"
+        class={SEARCH_INPUT_CLASS}
       />
       {query.sort !== options.defaultSort && <input type="hidden" name="sort" value={query.sort} />}
       <button
         type="submit"
-        class="absolute top-1/2 right-1.5 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-on-primary transition hover:opacity-90"
+        class={`${SEARCH_BUTTON_CLASS} bg-primary text-on-primary hover:opacity-90`}
         aria-label={t(locale, 'nav.search')}
       >
         <Icon name="arrow-right" size={18} />

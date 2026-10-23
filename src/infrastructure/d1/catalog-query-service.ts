@@ -20,7 +20,7 @@ import { loadFacets } from './catalog-facets';
 import { cardImageKey } from './catalog-text';
 import { loadFeed } from './catalog-feed';
 import { loadSitemapCatalog } from './catalog-sitemap';
-import { buildWhere, newCutoff, orderByFor, type CatalogQueryOptions } from './catalog-filters';
+import { buildWhere, IN_STOCK_SQL, newCutoff, orderByFor, type CatalogQueryOptions } from './catalog-filters';
 import { loadProductBySlug } from './catalog-product-detail';
 import { loadCategoryAlternates, loadRelatedProductIds } from './catalog-related';
 import { toPrefixQuery } from './catalog-text';
@@ -40,6 +40,11 @@ export class D1CatalogQueryService implements CatalogQueryService {
     private readonly options: CatalogQueryOptions,
   ) {}
 
+  /** True when the store hides products that cannot be bought from its lists. */
+  private hidesOutOfStock(): boolean {
+    return this.options.showOutOfStock === 'hide';
+  }
+
   /**
    * Maps attribute value ids to their attribute ids (needed to group filters per attribute).
    * @param valueIds Value ids from the query.
@@ -57,13 +62,19 @@ export class D1CatalogQueryService implements CatalogQueryService {
 
   async listProducts(query: CatalogQuery, pageSize: number): Promise<Paginated<ProductCardDto>> {
     const cutoff = newCutoff(this.options);
-    const where = buildWhere(query, await this.valueAttributes(query.valueIds), cutoff);
+    const where = buildWhere(
+      query,
+      await this.valueAttributes(query.valueIds),
+      cutoff,
+      [],
+      this.hidesOutOfStock(),
+    );
     const offset = (query.page - 1) * pageSize;
     const rows = await queryAll<CardRow>(
       this.db,
       `${cardSelect(true)}
        WHERE ${where.sql}
-       ORDER BY ${orderByFor(query.sort)}
+       ORDER BY ${orderByFor(query.sort, this.options.showOutOfStock === 'last')}
        LIMIT ? OFFSET ?`,
       [query.locale, query.locale, ...where.params, pageSize, offset],
     );
@@ -77,7 +88,13 @@ export class D1CatalogQueryService implements CatalogQueryService {
   }
 
   async countProducts(query: CatalogQuery): Promise<number> {
-    const where = buildWhere(query, await this.valueAttributes(query.valueIds), newCutoff(this.options));
+    const where = buildWhere(
+      query,
+      await this.valueAttributes(query.valueIds),
+      newCutoff(this.options),
+      [],
+      this.hidesOutOfStock(),
+    );
     const row = await queryFirst<{ n: number }>(
       this.db,
       `SELECT COUNT(*) AS n FROM products p JOIN product_translations t ON t.product_id = p.id AND t.locale = ? WHERE ${where.sql}`,
@@ -87,7 +104,13 @@ export class D1CatalogQueryService implements CatalogQueryService {
   }
 
   async getFacets(query: CatalogQuery): Promise<FacetsDto> {
-    return loadFacets(this.db, query, await this.valueAttributes(query.valueIds), newCutoff(this.options));
+    return loadFacets(
+      this.db,
+      query,
+      await this.valueAttributes(query.valueIds),
+      newCutoff(this.options),
+      this.hidesOutOfStock(),
+    );
   }
 
   getProductBySlug(locale: Locale, slug: string): Promise<ProductDetailDto | null> {
@@ -153,7 +176,7 @@ export class D1CatalogQueryService implements CatalogQueryService {
        FROM product_search s
        JOIN product_translations t ON t.product_id = s.product_id AND t.locale = s.locale
        JOIN products p ON p.id = s.product_id
-       WHERE product_search MATCH ? AND s.locale = ? AND p.status = 'active'
+       WHERE product_search MATCH ? AND s.locale = ? AND p.status = 'active'${this.hidesOutOfStock() ? ` AND ${IN_STOCK_SQL}` : ''}
        LIMIT ?`,
       [prefix, locale, limit],
     );
@@ -177,7 +200,11 @@ export class D1CatalogQueryService implements CatalogQueryService {
   }
 
   async listRelatedProducts(locale: Locale, productId: string, limit: number): Promise<ProductCardDto[]> {
-    return this.listProductsByIds(locale, await loadRelatedProductIds(this.db, productId, locale, limit));
+    const cards = await this.listProductsByIds(
+      locale,
+      await loadRelatedProductIds(this.db, productId, locale, limit),
+    );
+    return this.hidesOutOfStock() ? cards.filter((card) => card.inStock) : cards;
   }
 
   getCategoryAlternates(categoryId: string): Promise<Partial<Record<Locale, string>>> {

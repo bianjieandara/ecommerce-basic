@@ -20,7 +20,7 @@ if (!page) return Astro.rewrite('/404');
 
 const view = storeViewFor(store, lang);
 const contact = contactFor(store, lang);
-const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(store), store.catalog.newDays);
+const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(store), store.catalog);
 ---
 
 <StoreLayout
@@ -39,7 +39,7 @@ const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(s
   contact={contact}
 >
   <div class="flex flex-col gap-10">
-    <h1 class="text-3xl md:text-4xl">{page.title}</h1>
+    <h1 class="text-2xl md:text-3xl">{page.title}</h1>
     <SectionRenderer
       sections={page.sections}
       data={data}

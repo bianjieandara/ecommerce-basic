@@ -244,7 +244,8 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     testimonials: new D1TestimonialRepository(env.DB),
     shipping: new D1ShippingMethodRepository(env.DB),
     media,
-    catalog: ({ newDays }) => new D1CatalogQueryService(env.DB, { newDays, now: () => clock.now() }),
+    catalog: ({ newDays, showOutOfStock }) =>
+      new D1CatalogQueryService(env.DB, { newDays, showOutOfStock, now: () => clock.now() }),
     failedJobs,
     jobQueue,
     jobs: new JobDispatcher({ failedJobs, handlers, log: logEvent }),

@@ -13,10 +13,22 @@ export interface Clause {
   params: SqlValue[];
 }
 
+/** What the storefront does with products that cannot be bought (Settings > Catalog). */
+export type ShowOutOfStock = 'last' | 'hide' | 'normal';
+
+/**
+ * A product can be bought: an active variant is untracked or has units. The one definition behind the "in stock only" filter, the
+ * facet counts and the out-of-stock setting.
+ */
+export const IN_STOCK_SQL =
+  'EXISTS (SELECT 1 FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1 AND (v.track_inventory = 0 OR v.stock > 0))';
+
 /** Options that come from store settings. */
 export interface CatalogQueryOptions {
   /** Products created within this many days show the "new" badge. */
   newDays: number;
+  /** Out-of-stock products at the end of a list, left out of it, or treated like any other. Defaults to "normal". */
+  showOutOfStock?: ShowOutOfStock;
   /** Current time, injected for tests and the new-products cutoff. */
   now: () => Date;
 }
@@ -36,6 +48,8 @@ export function newCutoff(options: CatalogQueryOptions): string {
  * @param valueAttribute Map from attribute value id to its attribute id.
  * @param cutoff Start of the "new" window, from newCutoff.
  * @param exclude Filters to leave out.
+ * @param hideOutOfStock True when the store hides products that cannot be bought. Unlike a filter it is never left out, so
+ * listings, counts and facets all agree.
  * @returns SQL fragment (always valid) and its parameters.
  */
 export function buildWhere(
@@ -43,10 +57,12 @@ export function buildWhere(
   valueAttribute: Map<string, string>,
   cutoff: string,
   exclude: Exclusion[] = [],
+  hideOutOfStock = false,
 ): Clause {
   const skip = (key: Exclusion) => exclude.some((item) => JSON.stringify(item) === JSON.stringify(key));
   const parts: string[] = ["p.status = 'active'"];
   const params: SqlValue[] = [];
+  if (hideOutOfStock) parts.push(IN_STOCK_SQL);
 
   if (query.q !== null && !skip('search')) {
     const prefix = toPrefixQuery(query.q);
@@ -91,11 +107,7 @@ export function buildWhere(
     parts.push('p.min_price_minor <= ?');
     params.push(query.maxPriceMinor);
   }
-  if (query.inStock && !skip('stock')) {
-    parts.push(
-      'EXISTS (SELECT 1 FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1 AND (v.track_inventory = 0 OR v.stock > 0))',
-    );
-  }
+  if (query.inStock && !skip('stock')) parts.push(IN_STOCK_SQL);
   if (query.onSale && !skip('sale')) parts.push('p.is_on_sale = 1');
   if (query.isNew && !skip('new')) {
     parts.push('p.created_at >= ?');
@@ -105,11 +117,11 @@ export function buildWhere(
 }
 
 /**
- * ORDER BY clause for a sort. Relevance falls back to newest, because FTS rank is not exposed here.
+ * ORDER BY clause of one sort, without the stock rule. Relevance falls back to newest, because FTS rank is not exposed here.
  * @param sort Sort name from the query.
  * @returns SQL ORDER BY expression.
  */
-export function orderByFor(sort: CatalogQuery['sort']): string {
+function sortSql(sort: CatalogQuery['sort']): string {
   switch (sort) {
     case 'price_asc':
       return 'p.min_price_minor ASC, p.id';
@@ -123,4 +135,15 @@ export function orderByFor(sort: CatalogQuery['sort']): string {
     case 'relevance':
       return 'p.created_at DESC, p.id';
   }
+}
+
+/**
+ * ORDER BY clause for a sort. With the "last" setting, products that cannot be bought come after the rest, in the same order.
+ * @param sort Sort name from the query.
+ * @param outOfStockLast True to put unavailable products last.
+ * @returns SQL ORDER BY expression.
+ */
+export function orderByFor(sort: CatalogQuery['sort'], outOfStockLast = false): string {
+  const order = sortSql(sort);
+  return outOfStockLast ? `CASE WHEN ${IN_STOCK_SQL} THEN 0 ELSE 1 END, ${order}` : order;
 }

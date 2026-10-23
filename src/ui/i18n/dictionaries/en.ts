@@ -53,6 +53,8 @@ export const en = {
   },
   product: {
     inStock: 'In stock',
+    onlyLeft: 'Only {count} left',
+    unitsInStock: '{count} in stock',
     outOfStock: 'Out of stock',
     lowStock: 'Only {count} left',
     taxIncluded: 'Tax included',

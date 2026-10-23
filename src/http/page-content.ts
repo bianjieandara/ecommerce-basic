@@ -88,7 +88,7 @@ export async function loadPageContent(
  * @param sections Page sections.
  * @param locale Page language.
  * @param options Catalog parsing options (currency exponent, default sort).
- * @param newDays "New" badge window from settings.
+ * @param catalog Catalog settings: the "new" badge window and what to do with out-of-stock products.
  * @returns Data keyed by section id.
  */
 export async function loadSectionData(
@@ -96,9 +96,9 @@ export async function loadSectionData(
   sections: WidgetInstance[],
   locale: Locale,
   options: CatalogOptions,
-  newDays: number,
+  catalog: { newDays: number; showOutOfStock: 'last' | 'hide' | 'normal' },
 ): Promise<SectionData> {
-  const service = app.catalog({ newDays });
+  const service = app.catalog(catalog);
   const enabled = sections.filter((section) => section.enabled);
   const needsCategories = enabled.some(
     (section) => section.type === 'category_grid' || section.type === 'featured_products',

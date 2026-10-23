@@ -16,7 +16,7 @@ export const GET = defineEndpoint({
     if (!isLocale(locale)) throw new DomainError('VALIDATION_FAILED', 'Unknown language');
     const store = await loadStoreContext(app);
     const query = parseCatalogQuery(context.url.searchParams, locale, catalogOptionsFor(store));
-    const count = await app.catalog({ newDays: store.catalog.newDays }).countProducts(query);
+    const count = await app.catalog(store.catalog).countProducts(query);
     return { count };
   },
 });

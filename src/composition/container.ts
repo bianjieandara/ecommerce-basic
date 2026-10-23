@@ -65,8 +65,8 @@ export interface Container {
   /** Cart quoting (server-side prices). newDays comes from the catalog settings. */
   quoteCart: (options: { newDays: number }) => QuoteCart;
   media: MediaStorage;
-  /** Storefront read model. `newDays` comes from the catalog settings ("new" badge window). */
-  catalog: (options: { newDays: number }) => CatalogQueryService;
+  /** Storefront read model. `newDays` and `showOutOfStock` come from the catalog settings. */
+  catalog: (options: { newDays: number; showOutOfStock?: 'last' | 'hide' | 'normal' }) => CatalogQueryService;
   failedJobs: FailedJobRepository;
   jobQueue: JobQueue;
   jobs: JobDispatcher;

@@ -72,11 +72,21 @@ export async function loadCatalogPage(
   const canonical = withSearch(basePath, catalogQueryToSearchParams(query, options));
   if (url.pathname + url.search !== canonical) return { redirectTo: canonical };
 
-  const service = app.catalog({ newDays: store.catalog.newDays });
+  const service = app.catalog(store.catalog);
   const [listing, facets] = await Promise.all([
     service.listProducts(query, store.catalog.pageSize),
     service.getFacets(query),
   ]);
+  // A page past the end would be an empty page that search engines could index, under a message that blames the filters. Send
+  // the visitor to the last page that exists instead.
+  if (query.page > listing.totalPages) {
+    return {
+      redirectTo: withSearch(
+        basePath,
+        catalogQueryToSearchParams({ ...query, page: listing.totalPages }, options),
+      ),
+    };
+  }
   return {
     query,
     options,

@@ -40,7 +40,9 @@ const path = coords
   .map((coord, index) => `${index === 0 ? 'M' : 'L'}${coord.x.toFixed(1)},${coord.y.toFixed(1)}`)
   .join(' ');
 // Gridlines at zero, half and the top of the scale, each with its value. The sparkline has none.
-const ticks = compact ? [] : [0, max / 2, max].map((value) => ({ value, y: yOf(value) }));
+// The middle tick is rounded: a half unit (for example 0.5 of a cent) cannot be formatted as money, and the chart shows
+// whole units anyway.
+const ticks = compact ? [] : [0, Math.round(max / 2), max].map((value) => ({ value, y: yOf(value) }));
 const showEnds = !compact && points.length > 1;
 ---
 
