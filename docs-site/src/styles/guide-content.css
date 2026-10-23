@@ -5,6 +5,16 @@
   line-height: var(--guide-leading-relaxed);
 }
 
+/* More air around the page: the title block and the body panel both get generous top and bottom padding, and the sidebar links a
+   roomier hit area. The side padding comes from --sl-content-pad-x. */
+.content-panel {
+  padding-block: var(--guide-pad-page-y);
+}
+
+.sidebar-content a {
+  padding: var(--guide-space-sm) var(--guide-space-md);
+}
+
 .sl-markdown-content > * + * {
   margin-top: var(--guide-space-xl);
 }
@@ -82,7 +92,7 @@
 .sl-markdown-content :is(th, td),
 .sl-markdown-content :is(th, td):first-child,
 .sl-markdown-content :is(th, td):last-child {
-  padding: var(--guide-space-lg) var(--guide-space-xl);
+  padding: var(--guide-space-xl) var(--guide-space-2xl);
   vertical-align: top;
 }
 
@@ -106,7 +116,7 @@
 /* Feature cards (Starlight's Card / CardGrid): the same rounded, hairline look as the role tiles, with the icon in a tinted square.
    A lone card on the last row spans the grid so it does not leave a hole. */
 .sl-markdown-content .card-grid {
-  gap: var(--guide-space-lg);
+  gap: var(--guide-space-xl);
 }
 
 .sl-markdown-content .card-grid > .card:last-child:nth-child(odd) {
@@ -114,7 +124,7 @@
 }
 
 .sl-markdown-content .card {
-  padding: var(--guide-space-xl) var(--guide-space-2xl);
+  padding: var(--guide-space-2xl) var(--guide-space-3xl);
   border-radius: var(--guide-radius-lg);
   border: var(--guide-border-width) solid var(--sl-color-hairline);
   background: var(--guide-card);
@@ -152,7 +162,7 @@
 
 /* Callouts (:::note) take the guide's neutral tint and red accent instead of Starlight's blue, and the cards' corner radius. */
 .sl-markdown-content .starlight-aside {
-  padding: var(--guide-space-lg) var(--guide-space-xl);
+  padding: var(--guide-space-xl) var(--guide-space-2xl);
   border-radius: var(--guide-radius-lg);
 }
 
@@ -196,7 +206,7 @@
   counter-increment: guide-step;
   position: relative;
   margin: 0 !important;
-  padding: var(--guide-space-lg) var(--guide-space-lg) var(--guide-space-lg) var(--guide-step-gutter);
+  padding: var(--guide-space-xl) var(--guide-space-xl) var(--guide-space-xl) var(--guide-step-gutter);
   min-height: var(--guide-step-min-height);
   background: var(--guide-card);
   border: var(--guide-border-width) solid var(--sl-color-hairline);
@@ -207,7 +217,7 @@
   content: counter(guide-step);
   position: absolute;
   inset-inline-start: var(--guide-step-inset);
-  top: var(--guide-space-md);
+  top: var(--guide-space-xl);
   width: var(--guide-step-size);
   height: var(--guide-step-size);
   border-radius: var(--guide-radius-pill);

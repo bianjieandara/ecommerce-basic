@@ -12,7 +12,12 @@ export default defineConfig({
       title: { es: 'Guía de la tienda', en: 'Store guide' },
       description:
         'Cómo funciona la tienda para quien compra, cómo la gestiona su equipo desde el panel y cómo un cliente consigue y lanza una.',
-      customCss: ['./src/styles/guide.css', './src/styles/guide-content.css', './src/styles/guide-home.css'],
+      customCss: [
+        './src/styles/guide.css',
+        './src/styles/guide-content.css',
+        './src/styles/guide-home.css',
+        './src/styles/guide-motion.css',
+      ],
       head: [
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true } },

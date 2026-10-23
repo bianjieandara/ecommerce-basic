@@ -1,0 +1,44 @@
+---
+// One way to reach the store on the contact page: an icon, a label and the value. With `href` the whole card is a single
+// link (email, phone, WhatsApp) and shows an arrow; without it the card is plain text (address, opening hours).
+import Icon from '@/ui/components/Icon.astro';
+import type { IconName } from '@/ui/components/icons';
+
+interface Props {
+  icon: IconName;
+  label: string;
+  value: string;
+  href?: string;
+  /** The main action of the page: a dark card instead of the light one. */
+  primary?: boolean;
+}
+
+const { icon, label, value, href, primary = false } = Astro.props;
+const Tag = href ? 'a' : 'div';
+const classes = [
+  'group relative flex min-h-36 flex-col justify-between gap-6 rounded-card p-5 md:min-h-40 md:p-6',
+  primary ? 'bg-primary text-on-primary' : 'bg-surface',
+  href ? 'transition hover:-translate-y-0.5 hover:shadow-lg' : '',
+].join(' ');
+---
+
+<Tag href={href} rel={href?.startsWith('http') ? 'noopener' : undefined} class={classes}>
+  <span class="flex items-start justify-between">
+    <span
+      class={`flex size-10 items-center justify-center rounded-full border ${primary ? 'border-on-primary/30' : 'border-text/15'}`}
+    >
+      <Icon name={icon} size={20} />
+    </span>
+    {href && (
+      <Icon
+        name="arrow-up-right"
+        size={22}
+        class="opacity-60 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
+      />
+    )}
+  </span>
+  <span class="flex min-w-0 flex-col gap-1.5">
+    <span class="text-xs font-medium tracking-[0.16em] uppercase opacity-65">{label}</span>
+    <span class="font-display text-lg font-semibold tracking-tight break-words md:text-xl">{value}</span>
+  </span>
+</Tag>

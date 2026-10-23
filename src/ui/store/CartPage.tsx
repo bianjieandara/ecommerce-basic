@@ -130,7 +130,7 @@ export default function CartPage(props: CartPageProps) {
   if (lines.length === 0) {
     return (
       <div class="flex flex-col items-center gap-6 py-20 text-center">
-        <p class="font-display text-2xl font-semibold tracking-tight md:text-3xl">{props.labels.empty}</p>
+        <p class="font-display text-2xl font-semibold tracking-tight md:text-2xl">{props.labels.empty}</p>
         <a
           href={props.continueHref}
           class="bg-primary text-on-primary inline-flex min-h-12 items-center rounded-full px-7 font-medium transition hover:opacity-90"

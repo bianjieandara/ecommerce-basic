@@ -1,0 +1,100 @@
+/* Motion for the guide: smooth in-page scrolling, soft hover and focus transitions, content that eases in, and a cross-fade between
+   pages that keeps the header and sidebar still. Everything moving sits behind prefers-reduced-motion. Tokens: guide.css. */
+
+/* Cross-document view transitions (Chromium and Safari; other browsers just navigate). The rule must be top level, so reduced
+   motion is honoured by switching the animations off below. */
+@view-transition {
+  navigation: auto;
+}
+
+header.header {
+  view-transition-name: guide-header;
+}
+
+.sidebar-pane {
+  view-transition-name: guide-sidebar;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--guide-duration-slow);
+    animation-timing-function: var(--guide-ease-out);
+  }
+
+  /* The page content eases up into place on every load. */
+  @keyframes guide-ease-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--guide-space-md));
+    }
+  }
+
+  .sl-markdown-content > * {
+    animation: guide-ease-in var(--guide-duration-slow) var(--guide-ease-out) backwards;
+  }
+
+  .sl-markdown-content > :nth-child(2) {
+    animation-delay: calc(var(--guide-duration) / 3);
+  }
+
+  .sl-markdown-content > :nth-child(3) {
+    animation-delay: calc(var(--guide-duration) / 3 * 2);
+  }
+
+  .sl-markdown-content > :nth-child(n + 4) {
+    animation-delay: var(--guide-duration);
+  }
+
+  /* Links, the sidebar, the table of contents and the table rows change colour softly instead of snapping. */
+  .sl-markdown-content a,
+  .sidebar-content a,
+  starlight-toc a,
+  .sl-markdown-content tbody tr {
+    transition:
+      color var(--guide-duration) var(--guide-ease),
+      background-color var(--guide-duration) var(--guide-ease),
+      text-decoration-color var(--guide-duration) var(--guide-ease);
+  }
+
+  .sl-markdown-content tbody tr:hover {
+    background-color: var(--sl-color-accent-low);
+  }
+
+  /* Feature cards and the previous/next links lift a little and pick up a red-tinted border and a soft shadow. */
+  .sl-markdown-content .card,
+  .pagination-links a {
+    transition:
+      transform var(--guide-duration-slow) var(--guide-ease-out),
+      box-shadow var(--guide-duration-slow) var(--guide-ease-out),
+      border-color var(--guide-duration-slow) var(--guide-ease-out);
+  }
+
+  .sl-markdown-content .card:hover,
+  .pagination-links a:hover {
+    transform: translateY(var(--guide-lift));
+    border-color: var(--guide-border-hover);
+    box-shadow: var(--guide-shadow-lift);
+  }
+
+  /* The screenshots zoom very slightly on hover, inside their own rounded frame. */
+  .sl-markdown-content img {
+    transition: box-shadow var(--guide-duration-slow) var(--guide-ease-out);
+  }
+
+  .sl-markdown-content img:hover {
+    box-shadow: var(--guide-shadow-lift);
+  }
+}

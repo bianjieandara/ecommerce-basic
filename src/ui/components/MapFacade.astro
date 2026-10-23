@@ -12,13 +12,17 @@ const { src, title, hint, openLabel } = Astro.props;
 
 {src && (
   <div
-    class="rounded-brand bg-surface flex min-h-56 flex-col items-center justify-center gap-3 p-4 text-center"
+    class="rounded-card bg-surface flex min-h-64 flex-col items-center justify-center gap-4 p-6 text-center"
     data-map-facade
     data-src={src}
     data-title={title}
   >
-    <p class="text-text/70 text-sm">{hint}</p>
-    <button type="button" class="rounded-brand border-text/20 min-h-11 border px-4" data-map-open>
+    <p class="text-text/70 max-w-sm text-sm">{hint}</p>
+    <button
+      type="button"
+      class="bg-primary text-on-primary min-h-12 rounded-full px-7 font-medium transition hover:opacity-90"
+      data-map-open
+    >
       {openLabel}
     </button>
   </div>
@@ -30,7 +34,7 @@ const { src, title, hint, openLabel } = Astro.props;
       const frame = document.createElement('iframe');
       frame.src = facade.dataset.src ?? '';
       frame.title = facade.dataset.title ?? '';
-      frame.className = 'h-80 w-full rounded-brand';
+      frame.className = 'h-96 w-full rounded-card';
       frame.loading = 'lazy';
       frame.referrerPolicy = 'no-referrer-when-downgrade';
       facade.replaceChildren(frame);

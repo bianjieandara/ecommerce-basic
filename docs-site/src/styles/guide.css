@@ -60,6 +60,9 @@
 
   /* Layout: reading column, table and tile minimums, and the guided-step cards (the mobile media query below narrows them). */
   --guide-content-width: 46rem;
+  --guide-pad-page-x: var(--guide-space-4xl);
+  --guide-pad-page-y: var(--guide-space-3xl);
+  --guide-pad-sidebar-x: var(--guide-space-xl);
   --guide-col-min: 11rem;
   --guide-tile-min-height: 15rem;
   --guide-step-size: 2.25rem;
@@ -67,15 +70,21 @@
   --guide-step-inset: var(--guide-space-lg);
   --guide-step-min-height: 3.5rem;
 
-  /* Motion. */
+  /* Motion (guide-motion.css) and the shadow and hover border that go with it. */
   --guide-duration: 0.15s;
+  --guide-duration-slow: 0.35s;
   --guide-ease: ease;
+  --guide-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --guide-lift: -0.125rem;
+  --guide-shadow-lift: 0 var(--guide-space-xs) var(--guide-space-xl) var(--guide-shadow-color);
+  --guide-border-hover: color-mix(in srgb, var(--guide-accent) 45%, var(--sl-color-hairline));
 
   /* Starlight's own tokens, fed from ours. */
   --sl-font: 'Inter', system-ui, sans-serif;
   --sl-color-bg-nav: var(--guide-primary);
   --sl-content-width: var(--guide-content-width);
+  --sl-content-pad-x: var(--guide-pad-page-x);
+  --sl-sidebar-pad-x: var(--guide-pad-sidebar-x);
   --sl-text-h1: var(--guide-text-h1);
   --sl-text-h2: var(--guide-text-h2);
   --sl-text-h3: var(--guide-text-h3);
@@ -88,6 +97,7 @@
     --guide-text-h1: 1.875rem;
     --guide-text-h2: 1.375rem;
     --guide-text-h3: 1.125rem;
+    --guide-pad-page-x: var(--guide-space-xl);
     --guide-step-size: 2rem;
     --guide-step-gutter: 3.5rem;
     --guide-step-inset: var(--guide-space-md);

@@ -11,7 +11,7 @@
   flex-direction: column;
   gap: var(--guide-space-sm);
   min-height: var(--guide-tile-min-height);
-  padding: var(--guide-space-xl);
+  padding: var(--guide-space-2xl);
   border-radius: var(--guide-radius-xl);
   border: var(--guide-border-width) solid var(--sl-color-hairline);
   background: var(--guide-card);
@@ -69,12 +69,12 @@
 @media (prefers-reduced-motion: no-preference) {
   .role-tile {
     transition:
-      transform var(--guide-duration) var(--guide-ease),
-      box-shadow var(--guide-duration) var(--guide-ease);
+      transform var(--guide-duration-slow) var(--guide-ease-out),
+      box-shadow var(--guide-duration-slow) var(--guide-ease-out);
   }
   .role-tile:hover {
     transform: translateY(var(--guide-lift));
-    box-shadow: 0 var(--guide-space-xs) var(--guide-space-xl) var(--guide-shadow-color);
+    box-shadow: var(--guide-shadow-lift);
   }
 }
 
