@@ -87,12 +87,17 @@ export async function withPageCache(
   const response = await render();
   if (!isCacheableResponse(response)) return withHeader(response, 'x-page-cache', 'BYPASS');
   const stored = response.clone();
+  // The edge keeps a page for PAGE_TTL_SECONDS (s-maxage), but browsers must ask again every time: a page without max-age gets
+  // Cloudflare's zone-wide Browser Cache TTL (4 hours by default), so an edit would stay invisible to returning visitors.
+  // A page that sets its own public policy (the sitemap) keeps it.
+  const own = response.headers.get('cache-control') ?? '';
+  const control = /public/i.test(own) ? own : `public, max-age=0, s-maxage=${PAGE_TTL_SECONDS}`;
   const headers = new Headers(stored.headers);
-  if (!/public/i.test(headers.get('cache-control') ?? '')) {
-    headers.set('cache-control', `public, s-maxage=${PAGE_TTL_SECONDS}`);
-  }
+  headers.set('cache-control', control);
   context.waitUntil(cache.put(key, new Response(stored.body, { status: 200, headers })));
-  return withHeader(response, 'x-page-cache', 'MISS');
+  const fresh = withHeader(response, 'x-page-cache', 'MISS');
+  fresh.headers.set('cache-control', control);
+  return fresh;
 }
 
 /**

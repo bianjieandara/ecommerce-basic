@@ -23,7 +23,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [ ] Stage 18 — WhatsApp Cloud API adapter and templates
 - [ ] Stage 19 — Tracking, consent and Meta marketing
 - [ ] Stage 20 — Reports
-- [ ] Stage 21 — Caching and performance (page cache, images, font and Lighthouse targets done; open: a HIT seen on a custom domain)
+- [x] Stage 21 — Caching and performance (HIT seen on ecommerce.relion-app.com; Lighthouse targets met locally; the browser max-age fix needs a deploy)
 - [x] Stage 22 — SEO and i18n polish
 - [x] Stage 23 — Security hardening and observability (securityheaders.com grade A+ on the public demo store, /en/)
 - [x] Stage 24 — Workers AI helpers (optional)
