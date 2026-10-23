@@ -1,5 +1,6 @@
 // Deploys one client: root wrangler.jsonc, build, queues (created only when missing), remote D1 migrations, then the Worker.
 // Usage: node scripts/deploy-client.mjs <slug> [--dry-run]   (--dry-run prints each command and runs nothing)
+import { closeSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { readClient, cloudflareEnv } from './lib/clients.mjs';
 import { createIfMissing, runStep } from './lib/run.mjs';
@@ -68,7 +69,42 @@ function queues(client, env, dryRun) {
   return { ok: true };
 }
 
-/** CLI entry. Exits 2 on a usage error and 1 when a step fails. */
+/**
+ * Path of the lock file that marks a deploy in progress. It sits in .wrangler/ (gitignored), so it never gets committed.
+ * Two deploys at once share dist/, and a build in the middle of another deploy removed its output, so only one may run.
+ */
+const LOCK_PATH = fileURLToPath(new URL('../.wrangler/deploy.lock', import.meta.url));
+
+/**
+ * Takes the deploy lock. The file is created exclusively, so two processes cannot both take it.
+ * @returns {boolean} True when the lock was taken; false when another deploy holds it.
+ */
+function takeLock() {
+  try {
+    const fd = openSync(LOCK_PATH, 'wx');
+    writeSync(fd, JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
+    closeSync(fd);
+    return true;
+  } catch (error) {
+    if (error.code === 'EEXIST') return false;
+    throw error;
+  }
+}
+
+/**
+ * Describes the deploy that holds the lock, for the message shown to the person who was blocked.
+ * @returns {string} Who holds the lock and when it started.
+ */
+function lockHolder() {
+  try {
+    const { pid, startedAt } = JSON.parse(readFileSync(LOCK_PATH, 'utf8'));
+    return `process ${pid}, started ${startedAt}`;
+  } catch {
+    return 'unknown process';
+  }
+}
+
+/** CLI entry. Exits 2 on a usage error, 1 when a step fails, and 3 when another deploy is in progress. */
 function main() {
   const args = process.argv.slice(2);
   const unknown = args.filter((arg) => arg.startsWith('--') && arg !== '--dry-run');
@@ -79,8 +115,18 @@ function main() {
     return;
   }
   const dryRun = args.includes('--dry-run');
-  deployClient(slug, { dryRun });
-  console.log(`\n[deploy-client] ${dryRun ? 'dry run finished, nothing was changed' : `deployed "${slug}"`}`);
+  if (!dryRun && !takeLock()) {
+    console.error(`[deploy-client] A deploy is in progress (${lockHolder()}). Wait for it to finish, then run this again.`);
+    console.error(`[deploy-client] If no deploy is running, delete ${LOCK_PATH} and run this again.`);
+    process.exitCode = 3;
+    return;
+  }
+  try {
+    deployClient(slug, { dryRun });
+    console.log(`\n[deploy-client] ${dryRun ? 'dry run finished, nothing was changed' : `deployed "${slug}"`}`);
+  } finally {
+    if (!dryRun) rmSync(LOCK_PATH, { force: true });
+  }
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
