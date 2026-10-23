@@ -1,13 +1,17 @@
 ---
-// Admin product list. Filters are query parameters, so the list works without JavaScript and a filtered view can be shared.
+// Admin product list, as a picture grid or as rows (the `view` parameter). Filters and the view are query parameters, so the list
+// works without JavaScript and a filtered view can be shared. Both views have a selection box per product; the bulk bar
+// (an island) publishes or unpublishes the selection.
 import AdminLayout from '@/ui/layouts/AdminLayout.astro';
-import DataTable from '@/ui/admin/DataTable.astro';
+import AdminCard from '@/ui/admin/AdminCard.astro';
 import ListToolbar from '@/ui/admin/ListToolbar.astro';
-import RowActions from '@/ui/admin/RowActions.tsx';
-import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import ProductBulkBar from '@/ui/admin/ProductBulkBar.tsx';
+import ProductListRow from '@/ui/admin/ProductListRow.astro';
+import ProductTile from '@/ui/admin/ProductTile.astro';
+import ViewSwitch from '@/ui/admin/ViewSwitch.astro';
 import { BUTTON_PRIMARY, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
-import { formatDate, formatMoney } from '@/domain/shared/format';
+import { formatMoney } from '@/domain/shared/format';
 import { categoryOptions, productFilterFrom } from '@/http/admin-catalog-page';
 import { listHref } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
@@ -25,6 +29,23 @@ const [result, categories] = await Promise.all([
   app.catalogAdmin.categories.list(),
 ]);
 const choices = categoryOptions(categories, lang);
+/** The grid is the default; any other value falls back to it. */
+const view = params.get('view') === 'rows' ? 'rows' : 'grid';
+const viewHref = (value: string) => {
+  const next = new URLSearchParams(params);
+  next.set('view', value);
+  next.delete('page');
+  return `${ADMIN_PATHS.products}?${next}`;
+};
+const priceOf = (amountMinor: number) =>
+  formatMoney({ amountMinor, currency: store.general.currency }, lang, store.general.country);
+const bulkLabels = {
+  selected: t(lang, 'admin.products.selected', { count: '{count}' }),
+  publish: t(lang, 'admin.products.bulkPublish'),
+  unpublish: t(lang, 'admin.products.bulkUnpublish'),
+  failed: t(lang, 'admin.products.bulkFailed'),
+  working: t(lang, 'admin.products.bulkWorking'),
+};
 const statusLabel = {
   draft: t(lang, 'admin.status.draft'),
   active: t(lang, 'admin.status.active'),
@@ -42,9 +63,19 @@ const rowLabels = {
 <AdminLayout title={t(lang, 'admin.products.title')} locale={lang} storeName={store.general.storeName}>
   <div class="flex flex-wrap items-center justify-between gap-3">
     <h1 class="text-2xl font-semibold">{t(lang, 'admin.products.title')}</h1>
-    <a href={`${ADMIN_PATHS.products}/new`} class={BUTTON_PRIMARY}>
-      {t(lang, 'admin.products.new')}
-    </a>
+    <div class="flex flex-wrap items-center gap-3">
+      <ViewSwitch
+        label={t(lang, 'admin.products.viewLabel')}
+        current={view}
+        options={[
+          { value: 'grid', label: t(lang, 'admin.products.viewGrid'), href: viewHref('grid') },
+          { value: 'rows', label: t(lang, 'admin.products.viewRows'), href: viewHref('rows') },
+        ]}
+      />
+      <a href={`${ADMIN_PATHS.products}/new`} class={BUTTON_PRIMARY}>
+        {t(lang, 'admin.products.new')}
+      </a>
+    </div>
   </div>
 
   <ListToolbar
@@ -57,6 +88,7 @@ const rowLabels = {
     }}
     clearHref={ADMIN_PATHS.products}
   >
+    <input type="hidden" name="view" value={view} />
     <label class={`${LABEL} sm:w-44`}>
       {t(lang, 'admin.products.status')}
       <select name="status" class={FIELD}>
@@ -95,50 +127,39 @@ const rowLabels = {
     </label>
   </ListToolbar>
 
-  <DataTable>
-    <thead>
-      <tr>
-        <th scope="col">{t(lang, 'admin.products.columnName')}</th>
-        <th scope="col">{t(lang, 'admin.products.columnStatus')}</th>
-        <th scope="col">{t(lang, 'admin.products.columnPrice')}</th>
-        <th scope="col">{t(lang, 'admin.products.columnStock')}</th>
-        <th scope="col">{t(lang, 'admin.products.columnVariants')}</th>
-        <th scope="col">{t(lang, 'admin.products.columnUpdated')}</th>
-        <th scope="col">
-          <span class="sr-only">{t(lang, 'admin.products.edit')}</span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {result.items.map((row) => (
-        <tr>
-          <td data-label={t(lang, 'admin.products.columnName')}>
-            <a href={`${ADMIN_PATHS.products}/${row.id}`} class={LINK_BUTTON}>
-              {row.name || '—'}
-            </a>
-          </td>
-          <td data-label={t(lang, 'admin.products.columnStatus')}>
-            <StatusBadge label={statusLabel[row.status]} tone={row.status === 'active' ? 'ok' : 'muted'} />
-          </td>
-          <td data-label={t(lang, 'admin.products.columnPrice')}>
-            {formatMoney(
-              { amountMinor: row.basePriceMinor, currency: store.general.currency },
-              lang,
-              store.general.country,
-            )}
-          </td>
-          <td data-label={t(lang, 'admin.products.columnStock')}>{row.stock}</td>
-          <td data-label={t(lang, 'admin.products.columnVariants')}>{row.variantCount}</td>
-          <td data-label={t(lang, 'admin.products.columnUpdated')}>
-            {formatDate(row.updatedAt, lang, store.general.country, store.general.timezone)}
-          </td>
-          <td>
-            <RowActions client:visible productId={row.id} status={row.status} labels={rowLabels} />
-          </td>
-        </tr>
+  {result.items.length > 0 && view === 'grid' && (
+    <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
+      {result.items.map((product) => (
+        <li class="contents">
+          <ProductTile
+            product={product}
+            price={priceOf(product.basePriceMinor)}
+            statusLabel={statusLabel[product.status]}
+            stockLabel={`${t(lang, 'admin.products.columnStock')}: ${product.stock}`}
+            selectLabel={t(lang, 'admin.products.selectRow', { name: product.name })}
+          />
+        </li>
       ))}
-    </tbody>
-  </DataTable>
+    </ul>
+  )}
+  {result.items.length > 0 && view === 'rows' && (
+    <AdminCard title={t(lang, 'admin.products.title')} bleed>
+      <ul class="divide-y divide-text/10">
+        {result.items.map((product) => (
+          <ProductListRow
+            product={product}
+            price={priceOf(product.basePriceMinor)}
+            statusLabel={statusLabel[product.status]}
+            stockLabel={`${t(lang, 'admin.products.columnStock')}: ${product.stock}`}
+            variantsLabel={`${t(lang, 'admin.products.columnVariants')}: ${product.variantCount}`}
+            selectLabel={t(lang, 'admin.products.selectRow', { name: product.name })}
+            actionLabels={rowLabels}
+          />
+        ))}
+      </ul>
+    </AdminCard>
+  )}
+  <ProductBulkBar client:idle labels={bulkLabels} />
 
   {result.items.length === 0 && <p class="text-sm text-text/70">{t(lang, 'admin.products.empty')}</p>}
 

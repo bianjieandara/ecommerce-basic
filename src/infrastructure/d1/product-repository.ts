@@ -114,6 +114,23 @@ export class D1ProductRepository implements ProductRepository {
   }
 
   /**
+   * Changes the status of several products in one statement. The ids come back from the write itself (RETURNING), so an id
+   * that does not exist is simply absent from the answer.
+   * @param ids Product ids.
+   * @param status New status.
+   * @param nowIso Time of the change.
+   * @returns The ids that were changed.
+   */
+  async setStatusMany(ids: readonly string[], status: ProductStatus, nowIso: string): Promise<string[]> {
+    const rows = await queryAll<{ id: string }>(
+      this.db,
+      `UPDATE products SET status = ?, updated_at = ? WHERE id IN (SELECT value FROM json_each(?)) RETURNING id`,
+      [status, nowIso, JSON.stringify(ids)],
+    );
+    return rows.map((row) => row.id);
+  }
+
+  /**
    * Deletes a product that has never had stock movements. Products with history are archived instead.
    * @param id Product id.
    * @throws DomainError CONFLICT when the product has stock history.

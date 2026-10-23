@@ -1,0 +1,33 @@
+---
+// A product's first picture, or its initial on a tinted tile when it has none. `tile` is the large square of the grid; the
+// default is the 40 px square of a row. The picture itself is decorative: the product's name is next to it.
+import { mediaUrl } from '@/ui/lib/media-url';
+
+interface Props {
+  imageKey: string | null;
+  name: string;
+  tile?: boolean;
+}
+
+const { imageKey, name, tile = false } = Astro.props;
+const box = tile ? 'aspect-square w-full rounded-card text-6xl' : 'size-10 rounded-lg text-base';
+---
+
+{imageKey ? (
+  <img
+    src={mediaUrl(imageKey)}
+    alt=""
+    width={tile ? 480 : 80}
+    height={tile ? 480 : 80}
+    loading="lazy"
+    decoding="async"
+    class={`${box} shrink-0 bg-accent-soft object-cover`}
+  />
+) : (
+  <span
+    class={`${box} flex shrink-0 items-center justify-center bg-accent-soft font-display font-semibold text-text/25`}
+    aria-hidden="true"
+  >
+    {name.charAt(0).toUpperCase()}
+  </span>
+)}

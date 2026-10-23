@@ -58,5 +58,7 @@ export interface ProductRepository {
   save(product: Product, context: ProductSaveContext): Promise<StockChange[]>;
   /** Changes only the status, so a quick toggle never rewrites stock. */
   setStatus(id: string, status: ProductStatus, nowIso: string): Promise<void>;
+  /** Changes the status of several products in one write. Returns the ids that exist and were changed. */
+  setStatusMany(ids: readonly string[], status: ProductStatus, nowIso: string): Promise<string[]>;
   delete(id: string): Promise<void>;
 }

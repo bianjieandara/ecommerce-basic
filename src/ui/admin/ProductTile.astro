@@ -1,0 +1,45 @@
+---
+// One product as a picture card for the grid view: the picture with a selection box on it, then the name, price, status and
+// stock. The checkbox carries `data-bulk-id`, which the bulk bar reads.
+import ProductThumb from './ProductThumb.astro';
+import StatusBadge from './StatusBadge.astro';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import type { AdminProductRow } from '@/application/ports/catalog-admin';
+
+interface Props {
+  product: AdminProductRow;
+  price: string;
+  statusLabel: string;
+  stockLabel: string;
+  selectLabel: string;
+}
+
+const { product, price, statusLabel, stockLabel, selectLabel } = Astro.props;
+---
+
+<article class="relative flex min-w-0 flex-col gap-3 rounded-card border border-text/10 bg-background p-3">
+  <div class="relative">
+    <a href={`${ADMIN_PATHS.products}/${product.id}`} tabindex="-1" aria-hidden="true">
+      <ProductThumb imageKey={product.imageKey} name={product.name} tile />
+    </a>
+    <input
+      type="checkbox"
+      data-bulk-id={product.id}
+      aria-label={selectLabel}
+      class="absolute top-3 left-3 size-6 cursor-pointer rounded-md border-text/30 accent-primary"
+    />
+  </div>
+  <div class="flex min-w-0 flex-col gap-1 px-1 pb-1">
+    <a
+      href={`${ADMIN_PATHS.products}/${product.id}`}
+      class="inline-flex min-h-11 items-center font-semibold wrap-break-word hover:underline"
+    >
+      {product.name || '—'}
+    </a>
+    <div class="flex items-center justify-between gap-2 text-sm">
+      <span class="tabular-nums text-text/70">{price}</span>
+      <StatusBadge label={statusLabel} tone={product.status === 'active' ? 'ok' : 'muted'} />
+    </div>
+    <p class="text-xs text-text/60">{stockLabel}</p>
+  </div>
+</article>

@@ -21,6 +21,7 @@ interface ListRow {
   stock: number;
   variant_count: number;
   image_media_id: string | null;
+  image_variants_json: string | null;
   updated_at: string;
 }
 
@@ -74,7 +75,9 @@ export class D1AdminCatalogQueries implements AdminCatalogQueries {
          ${PRODUCT_NAME_SQL} AS name,
          (SELECT COALESCE(SUM(v.stock), 0) FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1) AS stock,
          (SELECT COUNT(*) FROM product_variants v WHERE v.product_id = p.id AND v.is_active = 1) AS variant_count,
-         (SELECT i.media_id FROM product_images i WHERE i.product_id = p.id ORDER BY i.position LIMIT 1) AS image_media_id
+         (SELECT i.media_id FROM product_images i WHERE i.product_id = p.id ORDER BY i.position LIMIT 1) AS image_media_id,
+         (SELECT m.variants_json FROM product_images i JOIN media_assets m ON m.id = i.media_id
+           WHERE i.product_id = p.id ORDER BY i.position LIMIT 1) AS image_variants_json
        FROM products p ${clause}
        ORDER BY p.updated_at DESC, p.id LIMIT ? OFFSET ?`,
       [locale, ...params, filter.pageSize, (filter.page - 1) * filter.pageSize],
@@ -99,6 +102,28 @@ function toRow(row: ListRow): AdminProductRow {
     stock: row.stock,
     variantCount: row.variant_count,
     imageMediaId: row.image_media_id,
+    imageKey: listImageKey(row.image_variants_json),
     updatedAt: row.updated_at,
   };
+}
+
+/** Width the list asks for: the grid tiles are about 240 px wide, so 480 covers a sharp screen. */
+const LIST_IMAGE_WIDTH = 480;
+
+/**
+ * Picks the stored size closest to what the list shows.
+ * @param json variants_json of the media asset, or null without a picture.
+ * @returns The storage key, or null when there is no usable variant.
+ */
+function listImageKey(json: string | null): string | null {
+  if (!json) return null;
+  try {
+    const variants = JSON.parse(json) as { width: number; key: string }[];
+    const best = [...variants].sort(
+      (a, b) => Math.abs(a.width - LIST_IMAGE_WIDTH) - Math.abs(b.width - LIST_IMAGE_WIDTH),
+    )[0];
+    return best?.key ?? null;
+  } catch {
+    return null;
+  }
 }

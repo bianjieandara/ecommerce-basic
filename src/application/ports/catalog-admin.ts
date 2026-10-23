@@ -98,6 +98,8 @@ export interface AdminProductRow {
   stock: number;
   variantCount: number;
   imageMediaId: string | null;
+  /** Storage key of a small size of the first picture, for the list; null without a picture. */
+  imageKey: string | null;
   updatedAt: string;
 }
 

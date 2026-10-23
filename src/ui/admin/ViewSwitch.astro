@@ -1,0 +1,23 @@
+---
+// Segmented links that switch how a list is shown (grid or rows). Plain links to the same page with another `view`, so the
+// choice lives in the URL and works without JavaScript.
+interface Props {
+  label: string;
+  current: string;
+  options: { value: string; label: string; href: string }[];
+}
+
+const { label, current, options } = Astro.props;
+---
+
+<nav aria-label={label} class="flex w-max max-w-full gap-0.5 rounded-xl bg-surface p-1">
+  {options.map((option) => (
+    <a
+      href={option.href}
+      aria-current={option.value === current ? 'page' : undefined}
+      class="inline-flex min-h-9 items-center rounded-lg px-4 text-sm font-medium text-text/70 transition-colors hover:text-text aria-[current=page]:bg-background aria-[current=page]:text-text aria-[current=page]:shadow-sm"
+    >
+      {option.label}
+    </a>
+  ))}
+</nav>

@@ -2,7 +2,11 @@
 // the container stays a list of what exists, not of how each part is built.
 import { ManageAttributes } from '@/application/catalog/manage-attributes';
 import { ManageCategories } from '@/application/catalog/manage-categories';
-import { ChangeProductStatus, DuplicateProduct } from '@/application/catalog/product-actions';
+import {
+  ChangeProductStatus,
+  ChangeProductStatuses,
+  DuplicateProduct,
+} from '@/application/catalog/product-actions';
 import { UpsertProduct } from '@/application/catalog/upsert-product';
 import type { EvaluateStockChanges } from '@/application/inventory/evaluate-stock-changes';
 import { MediaLibrary } from '@/application/media/media-library';
@@ -28,6 +32,7 @@ export interface CatalogAdmin {
   attributes: AttributeRepository;
   upsertProduct: UpsertProduct;
   changeProductStatus: ChangeProductStatus;
+  changeProductStatuses: ChangeProductStatuses;
   duplicateProduct: DuplicateProduct;
   manageCategories: ManageCategories;
   manageAttributes: ManageAttributes;
@@ -66,6 +71,7 @@ export function createCatalogAdmin(env: Env, deps: CatalogAdminDeps): CatalogAdm
       clock: deps.clock,
     }),
     changeProductStatus: new ChangeProductStatus({ products, clock: deps.clock }),
+    changeProductStatuses: new ChangeProductStatuses({ products, clock: deps.clock }),
     duplicateProduct: new DuplicateProduct({
       products,
       evaluateStock: deps.evaluateStock,

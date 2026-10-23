@@ -31,6 +31,23 @@ export class ChangeProductStatus {
   }
 }
 
+/** Changes the status of several products at once, from the bulk bar of the admin list. Stock is never touched. */
+export class ChangeProductStatuses {
+  /** @param deps Repository and clock. */
+  constructor(private readonly deps: Pick<ProductActionsDeps, 'products' | 'clock'>) {}
+
+  /**
+   * Sets the status of every product in the list.
+   * @param ids Product ids; repeats are ignored.
+   * @param status New status.
+   * @returns The ids that were changed. An unknown id is skipped, not an error: the list may be stale.
+   */
+  async execute(ids: readonly string[], status: ProductStatus): Promise<string[]> {
+    const unique = [...new Set(ids)];
+    return this.deps.products.setStatusMany(unique, status, this.deps.clock.now().toISOString());
+  }
+}
+
 /** Copies a product as a draft. Variant ids are new and SKUs and barcodes are cleared, because SKUs must stay unique. */
 export class DuplicateProduct {
   /** @param deps Repository, stock alert evaluation, ids and clock. */

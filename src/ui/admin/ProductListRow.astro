@@ -1,0 +1,55 @@
+---
+// One product as a row for the rows view: selection box, small picture, name, then chips for price, stock and variants, the
+// status and the quick actions. The checkbox carries `data-bulk-id`, which the bulk bar reads.
+import ProductThumb from './ProductThumb.astro';
+import RowActions from './RowActions.tsx';
+import StatusBadge from './StatusBadge.astro';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import type { AdminProductRow } from '@/application/ports/catalog-admin';
+
+interface Props {
+  product: AdminProductRow;
+  price: string;
+  statusLabel: string;
+  stockLabel: string;
+  variantsLabel: string;
+  selectLabel: string;
+  actionLabels: {
+    publish: string;
+    unpublish: string;
+    duplicate: string;
+    working: string;
+    failed: string;
+  };
+}
+
+const { product, price, statusLabel, stockLabel, variantsLabel, selectLabel, actionLabels } = Astro.props;
+// A fixed width keeps the chips (and the status after them) in the same columns from row to row.
+const chip =
+  'w-24 rounded-full border border-text/15 px-3 py-1 text-center text-xs tabular-nums text-text/80';
+---
+
+<li class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-3">
+  <div class="flex min-w-0 items-center gap-3">
+    <input
+      type="checkbox"
+      data-bulk-id={product.id}
+      aria-label={selectLabel}
+      class="size-6 shrink-0 cursor-pointer rounded-md border-text/30 accent-primary"
+    />
+    <ProductThumb imageKey={product.imageKey} name={product.name} />
+    <a
+      href={`${ADMIN_PATHS.products}/${product.id}`}
+      class="inline-flex min-h-11 min-w-0 items-center font-semibold wrap-break-word hover:underline"
+    >
+      {product.name || '—'}
+    </a>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <span class={chip}>{price}</span>
+    <span class={chip}>{stockLabel}</span>
+    <span class={chip}>{variantsLabel}</span>
+    <StatusBadge label={statusLabel} tone={product.status === 'active' ? 'ok' : 'muted'} />
+    <RowActions client:visible productId={product.id} status={product.status} labels={actionLabels} />
+  </div>
+</li>

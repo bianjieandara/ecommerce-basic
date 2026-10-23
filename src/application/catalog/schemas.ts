@@ -110,6 +110,12 @@ export const productStatusInput = z.object({
   status: z.enum(['draft', 'active', 'archived']),
 });
 
+/** Status change of several products at once. */
+export const productBulkStatusInput = z.object({
+  ids: z.array(id).min(1).max(100),
+  status: z.enum(['draft', 'active', 'archived']),
+});
+
 /** New order of a list of ids (categories). */
 export const reorderInput = z.object({ ids: z.array(id).min(1).max(500) });
 
