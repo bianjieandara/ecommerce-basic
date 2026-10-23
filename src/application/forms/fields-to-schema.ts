@@ -91,10 +91,15 @@ function fieldSchema(field: FieldDescriptor, options: SchemaOptions): z.ZodType 
       return z.array(z.uuid()).max(field.max ?? 50);
     case 'link':
       return z.object({
-        href: z.string().refine((value) => value.startsWith('/') || value.startsWith('https://'), {
-          message: 'Use / or https://',
-          params: { code: 'LINK_HREF' },
-        }),
+        href: z
+          .string()
+          .refine(
+            (value) => value.startsWith('/') || value.startsWith('https://') || value.startsWith('mailto:'),
+            {
+              message: 'Use /, https:// or mailto:',
+              params: { code: 'LINK_HREF' },
+            },
+          ),
         label: z.object({ es: z.string().max(200), en: z.string().max(200) }),
       });
     case 'repeater': {

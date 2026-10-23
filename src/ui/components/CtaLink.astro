@@ -1,0 +1,27 @@
+---
+// Pill-shaped call-to-action link with a small arrow that nudges on hover. One look for every banner, hero and highlighted
+// block; the tone says what it sits on: "light" is white (over a photo), "dark" is the primary colour, "inverse" is the
+// on-primary colour (inside a primary-coloured block).
+import Icon from './Icon.astro';
+
+interface Props {
+  href: string;
+  tone?: 'light' | 'dark' | 'inverse';
+  class?: string;
+}
+
+const { href, tone = 'dark', class: className = '' } = Astro.props;
+const tones = {
+  light: 'bg-white text-black hover:bg-white/90',
+  dark: 'bg-primary text-on-primary hover:opacity-90',
+  inverse: 'bg-on-primary text-primary hover:opacity-90',
+};
+---
+
+<a
+  href={href}
+  class={`group inline-flex min-h-12 items-center gap-2 rounded-full px-7 font-semibold transition ${tones[tone]} ${className}`}
+>
+  <slot />
+  <Icon name="arrow-right" size={18} class="transition group-hover:translate-x-0.5" />
+</a>

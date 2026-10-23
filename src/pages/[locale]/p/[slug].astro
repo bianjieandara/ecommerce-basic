@@ -2,8 +2,11 @@
 // Content pages: about, contact, privacy, terms and shipping/returns, plus custom pages. Rendered from their sections.
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import SectionRenderer from '@/ui/widgets/SectionRenderer.astro';
+import { isLegalPageSlug } from '@/domain/content/page';
 import { isLocale } from '@/domain/shared/locale';
 import { PATHS } from '@/domain/shared/paths';
+import { fillSectionPlaceholders } from '@/application/content/defaults/fill-placeholders';
+import { t } from '@/ui/i18n';
 import { loadStoreContext } from '@/http/store-context';
 import { loadPageContent, loadSectionData } from '@/http/page-content';
 import { buildTitle, catalogOptionsFor, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
@@ -21,6 +24,24 @@ if (!page) return Astro.rewrite('/404');
 const view = storeViewFor(store, lang);
 const contact = contactFor(store, lang);
 const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(store), store.catalog);
+// The texts of a page may hold {{placeholders}} (the store's name, address, e-mail, country and the date it was saved). They
+// are filled here; one with no value stays visible, so a missing setting is noticed.
+const countryName = new Intl.DisplayNames([lang], { type: 'region' }).of(store.general.country.toUpperCase());
+const savedAt = page.updatedAt ? new Date(page.updatedAt) : new Date();
+const vars = Object.fromEntries(
+  Object.entries({
+    storeName: store.general.storeName,
+    address: store.contact.address,
+    contactEmail: store.contact.email,
+    country: countryName ?? store.general.country,
+    lastUpdated: new Intl.DateTimeFormat(lang, {
+      dateStyle: 'long',
+      timeZone: store.general.timezone,
+    }).format(savedAt),
+  }).filter(([, value]) => value !== ''),
+);
+const sections = fillSectionPlaceholders(page.sections, vars);
+const isLegal = isLegalPageSlug(slug);
 ---
 
 <StoreLayout
@@ -38,10 +59,13 @@ const data = await loadSectionData(app, page.sections, lang, catalogOptionsFor(s
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >
-  <div class="flex flex-col gap-10">
-    <h1 class="text-2xl md:text-3xl">{page.title}</h1>
+  <div class:list={['flex flex-col gap-9', isLegal && 'mx-auto max-w-3xl']}>
+    <header class="flex flex-col gap-3">
+      {isLegal && <p class="eyebrow">{t(lang, 'footer.legal')}</p>}
+      <h1 class="text-2xl md:text-3xl">{page.title}</h1>
+    </header>
     <SectionRenderer
-      sections={page.sections}
+      sections={sections}
       data={data}
       view={view}
       whatsapp={{ number: contact.whatsappNumber, message: contact.whatsappMessage }}

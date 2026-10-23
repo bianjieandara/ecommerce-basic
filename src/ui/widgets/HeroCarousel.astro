@@ -2,7 +2,7 @@
 // Hero carousel: large slides with a picture, a title, a subtitle and an optional button. A slide without a picture is a
 // block in the primary colour. The text sits on a dark gradient so it stays readable on any picture.
 import Carousel from '@/ui/components/Carousel.astro';
-import Icon from '@/ui/components/Icon.astro';
+import CtaLink from '@/ui/components/CtaLink.astro';
 import SectionPicture from '@/ui/components/SectionPicture.astro';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { t } from '@/ui/i18n';
@@ -57,13 +57,9 @@ const slides = config.slides ?? [];
                 {pickText(slide.subtitle, view.locale, 'es')}
               </p>
               {slide.cta && (
-                <a
-                  href={localizedHref(view.locale, slide.cta.href)}
-                  class={`group inline-flex min-h-12 items-center gap-2 rounded-full px-7 font-semibold transition ${image ? 'bg-white text-black hover:bg-white/90' : 'bg-primary text-on-primary hover:opacity-90'}`}
-                >
+                <CtaLink href={localizedHref(view.locale, slide.cta.href)} tone={image ? 'light' : 'dark'}>
                   {pickText(slide.cta.label, view.locale, 'es')}
-                  <Icon name="arrow-right" size={18} class="transition group-hover:translate-x-0.5" />
-                </a>
+                </CtaLink>
               )}
             </div>
           </div>

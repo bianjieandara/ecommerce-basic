@@ -18,7 +18,6 @@ import type { CatalogQueryService } from '@/application/ports/catalog';
 import type { ShippingMethodRepository } from '@/application/ports/ordering';
 import type { PaymentGateway, PaymentMethod } from '@/application/ports/payments';
 import type { QuoteCart } from '@/application/cart/quote-cart';
-import type { SubmitContactMessage } from '@/application/content/submit-contact-message';
 import type { ReviewsService } from '@/application/content/reviews-service';
 import type { InviteAdmin } from '@/application/identity/invite-admin';
 import type { Login } from '@/application/identity/login';
@@ -91,8 +90,6 @@ export interface Container {
   /** Customer invoice page: the same document as the PDF, as HTML. */
   invoiceHtml: GetInvoiceHtml;
   voidInvoice: VoidInvoice;
-  /** Contact form: stores the message and queues the store alert and the auto-reply. */
-  submitContact: SubmitContactMessage;
   /** Google reviews: the job refreshes them, pages read them from KV. */
   reviews: ReviewsService;
   /** Admin accounts and sessions. */

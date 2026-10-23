@@ -1,7 +1,7 @@
 // Default content for the system pages. Setup creates them once from these definitions; afterwards admins edit them.
 import type { LocalizedText } from '@/domain/shared/localized-text';
 import type { SystemPageSlug } from '@/domain/content/page';
-import { PRIVACY_POLICY, SHIPPING_RETURNS, TERMS } from './legal-texts';
+import { LEGAL_PAGE_SECTIONS } from './legal-pages';
 
 /** Default page definition used to seed a system page. */
 export interface DefaultPage {
@@ -102,17 +102,17 @@ export const DEFAULT_SYSTEM_PAGES: DefaultPage[] = [
   {
     slug: 'privacy',
     title: { es: 'Política de privacidad', en: 'Privacy policy' },
-    sections: [{ type: 'rich_text', enabled: true, config: { body: PRIVACY_POLICY } }],
+    sections: LEGAL_PAGE_SECTIONS.privacy,
   },
   {
     slug: 'terms',
     title: { es: 'Términos y condiciones', en: 'Terms and conditions' },
-    sections: [{ type: 'rich_text', enabled: true, config: { body: TERMS } }],
+    sections: LEGAL_PAGE_SECTIONS.terms,
   },
   {
     slug: 'shipping-returns',
     title: { es: 'Envíos y devoluciones', en: 'Shipping and returns' },
-    sections: [{ type: 'rich_text', enabled: true, config: { body: SHIPPING_RETURNS } }],
+    sections: LEGAL_PAGE_SECTIONS['shipping-returns'],
   },
 ];
 

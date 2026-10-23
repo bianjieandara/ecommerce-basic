@@ -53,7 +53,6 @@ Run through it for every new route.
 | Endpoint                                                                    | Guard                                                                    |
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `POST /api/checkout`                                                        | rate limit `forms`, Turnstile                                            |
-| `POST /api/contact`                                                         | rate limit `forms`, Turnstile                                            |
 | `POST /api/stock-subscriptions`                                             | rate limit `forms`, Turnstile                                            |
 | `POST /api/cart/quote`, `GET /api/catalog/count`, `GET /api/search/suggest` | rate limit `api`                                                         |
 | `GET /api/health`                                                           | none; answers only `ok` and whether D1 responds                          |

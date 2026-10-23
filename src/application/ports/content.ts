@@ -1,7 +1,6 @@
-// Content ports: settings, pages, testimonials, contact messages and reviews.
+// Content ports: settings, pages, testimonials and reviews.
 import type { Page } from '@/domain/content/page';
 import type { Locale } from '@/domain/shared/locale';
-import type { Paginated } from '@/domain/shared/pagination';
 import type { SettingsGroup, SettingsMap } from '../content/settings-schemas';
 
 /** Settings persistence. Reads return parsed values with defaults applied. */
@@ -39,26 +38,6 @@ export interface TestimonialRepository {
   findById(id: string): Promise<Testimonial | null>;
   save(testimonial: Testimonial): Promise<void>;
   delete(id: string): Promise<void>;
-}
-
-/** A message from the contact form. */
-export interface ContactMessage {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  message: string;
-  locale: Locale;
-  isRead: boolean;
-  createdAt: string;
-}
-
-/** Contact message persistence. */
-export interface ContactMessageRepository {
-  create(message: ContactMessage): Promise<void>;
-  list(page: number, pageSize: number): Promise<Paginated<ContactMessage>>;
-  markRead(id: string): Promise<void>;
-  countUnread(): Promise<number>;
 }
 
 /** Google reviews snapshot (cached in KV, refreshed by a job). */

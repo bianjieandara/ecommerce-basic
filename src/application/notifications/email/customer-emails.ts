@@ -1,7 +1,7 @@
-// Other emails sent to customers: invoices, contact replies and back-in-stock alerts. Order lifecycle emails are in order-emails.ts.
+// Other emails sent to customers: invoices and back-in-stock alerts. Order lifecycle emails are in order-emails.ts.
 import type { EmailDefinition } from './definition';
 
-type CustomerEmailKey = 'invoice_issued' | 'contact_autoreply' | 'back_in_stock';
+type CustomerEmailKey = 'invoice_issued' | 'back_in_stock';
 
 /** Customer emails that are not about an order's lifecycle, by key. */
 export const CUSTOMER_EMAILS: Record<CustomerEmailKey, EmailDefinition> = {
@@ -20,25 +20,6 @@ export const CUSTOMER_EMAILS: Record<CustomerEmailKey, EmailDefinition> = {
       en: {
         subject: 'Your invoice {{invoice.number}} for order {{order.number}}',
         body: `Hi {{customer.firstName}}, your invoice **{{invoice.number}}** for order **{{order.number}}** is ready and is attached to this email as a PDF.`,
-      },
-    },
-  },
-
-  contact_autoreply: {
-    key: 'contact_autoreply',
-    audience: 'customer',
-    label: 'Contact auto-reply',
-    description: 'Sent to the person who used the contact form.',
-    variables: ['customer.firstName'],
-    blocks: [],
-    defaults: {
-      es: {
-        subject: 'Recibimos tu mensaje',
-        body: 'Hola {{customer.firstName}}, gracias por escribirnos. Te responderemos lo antes posible.',
-      },
-      en: {
-        subject: 'We received your message',
-        body: 'Hi {{customer.firstName}}, thank you for writing to us. We will reply as soon as possible.',
       },
     },
   },

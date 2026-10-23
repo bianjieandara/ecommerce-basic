@@ -142,35 +142,6 @@ async function addOrders(cookie) {
   }
 }
 
-/** Messages from shoppers to the contact form. */
-async function addMessages() {
-  if (sql('SELECT COUNT(*) AS n FROM contact_messages')[0].n > 0) return;
-  const messages = [
-    ['Paula Rincón', 'paula.rincon@example.com', 'Do you ship to Medellín, and how long does it take?'],
-    [
-      'Jorge Salazar',
-      'jorge.salazar@example.com',
-      'Quiero comprar 20 tazas para un evento. ¿Hay descuento por cantidad?',
-    ],
-    [
-      'Ana Beltrán',
-      'ana.beltran@example.com',
-      'The hooded sweatshirt I want is out of stock. When will it be back?',
-    ],
-  ];
-  for (const [name, email, message] of messages) {
-    await post('/api/contact', {
-      locale: 'en',
-      name,
-      email,
-      phone: '',
-      message,
-      website: '',
-      turnstileToken: TURNSTILE_TEST_TOKEN,
-    });
-  }
-}
-
 /**
  * Adds shopper testimonials.
  * @param cookie Admin session.
@@ -200,6 +171,5 @@ await addHomePage(cookie);
 console.log('pictures added');
 await addOrders(cookie);
 console.log('orders added');
-await addMessages();
 await addTestimonials(cookie);
-console.log('messages and testimonials added. Demo owner login is in', ACCOUNT_FILE);
+console.log('testimonials added. Demo owner login is in', ACCOUNT_FILE);

@@ -17,10 +17,6 @@ export interface EmailLabels {
   sku: string;
   stock: string;
   minimum: string;
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
   viewOrder: string;
   downloadInvoice: string;
   resetPassword: string;
@@ -45,10 +41,6 @@ export const EMAIL_LABELS: Record<Locale, EmailLabels> = {
     sku: 'SKU',
     stock: 'Stock',
     minimum: 'Mínimo',
-    name: 'Nombre',
-    email: 'Correo',
-    phone: 'Teléfono',
-    message: 'Mensaje',
     viewOrder: 'Ver pedido',
     downloadInvoice: 'Descargar factura',
     resetPassword: 'Restablecer contraseña',
@@ -70,10 +62,6 @@ export const EMAIL_LABELS: Record<Locale, EmailLabels> = {
     sku: 'SKU',
     stock: 'Stock',
     minimum: 'Minimum',
-    name: 'Name',
-    email: 'Email',
-    phone: 'Phone',
-    message: 'Message',
     viewOrder: 'View order',
     downloadInvoice: 'Download invoice',
     resetPassword: 'Reset password',

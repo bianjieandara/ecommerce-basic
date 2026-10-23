@@ -98,7 +98,7 @@ const totals: [string, number][] = [
       <dl class={DETAIL_LIST}>
         <dt>{t(lang, 'admin.common.email')}</dt>
         <dd class="wrap-break-word">{order.customer.email}</dd>
-        <dt>{t(lang, 'admin.messages.phone')}</dt>
+        <dt>{t(lang, 'admin.orderContact.phone')}</dt>
         <dd>{order.customer.phone}</dd>
         {order.note && (
           <>
@@ -109,7 +109,7 @@ const totals: [string, number][] = [
       </dl>
       {whatsapp && (
         <a href={whatsapp} target="_blank" rel="noopener noreferrer" class={BUTTON}>
-          {t(lang, 'admin.messages.replyWhatsApp')}
+          {t(lang, 'admin.orderContact.replyWhatsApp')}
         </a>
       )}
       {customerLink && (

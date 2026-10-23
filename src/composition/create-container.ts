@@ -4,7 +4,6 @@ import { buildJobHandlers } from '@/application/jobs/handlers';
 import { JobDispatcher } from '@/application/jobs/dispatcher';
 import { JobScheduler } from '@/application/jobs/scheduler';
 import type { BackgroundTasks, EmailSender } from '@/application/ports/platform';
-import { SubmitContactMessage } from '@/application/content/submit-contact-message';
 import { ReviewsService } from '@/application/content/reviews-service';
 import { EmailTemplateService } from '@/application/notifications/email-template-service';
 import { NotificationService } from '@/application/notifications/notification-service';
@@ -32,7 +31,6 @@ import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-reposit
 import { D1SettingsRepository } from '@/infrastructure/d1/settings-repository';
 import { R2MediaStorage } from '@/infrastructure/r2/r2-media-storage';
 import { readSecret } from '@/infrastructure/cloudflare/env';
-import { D1ContactMessageRepository } from '@/infrastructure/d1/contact-message-repository';
 import { GooglePlacesReviews } from '@/infrastructure/google/places-reviews-provider';
 import { CloudflareJobQueue } from '@/infrastructure/queues/cloudflare-job-queue';
 import { KvCacheStore, KvPageCacheVersion } from '@/infrastructure/kv/kv-adapters';
@@ -141,15 +139,6 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   const catalogAdmin = createCatalogAdmin(env, { ids, clock, evaluateStock: inventory.evaluateStock });
   const mediaLibrary = createMediaLibrary(env, { ids, clock, storage: media });
 
-  const contactMessages = new D1ContactMessageRepository(env.DB);
-  const submitContact = new SubmitContactMessage({
-    messages: contactMessages,
-    settings,
-    notifications,
-    botVerifier,
-    clock,
-    ids,
-  });
   const reviews = new ReviewsService({
     provider: new GooglePlacesReviews(readSecret('GOOGLE_PLACES_API_KEY')),
     cache,
@@ -225,7 +214,6 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     issueInvoice: orderingServices.issueInvoice,
     failedJobs,
     notificationLog,
-    messages: contactMessages,
     confirmPayment: orderingServices.confirmPayment,
     evaluateStock: inventory.evaluateStock,
     siteUrl,
@@ -255,7 +243,6 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     emailTemplates,
     ...orderingServices,
     providers: { dlocalgo, paypal },
-    submitContact,
     reviews,
     ...identity,
     catalogAdmin,

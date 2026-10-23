@@ -13,8 +13,6 @@ export const NOTIFICATION_KEYS = [
   'order_cancelled',
   'order_refunded',
   'invoice_issued',
-  'contact_message_store',
-  'contact_autoreply',
   'low_stock_store',
   'back_in_stock',
   'weekly_report_store',

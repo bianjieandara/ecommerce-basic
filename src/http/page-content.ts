@@ -17,6 +17,8 @@ export interface PageContent {
   /** Description for search engines in the page language; empty when the owner wrote none. */
   seoDescription: string;
   sections: WidgetInstance[];
+  /** When the page was last saved (ISO); empty for a page that is still the code default. */
+  updatedAt: string;
 }
 
 /** A picture chosen in the admin for a section, with the sizes the storefront can serve. */
@@ -65,6 +67,7 @@ export async function loadPageContent(
       seoTitle: stored.seoTitle[locale] ?? '',
       seoDescription: stored.seoDescription[locale] ?? '',
       sections: stored.sections,
+      updatedAt: stored.updatedAt,
     };
   }
   const fallback = DEFAULT_SYSTEM_PAGES.find((page) => page.slug === slug);
@@ -79,6 +82,7 @@ export async function loadPageContent(
       enabled: section.enabled,
       config: section.config,
     })),
+    updatedAt: '',
   };
 }
 

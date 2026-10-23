@@ -6,7 +6,7 @@ import type { OrderStatus } from '@/domain/ordering/order-status';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import type { Locale } from '@/domain/shared/locale';
 import { queryAll, statement, type SqlValue } from './d1-client';
-import { escapeLike, whereClause } from './sql-fragments';
+import { containsText, whereClause } from './sql-fragments';
 
 /** Row of the list query. */
 interface AdminOrderDbRow {
@@ -51,16 +51,16 @@ function conditionsFor(filter: AdminOrderFilter): { conditions: string[]; binds:
   }
   const text = filter.search?.trim() ?? '';
   if (text) {
-    // Typed text matches literally: escaping keeps "%" and "_" from acting as wildcards.
-    const like = `%${escapeLike(text)}%`;
+    // Typed text matches literally, however long it is (see containsText).
+    const phone = containsText('o.customer_phone', text);
     if (NUMBER_TEXT.test(text)) {
-      conditions.push(`(o.number = ? OR o.customer_phone LIKE ? ESCAPE '\\')`);
-      binds.push(Number(text), like);
+      conditions.push(`(o.number = ? OR ${phone.sql})`);
+      binds.push(Number(text), phone.bind);
     } else {
-      conditions.push(
-        `(o.customer_name LIKE ? ESCAPE '\\' OR o.customer_email LIKE ? ESCAPE '\\' OR o.customer_phone LIKE ? ESCAPE '\\')`,
-      );
-      binds.push(like, like, like);
+      const name = containsText('o.customer_name', text);
+      const email = containsText('o.customer_email', text);
+      conditions.push(`(${name.sql} OR ${email.sql} OR ${phone.sql})`);
+      binds.push(name.bind, email.bind, phone.bind);
     }
   }
   return { conditions, binds };

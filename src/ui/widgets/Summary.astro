@@ -1,0 +1,28 @@
+---
+// "In brief" panel: a few plain-language lines above a long text, as on the legal pages. The title is a small label.
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import type { WidgetProps } from './types';
+
+const { section, view } = Astro.props as WidgetProps;
+const config = section.config as { title?: LocalizedText; items?: { text: LocalizedText }[] };
+const title = pickText(config.title, view.locale, 'es');
+const lines = (config.items ?? []).map((item) => pickText(item.text, view.locale, 'es')).filter(Boolean);
+---
+
+{lines.length > 0 && (
+  <section
+    class="flex flex-col gap-4 rounded-card bg-surface p-6 md:p-7"
+    aria-label={title || undefined}
+    data-reveal
+  >
+    {title && <p class="eyebrow">{title}</p>}
+    <ul class="flex flex-col gap-3">
+      {lines.map((line) => (
+        <li class="flex items-start gap-3">
+          <span class="mt-2.5 size-2 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+          <span>{line}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

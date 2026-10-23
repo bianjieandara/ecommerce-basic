@@ -6,7 +6,6 @@ import type { EvaluateStockChanges } from '@/application/inventory/evaluate-stoc
 import type { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import { ChangeOrderStatus } from '@/application/ordering/change-order-status';
 import { OrderLinks } from '@/application/ordering/order-links';
-import { MarkMessageRead } from '@/application/content/mark-message-read';
 import { InvoiceDocumentForAdmin } from '@/application/invoicing/invoice-document-admin';
 import type { IssueInvoice } from '@/application/invoicing/issue-invoice';
 import { IssueOrderInvoice } from '@/application/invoicing/issue-order-invoice';
@@ -17,7 +16,7 @@ import { RetryFailedJob } from '@/application/jobs/retry-failed-job';
 import { RetryNotification } from '@/application/notifications/retry-notification';
 import type { NotificationService } from '@/application/notifications/notification-service';
 import type { DashboardQueries } from '@/application/ports/dashboard';
-import type { SettingsRepository, ContactMessageRepository } from '@/application/ports/content';
+import type { SettingsRepository } from '@/application/ports/content';
 import type { AdminInvoiceQueries } from '@/application/ports/invoice-admin';
 import type { InvoiceRepository } from '@/application/ports/invoicing';
 import type { AdminOrderQueries } from '@/application/ports/order-admin';
@@ -39,7 +38,6 @@ export interface AdminReads {
   invoiceRecords: Pick<InvoiceRepository, 'findById' | 'findByOrderId'>;
   failedJobs: Pick<FailedJobRepository, 'list' | 'get'>;
   notificationLog: Pick<NotificationLogRepository, 'list' | 'get' | 'listForOrder'>;
-  messages: Pick<ContactMessageRepository, 'list'>;
   /** Backlog of the job queue, for the failed-jobs page. */
   queueBacklog: QueueBacklog;
   /** Access keys of the customer's order link, for the copy-link action on the order screen. */
@@ -58,7 +56,6 @@ export interface AdminOperations {
   retryFailedJob: RetryFailedJob;
   discardFailedJob: DiscardFailedJob;
   retryNotification: RetryNotification;
-  markMessageRead: MarkMessageRead;
 }
 
 /** Dependencies of the admin operations, all built by the container. */
@@ -73,7 +70,6 @@ export interface AdminOperationsDeps {
   issueInvoice: IssueInvoice;
   failedJobs: FailedJobRepository;
   notificationLog: NotificationLogRepository;
-  messages: ContactMessageRepository;
   confirmPayment: ConfirmPayment;
   evaluateStock: EvaluateStockChanges;
   siteUrl: string;
@@ -99,7 +95,6 @@ export function createAdminOperations(env: Env, deps: AdminOperationsDeps): Admi
       invoiceRecords: deps.invoices,
       failedJobs: deps.failedJobs,
       notificationLog: deps.notificationLog,
-      messages: deps.messages,
       orderLinks: links,
       queueBacklog: new CloudflareQueueBacklog(env.JOBS),
     },
@@ -139,6 +134,5 @@ export function createAdminOperations(env: Env, deps: AdminOperationsDeps): Admi
       jobs: deps.jobs,
       clock: deps.clock,
     }),
-    markMessageRead: new MarkMessageRead({ messages: deps.messages }),
   };
 }

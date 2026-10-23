@@ -55,7 +55,6 @@ export const ADMIN_PATHS = {
   inventoryMovements: '/admin/inventory/movements',
   orders: '/admin/orders',
   invoices: '/admin/invoices',
-  messages: '/admin/messages',
   notificationLog: '/admin/notification-log',
   jobs: '/admin/jobs',
   settings: '/admin/settings',

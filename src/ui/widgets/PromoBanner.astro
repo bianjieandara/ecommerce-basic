@@ -1,6 +1,6 @@
 ---
 // Promo banner: one wide picture with a headline, a line of text and a button, for an offer or a campaign.
-import Icon from '@/ui/components/Icon.astro';
+import CtaLink from '@/ui/components/CtaLink.astro';
 import SectionPicture from '@/ui/components/SectionPicture.astro';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { localizedHref } from '@/ui/lib/localized-href';
@@ -40,13 +40,9 @@ const centered = config.align === 'center';
     </h2>
     <p class="max-w-lg text-base opacity-85 md:text-lg">{pickText(config.text, view.locale, 'es')}</p>
     {config.cta && (
-      <a
-        href={localizedHref(view.locale, config.cta.href)}
-        class="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-7 font-semibold text-black transition hover:bg-white/90"
-      >
+      <CtaLink href={localizedHref(view.locale, config.cta.href)} tone="light">
         {pickText(config.cta.label, view.locale, 'es')}
-        <Icon name="arrow-right" size={18} class="transition group-hover:translate-x-0.5" />
-      </a>
+      </CtaLink>
     )}
   </div>
 </section>

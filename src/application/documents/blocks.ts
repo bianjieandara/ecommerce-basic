@@ -111,20 +111,6 @@ const productButton: BlockRenderer = ({ locale, store, product }) =>
 const reportButton: BlockRenderer = ({ locale, store, report }) =>
   button(EMAIL_LABELS[locale].openReports, report.url, store.primaryColor);
 
-const contactMessage: BlockRenderer = ({ locale, contact }) => {
-  const labels = EMAIL_LABELS[locale];
-  return dataTable(
-    [],
-    [
-      [labels.name, contact.name],
-      [labels.email, contact.email],
-      [labels.phone, contact.phone],
-      [labels.message, contact.message],
-    ],
-    ['left', 'left'],
-  );
-};
-
 const lowStockTable: BlockRenderer = ({ locale, stock }) => {
   if (stock.items.length === 0) return '';
   const labels = EMAIL_LABELS[locale];
@@ -161,7 +147,6 @@ export const EMAIL_BLOCKS = {
   inviteButton,
   productButton,
   reportButton,
-  contactMessage,
   lowStockTable,
   kpiTable,
 } satisfies Record<string, BlockRenderer>;

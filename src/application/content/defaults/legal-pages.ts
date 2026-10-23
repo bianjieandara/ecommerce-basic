@@ -14,7 +14,11 @@ export interface DefaultSection {
 }
 
 /** A markdown block. */
-const markdown = (body: LocalizedText): DefaultSection => ({ type: 'rich_text', enabled: true, config: { body } });
+const markdown = (body: LocalizedText): DefaultSection => ({
+  type: 'rich_text',
+  enabled: true,
+  config: { body },
+});
 
 /** The "in brief" panel: a few plain-language lines that summarise the page. */
 const summary = (items: LocalizedText[]): DefaultSection => ({

@@ -1,12 +1,7 @@
-// Emails sent to the store team: new orders, contact messages, low stock and the weekly summary.
+// Emails sent to the store team: new orders, low stock and the weekly summary.
 import type { EmailDefinition } from './definition';
 
-type StoreEmailKey =
-  | 'order_alert_store'
-  | 'contact_message_store'
-  | 'low_stock_store'
-  | 'weekly_report_store'
-  | 'payment_late_store';
+type StoreEmailKey = 'order_alert_store' | 'low_stock_store' | 'weekly_report_store' | 'payment_late_store';
 
 /** Store emails, by key. */
 export const STORE_EMAILS: Record<StoreEmailKey, EmailDefinition> = {
@@ -92,29 +87,6 @@ Customer: {{customer.fullName}} ({{customer.email}}, {{customer.phone}}).
 {{block:orderTotals}}
 
 **What to do:** refund the payment in your payment provider's dashboard and tell the customer. If you would rather fulfil the order, create it again by hand.`,
-      },
-    },
-  },
-
-  contact_message_store: {
-    key: 'contact_message_store',
-    audience: 'store',
-    label: 'Contact message (store alert)',
-    description: 'Sent to the store when someone uses the contact form.',
-    variables: ['contact.name', 'contact.email'],
-    blocks: ['contactMessage'],
-    defaults: {
-      es: {
-        subject: 'Nuevo mensaje de {{contact.name}}',
-        body: `Recibiste un mensaje desde el formulario de contacto.
-
-{{block:contactMessage}}`,
-      },
-      en: {
-        subject: 'New message from {{contact.name}}',
-        body: `You received a message from the contact form.
-
-{{block:contactMessage}}`,
       },
     },
   },

@@ -123,7 +123,6 @@ const SHOTS = [
   { name: 'admin-order-detail', path: `/admin/orders/${demo.shippedOrder}`, device: 'desktop', full: true },
   { name: 'admin-invoices', path: '/admin/invoices', device: 'desktop' },
   { name: 'admin-invoice-detail', path: `/admin/invoices/${demo.invoice}`, device: 'desktop', full: true },
-  { name: 'admin-messages', path: '/admin/messages', device: 'desktop' },
   { name: 'admin-pages', path: '/admin/pages', device: 'desktop' },
   { name: 'admin-page-builder', path: '/admin/pages/home', device: 'desktop', full: true },
   { name: 'admin-settings', path: '/admin/settings', device: 'desktop' },

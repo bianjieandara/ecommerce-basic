@@ -65,7 +65,6 @@ export interface NotificationContext {
     address: string[];
   };
   invoice: { number: string; url: string };
-  contact: { name: string; email: string; phone: string; message: string };
   product: { name: string; variant: string; url: string };
   stock: { count: number; items: StockRow[] };
   report: { period: string; url: string; kpis: KpiRow[] };
@@ -100,7 +99,6 @@ export function emptyContext(locale: Locale, store: StoreSection): NotificationC
       address: [],
     },
     invoice: { number: '', url: '' },
-    contact: { name: '', email: '', phone: '', message: '' },
     product: { name: '', variant: '', url: '' },
     stock: { count: 0, items: [] },
     report: { period: '', url: '', kpis: [] },

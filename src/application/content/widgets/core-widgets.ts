@@ -186,6 +186,33 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
     },
   },
   {
+    type: 'summary',
+    label: text('Resumen', 'Summary'),
+    icon: 'text',
+    fields: [
+      { name: 'title', kind: 'localizedText', label: text('Título', 'Title'), max: 40 },
+      {
+        name: 'items',
+        kind: 'repeater',
+        label: text('Líneas', 'Lines'),
+        max: 6,
+        fields: [{ name: 'text', kind: 'localizedText', label: text('Texto', 'Text'), max: 160 }],
+      },
+    ],
+    defaults: { title: { es: 'En breve', en: 'In brief' }, items: [] },
+  },
+  {
+    type: 'callout',
+    label: text('Bloque destacado', 'Highlighted block'),
+    icon: 'megaphone',
+    fields: [
+      { name: 'title', kind: 'localizedText', label: text('Título', 'Title'), max: 80 },
+      { name: 'text', kind: 'localizedTextarea', label: text('Texto', 'Text'), max: 600 },
+      { name: 'cta', kind: 'link', label: text('Botón', 'Button') },
+    ],
+    defaults: {},
+  },
+  {
     type: 'trust_badges',
     label: text('Beneficios', 'Trust badges'),
     icon: 'shield',

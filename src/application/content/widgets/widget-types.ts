@@ -14,6 +14,8 @@ export const CORE_WIDGET_TYPES = [
   'faq',
   'whatsapp_cta',
   'trust_badges',
+  'summary',
+  'callout',
 ] as const;
 
 /** One widget type identifier. */

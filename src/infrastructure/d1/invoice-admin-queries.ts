@@ -9,7 +9,7 @@ import type {
 import type { InvoiceStatus } from '@/domain/invoicing/invoice';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import { queryAll, statement, type SqlValue } from './d1-client';
-import { escapeLike, whereClause } from './sql-fragments';
+import { containsText, whereClause } from './sql-fragments';
 
 /** Row of the list query. */
 interface AdminInvoiceDbRow {
@@ -59,9 +59,10 @@ function conditionsFor(filter: AdminInvoiceFilter): { conditions: string[]; bind
       conditions.push('(i.number = ? OR o.number = ?)');
       binds.push(Number(text), Number(text));
     } else {
-      const like = `%${escapeLike(text)}%`;
-      conditions.push(`(o.customer_name LIKE ? ESCAPE '\\' OR o.customer_email LIKE ? ESCAPE '\\')`);
-      binds.push(like, like);
+      const name = containsText('o.customer_name', text);
+      const email = containsText('o.customer_email', text);
+      conditions.push(`(${name.sql} OR ${email.sql})`);
+      binds.push(name.bind, email.bind);
     }
   }
   return { conditions, binds };

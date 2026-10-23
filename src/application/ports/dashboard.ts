@@ -35,7 +35,6 @@ export interface DashboardSnapshot {
   ordersToProcess: number;
   outOfStock: number;
   lowStock: number;
-  unreadMessages: number;
   failedNotifications: number;
   unresolvedJobs: number;
   topProducts: TopProduct[];

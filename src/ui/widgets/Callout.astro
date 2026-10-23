@@ -1,0 +1,32 @@
+---
+// Highlighted block in the primary colour: a title, a short text and an optional button. Used for the one clause a reader
+// must not miss, such as "Your rights" on the privacy policy.
+import CtaLink from '@/ui/components/CtaLink.astro';
+import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
+import { localizedHref } from '@/ui/lib/localized-href';
+import type { WidgetProps } from './types';
+
+const { section, view } = Astro.props as WidgetProps;
+const config = section.config as {
+  title?: LocalizedText;
+  text?: LocalizedText;
+  cta?: { href: string; label: LocalizedText } | null;
+};
+const title = pickText(config.title, view.locale, 'es');
+const text = pickText(config.text, view.locale, 'es');
+---
+
+{(title || text) && (
+  <section
+    class="flex flex-col items-start gap-4 rounded-card bg-primary p-7 text-on-primary md:p-8"
+    data-reveal
+  >
+    {title && <h2 class="text-xl md:text-2xl">{title}</h2>}
+    {text && <p class="max-w-2xl opacity-85">{text}</p>}
+    {config.cta && config.cta.href && (
+      <CtaLink href={localizedHref(view.locale, config.cta.href)} tone="inverse">
+        {pickText(config.cta.label, view.locale, 'es')}
+      </CtaLink>
+    )}
+  </section>
+)}

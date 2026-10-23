@@ -24,6 +24,25 @@ export function escapeLike(text: string): string {
   return text.replace(/[\\%_]/g, '\\$&');
 }
 
+/** D1 refuses a LIKE pattern longer than 50 bytes with "LIKE or GLOB pattern too complex", which would be a 500 for the admin. */
+const MAX_LIKE_PATTERN_BYTES = 50;
+
+/**
+ * A "column contains this text" condition that never fails on long text. Short text uses LIKE (escaped, so "%" and "_" match
+ * literally). Text too long for D1's LIKE limit uses instr(), which has no limit and gives the same answer: both ignore case for
+ * ASCII letters and match anywhere in the value.
+ * @param column Column to search, with its alias.
+ * @param text What the admin typed.
+ * @returns The condition and the value to bind to its one placeholder.
+ */
+export function containsText(column: string, text: string): { sql: string; bind: string } {
+  const like = `%${escapeLike(text)}%`;
+  if (new TextEncoder().encode(like).length <= MAX_LIKE_PATTERN_BYTES) {
+    return { sql: `${column} LIKE ? ESCAPE '\\'`, bind: like };
+  }
+  return { sql: `instr(lower(${column}), lower(?)) > 0`, bind: text };
+}
+
 /**
  * Condition on the full-text index of product names, for a product alias `p`.
  * @param text What the admin typed.
@@ -45,9 +64,9 @@ export function productNameMatch(text: string): { sql: string; binds: SqlValue[]
  * @returns The condition and its binds.
  */
 export function textSearch(text: string, columns: string[]): { sql: string; binds: SqlValue[] } {
-  const like = `%${escapeLike(text)}%`;
-  const parts = columns.map((column) => `${column} LIKE ? ESCAPE '\\'`);
-  const binds: SqlValue[] = columns.map(() => like);
+  const contains = columns.map((column) => containsText(column, text));
+  const parts = contains.map((c) => c.sql);
+  const binds: SqlValue[] = contains.map((c) => c.bind);
   const name = productNameMatch(text);
   if (name) {
     parts.push(name.sql);

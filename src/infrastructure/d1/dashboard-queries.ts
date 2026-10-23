@@ -107,7 +107,6 @@ export class D1DashboardQueries implements DashboardQueries {
          FROM product_variants WHERE track_inventory = 1 AND is_active = 1`,
         [input.defaultLowStockThreshold],
       ),
-      statement(this.db, 'SELECT COUNT(*) AS n FROM contact_messages WHERE is_read = 0'),
       statement(
         this.db,
         `SELECT COUNT(*) AS n FROM notification_log WHERE status = 'failed' AND created_at >= ?`,
@@ -141,7 +140,7 @@ export class D1DashboardQueries implements DashboardQueries {
     };
     const stock = rowsAt<{ out_n: number; low_n: number }>(results, 7)[0];
     const chartRows = new Map(
-      rowsAt<{ day: string; orders: number; revenue: number }>(results, 12).map((row) => [row.day, row]),
+      rowsAt<{ day: string; orders: number; revenue: number }>(results, 11).map((row) => [row.day, row]),
     );
     const chart: DashboardDay[] = Array.from({ length: CHART_DAYS }, (_, index) => {
       const day = addDays(today, index - (CHART_DAYS - 1));
@@ -153,7 +152,7 @@ export class D1DashboardQueries implements DashboardQueries {
       name: string;
       units: number;
       revenue: number;
-    }>(results, 11).map((row) => ({
+    }>(results, 10).map((row) => ({
       productId: row.product_id,
       name: row.name,
       units: row.units,
@@ -168,9 +167,8 @@ export class D1DashboardQueries implements DashboardQueries {
       ordersToProcess: rowsAt<{ n: number }>(results, 6)[0]?.n ?? 0,
       outOfStock: stock?.out_n ?? 0,
       lowStock: stock?.low_n ?? 0,
-      unreadMessages: rowsAt<{ n: number }>(results, 8)[0]?.n ?? 0,
-      failedNotifications: rowsAt<{ n: number }>(results, 9)[0]?.n ?? 0,
-      unresolvedJobs: rowsAt<{ n: number }>(results, 10)[0]?.n ?? 0,
+      failedNotifications: rowsAt<{ n: number }>(results, 8)[0]?.n ?? 0,
+      unresolvedJobs: rowsAt<{ n: number }>(results, 9)[0]?.n ?? 0,
       topProducts,
       chart,
     };

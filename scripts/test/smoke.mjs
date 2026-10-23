@@ -170,14 +170,14 @@ for (const path of ['/api/webhooks/dlocalgo', '/api/webhooks/paypal', '/api/webh
 // A browser can send text/plain or form bodies cross-site without a preflight; those must be refused. A JSON body needs a
 // preflight the server never grants, so it cannot arrive from another site.
 for (const type of ['text/plain', 'application/x-www-form-urlencoded']) {
-  const cross = await fetch(BASE + '/api/contact', {
+  const cross = await fetch(BASE + '/api/stock-subscriptions', {
     method: 'POST',
     headers: { 'content-type': type, origin: 'https://evil.example' },
     body: '{}',
   });
   record(`cross-site POST (${type}) refused`, cross.status === 403, String(cross.status));
 }
-const preflight = await fetch(BASE + '/api/contact', {
+const preflight = await fetch(BASE + '/api/stock-subscriptions', {
   method: 'OPTIONS',
   headers: {
     origin: 'https://evil.example',
@@ -247,31 +247,7 @@ if (bankPath) {
   await get(bankPath.split('?')[0], { expect: [403, 404], label: 'order page without key refused' });
 }
 
-// 9. Contact form and stock subscription.
-const contact = await post('/api/contact', {
-  name: 'Smoke',
-  email: 'smoke@example.com',
-  message: 'Hello from the smoke test',
-  locale: 'en',
-  turnstileToken: TURNSTILE_TEST_TOKEN,
-});
-record(
-  'contact form',
-  contact.status === 200,
-  `${contact.status} ${JSON.stringify(contact.json?.error ?? '').slice(0, 100)}`,
-);
-const contactBad = await post('/api/contact', {
-  name: '',
-  email: 'nope',
-  message: '',
-  locale: 'en',
-  turnstileToken: TURNSTILE_TEST_TOKEN,
-});
-record(
-  'contact form validation',
-  contactBad.status >= 400 && contactBad.status < 500,
-  String(contactBad.status),
-);
+// 9. Stock subscription.
 
 // 10. Admin read endpoints and exports.
 for (const path of [

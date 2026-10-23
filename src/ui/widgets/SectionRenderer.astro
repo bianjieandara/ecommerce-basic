@@ -5,6 +5,7 @@ import type { WidgetInstance } from '@/application/content/widgets/registry';
 import type { SectionData } from '@/http/page-content';
 import type { StoreView } from '@/ui/lib/store-view';
 import type { WhatsAppContact } from './types';
+import Callout from './Callout.astro';
 import CategoryGrid from './CategoryGrid.astro';
 import FeaturedProducts from './FeaturedProducts.astro';
 import Faq from './Faq.astro';
@@ -12,6 +13,7 @@ import HeroCarousel from './HeroCarousel.astro';
 import ImageGallery from './ImageGallery.astro';
 import PromoBanner from './PromoBanner.astro';
 import RichText from './RichText.astro';
+import Summary from './Summary.astro';
 import Testimonials from './Testimonials.astro';
 import TrustBadges from './TrustBadges.astro';
 import WhatsAppCta from './WhatsAppCta.astro';
@@ -37,6 +39,8 @@ const renderers: Record<string, typeof HeroCarousel> = {
   testimonials: Testimonials,
   trust_badges: TrustBadges,
   whatsapp_cta: WhatsAppCta,
+  summary: Summary,
+  callout: Callout,
 };
 ---
 

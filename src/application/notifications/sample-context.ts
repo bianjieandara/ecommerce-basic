@@ -67,12 +67,6 @@ export function sampleSections(
       number: 'FV-000123',
       url: withQuery(absoluteUrl(siteUrl, PATHS.orderInvoice(locale, 1042)), { key: 'sample' }),
     },
-    contact: {
-      name: 'Camila Restrepo',
-      email: 'camila@example.com',
-      phone: '+573001234567',
-      message: es ? 'Hola, ¿tienen tallas grandes?\nGracias.' : 'Hi, do you have plus sizes?\nThanks.',
-    },
     product: {
       name: es ? 'Camiseta básica' : 'Basic tee',
       variant,
