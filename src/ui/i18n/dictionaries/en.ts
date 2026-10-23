@@ -23,6 +23,11 @@ export const en = {
     search: 'Search',
     menu: 'Menu',
     language: 'Language',
+    main: 'Main navigation',
+    mobile: 'Mobile navigation',
+    breadcrumb: 'Breadcrumb',
+    previous: 'Previous',
+    next: 'Next',
   },
   shop: {
     title: 'Shop',

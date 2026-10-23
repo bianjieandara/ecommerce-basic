@@ -1,6 +1,7 @@
 ---
 // Product page: gallery, price for the chosen option, option links (no JavaScript needed), description and WhatsApp.
 // The chosen option is the ?v= parameter; the first available option is used when it is missing.
+import Icon from '@/ui/components/Icon.astro';
 import Price from '@/ui/components/Price.astro';
 import AddToCart from '@/ui/store/AddToCart.tsx';
 import BackInStockForm from '@/ui/store/BackInStockForm.tsx';
@@ -99,7 +100,7 @@ const category = product.categories[0];
   webAnalyticsToken={store.integrations.webAnalyticsToken}
   contact={contact}
 >
-  <article class="grid gap-8 md:grid-cols-2">
+  <article class="grid gap-10 md:grid-cols-[1.15fr_1fr] md:gap-16">
     <div class="flex flex-col gap-3">
       {mainImage ? (
         <img
@@ -108,11 +109,15 @@ const category = product.categories[0];
           width="960"
           height="960"
           fetchpriority="high"
-          class="aspect-square w-full rounded-brand bg-surface object-cover"
+          class="aspect-square w-full rounded-card bg-surface object-cover"
         />
       ) : (
-        <div class="flex aspect-square w-full items-center justify-center rounded-brand bg-surface text-sm text-text/70">
-          {t(lang, 'product_page.noImage')}
+        <div
+          class="flex aspect-square w-full items-center justify-center rounded-card bg-surface font-display text-[10rem] font-semibold text-text/10"
+          role="img"
+          aria-label={t(lang, 'product_page.noImage')}
+        >
+          {product.name.charAt(0)}
         </div>
       )}
       {product.images.length > 1 && (
@@ -125,7 +130,7 @@ const category = product.categories[0];
                 width="240"
                 height="240"
                 loading="lazy"
-                class="aspect-square w-full rounded-brand object-cover"
+                class="aspect-square w-full rounded-2xl object-cover"
               />
             </li>
           ))}
@@ -133,8 +138,8 @@ const category = product.categories[0];
       )}
     </div>
 
-    <div class="flex flex-col gap-5">
-      <nav aria-label="breadcrumb" class="text-sm text-text/70">
+    <div class="flex flex-col gap-6 md:sticky md:top-28 md:self-start">
+      <nav aria-label={t(lang, 'nav.breadcrumb')} class="text-sm text-text/70">
         <a
           href={PATHS.shop(lang)}
           class="-my-3.5 inline-flex min-h-11 min-w-11 items-center justify-center underline"
@@ -155,8 +160,8 @@ const category = product.categories[0];
       </nav>
 
       <header class="flex flex-col gap-2">
-        <h1 class="text-2xl font-semibold">{product.name}</h1>
-        <p class="text-text/80">{product.shortDescription}</p>
+        <h1 class="text-4xl md:text-5xl">{product.name}</h1>
+        <p class="text-lg text-text/70">{product.shortDescription}</p>
       </header>
 
       <div class="flex flex-wrap items-baseline gap-3">
@@ -166,17 +171,24 @@ const category = product.categories[0];
           currency={view.currency}
           locale={lang}
           country={view.country}
+          class="text-3xl"
         />
-        <span class="text-sm text-text/70">{taxLabel}</span>
+        <span class="text-sm text-text/60">{taxLabel}</span>
       </div>
 
-      <p class={`text-sm font-medium ${inStock ? 'text-emerald-800' : 'text-accent'}`}>
+      <p
+        class={`flex items-center gap-2 text-sm font-medium ${inStock ? 'text-emerald-800' : 'text-accent'}`}
+      >
+        <span
+          class={`size-2 rounded-full ${inStock ? 'bg-emerald-600' : 'bg-accent'}`}
+          aria-hidden="true"
+        ></span>
         {inStock ? t(lang, 'product.inStock') : t(lang, 'product.outOfStock')}
       </p>
 
       {hasOptions && (
         <section aria-label={t(lang, 'product_page.variants')} class="flex flex-col gap-2">
-          <h2 class="text-sm font-semibold">{t(lang, 'product_page.variants')}</h2>
+          <h2 class="eyebrow">{t(lang, 'product_page.variants')}</h2>
           <ul class="flex flex-wrap gap-2">
             {product.variants.map((variant) => {
               const available = variant.isActive && (!variant.trackInventory || variant.stock > 0);
@@ -186,9 +198,9 @@ const category = product.categories[0];
                     href={withQuery(PATHS.product(lang, slug), { v: variant.id })}
                     aria-current={selected?.id === variant.id ? 'true' : undefined}
                     class:list={[
-                      'flex min-h-11 items-center rounded-brand border px-4 text-sm',
+                      'flex min-h-11 items-center rounded-full border px-5 text-sm transition-colors hover:border-text',
                       selected?.id === variant.id
-                        ? 'border-primary bg-primary-soft font-semibold'
+                        ? 'border-text bg-text font-medium text-background'
                         : 'border-text/20',
                       available ? '' : 'opacity-70 line-through',
                     ]}
@@ -208,8 +220,9 @@ const category = product.categories[0];
           href={whatsappHref}
           target="_blank"
           rel="noopener"
-          class="inline-flex min-h-12 items-center justify-center rounded-brand bg-emerald-700 px-6 font-semibold text-white"
+          class="inline-flex min-h-12 items-center justify-center gap-2 rounded-brand border border-text/20 px-6 font-medium transition hover:border-text hover:bg-surface"
         >
+          <Icon name="chat" size={18} />
           {t(lang, 'product.askWhatsApp')}
         </a>
       )}
@@ -257,8 +270,8 @@ const category = product.categories[0];
           }}
         />
       )}
-      <section class="flex flex-col gap-2 border-t border-text/10 pt-5">
-        <h2 class="text-sm font-semibold">{t(lang, 'product.description')}</h2>
+      <section class="flex flex-col gap-3 border-t border-text/10 pt-6">
+        <h2 class="eyebrow">{t(lang, 'product.description')}</h2>
         <div class="max-w-prose leading-relaxed [&_p]:my-3" set:html={description} />
       </section>
     </div>

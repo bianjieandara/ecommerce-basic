@@ -69,7 +69,8 @@ export interface AttributeRepository {
   existingValueIds(ids: string[]): Promise<string[]>;
   /** True when a variant of any product uses one of the attribute's values. */
   attributeInUse(id: string): Promise<boolean>;
-  valueInUse(valueId: string): Promise<boolean>;
+  /** True when a variant uses any of the given attribute values (one query for the whole list). */
+  anyValueInUse(valueIds: string[]): Promise<boolean>;
   /** Inserts or updates the attribute and its values, and deletes the values that are no longer listed. */
   save(attribute: AdminAttribute): Promise<void>;
   delete(id: string): Promise<void>;

@@ -158,7 +158,7 @@ export class D1OrderRepository implements OrderRepository {
     const rows = await queryAll<{ id: string }>(
       this.db,
       `SELECT id FROM orders WHERE status = 'pending_payment' AND expires_at IS NOT NULL AND expires_at <= ?
-       ORDER BY expires_at LIMIT ?`,
+       ORDER BY expires_at, id LIMIT ?`,
       [nowIso, limit],
     );
     return rows.map((row) => row.id);

@@ -16,11 +16,15 @@ const { products, view } = Astro.props;
 ---
 
 {products.length > 0 && (
-  <section class="mt-12 flex flex-col gap-4" aria-labelledby="related-heading">
-    <h2 id="related-heading" class="text-xl font-semibold">
+  <section class="mt-20 flex flex-col gap-8 md:mt-28" aria-labelledby="related-heading">
+    <h2 id="related-heading" class="text-3xl md:text-4xl">
       {t(view.locale, 'product.related')}
     </h2>
-    <Carousel label={t(view.locale, 'product.related')}>
+    <Carousel
+      label={t(view.locale, 'product.related')}
+      previousLabel={t(view.locale, 'nav.previous')}
+      nextLabel={t(view.locale, 'nav.next')}
+    >
       {products.map((product) => (
         <div class="w-44 shrink-0 snap-start sm:w-56">
           <ProductCard product={product} view={view} />

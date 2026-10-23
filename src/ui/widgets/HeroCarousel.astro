@@ -2,6 +2,7 @@
 // Hero carousel: large slides with a picture, a title, a subtitle and an optional button. A slide without a picture is a
 // block in the primary colour. The text sits on a dark gradient so it stays readable on any picture.
 import Carousel from '@/ui/components/Carousel.astro';
+import Icon from '@/ui/components/Icon.astro';
 import SectionPicture from '@/ui/components/SectionPicture.astro';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { t } from '@/ui/i18n';
@@ -24,15 +25,18 @@ const slides = config.slides ?? [];
   <div data-reveal>
     <Carousel
       label={t(view.locale, 'nav.home')}
+      previousLabel={t(view.locale, 'nav.previous')}
+      nextLabel={t(view.locale, 'nav.next')}
       autoplay={(config.autoplaySeconds ?? 6) * 1000}
       slideBasis="100%"
       single
+      overlay
     >
       {slides.map((slide, index) => {
         const image = slide.image ? data.media?.[slide.image] : undefined;
         return (
           <div
-            class={`relative flex min-h-104 flex-col justify-end overflow-hidden rounded-brand md:min-h-128 ${image ? 'bg-text text-white' : 'bg-primary text-on-primary'}`}
+            class={`relative flex min-h-[28rem] flex-col justify-end overflow-hidden rounded-card md:min-h-[36rem] ${image ? 'bg-text text-white' : 'bg-surface text-text'}`}
           >
             {image && (
               <>
@@ -45,17 +49,20 @@ const slides = config.slides ?? [];
                 <div class="absolute inset-0 bg-linear-to-t from-black/75 via-black/25 to-transparent" />
               </>
             )}
-            <div class="relative flex max-w-xl flex-col items-start gap-4 p-6 md:p-12">
-              <h2 class="text-4xl font-medium leading-[1.05] tracking-tight text-balance md:text-6xl">
+            <div class="relative flex max-w-2xl flex-col items-start gap-5 p-6 pb-20 md:p-14 md:pb-14">
+              <h2 class="text-5xl leading-[1.02] tracking-[-0.04em] text-balance md:text-7xl">
                 {pickText(slide.title, view.locale, 'es')}
               </h2>
-              <p class="text-base opacity-90 md:text-lg">{pickText(slide.subtitle, view.locale, 'es')}</p>
+              <p class="max-w-md text-base opacity-85 md:text-lg">
+                {pickText(slide.subtitle, view.locale, 'es')}
+              </p>
               {slide.cta && (
                 <a
                   href={localizedHref(view.locale, slide.cta.href)}
-                  class="inline-flex min-h-12 items-center rounded-full bg-white px-7 font-semibold text-black transition hover:bg-white/90"
+                  class={`group inline-flex min-h-12 items-center gap-2 rounded-full px-7 font-semibold transition ${image ? 'bg-white text-black hover:bg-white/90' : 'bg-primary text-on-primary hover:opacity-90'}`}
                 >
                   {pickText(slide.cta.label, view.locale, 'es')}
+                  <Icon name="arrow-right" size={18} class="transition group-hover:translate-x-0.5" />
                 </a>
               )}
             </div>

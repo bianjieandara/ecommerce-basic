@@ -118,7 +118,7 @@ export function orderByFor(sort: CatalogQuery['sort']): string {
     case 'best_sellers':
       return 'p.sales_count DESC, p.id';
     case 'featured':
-      return 'p.is_featured DESC, p.created_at DESC';
+      return 'p.is_featured DESC, p.created_at DESC, p.id';
     case 'newest':
     case 'relevance':
       return 'p.created_at DESC, p.id';

@@ -24,6 +24,11 @@ export const es: Dictionary = {
     search: 'Buscar',
     menu: 'Menú',
     language: 'Idioma',
+    main: 'Navegación principal',
+    mobile: 'Navegación móvil',
+    breadcrumb: 'Ruta de navegación',
+    previous: 'Anterior',
+    next: 'Siguiente',
   },
   shop: {
     title: 'Tienda',

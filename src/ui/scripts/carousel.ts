@@ -28,7 +28,8 @@ export function initCarousel(root: HTMLElement): void {
     dot.className = 'group flex min-h-11 min-w-11 items-center justify-center';
     dot.setAttribute('aria-label', `${index + 1} / ${slides.length}`);
     const bar = document.createElement('span');
-    bar.className = 'h-2.5 w-2.5 rounded-full bg-text/25 group-aria-[current=true]:bg-primary';
+    bar.className =
+      'h-1.5 w-1.5 rounded-full bg-text/25 transition-all group-aria-[current=true]:w-5 group-aria-[current=true]:bg-text';
     dot.appendChild(bar);
     dot.addEventListener('click', () => goTo(index));
     dotsHost?.appendChild(dot);

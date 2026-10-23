@@ -33,7 +33,7 @@ export class D1MediaRepository implements MediaRepository {
     const counted = await queryFirst<{ n: number }>(this.db, 'SELECT COUNT(*) AS n FROM media_assets');
     const rows = await queryAll<MediaRow>(
       this.db,
-      'SELECT * FROM media_assets ORDER BY created_at DESC LIMIT ? OFFSET ?',
+      'SELECT * FROM media_assets ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?',
       [pageSize, (page - 1) * pageSize],
     );
     return toPaginated(rows.map(toAsset), counted?.n ?? 0, { page, pageSize });

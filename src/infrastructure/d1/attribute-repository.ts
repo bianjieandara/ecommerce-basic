@@ -89,15 +89,16 @@ export class D1AttributeRepository implements AttributeRepository {
   }
 
   /**
-   * True when a variant uses this value.
-   * @param valueId Attribute value id.
-   * @returns Whether it is in use.
+   * Whether any of the values is used by a variant, in one query.
+   * @param valueIds Attribute value ids.
+   * @returns True when at least one is in use.
    */
-  async valueInUse(valueId: string): Promise<boolean> {
+  async anyValueInUse(valueIds: string[]): Promise<boolean> {
+    if (valueIds.length === 0) return false;
     const row = await queryFirst<{ n: number }>(
       this.db,
-      'SELECT COUNT(*) AS n FROM variant_attribute_values WHERE attribute_value_id = ?',
-      [valueId],
+      'SELECT COUNT(*) AS n FROM variant_attribute_values WHERE attribute_value_id IN (SELECT value FROM json_each(?))',
+      [JSON.stringify(valueIds)],
     );
     return (row?.n ?? 0) > 0;
   }

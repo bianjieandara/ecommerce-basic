@@ -209,7 +209,13 @@ const points = [1, 2, 3, 4, 5, 6, 7].map((value) => ({ label: String(value), val
       <h2 id="kit-carousel" class="text-lg font-semibold">
         {t(lang, 'ui_kit.carousel')}
       </h2>
-      <Carousel label={t(lang, 'ui_kit.carousel')} autoplay={0} slideBasis="85%">
+      <Carousel
+        label={t(lang, 'ui_kit.carousel')}
+        previousLabel={t(lang, 'nav.previous')}
+        nextLabel={t(lang, 'nav.next')}
+        autoplay={0}
+        slideBasis="85%"
+      >
         {[1, 2, 3, 4].map((n) => (
           <div class="rounded-brand bg-surface flex aspect-square items-center justify-center text-2xl font-semibold">
             {t(lang, 'ui_kit.slide')} {n}

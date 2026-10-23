@@ -30,13 +30,12 @@ export class ManageAttributes {
       throw new DomainError('VALIDATION_FAILED', 'A value does not belong to this attribute');
     }
     const kept = new Set(input.values.map((value) => value.id));
-    for (const value of existing?.values ?? []) {
-      if (!kept.has(value.id) && (await this.deps.attributes.valueInUse(value.id))) {
-        throw new DomainError(
-          'CONFLICT',
-          'A value in use cannot be removed. Remove it from the products first.',
-        );
-      }
+    const removed = (existing?.values ?? []).filter((value) => !kept.has(value.id)).map((value) => value.id);
+    if (await this.deps.attributes.anyValueInUse(removed)) {
+      throw new DomainError(
+        'CONFLICT',
+        'A value in use cannot be removed. Remove it from the products first.',
+      );
     }
     const attribute: AdminAttribute = {
       id: input.id ?? this.deps.ids.newId(),

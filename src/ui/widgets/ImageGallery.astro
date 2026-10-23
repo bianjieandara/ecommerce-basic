@@ -14,7 +14,13 @@ const square = 'aspect-square w-full rounded-brand object-cover';
 {images.length > 0 && (
   <div data-reveal>
     {config.layout === 'carousel' ? (
-      <Carousel label={t(view.locale, 'nav.home')} autoplay={0} slideBasis="70%">
+      <Carousel
+        label={t(view.locale, 'nav.home')}
+        previousLabel={t(view.locale, 'nav.previous')}
+        nextLabel={t(view.locale, 'nav.next')}
+        autoplay={0}
+        slideBasis="70%"
+      >
         {images.map((image) => (
           <div class="w-[var(--slide-basis)] shrink-0 snap-start md:w-1/3">
             <SectionPicture image={image} sizes="(min-width: 768px) 33vw, 70vw" class={square} />

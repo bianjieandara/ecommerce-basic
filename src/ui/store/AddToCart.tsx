@@ -73,10 +73,10 @@ export default function AddToCart(props: AddToCartProps) {
   return (
     <div class="flex flex-col gap-3">
       <div class="flex items-center gap-3">
-        <span class="text-sm font-medium">{props.labels.quantity}</span>
+        <span class="eyebrow">{props.labels.quantity}</span>
         <button
           type="button"
-          class="rounded-brand border-text/20 min-h-11 min-w-11 border"
+          class="border-text/20 hover:border-text min-h-11 min-w-11 rounded-full border transition-colors disabled:opacity-40"
           onClick={() => setQuantity((value) => Math.max(1, value - 1))}
           disabled={!available || quantity <= 1}
           aria-label="−"
@@ -88,7 +88,7 @@ export default function AddToCart(props: AddToCartProps) {
         </output>
         <button
           type="button"
-          class="rounded-brand border-text/20 min-h-11 min-w-11 border"
+          class="border-text/20 hover:border-text min-h-11 min-w-11 rounded-full border transition-colors disabled:opacity-40"
           onClick={() => setQuantity((value) => Math.min(maximum, value + 1))}
           disabled={!available || quantity >= maximum}
           aria-label="+"
@@ -100,7 +100,7 @@ export default function AddToCart(props: AddToCartProps) {
         type="button"
         onClick={add}
         disabled={!available}
-        class="rounded-brand bg-primary text-on-primary inline-flex min-h-12 items-center justify-center px-6 font-semibold disabled:opacity-50"
+        class="rounded-brand bg-primary text-on-primary inline-flex min-h-14 items-center justify-center px-6 text-base font-semibold transition hover:opacity-90 disabled:opacity-50"
       >
         {available ? props.labels.add : props.labels.soldOut}
       </button>

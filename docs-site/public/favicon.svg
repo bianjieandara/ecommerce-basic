@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- A neutral shopping bag: dark tile with a light bag, inverted when the browser is in dark mode. A client replaces this file. -->
+  <style>
+    .tile { fill: #111111; }
+    .bag { stroke: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #ffffff; }
+      .bag { stroke: #111111; }
+    }
+  </style>
+  <rect class="tile" width="64" height="64" rx="14" />
+  <path class="bag" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M19 26h26l2 21H17z M26 26v-3a6 6 0 0 1 12 0v3" />
+</svg>

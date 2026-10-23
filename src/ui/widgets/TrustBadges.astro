@@ -15,12 +15,13 @@ const items = (config.items ?? []).map((item) => ({
 ---
 
 {items.length > 0 && (
-  <ul class="grid grid-cols-2 gap-x-3 gap-y-5 md:grid-cols-4 md:gap-6" data-reveal>
+  <ul
+    class="grid grid-cols-2 gap-x-4 gap-y-6 border-y border-text/10 py-7 md:grid-cols-4 md:gap-y-0 md:divide-x md:divide-text/10"
+    data-reveal
+  >
     {items.map((item) => (
-      <li class="flex flex-col items-center gap-3 text-center text-sm font-medium md:flex-row md:text-left">
-        <span class="flex size-12 shrink-0 items-center justify-center rounded-full bg-surface">
-          <Icon name={item.icon} size={22} />
-        </span>
+      <li class="flex items-center gap-3 text-sm font-medium md:px-8 md:first:pl-0 md:last:pr-0">
+        <Icon name={item.icon} size={22} class="shrink-0 text-accent" />
         <span>{pickText(item.text, view.locale, 'es')}</span>
       </li>
     ))}

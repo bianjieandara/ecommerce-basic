@@ -19,21 +19,30 @@ interface Props {
 const { storeName, locale, alternates = {}, announcement = '' } = Astro.props;
 const other: Locale = locale === 'es' ? 'en' : 'es';
 const otherHref = alternates[other] ?? (other === 'es' ? '/es/' : '/en/');
+const navLink = 'inline-flex min-h-11 items-center text-text/70 transition hover:text-text';
 ---
 
 {announcement && (
-  <p class="bg-primary px-4 py-2 text-center text-xs tracking-wide text-on-primary">{announcement}</p>
+  <p class="bg-primary px-5 py-2 text-center text-[11px] font-medium uppercase tracking-[0.16em] text-on-primary">
+    {announcement}
+  </p>
 )}
-<header class="sticky top-0 z-30 border-b border-text/10 bg-background/95 backdrop-blur">
-  <div class="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
-    <a href={routes.home(locale)} class="inline-flex min-h-11 items-center font-semibold tracking-tight">
+<header class="sticky top-0 z-30 border-b border-text/10 bg-background/90 backdrop-blur-md">
+  <div class="mx-auto flex h-16 max-w-7xl items-center gap-4 px-5 md:h-[4.5rem] md:px-8">
+    <a
+      href={routes.home(locale)}
+      class="inline-flex min-h-11 items-center font-display text-xl font-semibold tracking-tight"
+    >
       {storeName}
     </a>
-    <nav aria-label="Main" class="ml-6 hidden items-center gap-5 text-sm md:flex">
-      <a href={routes.shop(locale)} class="hover:text-accent">
+    <nav
+      aria-label={t(locale, 'nav.main')}
+      class="ml-8 hidden items-center gap-8 text-sm font-medium md:flex"
+    >
+      <a href={routes.shop(locale)} class={navLink}>
         {t(locale, 'nav.shop')}
       </a>
-      <a href={routes.contact(locale)} class="hover:text-accent">
+      <a href={routes.contact(locale)} class={navLink}>
         {t(locale, 'nav.contact')}
       </a>
     </nav>
@@ -51,7 +60,7 @@ const otherHref = alternates[other] ?? (other === 'es' ? '/es/' : '/en/');
       <a
         href={otherHref}
         hreflang={other}
-        class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium hover:bg-surface"
+        class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-xs font-semibold tracking-wider hover:bg-surface"
         aria-label={`${other.toUpperCase()} ${t(locale, 'nav.language')}`}
       >
         {other.toUpperCase()}

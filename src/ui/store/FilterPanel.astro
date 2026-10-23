@@ -49,7 +49,7 @@ const flags = [
 
   {showCategoryLinks && categories.length > 0 && (
     <fieldset class="flex flex-col gap-2">
-      <legend class="mb-2 text-sm font-semibold">{t(locale, 'filters.category')}</legend>
+      <legend class="eyebrow mb-3">{t(locale, 'filters.category')}</legend>
       <ul class="flex flex-col gap-1 text-sm">
         {categories.map((category) => {
           const found = facets.categories.find((item) => item.slug === category.slug);
@@ -71,7 +71,7 @@ const flags = [
 
   {facets.attributes.map((facet) => (
     <fieldset class="flex flex-col gap-2">
-      <legend class="mb-2 text-sm font-semibold">{facet.label}</legend>
+      <legend class="eyebrow mb-3">{facet.label}</legend>
       <div class="flex flex-wrap gap-2">
         {facet.values.map((value) => {
           const id = `${idPrefix}-v-${value.id}`;
@@ -80,7 +80,7 @@ const flags = [
             <label
               for={id}
               class:list={[
-                'flex min-h-11 cursor-pointer items-center gap-2 rounded-brand border px-3 text-sm',
+                'flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm transition-colors hover:border-text',
                 value.selected ? 'border-primary bg-primary-soft' : 'border-text/20',
                 disabled ? 'opacity-40' : '',
               ]}
@@ -111,7 +111,7 @@ const flags = [
   ))}
 
   <fieldset class="flex flex-col gap-2">
-    <legend class="mb-2 text-sm font-semibold">{t(locale, 'filters.price')}</legend>
+    <legend class="eyebrow mb-3">{t(locale, 'filters.price')}</legend>
     <div class="grid grid-cols-2 gap-2">
       <label class="flex flex-col gap-1 text-xs">
         {t(locale, 'filters.min')}
@@ -121,7 +121,7 @@ const flags = [
           min="0"
           step="any"
           value={major(query.minPriceMinor)}
-          class="min-h-11 rounded-brand border border-text/20 px-2"
+          class="min-h-11 rounded-brand border border-text/15 px-3"
         />
       </label>
       <label class="flex flex-col gap-1 text-xs">
@@ -132,7 +132,7 @@ const flags = [
           min="0"
           step="any"
           value={major(query.maxPriceMinor)}
-          class="min-h-11 rounded-brand border border-text/20 px-2"
+          class="min-h-11 rounded-brand border border-text/15 px-3"
         />
       </label>
     </div>
