@@ -22,7 +22,7 @@
   "customDomains": ["ecommerce.relion-app.com"],
   "vars": {
     "PUBLIC_SITE_URL": "https://ecommerce.relion-app.com",
-    "EMAIL_FROM": "Store <orders@example.com>",
+    "EMAIL_FROM": "Store <orders@ecommerce.relion-app.com>",
     "PAYPAL_ENV": "sandbox",
     "DLOCALGO_ENV": "sandbox",
     "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",

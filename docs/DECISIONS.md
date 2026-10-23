@@ -685,3 +685,9 @@ What was checked beyond the first round: every admin API route without a session
 - **Shared link button.** `CtaLink.astro` is the one pill link with an arrow, used by the hero, the promo banner and the callout.
 - **Existing stores keep their old text** until `node scripts/refresh-legal-pages.mjs --remote` (or `--persist-to <folder>` for a local database) is run after the new version is deployed. It replaces the three pages with the defaults, so run it only on stores that did not edit them. Run it before deploying and the pages would lose their text, because the old version does not know the new widgets.
 - **Headings one step smaller storefront-wide** (page titles 24–30px, section titles 20–24px, hero 30–48px).
+
+## 2026-10-23 — Demo e-mail is sent from the store's own subdomain
+
+- **Why.** The demo sent from `orders@example.com`, a placeholder domain not owned by the Cloudflare account. Cloudflare refused every send with "domain is not owned by the same account", so no store e-mail (weekly summary, orders, password reset) could reach anyone.
+- **What.** Email Sending is enabled for `ecommerce.relion-app.com` (zone `relion-app.com`). Its SPF, DKIM and DMARC records resolve publicly. The demo's `EMAIL_FROM` is now `Store <orders@ecommerce.relion-app.com>`. A test weekly summary to the owner's mailbox reached `sent`.
+- **Template.** A client with its own domain repeats this: `wrangler email sending enable <domain>`, publish the DNS records it returns, then set `EMAIL_FROM` in `clients/<slug>/client.jsonc`.
