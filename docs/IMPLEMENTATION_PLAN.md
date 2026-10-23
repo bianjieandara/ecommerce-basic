@@ -29,7 +29,7 @@ Locked decisions (approved by the user):
 | Background work | **Cloudflare Queues** (one queue + dead-letter queue per client) + one Cron Trigger per client |
 | Cache | Workers Cache API with version-key invalidation in KV |
 | Admin auth | Own email + password (PBKDF2 WebCrypto), sessions in D1, Turnstile + Rate Limiting binding |
-| Payments | Stripe Checkout, PayPal (Orders v2 via fetch), WhatsApp order (wa.me), Bank transfer, Cash on delivery |
+| Payments | dLocal Go (hosted checkout), PayPal (Orders v2 via fetch), WhatsApp order (wa.me), Bank transfer, Cash on delivery |
 | Catalog filters | Faceted filters with counts (categories, attributes, price, availability, on sale, new), canonical URLs |
 | Variants | Global attributes (Size, Color…) → variants with own SKU/barcode/price/cost/stock |
 | Inventory | Stock ledger (every movement recorded), low-stock alerts, back-in-stock subscriptions, CSV import/export, barcode scan |
@@ -64,7 +64,7 @@ Locked decisions (approved by the user):
 | Bot protection | Turnstile | secret | Free |
 | AI (optional) | Workers AI | `AI` | Free daily allocation (shared) |
 
-External (paid by the client or per use): domains, Stripe/PayPal fees, **Meta WhatsApp template messages (Meta charges per
+External (paid by the client or per use): domains, dLocal Go/PayPal fees, **Meta WhatsApp template messages (Meta charges per
 delivered template message by category and country)**, Google Places (1 call/day/store, within free cap), certified e-invoicing
 provider only if needed. Account plan: **Workers Paid ($5/month) on our account covers all stores.**
 
@@ -86,7 +86,7 @@ src/worker.ts (custom entrypoint) → fetch: Astro handler | queue: job dispatch
 - `src/domain/` — pure TS: entities, value objects, rules (pricing, tax, stock, order status, invoice numbering). Imports nothing outside `src/domain`.
 - `src/application/` — use cases (classes with `execute()`), **ports**, DTOs, zod schemas, job definitions/handlers, notification templates,
   content defaults and pure **document builders** (email layout, invoice HTML, CSV). Imports only `domain` (+ `zod`, `micromark`).
-- `src/infrastructure/` — adapters: D1, R2, KV, Queues, Stripe, PayPal, Email, Browser Run, Meta (Graph API: CAPI + WhatsApp), Analytics Engine,
+- `src/infrastructure/` — adapters: D1, R2, KV, Queues, dLocal Go, PayPal, Email, Browser Run, Meta (Graph API: CAPI + WhatsApp), Analytics Engine,
   Turnstile, Rate limit, Google Places, Workers AI, Cloudflare env.
 - `src/composition/` — the only place that instantiates adapters and use cases (`createApp(env, ctx)`).
 - `src/http/` — driving-adapter helpers (endpoint factory, error mapping, cookies, auth guard, page cache, middleware).
@@ -136,7 +136,7 @@ ESLint `no-restricted-imports` enforces the rule (Stage 0).
    │  ├─ cloudflare/ env.ts
    │  ├─ d1/         d1-client, mappers, *-repository, catalog-query-service, reports-query-service
    │  ├─ r2/  kv/  queues/ (cloudflare-job-queue, inline-job-queue)
-   │  ├─ payments/   stripe-*, paypal-*, manual-gateways
+   │  ├─ payments/   dlocalgo-*, paypal-*, manual-gateways
    │  ├─ email/      cloudflare-email-sender, console-email-sender
    │  ├─ meta/       graph-client, meta-conversions-sink, whatsapp-cloud-sender, whatsapp-template-catalog, meta-signature
    │  ├─ analytics/  analytics-engine-sink, analytics-sql-query-service
@@ -164,7 +164,7 @@ ESLint `no-restricted-imports` enforces the rule (Stage 0).
       │              inventory/{index,movements} orders/* invoices/* messages pages/* testimonials shipping
       │              emails/* whatsapp reports/[report] notification-log jobs settings/[group] users
       └─ api/        health cart/quote catalog/count search/suggest checkout contact events stock-subscriptions
-                     orders/[number]/invoice.pdf webhooks/{stripe,paypal,whatsapp} admin/** (JSON + CSV)
+                     orders/[number]/invoice.pdf webhooks/{dlocalgo,paypal,whatsapp} admin/** (JSON + CSV)
 ```
 
 ### 2.3 Multi-client model (all clients in our account)
@@ -224,7 +224,7 @@ All strings from i18n. CSS-only animations honoring `prefers-reduced-motion`. Be
 search `src/` — shared logic lives in exactly one module.
 
 **Approved dependencies** (others need a reason in `docs/DECISIONS.md`): `astro`, `@astrojs/cloudflare`, `@astrojs/preact`, `preact`,
-`tailwindcss`, `@tailwindcss/vite`, `zod`, `nanostores`, `@nanostores/persistent`, `@nanostores/preact`, `micromark`, `stripe`,
+`tailwindcss`, `@tailwindcss/vite`, `zod`, `nanostores`, `@nanostores/persistent`, `@nanostores/preact`, `micromark`,
 `@fontsource-variable/inter`, `@fontsource-variable/manrope`, `@fontsource-variable/playfair-display`;
 dev: `wrangler` (≥ 4.145), `typescript`, `@astrojs/check`, `eslint`, `typescript-eslint`, `eslint-plugin-astro`, `globals`,
 `prettier`, `prettier-plugin-astro`, `prettier-plugin-tailwindcss`, `jsonc-parser` (scripts only).
@@ -236,11 +236,11 @@ dev: `wrangler` (≥ 4.145), `typescript`, `@astrojs/check`, `eslint`, `typescri
 1. Execute stages **in order**; a stage starts only after the previous "Done when" passes.
 2. After every numbered step run `npm run check`; fix everything before continuing.
 3. End of stage: `npm run check && npm run build`, manual smoke steps, tick `docs/PROGRESS.md`, commit `feat(stage-N): <summary>`, `git push`.
-4. If an external API (Astro adapter, Cloudflare, Stripe, PayPal, Meta) differs from this plan, read the official docs,
+4. If an external API (Astro adapter, Cloudflare, dLocal Go, PayPal, Meta) differs from this plan, read the official docs,
    adapt **only inside the adapter file** that wraps it, and log it in `docs/DECISIONS.md`.
 5. Never put secrets in code, `clients/*.jsonc` or D1. Secrets: `.dev.vars` (local), `.secrets/` → `wrangler secret bulk` (prod).
 6. Never edit generated files (`wrangler.jsonc`, `worker-configuration.d.ts`, `.astro/`).
-7. Stop and ask the user for anything requiring them (Cloudflare login, Stripe/PayPal/Meta accounts, domains, DNS, template approval).
+7. Stop and ask the user for anything requiring them (Cloudflare login, dLocal Go/PayPal/Meta accounts, domains, DNS, template approval).
 8. Keep files < ~250 lines; split by responsibility.
 
 ---
@@ -385,7 +385,7 @@ CREATE TABLE orders (
   id TEXT PRIMARY KEY, number INTEGER NOT NULL UNIQUE,
   access_key_hash TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('pending_payment','paid','processing','shipped','delivered','cancelled','refunded')),
-  payment_method TEXT NOT NULL CHECK (payment_method IN ('stripe','paypal','whatsapp','bank_transfer','cash_on_delivery')),
+  payment_method TEXT NOT NULL CHECK (payment_method IN ('dlocalgo','paypal','whatsapp','bank_transfer','cash_on_delivery')),
   payment_reference TEXT, currency TEXT NOT NULL, locale TEXT NOT NULL, prices_include_tax INTEGER NOT NULL,
   subtotal_minor INTEGER NOT NULL, tax_minor INTEGER NOT NULL, shipping_minor INTEGER NOT NULL, total_minor INTEGER NOT NULL,
   customer_name TEXT NOT NULL, customer_email TEXT NOT NULL, customer_phone TEXT NOT NULL,
@@ -550,7 +550,7 @@ export interface JobQueue {
 export interface FailedJobRepository { record(envelope: JobEnvelope, error: string, attempts: number): Promise<void>; list(q: PageQuery): Promise<Paginated<FailedJob>>; resolve(id: string, resolution: "retried" | "discarded"): Promise<void> }
 
 // ---------- application/ports/payments.ts ----------
-export type PaymentMethod = "stripe" | "paypal" | "whatsapp" | "bank_transfer" | "cash_on_delivery";
+export type PaymentMethod = "dlocalgo" | "paypal" | "whatsapp" | "bank_transfer" | "cash_on_delivery";
 export type PaymentInitiation = { kind: "redirect"; url: string; providerReference?: string } | { kind: "confirmation" };
 export interface PaymentGateway {
   readonly method: PaymentMethod;
@@ -558,7 +558,7 @@ export interface PaymentGateway {
   supportsCurrency(currency: CurrencyCode, settings: CheckoutSettings): boolean;
   initiate(input: { order: OrderSummaryDto; accessKey: string; origin: string }): Promise<PaymentInitiation>;
 }
-export interface PaymentConfirmation { provider: "stripe" | "paypal"; eventId: string; providerReference: string; outcome: "succeeded" | "failed" | "expired" | "refunded"; amountMinor: number; currency: string }
+export interface PaymentConfirmation { provider: "dlocalgo" | "paypal"; eventId: string; providerReference: string; outcome: "succeeded" | "failed" | "expired" | "refunded"; amountMinor: number; currency: string }
 
 // ---------- application/ports/catalog.ts & inventory.ts ----------
 export interface CatalogQueryService {
@@ -664,8 +664,8 @@ Goal: Astro + Cloudflare + Preact + Tailwind project with lint boundaries, docs 
    alias `@client` → `clients/<CLIENT_SLUG|demo>/extensions` (fallback `_default`). No Astro i18n routing.
 4. `tsconfig.json`: strict + `noUncheckedIndexedAccess` + paths `@/*`, `@client`; include `worker-configuration.d.ts`.
 5. `eslint.config.js` with `no-restricted-imports` per layer:
-   domain ✗ application/infrastructure/http/ui/composition/astro*/cloudflare:*/preact*/stripe/zod;
-   application ✗ infrastructure/http/ui/composition/astro*/cloudflare:*/preact*/stripe;
+   domain ✗ application/infrastructure/http/ui/composition/astro*/cloudflare:*/preact*/zod;
+   application ✗ infrastructure/http/ui/composition/astro*/cloudflare:*/preact*;
    infrastructure ✗ http/ui/composition; ui, pages, clients ✗ infrastructure.
 6. Prettier (`prettier-plugin-astro`, `prettier-plugin-tailwindcss`, printWidth 110), `.editorconfig`,
    `.gitignore` (`node_modules dist .astro .wrangler .dev.vars .env* .secrets/ /wrangler.jsonc`).
@@ -732,7 +732,7 @@ Done when: check/build pass; first commit; `git push -u origin main` succeeds.
 6. `scripts/client-secrets.mjs <slug>` (`wrangler secret bulk`). `.dev.vars.example`:
    ```
    TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
-   STRIPE_SECRET_KEY=            STRIPE_WEBHOOK_SECRET=
+   DLOCALGO_API_KEY=            DLOCALGO_SECRET_KEY=
    PAYPAL_CLIENT_ID=             PAYPAL_CLIENT_SECRET=          PAYPAL_WEBHOOK_ID=
    GOOGLE_PLACES_API_KEY=        SETUP_TOKEN=change-me-long-random
    WHATSAPP_TOKEN=               WHATSAPP_VERIFY_TOKEN=         META_APP_SECRET=
@@ -800,7 +800,7 @@ Done when: migrate + seed apply cleanly on a fresh `.wrangler` state.
 5. Widget definitions (`application/content/widgets/`, one file each + `registry.ts` merging `@client`): `hero_carousel`, `featured_products`,
    `category_grid`, `promo_banner`, `rich_text`, `testimonials`, `image_gallery`, `faq`, `whatsapp_cta`, `trust_badges`.
 6. `application/content/defaults/`: system pages (home demo sections, about, contact intro, privacy, terms, shipping-returns). Full **bilingual** legal texts
-   (GDPR, CCPA/CPRA, LGPD, Colombia Law 1581/2012; processors: Cloudflare, Stripe, PayPal, Google, **Meta (WhatsApp, Pixel/Conversions API)**; cookies & consent
+   (GDPR, CCPA/CPRA, LGPD, Colombia Law 1581/2012; processors: Cloudflare, dLocal Go, PayPal, Google, **Meta (WhatsApp, Pixel/Conversions API)**; cookies & consent
    section). Placeholders replaced by ONE `fillPlaceholders(text, vars)` (reused by the template engine).
 
 Done when: check/build pass; no boundary violations.
@@ -933,11 +933,12 @@ Done when: DEV route previews every email in both languages; `notify()` produces
    tracking `purchase` is NOT sent here (only on payment) → return `{ number, next, orderUrl }`. On `initiate` failure: `cancelAndReleaseStock` + `PAYMENT_PROVIDER_ERROR`.
 2. `POST /api/checkout` (public, `RL_FORMS`, `botCheck`).
 3. Gateways:
-   - **Stripe** (`stripe` SDK, `Stripe.createFetchHttpClient()`): Checkout Session `mode: "payment"`, line items (minor units), extra "Tax/IVA" line when prices exclude tax,
-     shipping line, `customer_email`, `client_reference_id`, `metadata.orderId`, `locale`, `expires_at = now + max(30, onlineHoldMinutes) min`,
-     `success_url …/checkout/success?order=<n>&key=<k>`, `cancel_url …/checkout/cancel?order=<n>&key=<k>`. Webhook: `constructEventAsync(raw, sig, secret, undefined,
-     Stripe.createSubtleCryptoProvider())`; `checkout.session.completed` (paid) / `async_payment_succeeded` → succeeded; `async_payment_failed` → failed;
-     `expired` → expired; `charge.refunded` → refunded.
+   - **dLocal Go** (fetch, `Authorization: Bearer <api key>:<secret key>`): `POST /v1/payments` (hosted checkout) with currency, a decimal amount built from the integer digits,
+     country, `order_id` (the order number), payer email, `success_url …/checkout/success?order=<n>&key=<k>`, `back_url …/checkout/cancel?order=<n>&key=<k>`, `notification_url`
+     and an expiry of max(30, onlineHoldMinutes) minutes; redirect to the returned `redirect_url`. Webhook: dLocal Go posts only `{payment_id}` (or a refund id), signed in the
+     `Authorization` header as `V2-HMAC-SHA256, Signature: <hex>` = HMAC-SHA256 of the API key followed by the raw body, keyed with the secret key; the store verifies it,
+     asks dLocal Go for the payment (`GET /v1/payments/:id`) and maps `PAID` → succeeded, `CANCELLED` → failed, `EXPIRED` → expired (`REJECTED` and `PENDING` change nothing:
+     the buyer can retry inside the same checkout); a fully refunded payment → refunded.
    - **PayPal** (fetch): token cached in KV; create order with `item_total`/`tax_total`/`shipping` breakdown and `experience_context` (`return_url`, `cancel_url`,
      `user_action: "PAY_NOW"`, `shipping_preference: "NO_SHIPPING"`); redirect to `payer-action`; **our param is `key`** (PayPal adds `token`); return page →
      `CapturePayPalOrder`; webhook verified via `/v1/notifications/verify-webhook-signature`; unsupported currency → settlement currency + exchange rate, else hidden.
@@ -949,7 +950,7 @@ Done when: DEV route previews every email in both languages; `notify()` produces
 6. UI: `CheckoutForm` island (Contact → Delivery → optional invoice data → Payment → WhatsApp updates opt-in checkbox (default from settings) → summary with tax lines →
    Turnstile → sticky pay bar); success, cancel and order status pages (`key` constant-time check; timeline; invoice link). `no-store` everywhere in checkout/orders.
 
-Done when (local): Stripe test card + `stripe listen` marks paid; PayPal sandbox marks paid; WhatsApp opens wa.me; bank/COD instructions; oversell fails nicely;
+Done when (local): a dLocal Go sandbox test card marks paid; PayPal sandbox marks paid; WhatsApp opens wa.me; bank/COD instructions; oversell fails nicely;
 expired orders restore stock (ledger shows `sale` then `cancel_restore`); notifications are queued and consumed.
 
 ### Stage 11 — Invoicing (own invoice + PDF + legal port)
@@ -1145,7 +1146,7 @@ Done when: sitemap validates; Rich Results shows Product; filtered URLs are noin
 1. Headers: HSTS, nosniff, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(self), microphone=(), geolocation=()` (camera for the admin
    barcode scanner), CSP `frame-ancestors 'none'; base-uri 'self'; object-src 'none'`.
 2. Every public mutation: `rateLimit` (+ `botCheck` for contact/checkout/login/forgot/stock-subscriptions); every admin endpoint: `auth`; body limits (JSON 64 KB,
-   uploads 10 MB, CSV import 2 MB); webhooks (Stripe, PayPal, WhatsApp) verify signatures on the raw body; public order/invoice URLs require the key (constant time).
+   uploads 10 MB, CSV import 2 MB); webhooks (dLocal Go, PayPal, WhatsApp) verify signatures on the raw body; public order/invoice URLs require the key (constant time).
 3. Escaping everywhere (Astro, micromark safe, template engine, CSV injection guard: prefix `'` when a cell starts with `= + - @`).
 4. Structured logs (`http/log.ts`) in errors, webhooks, payments, jobs, notifications; Workers Logs on.
 5. `docs/SECURITY.md` (threat summary + endpoint checklist).
@@ -1164,7 +1165,7 @@ Done when: translating a product description or an email body fills the other ta
 
 1. Finish `deploy-client.mjs` / `deploy-all.mjs` (section 2.3); deploy `demo`.
 2. `docs/NEW_CLIENT.md` runbook: `npm run client:new -- <slug>` → edit `client.jsonc` → domain as zone in our account (or subdomain) → Turnstile widget →
-   Email Service sending domain → client's Stripe/PayPal keys + webhooks → WhatsApp (WABA, phone id, token, webhook) and Meta Pixel/CAPI token (optional) →
+   Email Service sending domain → client's dLocal Go/PayPal keys + webhooks → WhatsApp (WABA, phone id, token, webhook) and Meta Pixel/CAPI token (optional) →
    `.secrets/<slug>.json` → `npm run client:secrets -- <slug>` → `npm run deploy:client -- <slug>` → `/admin/setup` → rotate `SETUP_TOKEN` → settings, logo, products,
    WhatsApp templates submit/sync. **Own-account clients**: `accountId` + `.secrets/<slug>.env` token; same commands; their usage billed to them.
 3. `docs/CUSTOMIZATION.md`: admin-level customization; `clients/<slug>/extensions` (widgets, CSS); new adapters (payment, legal invoicing, marketing sinks such as
@@ -1182,7 +1183,7 @@ Done when: `demo` + a second test client are deployed with `npm run deploy:all`,
 1. `npm run check` + `npm run build` pass; no boundary violations.
 2. Mobile (360×800), `/es` and `/en`: home carousel + animations; **filters**: every facet, counts, live "Ver N resultados", chips, canonical 301, noindex on filtered URLs;
    sort/search/pagination; variant picker; back-in-stock subscription; cart; checkout with all 5 payment methods; tax lines for included/excluded settings.
-3. Stripe test payment → webhook → `paid` → invoice + PDF → `payment_confirmed` and `invoice_issued` by email **and WhatsApp** (opted-in) → Meta `Purchase` (deduplicated)
+3. dLocal Go test payment → webhook → `paid` → invoice + PDF → `payment_confirmed` and `invoice_issued` by email **and WhatsApp** (opted-in) → Meta `Purchase` (deduplicated)
    → appears in reports. Expired session → cancelled + stock restored (ledger) + `order_cancelled`.
 4. PayPal sandbox capture → `paid`; replayed webhooks cause no duplicates (payment events, notification idempotency keys, invoice uniqueness).
 5. **Queues**: kill a provider (wrong token) → jobs retry with backoff → land in DLQ → visible in `/admin/jobs` → fix token → Retry succeeds once.

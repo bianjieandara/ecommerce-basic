@@ -54,4 +54,4 @@ Before any task, read `docs/PROGRESS.md` (30 lines) and work in stage order. The
 - After every numbered step: `npm run check`. Fix errors before moving on.
 - End of stage: `npm run check && npm run build`, tick `docs/PROGRESS.md`, commit `feat(stage-N): <summary>`, push.
 - Never commit secrets. Never edit generated files (`wrangler.jsonc`, `worker-configuration.d.ts`, `.astro/`).
-- Ask the user for anything that needs their accounts (Cloudflare login, Stripe, PayPal, Meta, domains).
+- Ask the user for anything that needs their accounts (Cloudflare login, dLocal Go, PayPal, Meta, domains).

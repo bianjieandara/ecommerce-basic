@@ -22,7 +22,6 @@ const DOMAIN_FORBIDDEN = [
   'cloudflare:*',
   'preact',
   'preact/**',
-  'stripe',
   'zod',
 ];
 
@@ -42,7 +41,6 @@ const APPLICATION_FORBIDDEN = [
   'cloudflare:*',
   'preact',
   'preact/**',
-  'stripe',
 ];
 
 /** Module patterns that infrastructure must never import (it implements ports, it does not drive HTTP or UI). */

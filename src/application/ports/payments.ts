@@ -5,8 +5,8 @@ import type { OrderSummary } from '../dto/order-dto';
 import type { CheckoutSettings, ContactSettings } from '../dto/settings-dto';
 
 /**
- * Payment methods the store can offer. The CHECK constraint on orders.payment_method also keeps 'stripe', the card gateway before
- * dLocal Go, so orders stored with it stay valid.
+ * Payment methods the store can offer. The CHECK constraint on orders.payment_method also keeps the id of the card gateway that
+ * dLocal Go replaced (see migration 0003), so orders stored with it stay valid.
  */
 export const PAYMENT_METHODS = [
   'dlocalgo',
