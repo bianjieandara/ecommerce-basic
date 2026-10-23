@@ -29,6 +29,8 @@ const page = positiveInteger(params.get('page'));
 const result = can(admin.role, 'jobs.manage')
   ? await app.adminOps.reads.failedJobs.list(page, ADMIN_LIST_PAGE_SIZE)
   : null;
+// The notice below is the page; the status says so too, so nothing downstream treats it as a normal screen.
+if (result === null) Astro.response.status = 403;
 
 const head = {
   job: t(lang, 'admin.jobs.job'),

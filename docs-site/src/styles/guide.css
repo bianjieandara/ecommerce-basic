@@ -1,0 +1,212 @@
+/* Look of the user guide: it wears the demo store's type (Inter, text #111111) with a brand-colour header, shows ordered lists as guided
+   steps and styles the role tiles of the home page. Change --guide-primary to re-skin the whole guide for another brand. */
+:root {
+  --guide-primary: #111111;
+  --guide-accent: #d62828;
+  --guide-on-primary: #ffffff;
+  --guide-font-display: 'Inter', system-ui, sans-serif;
+  --sl-font: 'Inter', system-ui, sans-serif;
+  --sl-color-bg-nav: var(--guide-primary);
+}
+
+:root[data-theme='light'] {
+  --sl-color-purple: var(--guide-accent);
+  --sl-color-purple-low: #fbe9e8;
+  --sl-color-purple-high: #8f1a1a;
+  --sl-color-accent: var(--guide-primary);
+  --sl-color-accent-low: #f5f5f5;
+  --sl-color-accent-high: #111111;
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-sidebar: #f5f5f5;
+  --sl-color-text: #111111;
+  --sl-color-white: #111111;
+  --sl-color-hairline: #dcdcdc;
+  --guide-card: #ffffff;
+  --guide-muted: #4a4a4a;
+}
+
+:root[data-theme='dark'] {
+  --sl-color-purple: #ef6b6b;
+  --sl-color-purple-low: #3a1a1a;
+  --sl-color-purple-high: #f7b4b4;
+  --sl-color-accent: #f5f5f5;
+  --sl-color-accent-low: #26272b;
+  --sl-color-accent-high: #ffffff;
+  --guide-card: var(--sl-color-gray-6);
+  --guide-muted: var(--sl-color-gray-2);
+}
+
+/* Brand header: the controls inside it read white on the brand colour in both themes. */
+header.header {
+  --sl-color-text: #ffffff;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #ffffff;
+  --sl-color-gray-2: #e6e6e6;
+  --sl-color-gray-3: #e6e6e6;
+  --sl-color-gray-5: rgb(255 255 255 / 0.45);
+  --sl-color-gray-6: rgb(255 255 255 / 0.16);
+  --sl-color-black: var(--guide-primary);
+  --sl-color-hairline-shade: rgb(0 0 0 / 0.2);
+}
+
+.site-title {
+  color: #ffffff;
+  font-family: var(--guide-font-display);
+  font-size: 1.25rem;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+}
+
+h1,
+.sl-markdown-content h2,
+.hero h1 {
+  font-family: var(--guide-font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Guided steps: every top-level numbered list becomes numbered cards. */
+.sl-markdown-content > ol {
+  list-style: none;
+  padding: 0;
+  margin-inline-start: 0;
+  counter-reset: guide-step;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sl-markdown-content > ol > li {
+  counter-increment: guide-step;
+  position: relative;
+  margin: 0 !important;
+  padding: 0.9rem 1rem 0.9rem 4rem;
+  min-height: 3.5rem;
+  background: var(--guide-card);
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.875rem;
+}
+
+.sl-markdown-content > ol > li::before {
+  content: counter(guide-step);
+  position: absolute;
+  inset-inline-start: 1rem;
+  top: 0.8rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--sl-color-accent);
+  color: var(--sl-color-text-invert);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.sl-markdown-content > ol > li > * + * {
+  margin-top: 0.5rem;
+}
+
+.sl-markdown-content > ol > li img {
+  border-radius: 0.5rem;
+  border: 1px solid var(--sl-color-hairline);
+}
+
+/* Role tiles on the home page. */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-block: 1.5rem;
+}
+
+.role-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 15rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid var(--sl-color-hairline);
+  background: var(--guide-card);
+  color: var(--sl-color-text);
+  text-decoration: none;
+}
+
+.role-tile.is-featured {
+  background: var(--guide-primary);
+  border-color: var(--guide-primary);
+  color: var(--guide-on-primary);
+}
+
+.role-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: grid;
+  place-items: center;
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+}
+
+.role-tile.is-featured .role-icon {
+  background: rgb(255 255 255 / 0.18);
+  color: var(--guide-on-primary);
+}
+
+.role-title {
+  font-family: var(--guide-font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  margin-top: 0.25rem;
+}
+
+.role-text {
+  color: var(--guide-muted);
+}
+
+.role-tile.is-featured .role-text {
+  color: #e6e6e6;
+}
+
+.role-go {
+  margin-top: auto;
+  font-weight: 600;
+}
+
+.role-tile:focus-visible {
+  outline: 3px solid var(--sl-color-accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .role-tile {
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .role-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(17 17 17 / 0.14);
+  }
+}
+
+@media (max-width: 50rem) {
+  .role-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .role-tile {
+    min-height: 0;
+  }
+  .sl-markdown-content > ol > li {
+    padding-inline-start: 3.5rem;
+  }
+  .sl-markdown-content > ol > li::before {
+    width: 2rem;
+    height: 2rem;
+    inset-inline-start: 0.75rem;
+  }
+}

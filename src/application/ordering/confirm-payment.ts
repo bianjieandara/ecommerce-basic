@@ -10,7 +10,7 @@ import type { SettingsRepository } from '../ports/content';
 import type { JobQueue } from '../ports/jobs';
 import type { OrderRepository } from '../ports/ordering';
 import type { PaymentConfirmation, PaymentEventLog } from '../ports/payments';
-import type { Clock } from '../ports/platform';
+import type { Clock, LogEvent } from '../ports/platform';
 import type { ReportPurchase } from '../marketing/report-purchase';
 import { notifyOrderCustomer } from './customer-notice';
 import type { OrderLinks } from './order-links';
@@ -27,6 +27,8 @@ export interface ConfirmPaymentDeps {
   /** Queues the Meta Purchase event once the order is paid. Never throws. */
   purchase: ReportPurchase;
   clock: Clock;
+  /** Structured logger, for events the store owner has to act on by hand. */
+  log: LogEvent;
   siteUrl: string;
 }
 
@@ -62,6 +64,17 @@ export class ConfirmPayment {
       throw new DomainError('VALIDATION_FAILED', 'Payment amount or currency does not match the order');
     }
     const nowIso = this.deps.clock.now().toISOString();
+    if (confirmation.outcome === 'succeeded' && order.status === 'cancelled') {
+      // The customer paid for an order that was already cancelled and whose stock was released, so it is not revived. Nothing else
+      // in the store reverses the charge, so it is logged for the owner to refund in the provider's dashboard.
+      this.deps.log('payment.late_for_cancelled_order', {
+        orderNumber: order.number,
+        provider: confirmation.provider,
+        providerReference: confirmation.providerReference,
+        amountMinor: confirmation.amountMinor,
+        currency: confirmation.currency,
+      });
+    }
     await this.apply(order, confirmation, nowIso);
     // Recorded last: if a step above failed, the provider retries the event and it is applied again. Every step is
     // idempotent, so a retry is safe.

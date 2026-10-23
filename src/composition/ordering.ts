@@ -131,6 +131,7 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     evaluateStock,
     links,
     clock,
+    log: logEvent,
     siteUrl,
     purchase: new ReportPurchase({ jobs, settings, clock, log: logEvent }),
   });

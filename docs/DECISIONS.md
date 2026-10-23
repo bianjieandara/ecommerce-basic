@@ -626,6 +626,6 @@ The user chose dLocal Go as the card gateway. Everywhere the plan names the prev
 
 ## 2026-10-23 — Guide redesign: role entry, store theme, guided steps
 
-- **Three options combined from the 20-option proposal:** the home page asks who the reader is (shopper, owner, client) with three tiles; the guide wears the store's warm theme (brand-colour header, serif headlines); every top-level numbered list shows as guided steps.
-- **CSS only.** `docs-site/src/styles/guide.css` carries the look and re-skins the whole guide by changing `--guide-primary`. Step cards come from CSS counters on `.sl-markdown-content > ol`, so existing Markdown needs no changes. No new dependency; Inter and Playfair Display load from Google Fonts through `head` links in `astro.config.mjs`.
+- **Three options combined from the 20-option proposal:** the home page asks who the reader is (shopper, owner, client) with three tiles; the guide uses the demo store's type (Inter for body and headings, text colour #111111) with the demo store's palette (primary and text #111111, accent #d62828, surface #f5f5f5, white background) and a primary-colour header; every top-level numbered list shows as guided steps.
+- **CSS only.** `docs-site/src/styles/guide.css` carries the look and re-skins the whole guide by changing `--guide-primary`. Step cards come from CSS counters on `.sl-markdown-content > ol`, so existing Markdown needs no changes. No new dependency; Inter loads from Google Fonts through `head` links in `astro.config.mjs`.
 - **Content touched:** `admin/reports.md` ("Choosing the period" is now three steps, es and en). The English page also gained the CSV step the Spanish one already had.

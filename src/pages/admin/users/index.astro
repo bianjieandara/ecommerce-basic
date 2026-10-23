@@ -17,6 +17,8 @@ const store = await loadStoreContext(app);
 const { country, timezone, storeName } = store.general;
 // Display guard only: the endpoints check the same permission. Editors never reach the read, so no account data is loaded for them.
 const users = can(admin.role, 'users.manage') ? await app.adminUsers.list() : null;
+// The notice below is the page; the status says so too, so nothing downstream treats it as a normal screen.
+if (users === null) Astro.response.status = 403;
 const rows = (users ?? []).map((user) => ({
   id: user.id,
   name: user.name,

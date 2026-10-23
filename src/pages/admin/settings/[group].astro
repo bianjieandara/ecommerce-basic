@@ -21,6 +21,8 @@ const requested = Astro.params.group ?? '';
 if (!Object.hasOwn(names, requested)) return new Response(t(lang, 'errors.NOT_FOUND'), { status: 404 });
 const group = requested as SettingsGroup;
 const canEdit = can(admin.role, 'settings.manage');
+// The notice below is the page; the status says so too, so nothing downstream treats it as a normal screen.
+if (!canEdit) Astro.response.status = 403;
 const values = await app.settings.get(group);
 const library = await app.mediaLibrary.list(1, 100);
 const media = library.items.map((asset) => ({ id: asset.id, label: asset.originalName }));

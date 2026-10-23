@@ -17,6 +17,8 @@ const store = await loadStoreContext(app);
 const labels = whatsappLabels(lang);
 // Display guard only: every template use case checks the same permission itself.
 const allowed = can(admin.role, 'settings.manage');
+// The notice below is the page; the status says so too, so nothing downstream treats it as a normal screen.
+if (!allowed) Astro.response.status = 403;
 const overview = allowed ? await app.whatsapp.templates.overview(admin) : null;
 ---
 

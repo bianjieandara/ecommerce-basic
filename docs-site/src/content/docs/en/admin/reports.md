@@ -29,8 +29,9 @@ The tabs across the top are the reports:
 
 ## Choosing the period
 
-Set **From** and **To**, or press **Last 7 days**, **Last 30 days** or **Last 90 days**. For sales you can group the chart by day,
-week or month. Each number shows how it compares with the period before it.
+1. **Set the range.** Set **From** and **To**, or press **Last 7 days**, **Last 30 days** or **Last 90 days**.
+2. **Group if you need to.** For sales you can group the chart by day, week or month. Each number shows how it compares with the period before it.
+3. **Download the CSV.** **Download CSV** exports the report table.
 
 ## Weekly summary
 

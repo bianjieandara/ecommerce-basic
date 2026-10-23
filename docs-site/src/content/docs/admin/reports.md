@@ -29,10 +29,9 @@ Las pestañas de arriba son los reportes:
 
 ## Elegir el periodo
 
-Define **Desde** y **Hasta**, o pulsa **Últimos 7 días**, **Últimos 30 días** o **Últimos 90 días**. En ventas puedes **agrupar
-por** día, semana o mes. Cada cifra muestra cómo se compara con el periodo anterior («vs periodo anterior»). **Descargar CSV**
-exporta la tabla del reporte, y cada reporte lleva al pie notas que explican cómo se cuenta (por ejemplo, que los importes cuentan
-los pedidos el día en que se pagaron).
+1. **Define el rango.** Escribe **Desde** y **Hasta**, o pulsa **Últimos 7 días**, **Últimos 30 días** o **Últimos 90 días**.
+2. **Agrupa si hace falta.** En ventas puedes **agrupar por** día, semana o mes. Cada cifra muestra cómo se compara con el periodo anterior («vs periodo anterior»).
+3. **Descarga el CSV.** **Descargar CSV** exporta la tabla del reporte. Cada reporte lleva al pie notas que explican cómo se cuenta (por ejemplo, que los importes cuentan los pedidos el día en que se pagaron).
 
 ## Resumen semanal
 

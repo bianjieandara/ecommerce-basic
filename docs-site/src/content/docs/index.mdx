@@ -3,33 +3,29 @@ title: Guía de la tienda
 description: Cómo funciona la tienda para quien compra, cómo la gestiona su equipo y cómo un cliente consigue una.
 template: splash
 hero:
-  tagline: Una tienda online completa que puedes lanzar en pocos días, con un panel que tu equipo maneja sin depender de un programador.
-  actions:
-    - text: Gestiono una tienda (guía del panel)
-      link: /admin/overview/
-      icon: right-arrow
-    - text: Quiero una tienda
-      link: /clients/what-you-get/
-      variant: minimal
+  title: ¿Qué necesitas hacer hoy?
+  tagline: Elige tu papel y te llevamos directo a lo que te toca.
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+<div class="role-grid">
+  <a class="role-tile" href="/storefront/overview/">
+    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h13l-1.5 8H8z"/><circle cx="9" cy="19" r="1.2"/><circle cx="17" cy="19" r="1.2"/></svg></span>
+    <span class="role-title">Compro en la tienda</span>
+    <span class="role-text">Explorar, pagar y seguir mi pedido.</span>
+    <span class="role-go">Ver la guía →</span>
+  </a>
+  <a class="role-tile is-featured" href="/admin/overview/">
+    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M9 10v9"/></svg></span>
+    <span class="role-title">Llevo el negocio</span>
+    <span class="role-text">Productos, stock, pedidos, facturas y reportes.</span>
+    <span class="role-go">Ver la guía →</span>
+  </a>
+  <a class="role-tile" href="/clients/what-you-get/">
+    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-14 14z"/><path d="M5 19c3-4 6-7 9-9"/></svg></span>
+    <span class="role-title">Quiero una tienda</span>
+    <span class="role-text">Qué incluye, qué debes aportar y cómo se lanza.</span>
+    <span class="role-go">Ver la guía →</span>
+  </a>
+</div>
 
-<CardGrid stagger>
-  <Card title="Lo que ve quien compra" icon="open-book">
-    La tienda, las fichas de producto, el carrito, el pago y el seguimiento del pedido, en español e inglés y pensado primero
-    para el celular. [Lee el recorrido del comprador](/storefront/overview/).
-  </Card>
-  <Card title="Gestionar la tienda" icon="setting">
-    Productos, stock, pedidos, facturas, mensajes, páginas, correos y configuración, cada uno con capturas y los pasos a
-    seguir. [Abre la guía del panel](/admin/overview/).
-  </Card>
-  <Card title="Conseguir una tienda" icon="rocket">
-    Qué incluye, qué debes aportar, cuánto tarda el lanzamiento y cuánto cuesta mantenerla.
-    [Mira qué recibes](/clients/what-you-get/).
-  </Card>
-  <Card title="Siempre al día" icon="random">
-    Las capturas las toma un script desde la tienda real, así que se renuevan cuando cambian las pantallas.
-    [Cómo se hace esta guía](/start/how-this-guide-is-made/).
-  </Card>
-</CardGrid>
+Las capturas las toma un script desde la tienda real, así que se renuevan cuando cambian las pantallas. [Cómo se hace esta guía](/start/how-this-guide-is-made/).
