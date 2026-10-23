@@ -21,7 +21,7 @@ export default function ConsentSettingsLink({ label }: ConsentSettingsLinkProps)
     <button
       type="button"
       onClick={reopen}
-      class="inline-flex min-h-11 items-center text-sm underline-offset-4 opacity-80 hover:underline hover:opacity-100"
+      class="inline-flex min-h-11 items-center text-sm underline-offset-4 opacity-80 hover:underline hover:opacity-100 md:min-h-8"
     >
       {label}
     </button>

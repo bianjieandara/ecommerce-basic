@@ -24,11 +24,11 @@
 
 /* Small uppercase label above a title or in a footer column. */
 @utility eyebrow {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
+  font-size: var(--eyebrow-size);
+  font-weight: var(--eyebrow-weight);
+  letter-spacing: var(--eyebrow-tracking);
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--brand-text) 62%, transparent);
+  color: var(--brand-text-muted);
 }
 
 :root {
@@ -40,6 +40,15 @@
   --brand-surface: #f4f4f2;
   --brand-text: #111111;
   --brand-radius: 0.5rem;
+  /* Type rhythm shared by every title and small label. */
+  --title-weight: 600;
+  --title-tracking: -0.03em;
+  --title-leading: 1.08;
+  --body-leading: 1.6;
+  --eyebrow-size: 0.75rem;
+  --eyebrow-weight: 500;
+  --eyebrow-tracking: 0.16em;
+  --brand-text-muted: color-mix(in srgb, var(--brand-text) 62%, transparent);
   --brand-font: 'Outfit Variable';
   --brand-font-display: 'Sora Variable';
 }
@@ -49,9 +58,9 @@
 h1,
 h2 {
   font-family: var(--brand-font-display), ui-serif, Georgia, serif;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
+  font-weight: var(--title-weight);
+  letter-spacing: var(--title-tracking);
+  line-height: var(--title-leading);
   text-wrap: balance;
 }
 
@@ -70,7 +79,7 @@ body {
   color: var(--brand-text);
   font-family: var(--brand-font), ui-sans-serif, system-ui, sans-serif;
   min-height: 100dvh;
-  line-height: 1.6;
+  line-height: var(--body-leading);
 }
 
 :focus-visible {

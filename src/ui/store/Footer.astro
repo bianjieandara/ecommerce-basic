@@ -52,7 +52,7 @@ const columns = [
     </div>
     {columns.map((column) => (
       <nav aria-label={column.title} class="flex flex-col items-start">
-        <p class="eyebrow mb-1 !text-background/50">{column.title}</p>
+        <p class="eyebrow mb-1 text-background/50!">{column.title}</p>
         {column.links.map((link) => (
           <FooterLink href={link.href}>{link.label}</FooterLink>
         ))}

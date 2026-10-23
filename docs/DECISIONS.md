@@ -638,7 +638,7 @@ The user chose dLocal Go as the card gateway. Everywhere the plan names the prev
 - **No-picture state.** A product or product page without a picture shows the product's first letter large and faint on the tinted tile, so a store that has not uploaded photos yet still looks intentional.
 - **Product page.** The buying column is sticky beside the gallery; options are pills (the chosen one is filled); "Ask on WhatsApp" is an outline button with an icon instead of a green block; the floating WhatsApp button is the text colour (a dark circle), not brand green.
 - **Cart and forms.** Inputs are 48px high; the cart summary is a card that sticks while the lines scroll; checkout and cart buttons are 56px.
-- **Footer.** Adds the store name as a faint oversized wordmark (hidden on phones and from screen readers).
+- **Footer.** Compact: the store's name and details, a menu and a legal column side by side on every size, and the copyright. The first version added an oversized wordmark; it was removed because the footer was too tall. The columns are one list in `Footer.astro` and each link is `FooterLink.astro`.
 - **Not touched.** The admin, the emails and the PDFs keep their own styles. The demo hero banners still use earthy pictures from the earlier demo look.
 
 ## 2026-10-23 — Audit, second round
@@ -658,3 +658,4 @@ What was checked beyond the first round: every admin API route without a session
 - **Not checked:** payments and messages against the real providers (see TESTING.md), load behaviour, and the unfinished stages 18, 19, 20 and 25 beyond what exists.
 - **Contact page has no form (owner's decision).** The page shows the ways to reach the store as cards (`ContactCard.astro`): WhatsApp first as the dark main action, then email, phone, address and opening hours, then social links, the map and the Google reviews. The form's backend (`/api/contact`, the admin Messages page, the message jobs) and `ContactForm.tsx` are still in the code, unused by the page; remove them in a separate change if the form is not coming back. The `contact.form*` and `contact.send*` dictionary keys are unused for now.
 - **Footer is shorter:** on phones the menu and legal links sit side by side; padding and margins were cut on every size, and the wordmark is smaller (12vw).
+- **Type rhythm in tokens.** Title weight, tracking and leading, body leading and the small-label (`eyebrow`) size, weight and tracking are custom properties in `global.css`, as the project's CSS rule requires; the title and eyebrow rules read them.

@@ -36,7 +36,8 @@ const whatsappHref = whatsappLink(
   pickText(store.contact.whatsappMessage, lang, 'es'),
 );
 const hours = pickText(store.contact.openingHours, lang, 'es');
-const cards: ComponentProps<typeof ContactCard>[] = [
+type Card = ComponentProps<typeof ContactCard>;
+const candidates: (Card | null)[] = [
   whatsappHref
     ? {
         icon: 'chat',
@@ -66,7 +67,8 @@ const cards: ComponentProps<typeof ContactCard>[] = [
     ? { icon: 'map', label: t(lang, 'contact.address'), value: store.contact.address }
     : null,
   hours ? { icon: 'clock', label: t(lang, 'contact.hours'), value: hours } : null,
-].filter((card) => card !== null);
+];
+const cards = candidates.filter((card): card is Card => card !== null);
 const socialLinks = Object.entries(store.contact.social).filter(
   (entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1] !== '',
 );
