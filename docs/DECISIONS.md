@@ -579,3 +579,26 @@ The user chose dLocal Go as the card gateway. Everywhere the plan says Stripe, r
 - **Footer text contrast.** `text-text/60` on the warm surface colour measured 3.93:1; it is now `text-text/75`. Any store with a tinted surface colour would have failed the same check.
 - **`stripe` removed from dependencies** (nothing imported it since the move to dLocal Go); `worker-configuration.d.ts` regenerated, which also dropped the Stripe variable names. `ARCHITECTURE.md` lists dLocal Go in place of Stripe.
 - **Accepted: dev-only audit findings.** `npm audit` reports a high-severity regex denial of service in `braces`, reached only through `eslint-plugin-astro` (a development tool, never in the Worker). The suggested fix is a breaking downgrade of that plugin, so it waits for an upstream release. `npm audit --omit=dev` reports 0.
+
+## 2026-10-23 — Testing kit and guide
+
+- **Why.** The template is not tied to a live site, so "tested" is split in levels (TESTING.md): static checks, a local smoke test, local
+  webhook simulation, provider sandboxes, and a per-client pre-launch list. Levels 3 and 4 depend on a client's accounts and are done
+  per client; a template release never waits for them.
+- **`scripts/test/smoke.mjs`** (`npm run test:smoke`) is the stage smoke check made repeatable: pages in both languages, every admin page, the
+  public API, refusals, five checkout paths, the invoice PDF, the sales report against a direct database count, and the product feed's fields. It
+  talks only to the local demo store (the `docs/shared.mjs` guard).
+- **`scripts/test/webhooks.mjs`** (`npm run test:webhooks`) sends correctly and wrongly signed dLocal Go and WhatsApp calls. The demo store now
+  starts with fixed, made-up WhatsApp webhook secrets (`DEMO_WEBHOOK_VARS`), so it needs no Meta account and `.dev.vars` stays untouched. PayPal
+  cannot be simulated: the store verifies events with PayPal's own API, which refuses mock events.
+- **Fix: the phone hashed for Meta now carries the country code.** The Conversions API path hashed the digits as typed, so `300 555 0101`
+  was sent without its country code and `0057...` kept its `00`. It now uses the shared `normalizePhone` of `domain/shared/phone.ts`
+  with the store's default country code, and the duplicate helper in `domain/analytics` is gone. Email and phone hashes reproduce the
+  examples in Meta's Conversions API docs.
+- **Observed, not assumed.** Both local cron URLs work with this Wrangler (`/cdn-cgi/handler/scheduled` and the documented
+  `/cdn-cgi/local/scheduled`); the page cache gives `HIT` under `wrangler dev`; the rate limits are enforced locally; admin refunds are
+  recorded by hand (no provider refund API call), and PayPal refund events are not handled.
+- **Open question, left for the first Google upload.** The feed writes `in stock` (Meta's spelling); Google's specification lists `in_stock`.
+  Neither is confirmed from an official page for the other service, so TESTING_INTEGRATIONS.md says to read Merchant Center's diagnostics.
+- **Audit warning.** Pinning `eslint-plugin-astro` 1.5.0 as `npm audit` suggests lowered the findings from 5 to 4 and cleared nothing; no
+  patched `braces` exists on npm yet. Reverted; recheck each release.

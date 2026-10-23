@@ -55,7 +55,8 @@ acepta las cookies.
 
 ## Probar antes de lanzar
 
-Recorre esta lista en la dirección real, con pagos de prueba:
+Recorre esta lista en la dirección real, con pagos de prueba. El paso a paso de cada servicio está en
+[Probar con cuentas de prueba](/clients/test-accounts/):
 
 - [ ] La tienda carga en `/es` y `/en`, en un celular y en un portátil.
 - [ ] `/admin` pide iniciar sesión y el propietario puede entrar.

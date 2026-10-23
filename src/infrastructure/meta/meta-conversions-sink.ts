@@ -4,7 +4,8 @@
 import type { ConversionEvent, ConversionSettings, ConversionsSink } from '@/application/ports/analytics';
 import type { Hasher } from '@/application/ports/platform';
 import { DomainError } from '@/domain/shared/errors';
-import { normalizeEmail, normalizePhone } from '@/domain/analytics/identifiers';
+import { normalizeEmail } from '@/domain/analytics/identifiers';
+import { normalizePhone } from '@/domain/shared/phone';
 import { buildConversionBody, type HashedIdentifiers } from './meta-conversion-body';
 import type { MetaGraphClient } from './graph-client';
 
@@ -40,7 +41,7 @@ export class MetaConversionsSink implements ConversionsSink {
     if (!PIXEL_ID_PATTERN.test(settings.pixelId)) {
       throw new DomainError('VALIDATION_FAILED', 'The Meta pixel id must be numeric.');
     }
-    const hashed = await this.hashIdentifiers(event);
+    const hashed = await this.hashIdentifiers(event, settings.defaultCountryCode);
     const body = buildConversionBody(event, hashed, this.siteUrl, settings.testEventCode);
     await this.client.postJson(`${settings.pixelId}/events`, body);
   }
@@ -48,11 +49,15 @@ export class MetaConversionsSink implements ConversionsSink {
   /**
    * Hashes the email and phone of an event. Missing or unusable values are left out, never hashed as empty text.
    * @param event Conversion carrying the raw values (null when there is no consent).
+   * @param defaultCountryCode Calling code for phones typed without one.
    * @returns The hashes that exist.
    */
-  private async hashIdentifiers(event: ConversionEvent): Promise<HashedIdentifiers> {
+  private async hashIdentifiers(
+    event: ConversionEvent,
+    defaultCountryCode: string,
+  ): Promise<HashedIdentifiers> {
     const email = event.email === null ? null : normalizeEmail(event.email);
-    const phone = event.phone === null ? null : normalizePhone(event.phone);
+    const phone = event.phone === null ? null : normalizePhone(event.phone, defaultCountryCode);
     return {
       ...(email === null ? {} : { em: await this.hasher.sha256Hex(email) }),
       ...(phone === null ? {} : { ph: await this.hasher.sha256Hex(phone) }),

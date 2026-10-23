@@ -7,6 +7,15 @@ export const BASE = process.env.DOCS_BASE ?? 'http://localhost:4400';
 /** Folder where wrangler keeps the demo store's database, so it never mixes with the development one. */
 export const STATE = process.env.DOCS_STATE ?? '.wrangler/docs-state';
 
+/**
+ * Fixed, made-up WhatsApp webhook secrets of the local demo store. They are not credentials: they only let scripts/test/webhooks.mjs
+ * sign calls the demo store accepts, without a Meta account and without touching .dev.vars. The store starts with them (store.mjs).
+ */
+export const DEMO_WEBHOOK_VARS = {
+  META_APP_SECRET: 'local-test-app-secret',
+  WHATSAPP_VERIFY_TOKEN: 'local-test-verify-token',
+};
+
 /** Test token the Turnstile test keys accept. */
 export const TURNSTILE_TEST_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
 

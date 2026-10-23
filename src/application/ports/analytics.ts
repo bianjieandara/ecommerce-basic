@@ -77,6 +77,8 @@ export interface ConversionEvent {
 export interface ConversionSettings {
   pixelId: string;
   testEventCode: string | null;
+  /** Calling code added to phones typed without one, so the hash carries the country as Meta requires (for example "57"). */
+  defaultCountryCode: string;
 }
 
 /** Sends events to Meta's Conversions API. Temporary failures throw RetryableError, so the queue retries them. */

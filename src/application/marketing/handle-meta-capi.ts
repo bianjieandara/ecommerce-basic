@@ -67,9 +67,11 @@ export function handleMetaCapi(deps: MetaCapiDeps): JobHandler {
       deps.log('meta_capi.skipped', { reason: 'not_configured', eventId: event.eventId });
       return;
     }
+    const { defaultCountryCode } = await deps.settings.get('whatsapp');
     await deps.sink.send(event, {
       pixelId,
       testEventCode: marketing.metaTestEventCode.trim() || null,
+      defaultCountryCode,
     });
   };
 }

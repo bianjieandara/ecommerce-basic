@@ -52,7 +52,8 @@ Add your Pixel ID in [Settings](/en/admin/settings/) (Marketing). Tracking start
 
 ## Test before you launch
 
-Go through this list on the real address, with test payments:
+Go through this list on the real address, with test payments. The step by step for each service is in
+[Test with test accounts](/en/clients/test-accounts/):
 
 - [ ] The shop loads in `/es` and `/en`, on a phone and a laptop.
 - [ ] `/admin` asks for a sign-in, and the owner can sign in.
