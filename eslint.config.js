@@ -81,7 +81,15 @@ const boundary = (patterns) => [
 
 export default [
   {
-    ignores: ['dist', '.astro', '.wrangler', 'node_modules', 'worker-configuration.d.ts', 'wrangler.jsonc'],
+    ignores: [
+      'docs-site',
+      'dist',
+      '.astro',
+      '.wrangler',
+      'node_modules',
+      'worker-configuration.d.ts',
+      'wrangler.jsonc',
+    ],
   },
   ...tseslint.configs.recommended,
   ...eslintPluginAstro.configs.recommended,

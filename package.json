@@ -22,6 +22,11 @@
     "deploy:client": "node scripts/deploy-client.mjs",
     "deploy:all": "node scripts/deploy-all.mjs",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "docs:store": "node scripts/docs/store.mjs",
+    "docs:data": "node scripts/docs/demo-data.mjs",
+    "docs:screens": "node scripts/docs/screenshots.mjs",
+    "docs:dev": "npm --prefix docs-site run dev",
+    "docs:build": "npm --prefix docs-site run build",
     "db:seed:local": "wrangler d1 execute DB --local --file=db/seed/dev.sql"
   },
   "dependencies": {

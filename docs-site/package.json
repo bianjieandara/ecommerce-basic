@@ -1,0 +1,16 @@
+{
+  "name": "ecommerce-docs",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "description": "User guide for the store template: what it does, how store owners run it, and how a client gets one. Separate from the store's own package so the Worker never carries these dependencies.",
+  "scripts": {
+    "dev": "astro dev --port 4500",
+    "build": "astro build",
+    "preview": "astro preview --port 4500"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.42.6",
+    "astro": "^7.4.2"
+  }
+}

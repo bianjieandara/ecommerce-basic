@@ -7,3 +7,4 @@ wrangler.jsonc
 worker-configuration.d.ts
 .secrets
 docs/IMPLEMENTATION_PLAN.md
+docs-site
