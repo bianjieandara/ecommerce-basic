@@ -587,7 +587,7 @@ export const es: Dictionary = {
     ai: {
       translate: 'Traducir',
       translating: 'Traduciendo…',
-      hint: 'Rellena la otra pestaña de idioma. No se guarda nada hasta que guardes el formulario.',
+      hint: 'Rellena el otro idioma. No se guarda nada hasta que guardes el formulario.',
       empty: 'Escribe un texto para traducir.',
       tooLong: 'El texto supera los 5.000 caracteres. Acórtalo e inténtalo de nuevo.',
       placeholders:

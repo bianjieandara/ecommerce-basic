@@ -582,7 +582,7 @@ export const en = {
     ai: {
       translate: 'Translate',
       translating: 'Translating…',
-      hint: 'Fills the other language tab. Nothing is saved until you save the form.',
+      hint: 'Fills the other language. Nothing is saved until you save the form.',
       empty: 'Write some text to translate first.',
       tooLong: 'The text is longer than 5,000 characters. Shorten it and try again.',
       placeholders: 'The translation changed a variable, so it was not applied. Edit by hand or try again.',
