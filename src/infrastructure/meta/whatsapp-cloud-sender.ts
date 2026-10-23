@@ -4,6 +4,17 @@ import { DomainError, RetryableError } from '@/domain/shared/errors';
 import type { WhatsAppMedia, WhatsAppSender, WhatsAppTemplateMessage } from '@/application/ports/whatsapp';
 import type { MetaGraphClient } from './graph-client';
 
+/**
+ * The recipient as the Cloud API addresses it. Argentine mobiles are stored with a "9" after the country code (549 + area
+ * + number), but Meta's allowed-recipient list and sends use the form without it (54 + area + number). The domain keeps
+ * the full E.164 number; only this adapter changes it.
+ * @param phone Digits with country code, as normalized by the domain.
+ * @returns The digits in the form the Cloud API accepts.
+ */
+export function metaRecipient(phone: string): string {
+  return /^549\d{10}$/.test(phone) ? `54${phone.slice(3)}` : phone;
+}
+
 /** Body of a template message in the shape the Cloud API expects. Exported so the payload can be checked without a call. */
 export function templatePayload(message: WhatsAppTemplateMessage): Record<string, unknown> {
   const components: Record<string, unknown>[] = [];
@@ -29,7 +40,7 @@ export function templatePayload(message: WhatsAppTemplateMessage): Record<string
   }
   return {
     messaging_product: 'whatsapp',
-    to: message.to,
+    to: metaRecipient(message.to),
     type: 'template',
     template: {
       name: message.templateName,
