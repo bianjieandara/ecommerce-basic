@@ -960,6 +960,7 @@ export const es: Dictionary = {
         low_stock_store: 'Alerta de stock bajo',
         back_in_stock: 'De nuevo en stock',
         weekly_report_store: 'Resumen semanal',
+        payment_late_store: 'Pago de un pedido cancelado (aviso a la tienda)',
         admin_password_reset: 'Restablecer contraseña',
         admin_invite: 'Invitación de administrador',
       },

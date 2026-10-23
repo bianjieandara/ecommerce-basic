@@ -8,6 +8,15 @@ import type { Locale } from '@/domain/shared/locale';
 import { majorTextOf } from '@/domain/shared/money';
 import { PATHS } from '@/domain/shared/paths';
 
+/**
+ * The services that read the feed. They spell the availability differently: Meta wants "in stock", Google's specification lists
+ * "in_stock". Meta is the default, so a feed URL without a target keeps working as before.
+ */
+export const FEED_TARGETS = ['meta', 'google'] as const;
+
+/** A service the feed is written for. */
+export type FeedTarget = (typeof FEED_TARGETS)[number];
+
 /** Meta's limits: a longer title or description is rejected for the whole item. */
 const MAX_TITLE_LENGTH = 150;
 const MAX_DESCRIPTION_LENGTH = 5000;
@@ -29,6 +38,8 @@ export interface ProductFeedInput {
   /** Public origin without a trailing slash, for example "https://shop.example.com". */
   siteUrl: string;
   settings: ProductFeedSettings;
+  /** Who reads the feed; decides the spelling of the availability. Defaults to Meta. */
+  target?: FeedTarget;
 }
 
 /**
@@ -63,6 +74,17 @@ function priceText(amountMinor: number, currency: CurrencyCode): string {
 }
 
 /**
+ * The availability value in the spelling of the service that reads the feed.
+ * @param inStock Whether the variant can be bought.
+ * @param target Meta ("in stock") or Google ("in_stock").
+ * @returns The value for g:availability.
+ */
+function availabilityText(inStock: boolean, target: FeedTarget): string {
+  const text = inStock ? 'in stock' : 'out of stock';
+  return target === 'google' ? text.replaceAll(' ', '_') : text;
+}
+
+/**
  * Builds the `<item>` element of one variant. Variants without an image return null: Meta and Google reject items
  * without image_link, so leaving them out is the only way to keep the rest of the feed accepted.
  * @param item Feed row of one variant.
@@ -86,7 +108,7 @@ function itemXml(item: FeedItemDto, input: ProductFeedInput): string | null {
     element('description', (item.description || item.name).slice(0, MAX_DESCRIPTION_LENGTH)),
     element('link', absoluteUrl(input.siteUrl, PATHS.product(input.locale, item.slug))),
     element('g:image_link', absoluteUrl(input.siteUrl, PATHS.media(item.imageKey))),
-    `      <g:availability>${item.inStock ? 'in stock' : 'out of stock'}</g:availability>`,
+    `      <g:availability>${availabilityText(item.inStock, input.target ?? 'meta')}</g:availability>`,
     '      <g:condition>new</g:condition>',
     `      <g:price>${priceText(regularMinor, currency)}</g:price>`,
     onSale ? element('g:sale_price', priceText(item.priceMinor, currency)) : '',

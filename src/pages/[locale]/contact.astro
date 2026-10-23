@@ -6,6 +6,7 @@ import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import SectionRenderer from '@/ui/widgets/SectionRenderer.astro';
 import MapFacade from '@/ui/components/MapFacade.astro';
 import ContactCard from '@/ui/store/ContactCard.astro';
+import type { ComponentProps } from 'astro/types';
 import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 import { PATHS } from '@/domain/shared/paths';
@@ -35,6 +36,37 @@ const whatsappHref = whatsappLink(
   pickText(store.contact.whatsappMessage, lang, 'es'),
 );
 const hours = pickText(store.contact.openingHours, lang, 'es');
+const cards: ComponentProps<typeof ContactCard>[] = [
+  whatsappHref
+    ? {
+        icon: 'chat',
+        label: t(lang, 'contact.whatsApp'),
+        value: store.contact.whatsappNumber,
+        href: whatsappHref,
+        primary: true,
+      }
+    : null,
+  store.contact.email
+    ? {
+        icon: 'mail',
+        label: t(lang, 'contact.email'),
+        value: store.contact.email,
+        href: `mailto:${store.contact.email}`,
+      }
+    : null,
+  store.contact.phone
+    ? {
+        icon: 'phone',
+        label: t(lang, 'contact.call'),
+        value: store.contact.phone,
+        href: `tel:${store.contact.phone}`,
+      }
+    : null,
+  store.contact.address
+    ? { icon: 'map', label: t(lang, 'contact.address'), value: store.contact.address }
+    : null,
+  hours ? { icon: 'clock', label: t(lang, 'contact.hours'), value: hours } : null,
+].filter((card) => card !== null);
 const socialLinks = Object.entries(store.contact.social).filter(
   (entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1] !== '',
 );
@@ -68,47 +100,11 @@ const socialLinks = Object.entries(store.contact.social).filter(
       )}
     </header>
     <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {whatsappHref && (
+      {cards.map((card) => (
         <li class="contents">
-          <ContactCard
-            icon="chat"
-            label={t(lang, 'contact.whatsApp')}
-            value={store.contact.whatsappNumber}
-            href={whatsappHref}
-            primary
-          />
+          <ContactCard {...card} />
         </li>
-      )}
-      {store.contact.email && (
-        <li class="contents">
-          <ContactCard
-            icon="mail"
-            label={t(lang, 'contact.email')}
-            value={store.contact.email}
-            href={`mailto:${store.contact.email}`}
-          />
-        </li>
-      )}
-      {store.contact.phone && (
-        <li class="contents">
-          <ContactCard
-            icon="phone"
-            label={t(lang, 'contact.call')}
-            value={store.contact.phone}
-            href={`tel:${store.contact.phone}`}
-          />
-        </li>
-      )}
-      {store.contact.address && (
-        <li class="contents">
-          <ContactCard icon="map" label={t(lang, 'contact.address')} value={store.contact.address} />
-        </li>
-      )}
-      {hours && (
-        <li class="contents">
-          <ContactCard icon="clock" label={t(lang, 'contact.hours')} value={hours} />
-        </li>
-      )}
+      ))}
     </ul>
     {socialLinks.length > 0 && (
       <ul class="-mt-4 flex flex-wrap gap-2 md:-mt-8">

@@ -13,6 +13,7 @@ import type { PaymentConfirmation, PaymentEventLog } from '../ports/payments';
 import type { Clock, LogEvent } from '../ports/platform';
 import type { ReportPurchase } from '../marketing/report-purchase';
 import { notifyOrderCustomer } from './customer-notice';
+import { loadOrderPresentation, orderSections } from './order-sections';
 import type { OrderLinks } from './order-links';
 
 /** Dependencies of ConfirmPayment. */
@@ -74,12 +75,42 @@ export class ConfirmPayment {
         amountMinor: confirmation.amountMinor,
         currency: confirmation.currency,
       });
+      await this.alertStoreOfLatePayment(order, confirmation);
     }
     await this.apply(order, confirmation, nowIso);
     // Recorded last: if a step above failed, the provider retries the event and it is applied again. Every step is
     // idempotent, so a retry is safe.
     const isNew = await this.deps.events.recordIfNew(confirmation.provider, confirmation.eventId, nowIso);
     return { handled: isNew, orderNumber: order.number };
+  }
+
+  /**
+   * Tells the store team that a payment arrived for a cancelled order, so they can refund it. One message per provider event: a retried
+   * webhook finds the same reference and queues nothing. A failure here is logged and never fails the webhook.
+   * @param order The cancelled order.
+   * @param confirmation The payment event.
+   */
+  private async alertStoreOfLatePayment(order: Order, confirmation: PaymentConfirmation): Promise<void> {
+    try {
+      const [general, checkout, contact] = await Promise.all([
+        this.deps.settings.get('general'),
+        this.deps.settings.get('checkout'),
+        this.deps.settings.get('contact'),
+      ]);
+      await this.deps.notifications.notify({
+        key: 'payment_late_store',
+        reference: `late:${confirmation.provider}:${confirmation.eventId}`,
+        orderId: order.id,
+        recipient: { email: checkout.orderNotificationEmail || contact.email, locale: general.defaultLocale },
+        context: orderSections(order, general.defaultLocale, {
+          siteUrl: this.deps.siteUrl,
+          presentation: await loadOrderPresentation(this.deps.settings),
+          accessKey: null,
+        }),
+      });
+    } catch (error) {
+      this.deps.log('payment.late_alert_failed', { orderNumber: order.number, error: String(error) });
+    }
   }
 
   /**

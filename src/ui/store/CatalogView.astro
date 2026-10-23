@@ -5,6 +5,7 @@ import Button from '@/ui/components/Button.astro';
 import Drawer from '@/ui/components/Drawer.astro';
 import EmptyState from '@/ui/components/EmptyState.astro';
 import Icon from '@/ui/components/Icon.astro';
+import Select from '@/ui/components/Select.astro';
 import FilterPanel from './FilterPanel.astro';
 import Pagination from './Pagination.astro';
 import ProductCard from './ProductCard.astro';
@@ -41,25 +42,30 @@ const activeFilters = [
 <section class="flex flex-col gap-10">
   <header class="flex flex-col gap-6">
     <h1 class="text-3xl md:text-4xl">{title}</h1>
-    <form method="get" action={basePath} role="search" class="flex gap-2">
+    <form method="get" action={basePath} role="search" class="relative">
       <label class="sr-only" for="catalog-search">
         {t(locale, 'shop.searchPlaceholder')}
       </label>
+      <Icon
+        name="search"
+        size={20}
+        class="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-text/50"
+      />
       <input
         id="catalog-search"
         type="search"
         name="q"
         value={query.q ?? ''}
         placeholder={t(locale, 'shop.searchPlaceholder')}
-        class="min-h-12 flex-1 rounded-full border border-transparent bg-surface px-5 transition-colors focus:border-text focus:bg-background"
+        class="min-h-14 w-full appearance-none rounded-full border border-text/15 bg-background pr-16 pl-12 text-base transition-colors hover:border-text/40 focus:border-text [&::-webkit-search-cancel-button]:appearance-none"
       />
       {query.sort !== options.defaultSort && <input type="hidden" name="sort" value={query.sort} />}
       <button
         type="submit"
-        class="min-h-12 min-w-12 rounded-full bg-primary px-4 text-on-primary transition hover:opacity-90"
+        class="absolute top-1/2 right-1.5 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-on-primary transition hover:opacity-90"
         aria-label={t(locale, 'nav.search')}
       >
-        <Icon name="search" />
+        <Icon name="arrow-right" size={18} />
       </button>
     </form>
     <div class="flex flex-wrap items-center justify-between gap-3">
@@ -70,27 +76,22 @@ const activeFilters = [
         <button
           type="button"
           data-dialog-open="catalog-filters"
-          class="min-h-11 rounded-full border border-text/20 px-5 text-sm font-medium md:hidden"
+          class="min-h-11 rounded-full border border-text/20 px-5 text-sm font-medium md:hidden whitespace-nowrap"
         >
           {t(locale, 'filters.activeCount', { count: activeFilters })}
         </button>
         <form method="get" action={basePath} class="flex items-center gap-2">
           {query.q && <input type="hidden" name="q" value={query.q} />}
-          <label class="text-sm" for="catalog-sort">
+          <label class="sr-only text-sm md:not-sr-only" for="catalog-sort">
             {t(locale, 'shop.sortBy')}
           </label>
-          <select
-            id="catalog-sort"
-            name="sort"
-            onchange="this.form.requestSubmit()"
-            class="min-h-11 rounded-full border border-text/20 bg-background px-4 text-sm"
-          >
+          <Select id="catalog-sort" name="sort" shape="pill" onchange="this.form.requestSubmit()">
             {CATALOG_SORTS.map((sort) => (
               <option value={sort} selected={sort === query.sort}>
                 {t(locale, `sort.${sort}`)}
               </option>
             ))}
-          </select>
+          </Select>
           <noscript>
             <Button type="submit" variant="secondary">
               {t(locale, 'common.search')}

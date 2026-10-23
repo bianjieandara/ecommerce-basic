@@ -72,7 +72,9 @@ export class DLocalGoGateway implements PaymentGateway {
         // The API takes a decimal number in the payment currency. It is built from the integer digits, never by division.
         amount: Number(majorTextOf(order.totalMinor, order.currency)),
         country: settings.country,
-        order_id: String(order.number),
+        // The number alone repeats when two databases share one dLocal Go account (a reset database, a development store next to a
+        // demo): dLocal Go answers 5009 and the customer cannot pay. The order's own id makes it unique. Nothing reads it back.
+        order_id: `${order.number}-${order.id.slice(0, 8)}`,
         description: `Order ${order.number}`,
         payer: { email: order.customerEmail },
         success_url: withQuery(absoluteUrl(origin, PATHS.checkoutSuccess(order.locale)), query),

@@ -180,10 +180,6 @@
   font-size: var(--guide-text-code);
 }
 
-.sl-markdown-content img {
-  border-radius: var(--guide-radius-lg);
-}
-
 /* Previous/next cards: the title is a link label, not a heading, so it stays at body size. */
 .pagination-links a .link-title {
   font-size: var(--guide-text-md);
@@ -231,9 +227,4 @@
 
 .sl-markdown-content > ol > li > * + * {
   margin-top: var(--guide-space-sm);
-}
-
-.sl-markdown-content > ol > li img {
-  border-radius: var(--guide-radius-sm);
-  border: var(--guide-border-width) solid var(--sl-color-hairline);
 }

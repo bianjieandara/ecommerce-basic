@@ -70,7 +70,11 @@ async function placeDemoOrder(cookie) {
   return orderPath;
 }
 
-/** Every screenshot: file name, address, device and optional preparation. Names group by prefix (shop-, admin-, ...). */
+/**
+ * Every screenshot: file name, address, device and optional preparation. Names group by prefix (shop-, admin-, ...).
+ * A shot is one screen (phone 780x1688, desktop 1280x800) so the guide can show them at one size; `full: true` is only for
+ * admin pages whose text describes the whole form or list, because a full-page capture can be several screens tall.
+ */
 const SHOTS = [
   { name: 'shop-home-phone', path: '/en/', device: 'phone' },
   { name: 'shop-home-desktop', path: '/en/', device: 'desktop' },
@@ -79,7 +83,7 @@ const SHOTS = [
   { name: 'shop-catalog-desktop', path: '/en/shop', device: 'desktop' },
   { name: 'shop-filters-desktop', path: '/en/shop?min=10&max=30&sort=price_asc', device: 'desktop' },
   { name: 'shop-category-desktop', path: '/en/shop/apparel', device: 'desktop' },
-  { name: 'shop-product-phone', path: '/en/products/classic-tee', device: 'phone', full: true },
+  { name: 'shop-product-phone', path: '/en/products/classic-tee', device: 'phone' },
   { name: 'shop-product-desktop', path: '/en/products/classic-tee', device: 'desktop' },
   { name: 'shop-contact-desktop', path: '/en/contact', device: 'desktop' },
   { name: 'shop-not-found-phone', path: '/en/no-such-page', device: 'phone' },
@@ -91,9 +95,9 @@ const SHOTS = [
   },
   { name: 'shop-cart-phone', path: '/en/cart', device: 'phone', cart: true },
   { name: 'shop-cart-desktop', path: '/en/cart', device: 'desktop', cart: true },
-  { name: 'shop-checkout-phone', path: '/en/checkout', device: 'phone', cart: true, full: true },
-  { name: 'shop-checkout-desktop', path: '/en/checkout', device: 'desktop', cart: true, full: true },
-  { name: 'shop-order-phone', device: 'phone', order: 'page', full: true },
+  { name: 'shop-checkout-phone', path: '/en/checkout', device: 'phone', cart: true },
+  { name: 'shop-checkout-desktop', path: '/en/checkout', device: 'desktop', cart: true },
+  { name: 'shop-order-phone', device: 'phone', order: 'page' },
   { name: 'shop-invoice-desktop', device: 'desktop', order: 'invoice' },
   { name: 'admin-login', path: '/admin/login', device: 'desktop', guest: true },
   { name: 'admin-dashboard', path: '/admin', device: 'desktop' },

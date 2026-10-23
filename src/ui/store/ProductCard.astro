@@ -65,7 +65,7 @@ const href = routes.product(view.locale, product.slug);
       {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}
     </div>
     {/* Price tag on the picture. pointer-events-none lets a tap reach the picture's link under it. */}
-    <div class="pointer-events-none absolute bottom-3 right-3 rounded-full bg-primary px-3 py-2 text-sm [&_s]:text-on-primary/70 [&_span]:text-on-primary">
+    <div class="pointer-events-none absolute bottom-3 right-3 rounded-full bg-primary px-3 py-2 text-sm whitespace-nowrap max-sm:[&_s]:hidden [&_s]:text-on-primary/70 [&_span]:text-on-primary">
       <Price
         amountMinor={product.minPriceMinor}
         compareAtMinor={product.compareAtPriceMinor}

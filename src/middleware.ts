@@ -62,7 +62,7 @@ const handle = defineMiddleware(async (context, next) => {
           new DomainError('UNAUTHORIZED', 'Please sign in to continue.'),
           context.locals.requestId,
         )
-      : context.redirect(`${ADMIN_PATHS.login}?next=${encodeURIComponent(path)}`);
+      : context.redirect(`${ADMIN_PATHS.login}?next=${encodeURIComponent(path + context.url.search)}`);
     return adminHeaders(denied);
   }
   return adminHeaders(await next());

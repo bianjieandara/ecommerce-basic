@@ -954,6 +954,7 @@ export const en = {
         low_stock_store: 'Low stock alert',
         back_in_stock: 'Back in stock',
         weekly_report_store: 'Weekly summary',
+        payment_late_store: 'Payment for a cancelled order (store alert)',
         admin_password_reset: 'Password reset',
         admin_invite: 'Admin invitation',
       },

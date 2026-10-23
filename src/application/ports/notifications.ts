@@ -18,6 +18,7 @@ export const NOTIFICATION_KEYS = [
   'low_stock_store',
   'back_in_stock',
   'weekly_report_store',
+  'payment_late_store',
   'admin_password_reset',
   'admin_invite',
 ] as const;

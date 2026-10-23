@@ -8,7 +8,7 @@ import { ADMIN_PATHS } from '@/domain/shared/paths';
 export const SESSION_MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
 
 /** Admin paths in the dashboard area, and nothing else: a `next` value must stay inside it. */
-const ADMIN_PATH = /^\/admin(\/[^\s\\]*)?$/;
+const ADMIN_PATH = /^\/admin(?:[/?][^\s\\]*)?$/;
 
 /**
  * Cookie name for the request's scheme.

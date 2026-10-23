@@ -1,0 +1,17 @@
+---
+// One link of the dark footer: quiet text that brightens on hover. The text colour is the page background at reduced opacity,
+// because the footer swaps the text and background roles. 44px high on phones, shorter where a pointer is used.
+interface Props {
+  href: string;
+  class?: string;
+}
+
+const { href, class: className = '' } = Astro.props;
+---
+
+<a
+  href={href}
+  class={`inline-flex min-h-11 min-w-11 items-center text-sm text-background/70 underline-offset-4 transition hover:text-background hover:underline md:min-h-8 ${className}`}
+>
+  <slot />
+</a>

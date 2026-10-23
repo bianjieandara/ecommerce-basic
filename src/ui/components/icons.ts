@@ -10,6 +10,7 @@ export const ICON_PATHS = {
   close: '<path d="M6 6l12 12M18 6 6 18"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   minus: '<path d="M5 12h14"/>',
+  chevronDown: '<path d="m6 9 6 6 6-6"/>',
   chevronLeft: '<path d="m15 18-6-6 6-6"/>',
   chevronRight: '<path d="m9 18 6-6-6-6"/>',
   home: '<path d="M4 11 12 4l8 7v9h-5v-6h-6v6H4z"/>',

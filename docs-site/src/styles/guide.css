@@ -64,6 +64,7 @@
   --guide-pad-page-y: var(--guide-space-3xl);
   --guide-pad-sidebar-x: var(--guide-space-xl);
   --guide-col-min: 11rem;
+  --guide-shot-phone-width: 20rem;
   --guide-tile-min-height: 15rem;
   --guide-step-size: 2.25rem;
   --guide-step-gutter: 4rem;

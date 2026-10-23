@@ -15,6 +15,7 @@ export default defineConfig({
       customCss: [
         './src/styles/guide.css',
         './src/styles/guide-content.css',
+        './src/styles/guide-shots.css',
         './src/styles/guide-home.css',
         './src/styles/guide-motion.css',
       ],

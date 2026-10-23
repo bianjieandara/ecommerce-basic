@@ -2,7 +2,11 @@
 import type { EmailDefinition } from './definition';
 
 type StoreEmailKey =
-  'order_alert_store' | 'contact_message_store' | 'low_stock_store' | 'weekly_report_store';
+  | 'order_alert_store'
+  | 'contact_message_store'
+  | 'low_stock_store'
+  | 'weekly_report_store'
+  | 'payment_late_store';
 
 /** Store emails, by key. */
 export const STORE_EMAILS: Record<StoreEmailKey, EmailDefinition> = {
@@ -49,6 +53,45 @@ Payment method: {{order.paymentMethod}}
 {{block:shippingAddress}}
 
 {{#if order.note}}Customer note: {{order.note}}{{/if}}`,
+      },
+    },
+  },
+
+  payment_late_store: {
+    key: 'payment_late_store',
+    audience: 'store',
+    label: 'Payment for a cancelled order (store alert)',
+    description:
+      'Sent to the store when a payment arrives for an order that was already cancelled or expired.',
+    variables: [
+      'order.number',
+      'order.total',
+      'order.paymentMethod',
+      'customer.fullName',
+      'customer.email',
+      'customer.phone',
+    ],
+    blocks: ['orderTotals'],
+    defaults: {
+      es: {
+        subject: 'Pago recibido por un pedido cancelado: {{order.number}}',
+        body: `Se recibió un pago de **{{order.total}}** ({{order.paymentMethod}}) por el pedido **{{order.number}}**, que ya estaba cancelado o vencido. El pedido no se reactiva, porque su stock pudo venderse.
+
+Cliente: {{customer.fullName}} ({{customer.email}}, {{customer.phone}}).
+
+{{block:orderTotals}}
+
+**Qué hacer:** reembolsa el pago desde el panel de tu proveedor de pagos y avisa al cliente. Si prefieres atender el pedido, créalo de nuevo a mano.`,
+      },
+      en: {
+        subject: 'Payment received for a cancelled order: {{order.number}}',
+        body: `A payment of **{{order.total}}** ({{order.paymentMethod}}) arrived for order **{{order.number}}**, which was already cancelled or expired. The order is not reopened, because its stock may have been sold.
+
+Customer: {{customer.fullName}} ({{customer.email}}, {{customer.phone}}).
+
+{{block:orderTotals}}
+
+**What to do:** refund the payment in your payment provider's dashboard and tell the customer. If you would rather fulfil the order, create it again by hand.`,
       },
     },
   },

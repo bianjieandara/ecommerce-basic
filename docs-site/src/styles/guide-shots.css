@@ -1,0 +1,28 @@
+/* Screenshots in guide pages, sized by kind so they look the same everywhere. The shots script writes desktop captures 1280px wide
+   and phone captures 780px wide, and Astro emits those as the width attribute, which is what the selectors read. Tokens: guide.css. */
+.sl-markdown-content img {
+  display: block;
+  height: auto;
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-lg);
+}
+
+/* Desktop shots always fill the reading column. */
+.sl-markdown-content img[width='1280'] {
+  width: 100%;
+}
+
+/* Phone shots are one fixed, centred width: stretched to the column they would be as wide as a desktop shot and several screens tall. */
+.sl-markdown-content img[width='780'] {
+  width: var(--guide-shot-phone-width);
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* Inside a numbered step the card's left gutter and right padding would shrink a desktop shot. It reaches back over the gutter so it
+   sits one padding away from each card edge, which makes it as wide as the card allows. */
+.sl-markdown-content > ol > li img[width='1280'] {
+  width: calc(100% + var(--guide-step-gutter) - var(--guide-space-xl));
+  max-width: none;
+  margin-inline-start: calc(var(--guide-space-xl) - var(--guide-step-gutter));
+}

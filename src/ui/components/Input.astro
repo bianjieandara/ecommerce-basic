@@ -1,6 +1,8 @@
 ---
 // Native text-like control (input, select or textarea) with the store's focus and size rules.
 // Mobile keyboards are chosen with `type`, `inputmode` and `autocomplete`.
+import Select from './Select.astro';
+
 interface Props {
   id: string;
   name: string;
@@ -48,16 +50,16 @@ const classes = `min-h-12 w-full rounded-brand border border-text/15 bg-backgrou
       {value}
     </textarea>
 ) : element === 'select' ? (
-  <select
+  <Select
     id={id}
     name={name}
     required={required}
     disabled={disabled}
-    aria-describedby={describedBy}
-    class={classes}
+    describedBy={describedBy}
+    class={className}
   >
     <slot />
-  </select>
+  </Select>
 ) : (
   <input
     id={id}
