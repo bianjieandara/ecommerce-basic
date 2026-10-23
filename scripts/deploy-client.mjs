@@ -116,14 +116,18 @@ function main() {
   }
   const dryRun = args.includes('--dry-run');
   if (!dryRun && !takeLock()) {
-    console.error(`[deploy-client] A deploy is in progress (${lockHolder()}). Wait for it to finish, then run this again.`);
     console.error(`[deploy-client] If no deploy is running, delete ${LOCK_PATH} and run this again.`);
+    console.error(
+      `[deploy-client] A deploy is in progress (${lockHolder()}). Wait for it to finish, then run this again.`,
+    );
     process.exitCode = 3;
     return;
   }
   try {
     deployClient(slug, { dryRun });
-    console.log(`\n[deploy-client] ${dryRun ? 'dry run finished, nothing was changed' : `deployed "${slug}"`}`);
+    console.log(
+      `\n[deploy-client] ${dryRun ? 'dry run finished, nothing was changed' : `deployed "${slug}"`}`,
+    );
   } finally {
     if (!dryRun) rmSync(LOCK_PATH, { force: true });
   }
