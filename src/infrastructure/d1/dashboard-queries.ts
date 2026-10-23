@@ -8,6 +8,7 @@ import type {
   PeriodKpis,
   TopProduct,
 } from '@/application/ports/dashboard';
+import type { CurrencyCode } from '@/domain/shared/currency';
 import { PAID_OR_LATER, type OrderStatus } from '@/domain/ordering/order-status';
 import { dayStartUtc } from '@/domain/shared/day-bounds';
 import { statement, type SqlValue } from './d1-client';
@@ -21,6 +22,8 @@ const CHART_DAYS = 14;
 
 /** Products in the top list. */
 const TOP_PRODUCTS = 5;
+/** Orders listed under "recent orders". */
+const RECENT_ORDERS = 6;
 
 /**
  * Placeholders and binds for a list of statuses, for an IN (...) condition.
@@ -129,6 +132,13 @@ export class D1DashboardQueries implements DashboardQueries {
          GROUP BY day ORDER BY day ASC`,
         [offset, ...paid.binds, chartStart, nowIso],
       ),
+      // The newest orders in any state: statement 12. The id ends the sort so equal times keep a stable order.
+      statement(
+        this.db,
+        `SELECT number, customer_name, total_minor, currency, status, created_at
+         FROM orders ORDER BY created_at DESC, id DESC LIMIT ?`,
+        [RECENT_ORDERS],
+      ),
     ]);
 
     const placed = (index: number) => rowsAt<{ n: number }>(results, index)[0]?.n ?? 0;
@@ -170,6 +180,21 @@ export class D1DashboardQueries implements DashboardQueries {
       failedNotifications: rowsAt<{ n: number }>(results, 8)[0]?.n ?? 0,
       unresolvedJobs: rowsAt<{ n: number }>(results, 9)[0]?.n ?? 0,
       topProducts,
+      recentOrders: rowsAt<{
+        number: number;
+        customer_name: string;
+        total_minor: number;
+        currency: CurrencyCode;
+        status: OrderStatus;
+        created_at: string;
+      }>(results, 12).map((row) => ({
+        number: row.number,
+        customerName: row.customer_name,
+        totalMinor: row.total_minor,
+        currency: row.currency,
+        status: row.status,
+        createdAt: row.created_at,
+      })),
       chart,
     };
   }

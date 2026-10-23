@@ -61,7 +61,7 @@ Go through this list on the real address, with test payments. The step by step f
 - [ ] A **PayPal** purchase in test mode reaches **Paid**.
 - [ ] A **bank transfer** order shows your bank details and can be marked paid by hand.
 - [ ] A product that is out of stock cannot be bought, and shows the back-in-stock option.
-- [ ] The contact form delivers a message to **Messages** and an email to the store.
+- [ ] The **Contact** page shows your WhatsApp, email, phone and address, and each card opens what it should (chat, email, call).
 - [ ] The privacy policy, terms and shipping pages say what is true for your business.
 - [ ] The dashboard shows **0** failed jobs and **0** failed messages.
 

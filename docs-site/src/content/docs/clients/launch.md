@@ -64,7 +64,7 @@ Recorre esta lista en la dirección real, con pagos de prueba. El paso a paso de
 - [ ] Una compra con **PayPal** en modo de prueba llega a **Pagado**.
 - [ ] Un pedido por **transferencia bancaria** muestra tus datos del banco y se puede marcar como pagado a mano.
 - [ ] Un producto agotado no se puede comprar y ofrece el aviso de «vuelve a haber stock».
-- [ ] El formulario de contacto entrega un mensaje en **Mensajes** y un correo a la tienda.
+- [ ] La página de **Contacto** muestra tu WhatsApp, correo, teléfono y dirección, y cada tarjeta abre lo que debe (chat, correo, llamada).
 - [ ] La política de privacidad, los términos y la página de envíos dicen lo que es cierto para tu negocio.
 - [ ] El panel muestra **0** trabajos fallidos y **0** mensajes fallidos.
 

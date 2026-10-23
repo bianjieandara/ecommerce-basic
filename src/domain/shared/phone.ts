@@ -29,3 +29,15 @@ export function normalizePhone(raw: string, defaultCountryCode: string): string 
   if (digits.length < MIN_DIGITS || digits.length > MAX_DIGITS) return null;
   return digits;
 }
+
+/**
+ * The target of a `tel:` link for a phone as the owner typed it. The tel scheme takes digits and a leading "+", not the spaces,
+ * dashes or brackets people write for readability, and some dialers and screen readers fail on them.
+ * @param raw Phone as typed, for example "+57 (300) 000-0000".
+ * @returns The link, or "" when there are no digits.
+ */
+export function telLink(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  if (digits === '') return '';
+  return `tel:${raw.trim().startsWith('+') ? '+' : ''}${digits}`;
+}

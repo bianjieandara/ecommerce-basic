@@ -41,6 +41,17 @@ function withSearch(path: string, params: URLSearchParams): string {
 }
 
 /**
+ * The filters the language link keeps when a shopper switches language on a catalog page. Attribute values, prices, flags and
+ * the sort mean the same in both languages; the search text and the page do not, so they are left out.
+ * @param page The loaded catalog page.
+ * @returns A query string with its "?", or an empty string when no filter is set.
+ */
+export function languageSwitchSearch(page: Pick<CatalogPage, 'query' | 'options'>): string {
+  const params = catalogQueryToSearchParams({ ...page.query, q: null, page: 1 }, page.options);
+  return withSearch('', params);
+}
+
+/**
  * Loads a catalog page for the shop index (no path category) or a category path.
  * @param app Request container.
  * @param url Request URL.

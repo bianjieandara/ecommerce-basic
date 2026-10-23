@@ -1,6 +1,6 @@
 // Browser flow test of the LOCAL demo store: it drives Chrome like a shopper and checks what happens, not just what is served. Product
 // options, quantity, add to cart, the cart page (more, fewer, remove, totals), checkout validation and a real order, the order page,
-// the search overlay, the language switch, the contact form, the back-in-stock form and the filter panel in the page itself.
+// the search overlay, the language switch, the contact page, the back-in-stock form and the filter panel in the page itself.
 // The orders, messages and subscriptions it creates are marked "flow-test" and removed at the end.
 //
 // Usage: npm run build && npm run docs:store   (leave it running)  then  npm run docs:data  and  npm run test:flows
@@ -166,11 +166,13 @@ try {
   await clickText('main button[type=submit], main button', /place order/i);
   await wait(1500);
   check('an empty checkout is not sent', (await path()).startsWith('/en/checkout'), await path());
+  // The browser's own validation stops the send and points at the first empty field, so the page needs no message of its own.
   check(
-    'the form says what is missing',
-    /(required|invalid|enter|choose|select)/i.test(await text('main')),
-    (await text('main')).slice(0, 200),
+    'name, email and phone are marked required',
+    ['name', 'email', 'phone'].every((n) => required.includes(n)),
+    required.join(','),
   );
+  check('the empty form created no order', sql('SELECT COUNT(*) AS n FROM orders')[0].n === ordersBefore);
 
   const type = async (name, value) => browser.type(`main [name="${name}"]`, value);
   await type('name', 'Flow Tester');
@@ -278,34 +280,26 @@ try {
       )[0].p,
   );
 
-  // ------------------------------------------------------------------------------------------------------------- contact form
+  // --------------------------------------------------------------------------------------------------------- contact page
+  // The owner decided the page has no form: visitors write on WhatsApp or by email, or call.
   await open('/en/contact');
-  const contactFields = await js(`[...document.querySelectorAll('main form [name]')].map((e) => e.name)`);
-  check(
-    'the contact form has name, email and message',
-    ['name', 'email', 'message'].every((n) => contactFields.includes(n)),
-    contactFields.join(','),
-  );
-  await clickText('main form button', /send/i);
-  await wait(1200);
-  check(
-    'an empty contact form is not sent',
-    sql(`SELECT COUNT(*) AS n FROM contact_messages WHERE email = '${EMAIL}'`)[0].n === 0,
-  );
-  await browser.type('main form [name="name"]', 'Flow Tester');
-  await browser.type('main form [name="email"]', EMAIL);
-  await browser.type('main form [name="message"]', 'flow-test message about my order');
-  await clickText('main form button', /send/i);
-  await wait(2500);
-  check(
-    'a valid contact form is stored for the owner',
-    sql(`SELECT COUNT(*) AS n FROM contact_messages WHERE email = '${EMAIL}'`)[0].n === 1,
+  const contactLinks = await js(
+    `[...document.querySelectorAll('main a[href]')].map((a) => a.getAttribute('href'))`,
   );
   check(
-    'the visitor is told it was sent',
-    /(thank|sent|received)/i.test(await text('main')),
-    (await text('main')).slice(0, 160),
+    'the contact page has a WhatsApp link with a number',
+    contactLinks.some((h) => /^https:\/\/wa\.me\/\d{8,}/.test(h)),
+    contactLinks.slice(0, 6).join(' '),
   );
+  check(
+    'the contact page has an email link',
+    contactLinks.some((h) => /^mailto:[^@]+@[^@]+$/.test(h)),
+  );
+  check(
+    'the contact page has a phone link',
+    contactLinks.some((h) => /^tel:\+?\d{6,}$/.test(h)),
+  );
+  check('the contact page has no form', !(await js(`Boolean(document.querySelector('main form'))`)));
 
   // --------------------------------------------------------------------------------------------------- back-in-stock form
   if (soldOut) {
@@ -333,7 +327,7 @@ try {
 
   // ----------------------------------------------------------------------------------------------------------- filter panel
   await open('/en/shop');
-  const initialCount = (await text('main')).match(/(\d+) products/)?.[1];
+  const initialCount = (await text('main')).match(/(\d+) products/i)?.[1];
   await js(`document.querySelector('aside input[name="stock"], form input[name="stock"]')?.click()`);
   await wait(1200);
   const liveButton = await js(
@@ -344,15 +338,14 @@ try {
     /\d/.test(liveButton),
     liveButton || '(no button with a count)',
   );
-  await js(
-    `(() => { const f = document.querySelector('aside form, form[action*="shop"]'); (f.querySelector('button[type=submit]') ?? f).click?.(); f.requestSubmit?.(); })()`,
-  );
+  // The page holds a desktop and a phone copy of the panel; a real click only reaches the one that is on screen.
+  await clickText('form button[type=submit]', /(show|see|view|apply)/i);
   const applied = await until("location.search.includes('stock=1')", 8000);
   check('applying a filter puts it in the address', applied, await path());
   check(
     'the list shrinks to the filtered count',
-    Number((await text('main')).match(/(\d+) products/)?.[1]) < Number(initialCount),
-    `${initialCount} -> ${(await text('main')).match(/(\d+) products/)?.[1]}`,
+    Number((await text('main')).match(/(\d+) products/i)?.[1]) < Number(initialCount),
+    `${initialCount} -> ${(await text('main')).match(/(\d+) products/i)?.[1]}`,
   );
   await open('/en/shop?stock=1&sale=1');
   const clear = await clickText('main a', /(clear|reset|remove)/i);

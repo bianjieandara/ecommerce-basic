@@ -1,0 +1,178 @@
+---
+// Admin header: the store name, a search box that jumps to any admin page, a Menu button that opens every page in five
+// sections, and sign out. Both the search and the menu are built from ADMIN_NAV_GROUPS. Without JavaScript the menu button
+// does nothing, but the search results are plain links shown while the box has focus, so every page stays reachable.
+import Icon from '@/ui/components/Icon.astro';
+import { ADMIN_NAV_GROUPS, findAdminNav } from './lib/nav';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { t } from '@/ui/i18n';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  locale: Locale;
+  storeName: string;
+}
+
+const { locale, storeName } = Astro.props;
+const current = findAdminNav(Astro.url.pathname);
+const groups = ADMIN_NAV_GROUPS.map((group) => ({
+  title: t(locale, group.label),
+  items: group.items.map((item) => ({
+    href: item.href,
+    label: t(locale, item.label),
+    active: current?.item.href === item.href,
+  })),
+}));
+---
+
+<div data-admin-bar class="sticky top-0 z-40">
+  <header class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-text/10 bg-background px-4 py-2 md:flex-nowrap md:px-8 md:py-0 md:h-16">
+    <a
+      href={ADMIN_PATHS.dashboard}
+      class="inline-flex min-h-11 items-center font-display text-lg font-semibold tracking-tight"
+    >
+      {storeName}
+    </a>
+    <div
+      class="group relative order-last w-full md:order-none md:mx-auto md:w-full md:max-w-md"
+      data-admin-search
+    >
+      <label class="sr-only" for="admin-search">
+        {t(locale, 'admin.nav.goToLabel')}
+      </label>
+      <Icon
+        name="search"
+        size={18}
+        class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-text/50"
+      />
+      <input
+        id="admin-search"
+        type="search"
+        autocomplete="off"
+        placeholder={t(locale, 'admin.nav.goTo')}
+        class="min-h-11 w-full rounded-full border border-transparent bg-surface pr-16 pl-11 text-sm transition-colors hover:border-text/20 focus:border-text focus:bg-background [&::-webkit-search-cancel-button]:appearance-none"
+      />
+      <kbd class="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 rounded-md border border-text/15 bg-background px-1.5 py-0.5 font-mono text-[11px] text-text/50 md:block">
+        Ctrl K
+      </kbd>
+      <div
+        data-admin-results
+        class="absolute inset-x-0 top-full mt-2 hidden max-h-80 overflow-auto rounded-card border border-text/10 bg-background p-2 shadow-xl group-focus-within:block"
+      >
+        {groups.map((group) =>
+          group.items.map((item) => (
+            <a
+              href={item.href}
+              data-nav-item
+              data-search={`${item.label} ${group.title}`.toLowerCase()}
+              class="flex min-h-11 items-center justify-between gap-3 rounded-xl px-3 text-sm hover:bg-surface"
+            >
+              <span>{item.label}</span>
+              <span class="text-xs text-text/50">{group.title}</span>
+            </a>
+          )),
+        )}
+        <p data-no-match class="hidden px-3 py-3 text-sm text-text/60">
+          {t(locale, 'admin.nav.noMatch')}
+        </p>
+      </div>
+    </div>
+    <button
+      type="button"
+      data-admin-menu-button
+      aria-expanded="false"
+      aria-controls="admin-menu"
+      class="ml-auto inline-flex min-h-11 items-center gap-2 rounded-full border border-text/15 px-5 text-sm font-medium transition-colors hover:border-text md:ml-0"
+    >
+      {t(locale, 'admin.nav.menu')}
+      <Icon name="chevronDown" size={16} />
+    </button>
+    <form method="post" action="/api/admin/logout" class="md:ml-0">
+      <button
+        type="submit"
+        class="min-h-11 px-2 text-sm text-text/70 underline underline-offset-4 hover:text-text"
+      >
+        {t(locale, 'admin.nav.signOut')}
+      </button>
+    </form>
+  </header>
+  <nav
+    id="admin-menu"
+    hidden
+    aria-label={t(locale, 'admin.nav.menu')}
+    class="grid-cols-2 gap-x-6 gap-y-6 border-b border-text/10 bg-background px-4 py-6 shadow-xl md:grid-cols-5 md:px-8 [&:not([hidden])]:grid"
+  >
+    {groups.map((group) => (
+      <div class="flex flex-col">
+        <p class="eyebrow mb-2">{group.title}</p>
+        {group.items.map((item) => (
+          <a
+            href={item.href}
+            aria-current={item.active ? 'page' : undefined}
+            class="inline-flex min-h-10 items-center text-sm hover:underline aria-[current=page]:font-semibold"
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+    ))}
+  </nav>
+</div>
+
+<script>
+  // Menu button, search box and their shortcuts. Every part is optional: a missing element is skipped.
+  const bar = document.querySelector<HTMLElement>('[data-admin-bar]');
+  if (bar) {
+    const menu = bar.querySelector<HTMLElement>('#admin-menu');
+    const button = bar.querySelector<HTMLButtonElement>('[data-admin-menu-button]');
+    const search = bar.querySelector<HTMLElement>('[data-admin-search]');
+    const input = search?.querySelector<HTMLInputElement>('input');
+    const results = search?.querySelector<HTMLElement>('[data-admin-results]');
+    const items = [...(results?.querySelectorAll<HTMLAnchorElement>('[data-nav-item]') ?? [])];
+    const empty = results?.querySelector<HTMLElement>('[data-no-match]');
+
+    /** Opens or closes the menu panel and keeps aria-expanded in step. */
+    const setMenu = (open: boolean) => {
+      if (!menu || !button) return;
+      menu.hidden = !open;
+      button.setAttribute('aria-expanded', String(open));
+    };
+    /** Shows the results that match the text typed; an empty box shows every page. */
+    const filter = () => {
+      const term = (input?.value ?? '').trim().toLowerCase();
+      let shown = 0;
+      for (const item of items) {
+        const match = term === '' || (item.dataset.search ?? '').includes(term);
+        item.hidden = !match;
+        item.classList.toggle('hidden', !match);
+        if (match) shown += 1;
+      }
+      empty?.classList.toggle('hidden', shown > 0);
+    };
+    button?.addEventListener('click', () => {
+      input?.blur();
+      setMenu(Boolean(menu?.hidden));
+    });
+    input?.addEventListener('focus', () => {
+      setMenu(false);
+      filter();
+    });
+    input?.addEventListener('input', filter);
+    input?.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') items.find((item) => !item.hidden)?.click();
+    });
+    document.addEventListener('click', (event) => {
+      const target = event.target as Node;
+      if (menu && !menu.hidden && !bar.contains(target)) setMenu(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        input?.focus();
+      } else if (event.key === 'Escape') {
+        setMenu(false);
+        input?.blur();
+      }
+    });
+  }
+</script>

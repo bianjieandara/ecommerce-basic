@@ -29,8 +29,9 @@ del pedido.
 
 ## Contacto
 
-La página **Contacto** tiene un formulario (nombre, teléfono, mensaje) y la dirección y el WhatsApp de la tienda. Los mensajes
-llegan al panel, en [Mensajes](/admin/messages-and-notifications/), y una comprobación anti-bots y un límite de envíos por persona
-mantienen fuera el spam.
+La página **Contacto** no tiene formulario: muestra las formas de escribir a la tienda como tarjetas. **WhatsApp** va primero y
+abre un chat con un mensaje ya escrito; después el **correo**, el **teléfono** (al tocarlo, llama), la **dirección** y el
+**horario**. Más abajo van las redes sociales, el mapa (que solo se carga si la persona lo pide) y las reseñas de Google. Todo
+sale de [Configuración](/admin/settings/), en Contacto.
 
 ![La página de contacto](../../../assets/screens/es/shop-contact-desktop.png)

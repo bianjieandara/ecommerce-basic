@@ -15,7 +15,7 @@ This is what a shopper goes through. Each step has its own page with screenshots
 | 4. Cart                | Items stay in the browser, so a shopper can leave and come back.                     | [Cart and checkout](/en/storefront/cart-checkout/) |
 | 5. Checkout and pay    | Contact, delivery, invoice details and one of up to five payment methods.            | [Cart and checkout](/en/storefront/cart-checkout/) |
 | 6. Follow the order    | A private order page, emails, and the invoice once the order is paid.                | [After the order](/en/storefront/after-the-order/) |
-| 7. Ask a question      | A contact form, and a WhatsApp button when the store uses WhatsApp.                  | [After the order](/en/storefront/after-the-order/) |
+| 7. Ask a question      | A contact page with WhatsApp, email, phone and address.                  | [After the order](/en/storefront/after-the-order/) |
 
 ## Designed for phones
 

@@ -5,10 +5,15 @@ sidebar:
   order: 7
 ---
 
-## Mensajes del formulario de contacto
+## Mensajes de contacto
 
-Todo lo que alguien escribe en el formulario de contacto de la tienda llega a **Mensajes**, el más reciente primero. El panel
-muestra cuántos están sin leer.
+:::note
+La página de contacto de la tienda no tiene formulario ahora: la gente escribe por WhatsApp o por correo, y esos mensajes no pasan
+por el panel. Esta lista solo se llena si la tienda vuelve a tener un formulario; hasta entonces estará vacía.
+:::
+
+Lo que alguien escriba en un formulario de contacto llega a **Mensajes**, el más reciente primero. El panel muestra cuántos están
+sin leer.
 
 ![Mensajes de contacto](../../../assets/screens/es/admin-messages.png)
 

@@ -29,7 +29,7 @@ The first screen shows how the shop is doing right now.
 - **Today, last 7 days, last 30 days:** orders placed, paid orders, revenue, tax and the average order.
 - **Orders to process:** paid orders that still need preparing or shipping. Click **Open orders**.
 - **Out of stock** and **Low stock:** products that need restocking.
-- **Unread messages:** messages from the contact form.
+- **Unread messages:** contact messages (the store has no contact form now, so this is usually zero).
 - **Failed messages** and **Failed jobs:** emails or background tasks that did not go through. They should be **0**; see
   [Messages and notifications](/en/admin/messages-and-notifications/).
 - A chart of revenue for the last 14 days.

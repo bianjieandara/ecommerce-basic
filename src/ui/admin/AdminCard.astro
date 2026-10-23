@@ -1,0 +1,30 @@
+---
+// Bordered card of the admin: a title row (with an optional link on the right) and the content. `bleed` removes the padding
+// so a table can run edge to edge; the title row keeps its own padding either way.
+interface Props {
+  title: string;
+  /** A link shown on the right of the title, for "see all". */
+  action?: { href: string; label: string };
+  bleed?: boolean;
+  class?: string;
+}
+
+const { title, action, bleed = false, class: className = '' } = Astro.props;
+---
+
+<section class={`min-w-0 rounded-card border border-text/10 bg-background ${className}`}>
+  <header class="flex min-h-11 items-center justify-between gap-3 px-5 pt-4 pb-2">
+    <h2 class="text-base">{title}</h2>
+    {action && (
+      <a
+        href={action.href}
+        class="inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4"
+      >
+        {action.label}
+      </a>
+    )}
+  </header>
+  <div class={bleed ? 'pb-2' : 'px-5 pt-1 pb-5'}>
+    <slot />
+  </div>
+</section>

@@ -10,6 +10,7 @@ import type { ComponentProps } from 'astro/types';
 import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 import { PATHS } from '@/domain/shared/paths';
+import { telLink } from '@/domain/shared/phone';
 import { t } from '@/ui/i18n';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { themeToCss } from '@/ui/lib/theme-css';
@@ -60,7 +61,7 @@ const candidates: (Card | null)[] = [
         icon: 'phone',
         label: t(lang, 'contact.call'),
         value: store.contact.phone,
-        href: `tel:${store.contact.phone}`,
+        href: telLink(store.contact.phone),
       }
     : null,
   store.contact.address

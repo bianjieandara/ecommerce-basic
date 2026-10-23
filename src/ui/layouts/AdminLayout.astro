@@ -1,8 +1,10 @@
 ---
-// Admin shell: store name, sign-out and the page content. Every admin page uses it; the pages check the session themselves.
+// Admin shell: the header (search, menu, sign out), a small breadcrumb with the section and page, and the page content. Every
+// admin page uses it; the pages check the session themselves.
 import BaseLayout from './BaseLayout.astro';
+import AdminTopBar from '@/ui/admin/AdminTopBar.astro';
+import { findAdminNav } from '@/ui/admin/lib/nav';
 import type { Locale } from '@/domain/shared/locale';
-import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { t } from '@/ui/i18n';
 import '@/ui/styles/admin-table.css';
 
@@ -13,48 +15,19 @@ interface Props {
 }
 
 const { title, locale, storeName } = Astro.props;
+const place = findAdminNav(Astro.url.pathname);
+// The dashboard is outside the menu: its crumb is the page itself.
+const crumb = place ? `${t(locale, place.group.label)} / ${t(locale, place.item.label)}` : title;
 ---
 
 <BaseLayout title={`${title} · ${storeName}`} locale={locale} noindex>
-  <header class="border-text/10 flex items-center justify-between gap-4 border-b px-4 py-3">
-    <a href={ADMIN_PATHS.dashboard} class="inline-flex min-h-11 items-center font-semibold">
-      {storeName}
-    </a>
-    <form method="post" action="/api/admin/logout">
-      <button type="submit" class="min-h-11 px-3 text-sm underline">
-        {t(locale, 'admin.nav.signOut')}
-      </button>
-    </form>
-  </header>
-  <nav
-    class="border-text/10 flex gap-1 overflow-x-auto border-b px-2"
-    aria-label={t(locale, 'admin.nav.products')}
+  <AdminTopBar locale={locale} storeName={storeName} />
+  <main
+    id="main"
+    tabindex="-1"
+    class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 focus:outline-none md:px-8 md:py-8"
   >
-    {[
-      { href: ADMIN_PATHS.products, label: t(locale, 'admin.nav.products') },
-      { href: ADMIN_PATHS.categories, label: t(locale, 'admin.nav.categories') },
-      { href: ADMIN_PATHS.attributes, label: t(locale, 'admin.nav.attributes') },
-      { href: ADMIN_PATHS.media, label: t(locale, 'admin.nav.media') },
-      { href: ADMIN_PATHS.inventory, label: t(locale, 'admin.nav.inventory') },
-      { href: ADMIN_PATHS.orders, label: t(locale, 'admin.nav.orders') },
-      { href: ADMIN_PATHS.invoices, label: t(locale, 'admin.nav.invoices') },
-      { href: ADMIN_PATHS.notificationLog, label: t(locale, 'admin.nav.notifications') },
-      { href: ADMIN_PATHS.jobs, label: t(locale, 'admin.nav.jobs') },
-      { href: ADMIN_PATHS.settings, label: t(locale, 'admin.nav.settings') },
-      { href: ADMIN_PATHS.pages, label: t(locale, 'admin.nav.pages') },
-      { href: ADMIN_PATHS.emails, label: t(locale, 'admin.nav.emails') },
-      { href: ADMIN_PATHS.shipping, label: t(locale, 'admin.nav.shipping') },
-      { href: ADMIN_PATHS.testimonials, label: t(locale, 'admin.nav.testimonials') },
-      { href: ADMIN_PATHS.users, label: t(locale, 'admin.nav.users') },
-      { href: ADMIN_PATHS.whatsapp, label: t(locale, 'admin.nav.whatsapp') },
-      { href: ADMIN_PATHS.reports, label: t(locale, 'admin.reports.title') },
-    ].map((item) => (
-      <a href={item.href} class="inline-flex min-h-11 shrink-0 items-center px-3 text-sm font-semibold">
-        {item.label}
-      </a>
-    ))}
-  </nav>
-  <main class="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4">
+    <p class="text-xs tracking-wide text-text/60">{crumb}</p>
     <slot />
   </main>
 </BaseLayout>

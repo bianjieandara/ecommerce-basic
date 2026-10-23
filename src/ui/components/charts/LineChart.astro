@@ -13,6 +13,8 @@ interface Props {
   /** Formats a value for the axis, the tooltips and the accessible list. */
   format?: (value: number) => string;
   compact?: boolean;
+  /** Width of the drawing in viewBox units. A wider drawing is a flatter chart with smaller text, for wide cards. */
+  width?: number;
   class?: string;
 }
 
@@ -21,10 +23,10 @@ const {
   points,
   format = (value: number) => String(value),
   compact = false,
+  width = 320,
   class: className = '',
 } = Astro.props;
 // Margins inside the viewBox: the left one holds the value labels, the bottom one the labels of the first and last points.
-const width = 320;
 const height = compact ? 48 : 176;
 const left = compact ? 4 : 56;
 const right = 8;

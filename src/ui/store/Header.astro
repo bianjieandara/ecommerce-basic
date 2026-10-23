@@ -12,13 +12,15 @@ interface Props {
   storeName: string;
   locale: Locale;
   alternates?: Partial<Record<Locale, string>>;
+  /** Query string (with its "?") the language link keeps, for pages whose filters mean the same in both languages. */
+  switchSearch?: string;
   /** Text of the strip above the bar, in the page's language. Empty renders no strip. */
   announcement?: string;
 }
 
-const { storeName, locale, alternates = {}, announcement = '' } = Astro.props;
+const { storeName, locale, alternates = {}, switchSearch = '', announcement = '' } = Astro.props;
 const other: Locale = locale === 'es' ? 'en' : 'es';
-const otherHref = alternates[other] ?? (other === 'es' ? '/es/' : '/en/');
+const otherHref = `${alternates[other] ?? (other === 'es' ? '/es/' : '/en/')}${switchSearch}`;
 const navLink = 'inline-flex min-h-11 items-center text-text/70 transition hover:text-text';
 ---
 

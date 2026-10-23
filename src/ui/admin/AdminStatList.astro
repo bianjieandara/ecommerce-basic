@@ -1,0 +1,38 @@
+---
+// A list of label and value rows, the labels on the left and the values on the right, aligned on one baseline and in tabular
+// figures so numbers line up. A row with `href` is a link to the list behind its number.
+interface Row {
+  label: string;
+  value: string;
+  href?: string;
+  /** "alert" draws the value as a badge in the warning colour; used for counts that need action. */
+  tone?: 'alert';
+}
+
+interface Props {
+  rows: Row[];
+}
+
+const { rows } = Astro.props;
+const rowClass = 'flex min-h-11 items-center justify-between gap-4 text-sm';
+---
+
+<dl class="flex flex-col divide-y divide-text/10">
+  {rows.map((row) => {
+    const Tag = row.href ? 'a' : 'div';
+    return (
+      <Tag href={row.href} class={`${rowClass} ${row.href ? 'transition-colors hover:text-accent' : ''}`}>
+        <dt class="text-text/70">{row.label}</dt>
+        <dd
+          class={
+            row.tone === 'alert'
+              ? 'rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-semibold tabular-nums'
+              : 'font-semibold tabular-nums'
+          }
+        >
+          {row.value}
+        </dd>
+      </Tag>
+    );
+  })}
+</dl>

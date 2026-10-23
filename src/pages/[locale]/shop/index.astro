@@ -4,7 +4,7 @@ import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import CatalogView from '@/ui/store/CatalogView.astro';
 import { isLocale } from '@/domain/shared/locale';
 import { t } from '@/ui/i18n';
-import { loadCatalogPage } from '@/http/catalog-request';
+import { languageSwitchSearch, loadCatalogPage } from '@/http/catalog-request';
 import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
 import { PATHS } from '@/domain/shared/paths';
 import { themeToCss } from '@/ui/lib/theme-css';
@@ -31,6 +31,7 @@ const title = t(lang, 'shop.title');
   currency={view.currency}
   country={view.country}
   alternates={{ es: PATHS.shop('es'), en: PATHS.shop('en') }}
+  switchSearch={languageSwitchSearch(load)}
   canonical={new URL(load.basePath, Astro.url.origin).toString()}
   noindex={!load.indexable}
   defaultLocale={load.store.general.defaultLocale}

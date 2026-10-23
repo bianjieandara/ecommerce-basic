@@ -21,6 +21,8 @@ interface Props {
   locale: Locale;
   storeName: string;
   alternates?: Partial<Record<Locale, string>>;
+  /** Query string the header's language link keeps. The alternates for search engines never carry one. */
+  switchSearch?: string;
   canonical?: string;
   noindex?: boolean;
   defaultLocale?: Locale;
@@ -47,6 +49,7 @@ const {
   locale,
   storeName,
   alternates,
+  switchSearch = '',
   canonical,
   noindex,
   defaultLocale,
@@ -98,9 +101,14 @@ const consentLabels = {
     storeName={storeName}
     locale={locale}
     alternates={alternates}
+    switchSearch={switchSearch}
     announcement={general.announcement[locale]}
   />
-  <main class="mx-auto min-h-[60dvh] max-w-7xl px-5 py-8 md:px-8 md:py-12">
+  <main
+    id="main"
+    tabindex="-1"
+    class="mx-auto min-h-[60dvh] max-w-7xl px-5 py-8 focus:outline-none md:px-8 md:py-12"
+  >
     <slot />
   </main>
   <Footer storeName={storeName} locale={locale} email={contact.email} address={contact.address} />

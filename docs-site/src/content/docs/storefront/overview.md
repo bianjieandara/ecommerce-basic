@@ -15,7 +15,7 @@ Esto es lo que vive quien compra. Cada paso tiene su propia página con capturas
 | 4. Carrito                | Los productos se guardan en el navegador, así que puede irse y volver.                | [Carrito y pago](/storefront/cart-checkout/)    |
 | 5. Pago                   | Contacto, entrega, datos de factura y uno de hasta cinco métodos de pago.             | [Carrito y pago](/storefront/cart-checkout/)    |
 | 6. Sigue su pedido        | Una página privada del pedido, correos y la factura cuando se paga.                   | [Después del pedido](/storefront/after-the-order/) |
-| 7. Hace una pregunta      | Un formulario de contacto y un botón de WhatsApp si la tienda lo usa.                 | [Después del pedido](/storefront/after-the-order/) |
+| 7. Hace una pregunta      | Una página de contacto con WhatsApp, correo, teléfono y dirección.                 | [Después del pedido](/storefront/after-the-order/) |
 
 ## Pensada para el celular
 

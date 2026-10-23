@@ -3,7 +3,7 @@
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import CatalogView from '@/ui/store/CatalogView.astro';
 import { isLocale } from '@/domain/shared/locale';
-import { loadCatalogPage } from '@/http/catalog-request';
+import { languageSwitchSearch, loadCatalogPage } from '@/http/catalog-request';
 import { loadStoreContext } from '@/http/store-context';
 import { buildTitle, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
 import { routes } from '@/ui/lib/routes';
@@ -42,6 +42,7 @@ const alternates = Object.fromEntries(
   currency={view.currency}
   country={view.country}
   alternates={alternates}
+  switchSearch={languageSwitchSearch(load)}
   canonical={new URL(load.basePath, Astro.url.origin).toString()}
   noindex={!load.indexable}
   defaultLocale={load.store.general.defaultLocale}

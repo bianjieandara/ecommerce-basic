@@ -6,6 +6,14 @@
   text-align: left;
   vertical-align: middle;
 }
+.admin-table th:first-child,
+.admin-table td:first-child {
+  padding-left: 1.25rem;
+}
+.admin-table th:last-child,
+.admin-table td:last-child {
+  padding-right: 1.25rem;
+}
 .admin-table thead th {
   font-weight: 600;
   border-bottom: 1px solid color-mix(in oklab, currentColor 15%, transparent);

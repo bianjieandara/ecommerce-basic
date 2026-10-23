@@ -1,5 +1,6 @@
 // Dashboard reads: one snapshot of the numbers the admin home shows. Read-only, so it needs no use case of its own.
 import type { CurrencyCode } from '@/domain/shared/currency';
+import type { OrderStatus } from '@/domain/ordering/order-status';
 
 /** Sales over one period. Revenue counts orders that were paid and are not refunded or cancelled. */
 export interface PeriodKpis {
@@ -25,6 +26,16 @@ export interface TopProduct {
   revenueMinor: number;
 }
 
+/** One of the newest orders, for the "recent orders" table. */
+export interface RecentOrder {
+  number: number;
+  customerName: string;
+  totalMinor: number;
+  currency: CurrencyCode;
+  status: OrderStatus;
+  createdAt: string;
+}
+
 /** Everything the dashboard shows. */
 export interface DashboardSnapshot {
   currency: CurrencyCode;
@@ -38,6 +49,8 @@ export interface DashboardSnapshot {
   failedNotifications: number;
   unresolvedJobs: number;
   topProducts: TopProduct[];
+  /** The newest orders in any state, newest first. */
+  recentOrders: RecentOrder[];
   /** The last 14 store-local days, oldest first. Days without sales are present with zeros. */
   chart: DashboardDay[];
 }

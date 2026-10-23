@@ -5,10 +5,14 @@ sidebar:
   order: 7
 ---
 
-## Messages from the contact form
+## Contact messages
 
-Everything a visitor writes in the shop's contact form arrives under **Messages**, newest first. The dashboard shows how many are
-unread.
+:::note
+The store's contact page has no form now: people write on WhatsApp or by email, and those messages do not pass through the admin.
+This list only fills up if the store gets a form again; until then it will be empty.
+:::
+
+Whatever someone writes in a contact form arrives under **Messages**, newest first. The dashboard shows how many are unread.
 
 ![Contact messages](../../../../assets/screens/en/admin-messages.png)
 

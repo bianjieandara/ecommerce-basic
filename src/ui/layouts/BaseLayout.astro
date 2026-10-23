@@ -6,6 +6,7 @@ import { DEFAULT_LOCALE, type Locale } from '@/domain/shared/locale';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import type { JsonLd } from '@/ui/lib/structured-data';
 import SeoHead from './SeoHead.astro';
+import { t } from '@/ui/i18n';
 // The Latin subset of each preset, as hashed asset URLs. Preloading the one the store uses stops the text from changing
 // width when the web font replaces the fallback (that shift was most of the shop page's layout shift).
 import interFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
@@ -105,6 +106,13 @@ const {
     )}
   </head>
   <body class="antialiased" data-meta-pixel-id={metaPixelId} data-currency={currency}>
+    <!-- First Tab stop: lets keyboard and screen-reader users jump past the header to the page. It shows only when focused. -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-brand focus:bg-primary focus:px-4 focus:py-3 focus:text-on-primary focus:shadow-lg"
+    >
+      {t(locale, 'nav.skip')}
+    </a>
     <slot />
     <script>
       import { initCarousels } from '@/ui/scripts/carousel';

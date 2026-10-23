@@ -28,7 +28,9 @@ each line, the tax breakdown and the total. The shopper gets it by email as a PD
 
 ## Contact
 
-The **Contact** page has a form (name, email, phone, message) and the store's address and WhatsApp. Messages arrive in the admin
-under [Messages](/en/admin/messages-and-notifications/), and a bot check and a limit on how often one person can send keep spam out.
+The **Contact** page has no form: it shows the ways to reach the store as cards. **WhatsApp** comes first and opens a chat with a
+message already written; then **email**, **phone** (tapping it calls), **address** and **opening hours**. Below come the social
+links, the map (loaded only if the visitor asks for it) and the Google reviews. All of it comes from
+[Settings](/en/admin/settings/), under Contact.
 
 ![The contact page](../../../../assets/screens/en/shop-contact-desktop.png)

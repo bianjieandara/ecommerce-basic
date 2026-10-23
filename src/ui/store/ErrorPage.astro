@@ -16,7 +16,11 @@ const title = t(locale, `error_pages.${kind}Title`);
 ---
 
 <BaseLayout title={title} locale={locale} noindex>
-  <main class="mx-auto flex min-h-dvh max-w-xl flex-col items-center justify-center gap-4 px-4 py-12 text-center">
+  <main
+    id="main"
+    tabindex="-1"
+    class="mx-auto flex min-h-dvh max-w-xl flex-col items-center justify-center gap-4 px-4 py-12 text-center focus:outline-none"
+  >
     <h1 class="text-3xl font-semibold">{title}</h1>
     <p class="text-text/70">{t(locale, `error_pages.${kind}Text`)}</p>
     <div class="flex flex-wrap justify-center gap-3">
