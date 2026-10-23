@@ -1,57 +1,58 @@
 ---
-title: Browsing and finding products
-description: Home page, shop, filters, search, categories and product pages.
+title: Explorar y encontrar productos
+description: Inicio, tienda, filtros, búsqueda, categorías y fichas de producto.
 sidebar:
   order: 2
 ---
 
-## Home page
+## Página de inicio
 
-The home page is built from sections the owner chooses in the [page builder](/admin/pages-and-content/): a hero carousel,
-featured products, a grid of categories, trust badges (free shipping, secure payment…), customer reviews and a WhatsApp call to
-action. Products can be shown as a carousel or a grid.
+La página de inicio se compone de secciones que el dueño elige en el [editor de páginas](/admin/pages-and-content/): un carrusel
+principal, productos destacados, una cuadrícula de categorías, ventajas (envío, pago seguro…), opiniones de clientes y una
+llamada a la acción por WhatsApp. Los productos pueden mostrarse como carrusel o como cuadrícula.
 
-![Home page on a laptop](../../../assets/screens/shop-home-desktop.png)
+![Inicio en un portátil](../../../assets/screens/es/shop-home-desktop.png)
 
-## The shop and its filters
+## La tienda y sus filtros
 
-The **Shop** page lists every active product. Shoppers can narrow the list by category, by any filterable attribute (size,
-colour…), by price range, and by "on sale" or "in stock", and sort by relevance, price, newest or best selling. Each choice is part
-of the address, so a filtered view can be shared or bookmarked, and the Back button works as expected.
+La página **Tienda** lista todos los productos activos. Se puede acotar por categoría, por cualquier atributo que sirva de filtro
+(talla, color…), por rango de precio y por «en oferta» o «disponible», y ordenar por destacados, precio, novedad o más vendidos.
+Cada elección forma parte de la dirección, así que una vista filtrada se puede compartir o guardar, y el botón Atrás funciona como se
+espera.
 
-![Shop with filters on a laptop](../../../assets/screens/shop-filters-desktop.png)
+![La tienda con filtros en un portátil](../../../assets/screens/es/shop-filters-desktop.png)
 
-On a phone the filters open from a button above the list and show a live count of results, so the shopper sees what "Apply"
-will give before pressing it.
+En el celular los filtros se abren con un botón sobre la lista y muestran un contador en vivo de resultados, de modo que se ve lo
+que dará «Aplicar» antes de pulsarlo.
 
-![Shop on a phone](../../../assets/screens/shop-catalog-phone.png)
+![La tienda en un celular](../../../assets/screens/es/shop-catalog-phone.png)
 
-:::tip[For search engines]
-Category pages and the plain shop are indexed. Filtered and sorted views are marked `noindex` so Google does not fill up with
-near-duplicates. The sitemap lists only the pages worth indexing.
+:::tip[Para los buscadores]
+Las páginas de categoría y la tienda sin filtros se indexan. Las vistas filtradas u ordenadas se marcan `noindex` para que Google
+no se llene de casi-duplicados. El mapa del sitio incluye solo las páginas que valen la pena.
 :::
 
-## Search
+## Búsqueda
 
-The magnifier in the header opens a search box that suggests products as the shopper types. Pressing Enter shows the full results
-in the shop.
+La lupa de la cabecera abre un cuadro de búsqueda que sugiere productos mientras se escribe. Al pulsar Enter se ven los
+resultados completos en la tienda.
 
-![Search on a phone](../../../assets/screens/shop-search-phone.png)
+![Búsqueda en un celular](../../../assets/screens/es/shop-search-phone.png)
 
-## Product page
+## Ficha de producto
 
-A product page shows photos, the price (with the old price crossed out when it is on sale, and whether tax is included), stock
-status, and every option as a button. Options that are sold out are crossed out. The shopper picks a quantity and adds the item
-to the cart. When the store uses WhatsApp, an **Ask on WhatsApp** button opens a chat with the product name filled in.
+Una ficha muestra las fotos, el precio (con el precio anterior tachado si está en oferta, e indicando si el IVA está incluido), la
+disponibilidad y cada opción como un botón. Las opciones agotadas aparecen tachadas. La persona elige una cantidad y añade al
+carrito. Cuando la tienda usa WhatsApp, el botón **Preguntar por WhatsApp** abre un chat con el nombre del producto ya escrito.
 
-If the chosen option is sold out, the page offers to **notify the shopper by email when it is back in stock**.
+Si la opción elegida está agotada, la ficha ofrece **avisar por correo cuando vuelva a haber stock**.
 
-![Product page on a laptop](../../../assets/screens/shop-product-desktop.png)
+![Ficha de producto en un portátil](../../../assets/screens/es/shop-product-desktop.png)
 
-Below the description, **You may also like** shows related products from the same category.
+Debajo de la descripción, **También te puede interesar** muestra productos relacionados de la misma categoría.
 
-## When something is missing
+## Cuando algo no existe
 
-An address that does not exist shows a friendly page in the shopper's language, with links to the home page and the shop.
+Una dirección que no existe muestra una página amable en el idioma de quien la visita, con enlaces al inicio y a la tienda.
 
-![Page not found on a phone](../../../assets/screens/shop-not-found-phone.png)
+![Página no encontrada en un celular](../../../assets/screens/es/shop-not-found-phone.png)

@@ -1,40 +1,42 @@
 ---
-title: Categories, attributes and media
-description: Organizing the catalog and managing pictures.
+title: Categorías, atributos y multimedia
+description: Organizar el catálogo y gestionar las imágenes.
 sidebar:
   order: 3
 ---
 
-## Categories
+## Categorías
 
-Categories group products in the shop menu and on the home page grid. Each one has a name, address (slug) and description in
-both languages, a position, and an on/off switch.
+Las categorías agrupan los productos en el menú de la tienda y en la cuadrícula de la página de inicio. Cada una tiene nombre,
+dirección (slug) y descripción en ambos idiomas, y un interruptor para mostrarla u ocultarla. Se organizan en árbol: una categoría
+puede tener una **categoría padre**.
 
-![Categories](../../../assets/screens/admin-categories.png)
+![Categorías](../../../assets/screens/es/admin-categories.png)
 
-Use **reorder** to put the most important categories first. A category that is switched off disappears from the shop, but its
-products stay. A product can be in more than one category.
+Usa el orden para poner primero las categorías más importantes. Una categoría oculta desaparece de la tienda, pero sus productos
+siguen existiendo. Un producto puede estar en más de una categoría.
 
-## Attributes
+## Atributos
 
-Attributes are the things that make variants different: **Size**, **Color**, **Material**. Each attribute has values (S, M, L;
-Black, White…). Colours can have a swatch so the shop shows a coloured dot.
+Los atributos son lo que diferencia a las variantes: **Talla**, **Color**, **Material**. Cada atributo tiene valores (S, M, L;
+Negro, Blanco…). Un atributo se puede mostrar como **botones** o como **muestras de color**, y los colores llevan su tono para que
+la tienda dibuje un punto de color.
 
-![Attributes](../../../assets/screens/admin-attributes.png)
+![Atributos](../../../assets/screens/es/admin-attributes.png)
 
-An attribute marked as **filterable** appears in the shop filters, with a count next to each value. Define attributes once and
-reuse them across products; that is what lets a shopper filter the whole shop by "Size M".
+Un atributo marcado como **Usar como filtro en la tienda** aparece en los filtros, con un contador junto a cada valor. Define los
+atributos una vez y reutilízalos en todos los productos: así se puede filtrar toda la tienda por «Talla M».
 
-## Media library
+## Multimedia
 
-Every picture you upload is kept here and can be reused on products, categories and pages.
+Cada imagen que subes se guarda aquí y se puede reutilizar en productos y categorías.
 
-![The media library](../../../assets/screens/admin-media.png)
+![La biblioteca multimedia](../../../assets/screens/es/admin-media.png)
 
-When you upload a picture, the browser makes **several sizes** of it (480, 960 and 1600 px wide) before sending it, so phones
-download a small file and laptops a sharper one. Upload pictures of at least 1000 px on the long side; there is a limit of 10 MB
-per file.
+Se aceptan imágenes **JPEG, PNG o WebP de hasta 10 MB**. Al subir una imagen, el navegador prepara **varios tamaños** (480, 960 y
+1600 px de ancho) antes de enviarla, de modo que los celulares descargan un archivo pequeño y los portátiles uno más nítido. Sube
+imágenes de al menos 1000 px por el lado largo.
 
 :::caution
-You cannot delete a picture that is still used by a product or a category. Remove it from there first.
+No puedes eliminar una imagen que todavía usa un producto o una categoría. Quítala primero de donde se usa.
 :::

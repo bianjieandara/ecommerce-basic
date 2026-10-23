@@ -1,47 +1,48 @@
 ---
-title: Making it yours
-description: What can be changed without a developer, and what needs one.
+title: Hacerla tuya
+description: Qué se puede cambiar sin un desarrollador y qué necesita uno.
 sidebar:
   order: 4
 ---
 
-There are three levels. Start at the first; most stores never need the others.
+Hay tres niveles. Empieza por el primero; la mayoría de las tiendas nunca necesitan los otros.
 
-## 1. In the admin (no code)
+## 1. En el panel (sin código)
 
-The owner and team can change all of this themselves, any time:
+El propietario y el equipo pueden cambiar todo esto por sí mismos, cuando quieran:
 
-| To change…                          | Go to                                                        |
-| ----------------------------------- | ------------------------------------------------------------ |
-| Name, logo, colours, typeface       | [Settings](/admin/settings/) → General and Theme              |
-| The home page layout and its text   | [Pages](/admin/pages-and-content/) → Home                     |
-| About, privacy, terms, custom pages | [Pages](/admin/pages-and-content/)                            |
-| Email wording                       | [Emails](/admin/emails-and-shipping/)                         |
-| Delivery options and prices         | [Shipping](/admin/emails-and-shipping/)                       |
-| Payment methods and bank details    | [Settings](/admin/settings/) → Checkout                       |
-| Tax and invoice details             | [Settings](/admin/settings/) → Tax and Invoicing              |
-| Who can sign in                     | [Users](/admin/team-and-whatsapp/)                            |
+| Para cambiar…                          | Ve a                                                            |
+| -------------------------------------- | --------------------------------------------------------------- |
+| Nombre, logo, colores, tipografía      | [Configuración](/admin/settings/) → General y Tema visual       |
+| El diseño y el texto del inicio        | [Páginas](/admin/pages-and-content/) → Inicio                   |
+| Nosotros, privacidad, términos, páginas propias | [Páginas](/admin/pages-and-content/)                   |
+| El texto de los correos                | [Correos](/admin/emails-and-shipping/)                          |
+| Opciones y precios de entrega          | [Envíos](/admin/emails-and-shipping/)                           |
+| Métodos de pago y datos bancarios      | [Configuración](/admin/settings/) → Pago                        |
+| Impuestos y datos de facturación       | [Configuración](/admin/settings/) → Impuestos y Facturación     |
+| Quién puede iniciar sesión             | [Usuarios](/admin/team-and-whatsapp/)                           |
 
-The look of the shop comes from a small set of design choices (colours, typeface, corner roundness) that apply everywhere, so the
-shop stays consistent and readable on phones whatever you pick.
+El aspecto de la tienda sale de un conjunto pequeño de decisiones de diseño (colores, tipografía, redondez de las esquinas) que se
+aplican en todas partes, así que la tienda se mantiene coherente y legible en el celular elijas lo que elijas.
 
-## 2. A client extension (a developer, a little code)
+## 2. Una extensión de cliente (un desarrollador, poco código)
 
-When one client needs a **special section** or **extra styling** that others should not get, a developer adds it in that client's
-own folder, `clients/<name>/extensions`. The rest of the code is untouched, so updates keep working.
+Cuando un cliente necesita una **sección especial** o un **estilo extra** que los demás no deben recibir, un desarrollador la añade
+en la carpeta propia de ese cliente, `clients/<nombre>/extensions`. El resto del código no se toca, así que las actualizaciones
+siguen funcionando.
 
-:::caution[Check before promising]
-The folder and the wiring exist, but at the time of writing the storefront does not yet load extension sections. Ask your
-developer to confirm the current state before promising a client a custom widget.
+:::caution[Comprueba antes de prometer]
+La carpeta y la conexión existen, pero al escribir esto la tienda aún no carga las secciones de extensión. Pide a tu desarrollador
+que confirme el estado actual antes de prometer a un cliente una sección a medida.
 :::
 
-## 3. New connections (a developer)
+## 3. Conexiones nuevas (un desarrollador)
 
-Payment providers, electronic-invoicing providers and marketing connections are **adapters**: a new one is written against the
-same interface as the existing ones and plugged in, so the rest of the store does not change. This is how another card gateway or
-a tax-authority invoicing service would be added for a client.
+Los proveedores de pago, de facturación electrónica y las conexiones de marketing son **adaptadores**: uno nuevo se escribe contra
+la misma interfaz que los existentes y se conecta, así que el resto de la tienda no cambia. Así se añadiría otra pasarela de
+tarjetas o un servicio de facturación para la autoridad fiscal a un cliente.
 
-## Updating every store
+## Actualizar todas las tiendas
 
-Improvements to the template are published to every client in one step. Each client keeps its own settings, data and keys, and
-database changes are applied automatically as part of the update.
+Las mejoras de la plantilla se publican a todos los clientes en un solo paso. Cada cliente conserva su configuración, sus datos y
+sus claves, y los cambios de base de datos se aplican solos como parte de la actualización.

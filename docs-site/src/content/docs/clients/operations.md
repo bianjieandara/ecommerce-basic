@@ -1,41 +1,43 @@
 ---
-title: Operating the store
-description: Day-to-day health, security and the limits to know about.
+title: Operar la tienda
+description: La salud del día a día, la seguridad y los límites que conviene conocer.
 sidebar:
   order: 5
 ---
 
-## What to look at, and how often
+## Qué mirar y cada cuánto
 
-| Where                                           | Look for                                       | How often          |
-| ----------------------------------------------- | ---------------------------------------------- | ------------------ |
-| [Dashboard](/admin/overview/)                   | Orders to process, out of stock, unread messages | Every working day  |
-| **Failed jobs** and **Message log**             | Anything failed or skipped for a bad reason    | Daily at first, then weekly |
-| [Reports](/admin/reports/)                      | Sales, best sellers, stock to reorder          | Weekly             |
-| Payment provider dashboards                     | Disputes and refunds                           | Weekly             |
+| Dónde                                          | Qué buscar                                         | Cada cuánto                  |
+| ---------------------------------------------- | -------------------------------------------------- | ---------------------------- |
+| [Panel](/admin/overview/)                      | Pedidos por preparar, agotados, mensajes sin leer  | Cada día laborable           |
+| **Trabajos fallidos** y **Registro de mensajes** | Cualquier fallo u omisión por un mal motivo      | A diario al principio, luego cada semana |
+| [Reportes](/admin/reports/)                    | Ventas, más vendidos, stock por reponer            | Cada semana                  |
+| Paneles de los proveedores de pago             | Disputas y reembolsos                              | Cada semana                  |
 
-A healthy store shows **0** failed jobs and **0** failed messages. Both are one click away from the cause.
+Una tienda sana muestra **0** trabajos fallidos y **0** mensajes fallidos. Ambos están a un clic de la causa.
 
-## Security in plain words
+## La seguridad en palabras sencillas
 
-- **Bots and abuse:** forms use invisible bot checks and limits on repeated attempts; the admin sign-in is protected the same way.
-- **Payments:** the store never sees card numbers. Payment confirmations are checked cryptographically before an order is marked
-  paid, and the store asks the provider for the real status instead of trusting the message.
-- **Orders and invoices:** each customer link carries a private key; without it the order cannot be opened.
-- **Admin:** two roles, passwords stored as hashes, sessions that expire, and every action checked on the server.
-- **Browser protections:** the shop cannot be framed by other sites and sends only the necessary referrer information.
+- **Bots y abusos:** los formularios usan comprobaciones anti-bots invisibles y límites de intentos repetidos; el inicio de sesión
+  del panel está protegido igual.
+- **Pagos:** la tienda nunca ve los números de tarjeta. Las confirmaciones de pago se verifican criptográficamente antes de marcar
+  un pedido como pagado, y la tienda le pregunta al proveedor el estado real en lugar de fiarse del mensaje.
+- **Pedidos y facturas:** cada enlace de cliente lleva una clave privada; sin ella no se puede abrir el pedido.
+- **Panel:** dos roles, contraseñas guardadas como hash, sesiones que caducan y cada acción comprobada en el servidor.
+- **Protecciones del navegador:** otros sitios no pueden mostrar la tienda dentro de un marco y solo se envía la información de
+  procedencia necesaria.
 
-The detailed threat list and checklist for developers is `docs/SECURITY.md` in the repository.
+La lista detallada de amenazas y la lista de comprobación para desarrolladores están en `docs/SECURITY.md` del repositorio.
 
-## Limits to know
+## Límites que conviene conocer
 
-Each Cloudflare account has limits that matter only when one account hosts many stores: about 500 Workers, 1,000 KV namespaces,
-10,000 queues and **250 scheduled tasks**, which means at most about **250 stores per account**. Usage that is shared in an
-account (emails, invoice-PDF browser hours, database operations) is watched in the Cloudflare dashboard. When an account gets
-close to a limit, the biggest stores are moved to accounts of their own.
+Cada cuenta de Cloudflare tiene límites que importan solo cuando una cuenta aloja muchas tiendas: unos 500 Workers, 1.000
+espacios de KV, 10.000 colas y **250 tareas programadas**, lo que significa como máximo unas **250 tiendas por cuenta**. El uso
+compartido de una cuenta (correos, horas de navegador para los PDF de facturas, operaciones de base de datos) se vigila en el panel
+de Cloudflare. Cuando una cuenta se acerca a un límite, las tiendas más grandes se pasan a cuentas propias.
 
-## Updates and support
+## Actualizaciones y soporte
 
-The agency updates the template and publishes it to every store, usually without any action from you. If something looks wrong,
-send the order number or page address, what you expected and a screenshot; the [message log](/admin/messages-and-notifications/)
-and the order timeline usually show what happened.
+La agencia actualiza la plantilla y la publica en todas las tiendas, normalmente sin que tengas que hacer nada. Si algo parece
+fallar, envía el número del pedido o la dirección de la página, lo que esperabas y una captura; el
+[registro de mensajes](/admin/messages-and-notifications/) y el historial del pedido suelen mostrar qué pasó.

@@ -1,63 +1,64 @@
 ---
-title: Admin overview
-description: Signing in, the dashboard, the menu and who can do what.
+title: Panel de administración
+description: Iniciar sesión, el panel, el menú y quién puede hacer qué.
 sidebar:
   order: 1
 ---
 
-The admin is where the people who run the shop work. It lives at `/admin` on your store's address (for example
-`https://your-shop.com/admin`) and works on a phone or a laptop.
+El panel es donde trabaja quien lleva la tienda. Está en `/admin` en la dirección de tu tienda (por ejemplo
+`https://tu-tienda.com/admin`) y funciona en un celular o en un portátil.
 
-## Signing in
+## Iniciar sesión
 
-![The sign-in page](../../../assets/screens/admin-login.png)
+![La página de inicio de sesión](../../../assets/screens/es/admin-login.png)
 
-Enter your email and password. If you forgot the password, choose **Forgot password** and the store emails you a link that is
-valid for 30 minutes. There is a limit on sign-in attempts and a bot check, so guessing passwords does not work.
+Escribe tu correo y tu contraseña. Si la olvidaste, elige **¿Olvidaste tu contraseña?** y la tienda te envía un enlace válido
+durante 30 minutos. Hay un límite de intentos y una comprobación anti-bots, así que adivinar contraseñas no funciona.
 
-:::note[The very first time]
-When a store is launched, the person who deploys it opens `/admin/setup` once, enters the setup code they were given, and creates
-the first **owner** account. That page stops working as soon as an owner exists. See [Launching a store](/clients/launch/).
+:::note[La primera vez]
+Al lanzar una tienda, quien la publica abre `/admin/setup` una sola vez, escribe el código de configuración que recibió y crea la
+primera cuenta de **propietario**. Esa página deja de funcionar en cuanto existe un propietario. Mira
+[Lanzar una tienda](/clients/launch/).
 :::
 
-## The dashboard
+## El panel
 
-The first screen shows how the shop is doing right now.
+La primera pantalla muestra cómo va la tienda ahora mismo.
 
-![The dashboard](../../../assets/screens/admin-dashboard.png)
+![El panel](../../../assets/screens/es/admin-dashboard.png)
 
-- **Today, last 7 days, last 30 days:** orders placed, paid orders, revenue, tax and the average order.
-- **Orders to process:** paid orders that still need preparing or shipping. Click **Open orders**.
-- **Out of stock** and **Low stock:** products that need restocking.
-- **Unread messages:** messages from the contact form.
-- **Failed messages** and **Failed jobs:** emails or background tasks that did not go through. They should be **0**; see
-  [Messages and notifications](/admin/messages-and-notifications/).
-- A chart of revenue for the last 14 days.
+- **Hoy, Últimos 7 días, Últimos 30 días:** pedidos recibidos, pedidos pagados, ventas, impuestos y pedido promedio.
+- **Pedidos por preparar:** pedidos pagados que aún hay que preparar o enviar. Pulsa **Pedidos abiertos**.
+- **Agotados** y **Stock bajo:** productos que hay que reponer.
+- **Mensajes sin leer:** mensajes del formulario de contacto.
+- **Mensajes fallidos** y **Trabajos fallidos:** correos o tareas que no salieron. Deberían estar en **0**; mira
+  [Mensajes y notificaciones](/admin/messages-and-notifications/).
+- Un gráfico con las ventas de los últimos 14 días y los productos más vendidos.
 
-On a phone the same cards stack in one column.
+En el celular las mismas tarjetas se apilan en una columna.
 
-![The dashboard on a phone](../../../assets/screens/admin-dashboard-phone.png)
+![El panel en un celular](../../../assets/screens/es/admin-dashboard-phone.png)
 
-## The menu
+## El menú
 
-The bar at the top has one entry per area: **Products, Categories, Attributes, Media, Inventory, Orders, Invoices, Messages,
-Message log, Failed jobs, Settings, Pages, Emails, Shipping, Testimonials, Users, WhatsApp** and **Reports**. This guide follows
-the same order.
+La barra superior tiene una entrada por área: **Productos, Categorías, Atributos, Multimedia, Inventario, Pedidos, Facturas,
+Mensajes, Registro de mensajes, Trabajos fallidos, Configuración, Páginas, Correos, Envíos, Testimonios, Usuarios, WhatsApp** y
+**Reportes**. Esta guía sigue el mismo orden.
 
-## Roles: who can do what
+## Roles: quién puede hacer qué
 
-There are two roles.
+Hay dos roles.
 
-| Can…                                                        | Editor | Owner |
-| ----------------------------------------------------------- | :----: | :---: |
-| Manage products, categories, attributes and media           |   ✔    |   ✔   |
-| Process orders and change their status                      |   ✔    |   ✔   |
-| Adjust and import stock                                     |   ✔    |   ✔   |
-| Edit pages, testimonials and email wording                  |   ✔    |   ✔   |
-| Change **settings** (tax, checkout, payment, WhatsApp…)     |        |   ✔   |
-| Void an invoice                                             |        |   ✔   |
-| Invite and manage **users**                                 |        |   ✔   |
-| Retry or discard failed jobs, connect **WhatsApp**          |        |   ✔   |
+| Puede…                                                             | Editor | Propietario |
+| ------------------------------------------------------------------ | :----: | :---------: |
+| Gestionar productos, categorías, atributos y multimedia            |   ✔    |      ✔      |
+| Gestionar pedidos y cambiar su estado                              |   ✔    |      ✔      |
+| Ajustar e importar stock                                           |   ✔    |      ✔      |
+| Editar páginas, testimonios y el texto de los correos              |   ✔    |      ✔      |
+| Cambiar la **configuración** (impuestos, pago, WhatsApp…)          |        |      ✔      |
+| Anular una factura                                                 |        |      ✔      |
+| Invitar y gestionar **usuarios**                                   |        |      ✔      |
+| Reintentar o descartar trabajos fallidos, conectar **WhatsApp**    |        |      ✔      |
 
-Give people the Editor role for daily work and keep the Owner role for the people who run the business. Permissions are checked
-on the server, so a hidden button is never the only protection.
+Da el rol de Editor para el trabajo diario y reserva el de Propietario para quienes dirigen el negocio. Los permisos se
+comprueban en el servidor, así que un botón oculto nunca es la única protección.

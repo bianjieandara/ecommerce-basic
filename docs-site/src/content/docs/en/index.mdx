@@ -1,0 +1,35 @@
+---
+title: Store template guide
+description: How the store works for shoppers, how owners run it, and how a client gets one.
+template: splash
+hero:
+  tagline: A complete online store you can launch in days, with an admin your team can run without a developer.
+  actions:
+    - text: I run a store (admin guide)
+      link: /en/admin/overview/
+      icon: right-arrow
+    - text: I am buying a store
+      link: /en/clients/what-you-get/
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+  <Card title="What shoppers see" icon="open-book">
+    The shop, product pages, cart, checkout and order tracking, in Spanish and English and built for phones first.
+    [Read the shopper tour](/en/storefront/overview/).
+  </Card>
+  <Card title="Running the store" icon="setting">
+    Products, stock, orders, invoices, messages, pages, emails and settings, each with screenshots and the steps to follow.
+    [Open the admin guide](/en/admin/overview/).
+  </Card>
+  <Card title="Getting a store" icon="rocket">
+    What is included, what you need to bring, how long launch takes and what it costs to run.
+    [See what you get](/en/clients/what-you-get/).
+  </Card>
+  <Card title="Always up to date" icon="random">
+    The screenshots are taken by a script from the real store, so they are refreshed whenever the screens change.
+    [How the guide is built](/en/start/how-this-guide-is-made/).
+  </Card>
+</CardGrid>

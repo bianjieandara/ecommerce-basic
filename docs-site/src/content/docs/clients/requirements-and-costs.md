@@ -1,41 +1,42 @@
 ---
-title: What you bring, and what it costs
-description: The accounts, content and monthly costs behind a store.
+title: Qué debes aportar y cuánto cuesta
+description: Las cuentas, el contenido y los costos mensuales detrás de una tienda.
 sidebar:
   order: 2
 ---
 
-## What you bring
+## Qué debes aportar
 
-| Item                          | Why                                                                                          |
-| ----------------------------- | -------------------------------------------------------------------------------------------- |
-| **A domain name**             | The address of the shop, for example `shop.yourbrand.com`. A subdomain of your main site is fine. |
-| **Your business details**     | Legal name, tax ID, address and tax rate, for invoices.                                        |
-| **Products and pictures**     | Names, descriptions, prices, stock, and good photos (square, at least 1000 px).                 |
-| **Payment accounts**          | A **dLocal Go** account for cards and a **PayPal Business** account. Start in their test mode.   |
-| **A sending email address**   | On a domain you own, so order emails are trusted by Gmail and Outlook.                          |
-| **Legal texts**               | The store includes templates for the privacy policy, terms, and shipping and returns. Have them reviewed for your country and business. |
-| *(Optional)* **WhatsApp**     | A Meta Business account and a phone number not used in the regular WhatsApp app.                |
-| *(Optional)* **Meta ads**     | A Meta Pixel and, for server-side tracking, a Conversions API token.                            |
+| Elemento                         | Para qué                                                                                       |
+| -------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Un nombre de dominio**         | La dirección de la tienda, por ejemplo `tienda.tumarca.com`. Un subdominio de tu sitio principal sirve.       |
+| **Los datos de tu negocio**      | Razón social, identificación fiscal, dirección y tasa de impuesto, para las facturas.           |
+| **Productos e imágenes**         | Nombres, descripciones, precios, stock y buenas fotos (cuadradas, de al menos 1000 px).         |
+| **Cuentas de pago**              | Una cuenta de **dLocal Go** para tarjetas y una de **PayPal Business**. Empieza en su modo de prueba. |
+| **Una dirección de correo de envío** | En un dominio tuyo, para que Gmail y Outlook confíen en los correos de pedidos.            |
+| **Textos legales**               | La tienda incluye plantillas de política de privacidad, términos y envíos y devoluciones. Haz que las revise alguien para tu país y tu negocio. |
+| *(Opcional)* **WhatsApp**        | Una cuenta de Meta Business y un número de teléfono que no se use en la app normal de WhatsApp. |
+| *(Opcional)* **Anuncios de Meta**| Un Pixel de Meta y, para el seguimiento desde el servidor, un token de la API de Conversiones.  |
 
-## Where the store runs
+## Dónde funciona la tienda
 
-On **Cloudflare**. Either on the agency's Cloudflare account (the simplest: it is included in the service) or on **your own**
-Cloudflare account, in which case the usage is billed to you and you keep full ownership. Each store has its own database, picture
-storage, task queue and analytics, so moving one to another account is possible.
+En **Cloudflare**. Puede ser en la cuenta de Cloudflare de la agencia (lo más sencillo: va incluido en el servicio) o en **tu propia**
+cuenta de Cloudflare, en cuyo caso el consumo se te factura a ti y conservas la propiedad total. Cada tienda tiene su propia base
+de datos, almacenamiento de imágenes, cola de tareas y analítica, así que moverla a otra cuenta es posible.
 
-## What it costs to run
+## Cuánto cuesta mantenerla
 
-The platform is deliberately cheap to run because it uses pay-for-what-you-use services. Figures below come from the project plan;
-check Cloudflare's current pricing before quoting a client.
+La plataforma es barata de mantener porque usa servicios que se pagan por uso. Las cifras salen del plan del proyecto; comprueba los
+precios actuales de Cloudflare antes de cotizar a un cliente.
 
-| Cost                          | Typical                                                                                                  |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Cloudflare Workers plan**   | About **US$5 per month per account**. On the agency account one plan covers many stores.                  |
-| **Included usage**            | Database reads and writes, 3,000 emails a month and 10 browser-hours a month (for invoice PDFs) are included per account and shared by its stores; beyond that, usage is a few cents per thousand. |
-| **Picture storage**           | 10 GB free, and no charge for downloads.                                                                 |
-| **Domain**                    | Your registrar's yearly price.                                                                           |
-| **Card and PayPal fees**      | Charged by the providers per sale. The store adds nothing.                                               |
-| **WhatsApp**                  | Meta charges per template message sent, by category and country. Email has no such fee.                   |
+| Costo                               | Habitual                                                                                              |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Plan Cloudflare Workers**         | Unos **5 USD al mes por cuenta**. En la cuenta de la agencia un solo plan cubre muchas tiendas.       |
+| **Uso incluido**                    | Lecturas y escrituras de la base de datos, 3.000 correos al mes y 10 horas de navegador al mes (para los PDF de facturas) van incluidos por cuenta y se comparten entre sus tiendas; más allá, el uso cuesta unos centavos por mil. |
+| **Almacenamiento de imágenes**      | 10 GB gratis y sin costo por descargas.                                                               |
+| **Dominio**                         | El precio anual de tu registrador.                                                                    |
+| **Comisiones de tarjeta y PayPal**  | Las cobran los proveedores por cada venta. La tienda no añade nada.                                   |
+| **WhatsApp**                        | Meta cobra por cada mensaje de plantilla enviado, según la categoría y el país. El correo no tiene ese costo. |
 
-A small shop typically stays inside the included usage, so the running cost is dominated by the domain and the payment fees.
+Una tienda pequeña suele quedarse dentro del uso incluido, así que el costo de mantenerla lo dominan el dominio y las comisiones de
+pago.

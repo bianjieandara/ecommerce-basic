@@ -1,48 +1,48 @@
 ---
-title: Team and WhatsApp
-description: Inviting people to the admin, and sending messages through WhatsApp.
+title: Equipo y WhatsApp
+description: Invitar personas al panel y enviar mensajes por WhatsApp.
 sidebar:
   order: 11
 ---
 
-## Users
+## Usuarios
 
-**Users** (owners only) manages who can sign in.
+**Usuarios** (solo propietarios) gestiona quién puede iniciar sesión.
 
-![Users](../../../assets/screens/admin-users.png)
+![Usuarios](../../../assets/screens/es/admin-users.png)
 
-To add someone, fill in their **email**, **name**, **role** (Editor or Owner) and **language**, and press **Send invitation**. They
-receive an email with a link to choose their password. Until they accept, they cannot sign in.
+Para añadir a alguien, rellena su **correo**, **nombre**, **rol** (Editor o Propietario) e **idioma**, y pulsa **Enviar
+invitación**. Recibe un correo con un enlace para elegir su contraseña. Hasta que lo acepte, no puede iniciar sesión.
 
-In the list you can change a person's **role**, switch **Active** off to stop them signing in without deleting their history, or
-**Delete** them. Two rules protect you: the store always keeps **at least one active owner**, and nobody can change their own
-role or switch off their own account.
+En la lista puedes cambiar el **rol** de una persona, desactivar **Activo** para que no pueda entrar sin borrar su historial, o
+**Eliminar**. Dos reglas te protegen: la tienda siempre conserva **al menos un propietario activo**, y nadie puede cambiar su propio
+rol ni desactivar su propia cuenta.
 
-:::caution[When someone leaves]
-Switch their account to inactive the same day. Their past work stays in the history, but they can no longer sign in.
+:::caution[Cuando alguien se va]
+Desactiva su cuenta el mismo día. Su trabajo pasado queda en el historial, pero ya no puede iniciar sesión.
 :::
 
 ## WhatsApp
 
-WhatsApp can carry the same messages as email (order received, shipped, invoice…) and your store alerts. It uses the official
-WhatsApp Business platform from Meta, which has two consequences:
+WhatsApp puede llevar los mismos mensajes que el correo (pedido recibido, enviado, factura…) y los avisos de tu tienda. Usa la
+plataforma oficial WhatsApp Business de Meta, lo que tiene dos consecuencias:
 
-- Every message is a **template that Meta approves** before it can be sent.
-- A customer receives WhatsApp messages only if they **agreed** at checkout.
+- Cada mensaje es una **plantilla que Meta aprueba** antes de poder enviarse.
+- Un cliente recibe mensajes de WhatsApp solo si **lo aceptó** al pagar.
 
-The **WhatsApp** screen (owners only) is where this is managed.
+La pantalla **WhatsApp** (solo propietarios) es donde se gestiona.
 
-![The WhatsApp screen](../../../assets/screens/admin-whatsapp.png)
+![La pantalla de WhatsApp](../../../assets/screens/es/admin-whatsapp.png)
 
-1. **Connection to Meta** lists the seven values the connection needs, each marked **Set** or **Missing**. The values themselves
-   are never shown; they are stored securely on the server when the store is launched. See the
-   [WhatsApp setup guide](/clients/launch/#whatsapp-optional) for how to get them.
-2. Below, each message has a card: the template name, the status in Spanish and English (*Not submitted*, *Pending*,
-   *Approved*…), a **Send this message** switch, and buttons to **Submit** the template to Meta, **Sync** its status, and **Send a
-   test**.
-3. A message is sent only when WhatsApp is on in [Settings](/admin/settings/), the connection is complete, the message is switched
-   on, and Meta has approved the template in the customer's language. Anything else is recorded as **Skipped**, with the reason,
-   in the [message log](/admin/messages-and-notifications/).
+1. **Conexión con Meta** lista los siete valores que necesita la conexión, cada uno marcado como *Configurado* o *Falta*. Los valores
+   nunca se muestran; se guardan de forma segura en el servidor al lanzar la tienda. Mira la
+   [configuración de WhatsApp](/clients/launch/#whatsapp-opcional) para saber cómo obtenerlos.
+2. Debajo, cada mensaje tiene una tarjeta: el nombre de la plantilla, su estado en español e inglés (*No presentada*,
+   *En revisión*, *Aprobada*, *Rechazada*…), un interruptor **Enviar este mensaje** y los botones **Presentar en Meta**,
+   **Actualizar estado** y **Enviar prueba a mí**.
+3. Un mensaje se envía solo cuando WhatsApp está activado en [Configuración](/admin/settings/), la conexión está completa, el
+   mensaje está activado y Meta aprobó la plantilla en el idioma del cliente. Cualquier otro caso se registra como **Omitido**,
+   con el motivo, en el [registro de mensajes](/admin/messages-and-notifications/).
 
-The shop also has an optional floating WhatsApp button and a WhatsApp payment option; both work without the Meta connection,
-because they simply open a chat.
+La tienda también tiene un botón flotante de WhatsApp opcional y una opción de pago por WhatsApp; ambos funcionan sin la conexión con
+Meta, porque simplemente abren un chat.

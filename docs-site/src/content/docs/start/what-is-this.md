@@ -1,39 +1,41 @@
 ---
-title: What is this store?
-description: A short tour of what the store does and who the guide is for.
+title: ¿Qué es esta tienda?
+description: Un recorrido breve por lo que hace la tienda y a quién va dirigida la guía.
 sidebar:
   order: 1
 ---
 
-This is a ready-made online store. A shopper can browse products, pick sizes or colours, pay, and follow their order. The
-people who run the shop use a separate admin to manage products, stock, orders, invoices, pages and emails. There is nothing to
-install on a phone: both sides work in the browser.
+Esta es una tienda online lista para usar. Quien compra puede explorar productos, elegir tallas o colores, pagar y seguir su
+pedido. Quienes llevan el negocio usan un panel aparte para gestionar productos, stock, pedidos, facturas, páginas y correos. No
+hay nada que instalar en el celular: ambas partes funcionan en el navegador.
 
-![The shop home page on a phone](../../../assets/screens/shop-home-phone.png)
+![La página de inicio de la tienda en un celular](../../../assets/screens/es/shop-home-phone.png)
 
-## The three things it does
+## Lo que hace
 
-1. **Sells.** A catalog with variants (size, colour), a cart, checkout with five payment methods, and an order page the customer
-   can come back to.
-2. **Runs itself.** Stock goes down when an order is placed and comes back when an unpaid order expires. Invoices are numbered and
-   issued when an order is paid. Customers get emails (and WhatsApp messages if you turn them on) at each step.
-3. **Reports.** The dashboard and the reports show sales, taxes, stock, payments and where visitors drop off.
+1. **Vende.** Un catálogo con variantes (talla, color), carrito, pago con cinco métodos y una página de pedido a la que el
+   cliente puede volver.
+2. **Se gestiona sola en lo repetitivo.** El stock baja cuando se hace un pedido y vuelve cuando vence un pedido sin pagar. Las
+   facturas se numeran y se emiten cuando se paga. El cliente recibe correos (y mensajes de WhatsApp si los activas) en cada
+   paso.
+3. **Informa.** El panel y los reportes muestran ventas, impuestos, stock, pagos y en qué punto se van los visitantes.
 
-## Languages and devices
+## Idiomas y dispositivos
 
-Everything the shopper sees is in **Spanish and English**, and the switch is one tap in the header. The store is designed for
-phones first and scales up to a laptop. The admin works on both too; the screenshots in this guide use a laptop for the admin
-and a phone for the shop, because that is how each is mostly used.
+Todo lo que ve el cliente está en **español e inglés**, y el cambio de idioma está a un toque en la cabecera. La tienda está
+pensada primero para celulares y se adapta a un portátil. El panel también funciona en ambos; las capturas de esta guía usan un
+portátil para el panel y un celular para la tienda, porque así se usa cada uno normalmente.
 
-## Who should read what
+## Quién debe leer qué
 
-| You are…                                  | Start with                                                  |
-| ----------------------------------------- | ----------------------------------------------------------- |
-| A shopper or someone who wants a tour     | [What shoppers see](/storefront/overview/)                  |
-| A store owner or an employee in the admin | [Running the store](/admin/overview/)                       |
-| A client deciding to buy or launching one | [What you get](/clients/what-you-get/)                      |
-| A developer                               | The `docs/` folder of the repository (architecture, jobs…)  |
+| Tú eres…                                       | Empieza por                                                     |
+| ---------------------------------------------- | --------------------------------------------------------------- |
+| Quien compra, o quiere un recorrido            | [Lo que ve quien compra](/storefront/overview/)                 |
+| Dueño o empleado de una tienda, en el panel    | [Gestionar la tienda](/admin/overview/)                         |
+| Un cliente que decide comprar o lanza una      | [Qué recibes](/clients/what-you-get/)                           |
+| Un desarrollador                               | La carpeta `docs/` del repositorio (arquitectura, tareas…)      |
 
 :::note
-The store in the screenshots is a demo called "Demo Store" with sample products. Names, prices and customers are made up.
+La tienda de las capturas es una demo llamada «Demo Store» con productos de ejemplo. Los nombres, precios y clientes son
+inventados.
 :::

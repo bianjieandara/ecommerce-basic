@@ -1,43 +1,45 @@
 ---
-title: Messages and notifications
-description: Customer messages, the log of every email sent, and what to do when something fails.
+title: Mensajes y notificaciones
+description: Mensajes de clientes, el registro de todo lo enviado y qué hacer cuando algo falla.
 sidebar:
   order: 7
 ---
 
-## Messages from the contact form
+## Mensajes del formulario de contacto
 
-Everything a visitor writes in the shop's contact form arrives under **Messages**, newest first. The dashboard shows how many are
-unread.
+Todo lo que alguien escribe en el formulario de contacto de la tienda llega a **Mensajes**, el más reciente primero. El panel
+muestra cuántos están sin leer.
 
-![Contact messages](../../../assets/screens/admin-messages.png)
+![Mensajes de contacto](../../../assets/screens/es/admin-messages.png)
 
-- **Reply by e-mail** opens your email program addressed to the person.
-- **Mark as read** removes the unread marker so the dashboard count stays honest.
+- **Responder por correo** abre tu programa de correo dirigido a la persona (y **Responder por WhatsApp** si dejó su teléfono).
+- **Marcar como leído** quita la marca de «sin leer» para que el contador del panel sea honesto.
 
-The visitor automatically receives a short "we got your message" reply, and the store's own address receives an alert, both in
-the language of the page they wrote from.
+La persona recibe automáticamente una respuesta breve de «recibimos tu mensaje», y el correo de la tienda recibe un aviso, ambos en
+el idioma de la página desde la que escribió.
 
-## The message log
+## El registro de mensajes
 
-**Message log** lists every email (and WhatsApp message) the store tried to send: when, through which channel, which message,
-to whom, and whether it was **Sent**, **Failed** or **Skipped**.
+**Registro de mensajes** lista cada correo (y mensaje de WhatsApp) que la tienda intentó enviar: cuándo, por qué canal, qué
+mensaje, a quién y en qué estado está: *En cola*, *Enviado*, *Entregado*, *Leído*, *Fallido* u *Omitido*.
 
-![The message log](../../../assets/screens/admin-notification-log.png)
+![El registro de mensajes](../../../assets/screens/es/admin-notification-log.png)
 
-A message can be **skipped** on purpose, for example a WhatsApp message to someone who did not opt in. The reason is shown. A
-message that **failed** has a **Retry** button once you have fixed the cause (usually a wrong sender address or an expired key).
+Un mensaje puede **omitirse** a propósito, por ejemplo un WhatsApp a alguien que no lo aceptó; se muestra el motivo. Un mensaje
+**fallido** tiene un botón **Enviar de nuevo** una vez que arreglaste la causa (casi siempre una dirección de remitente incorrecta o
+una clave vencida). Solo los propietarios pueden reenviar.
 
 :::tip
-When a customer says "I never got my email", search the log for their address. It shows whether the store sent it, and when.
+Cuando un cliente dice «no me llegó el correo», busca su dirección en el registro. Muestra si la tienda lo envió y cuándo.
 :::
 
-## Failed jobs
+## Trabajos fallidos
 
-Some work happens in the background: sending an email, building an invoice PDF, checking stock alerts. If a task keeps failing
-after several automatic retries, it is parked under **Failed jobs** instead of being lost. **Owners** can **Retry** a job once the
-problem is fixed or **Discard** it when it no longer matters.
+Parte del trabajo ocurre en segundo plano: enviar un correo, generar el PDF de una factura, revisar alertas de stock. Si una tarea
+sigue fallando después de varios reintentos automáticos, queda aparcada en **Trabajos fallidos** en lugar de perderse. Los
+**propietarios** pueden **Reintentar** un trabajo cuando el problema está resuelto o **Descartarlo** cuando ya no importa. Arriba se
+indica además cuántas tareas están **en espera en la cola**.
 
-![Failed jobs](../../../assets/screens/admin-jobs.png)
+![Trabajos fallidos](../../../assets/screens/es/admin-jobs.png)
 
-The dashboard card **Failed jobs** should read **0**. A number there means something needs a look.
+La tarjeta **Trabajos fallidos** del panel debería marcar **0**. Un número distinto significa que algo necesita atención.

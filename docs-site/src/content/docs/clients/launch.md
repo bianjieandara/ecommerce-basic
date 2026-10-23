@@ -1,70 +1,73 @@
 ---
-title: Launching a store
-description: The steps from a signed agreement to a live, tested shop.
+title: Lanzar una tienda
+description: Los pasos desde un acuerdo firmado hasta una tienda en vivo y probada.
 sidebar:
   order: 3
 ---
 
-The technical steps are done by the agency (or your developer) and are written in full in the repository's `docs/NEW_CLIENT.md`.
-This page is the overview, so you know what happens and what is asked of you.
+Los pasos técnicos los hace la agencia (o tu desarrollador) y están escritos completos en `docs/NEW_CLIENT.md` del repositorio. Esta
+página es el resumen, para que sepas qué ocurre y qué se te pide.
 
-## The path
+## El camino
 
-1. **Gather** the items in [What you bring](/clients/requirements-and-costs/).
-2. **Create the store's resources.** One command creates the store's database, storage, cache and task queues on Cloudflare and
-   a configuration file for the client.
-3. **Configure the store.** The address, the sender email, the payment mode (test or live) and the bot-protection key.
-4. **Connect the services** (below).
-5. **Deploy.** The store is built and published, and the database is prepared.
-6. **First sign-in.** The first **owner** account is created once at `/admin/setup` with a private setup code, and the code is then
-   removed.
-7. **Fill the shop**: settings, products, pages, shipping, email wording. This is where the owner spends most of the time.
-8. **Test**, then **go live** by switching payments from test to live keys.
+1. **Reúne** lo de [Qué debes aportar](/clients/requirements-and-costs/).
+2. **Crear los recursos de la tienda.** Un comando crea en Cloudflare la base de datos, el almacenamiento, la caché y las colas de
+   tareas de la tienda, y un archivo de configuración para el cliente.
+3. **Configurar la tienda.** La dirección, el correo remitente, el modo de pago (prueba o real) y la clave anti-bots.
+4. **Conectar los servicios** (abajo).
+5. **Publicar.** La tienda se construye y se publica, y se prepara la base de datos.
+6. **Primer inicio de sesión.** La primera cuenta de **propietario** se crea una sola vez en `/admin/setup` con un código privado, y
+   después ese código se elimina.
+7. **Llenar la tienda**: configuración, productos, páginas, envíos, texto de los correos. Aquí el dueño pasa la mayor parte del
+   tiempo.
+8. **Probar** y luego **salir en vivo** cambiando los pagos de claves de prueba a claves reales.
 
-## Connecting the services
+## Conectar los servicios
 
-### Domain and bot protection
+### Dominio y anti-bots
 
-The shop's hostname is added to the store, and a Cloudflare **Turnstile** widget is created for it. Turnstile is free and invisible
-to shoppers.
+El nombre de host de la tienda se añade a la tienda, y se crea para él un widget de Cloudflare **Turnstile**. Turnstile es gratis e
+invisible para quien compra.
 
-### Email
+### Correo
 
-Add your sending domain to Cloudflare's Email Service and use an address on it as the sender, so messages are authenticated.
+Añade tu dominio de envío al Email Service de Cloudflare y usa una dirección de ese dominio como remitente, para que los mensajes
+estén autenticados.
 
-### Payments
+### Pagos
 
-- **Card (dLocal Go):** an API key and a secret key. The store registers a notification address at `/api/webhooks/dlocalgo` so
-  dLocal Go can tell it a payment succeeded.
-- **PayPal:** a client ID and secret, and a webhook at `/api/webhooks/paypal`.
+- **Tarjeta (dLocal Go):** una clave de API y una clave secreta. La tienda registra una dirección de notificación en
+  `/api/webhooks/dlocalgo` para que dLocal Go le avise cuando un pago se complete.
+- **PayPal:** un ID de cliente y un secreto, y un webhook en `/api/webhooks/paypal`.
 
-Start with the **test** keys of each provider, run a purchase with each, and only then switch to the live keys.
+Empieza con las claves de **prueba** de cada proveedor, haz una compra con cada uno y solo entonces cambia a las claves reales.
 
-### WhatsApp (optional)
+### WhatsApp (opcional)
 
-Create a Meta Business account and a Meta app with the WhatsApp product, note the phone number ID and the business account ID, and
-create a permanent token. The store submits its message templates to Meta, and Meta approves them (often within minutes to a day).
-Nothing is sent to customers until a template is approved and the customer agreed to receive messages.
+Crea una cuenta de Meta Business y una app de Meta con el producto WhatsApp, anota el ID del número de teléfono y el ID de la cuenta
+de empresa, y crea un token permanente. La tienda envía sus plantillas de mensaje a Meta y Meta las aprueba (a menudo en minutos o
+en un día). No se envía nada a los clientes hasta que una plantilla está aprobada y el cliente aceptó recibir mensajes.
 
-### Meta Pixel and catalog (optional)
+### Pixel de Meta y catálogo (opcional)
 
-Add your Pixel ID in [Settings](/admin/settings/) (Marketing). Tracking starts only after the visitor accepts cookies.
+Añade el ID de tu Pixel en [Configuración](/admin/settings/) (Marketing). El seguimiento empieza solo después de que el visitante
+acepta las cookies.
 
-## Test before you launch
+## Probar antes de lanzar
 
-Go through this list on the real address, with test payments:
+Recorre esta lista en la dirección real, con pagos de prueba:
 
-- [ ] The shop loads in `/es` and `/en`, on a phone and a laptop.
-- [ ] `/admin` asks for a sign-in, and the owner can sign in.
-- [ ] A **card** purchase in test mode reaches **Paid**, the customer email arrives, and an **invoice** is issued.
-- [ ] A **PayPal** purchase in test mode reaches **Paid**.
-- [ ] A **bank transfer** order shows your bank details and can be marked paid by hand.
-- [ ] A product that is out of stock cannot be bought, and shows the back-in-stock option.
-- [ ] The contact form delivers a message to **Messages** and an email to the store.
-- [ ] The privacy policy, terms and shipping pages say what is true for your business.
-- [ ] The dashboard shows **0** failed jobs and **0** failed messages.
+- [ ] La tienda carga en `/es` y `/en`, en un celular y en un portátil.
+- [ ] `/admin` pide iniciar sesión y el propietario puede entrar.
+- [ ] Una compra con **tarjeta** en modo de prueba llega a **Pagado**, el correo del cliente llega y se emite una **factura**.
+- [ ] Una compra con **PayPal** en modo de prueba llega a **Pagado**.
+- [ ] Un pedido por **transferencia bancaria** muestra tus datos del banco y se puede marcar como pagado a mano.
+- [ ] Un producto agotado no se puede comprar y ofrece el aviso de «vuelve a haber stock».
+- [ ] El formulario de contacto entrega un mensaje en **Mensajes** y un correo a la tienda.
+- [ ] La política de privacidad, los términos y la página de envíos dicen lo que es cierto para tu negocio.
+- [ ] El panel muestra **0** trabajos fallidos y **0** mensajes fallidos.
 
-## After launch
+## Después del lanzamiento
 
-Change the payment keys to **live**, make a small real purchase yourself and refund it, and keep an eye on the
-[message log](/admin/messages-and-notifications/) and the dashboard for the first few days.
+Cambia las claves de pago a las **reales**, haz tú mismo una compra pequeña real y reembólsala, y vigila el
+[registro de mensajes](/admin/messages-and-notifications/) y el panel durante los primeros días.

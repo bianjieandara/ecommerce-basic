@@ -1,35 +1,36 @@
 ---
-title: Invoices
-description: How invoices are issued, sent, corrected and exported.
+title: Facturas
+description: Cómo se emiten, envían, corrigen y exportan las facturas.
 sidebar:
   order: 6
 ---
 
-An invoice is created automatically when an order becomes **Paid**. It has a sequential number (for example `FV-000005`), the
-seller's details from [Settings](/admin/settings/) (Invoicing), the customer's name and any company name and tax ID they gave at
-checkout, each line, the tax breakdown and the totals.
+Una factura se crea sola cuando un pedido pasa a **Pagado**. Lleva un número consecutivo (por ejemplo `FV-000005`), los datos del
+vendedor tomados de [Configuración](/admin/settings/) (Facturación), el nombre del cliente y la razón social e identificación
+fiscal que dio al pagar, cada línea, el desglose de impuestos y los totales.
 
-![The invoice list](../../../assets/screens/admin-invoices.png)
+![La lista de facturas](../../../assets/screens/es/admin-invoices.png)
 
-The list shows every invoice with its number, date, customer, total and status. **Export CSV** gives your accountant the list
-for a period.
+La lista muestra cada factura con su número, pedido, cliente, fecha, total, impuesto y estado (*Emitida* o *Anulada*), y puedes
+filtrar por serie, estado o fechas. **Exportar CSV** le da a tu contador la lista de un periodo.
 
-## One invoice
+## Una factura
 
-![An invoice in the admin](../../../assets/screens/admin-invoice-detail.png)
+![Una factura en el panel](../../../assets/screens/es/admin-invoice-detail.png)
 
-- **View invoice** opens the printable page the customer sees.
-- **Download PDF** saves the PDF.
-- **Send invoice again** emails it to the customer.
-- **Regenerate PDF** builds a fresh PDF, for example after you correct your company's details in Settings. The invoice number and
-  amounts never change.
-- **Void** cancels an invoice that was issued by mistake (**owners only**). A voided invoice stays in the list, marked as void, so
-  the numbering has no gaps.
+- **Ver factura** abre la página imprimible que ve el cliente.
+- **Descargar PDF** guarda el PDF.
+- **Enviar factura de nuevo** (o «Enviar de nuevo al cliente») la reenvía por correo.
+- **Generar PDF de nuevo** crea un PDF nuevo, por ejemplo después de corregir los datos de tu empresa en Configuración. El número y
+  los importes de la factura no cambian nunca.
+- **Anular factura** cancela una factura emitida por error (**solo propietarios**). Hay que escribir un **motivo**, que queda en la
+  factura y en el historial del pedido. Una factura anulada sigue en la lista, marcada como anulada, para que la numeración no tenga
+  huecos.
 
-The PDF is prepared in the background a few seconds after the order is paid, and the email goes with it attached.
+El PDF se prepara en segundo plano unos segundos después de pagar el pedido, y el correo sale con él adjunto.
 
-:::note[Tax rules differ by country]
-The store issues its own invoice with the tax rate you set. If your country requires electronic invoicing approved by the tax
-authority (for example DIAN in Colombia), the store is prepared to connect to one, but that link is set up separately for each
-client. Ask the person who launched your store.
+:::note[Las reglas fiscales cambian según el país]
+La tienda emite su propia factura con la tasa de impuesto que configures. Si tu país exige facturación electrónica aprobada por la
+autoridad fiscal (por ejemplo la DIAN en Colombia), la tienda está preparada para conectarse a un proveedor, pero esa conexión se
+configura aparte para cada cliente. Pregunta a quien lanzó tu tienda.
 :::

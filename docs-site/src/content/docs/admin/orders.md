@@ -1,66 +1,67 @@
 ---
-title: Orders
-description: Finding orders, moving them through the states and talking to the customer.
+title: Pedidos
+description: Encontrar pedidos, moverlos por sus estados y hablar con el cliente.
 sidebar:
   order: 5
 ---
 
-## The order list
+## La lista de pedidos
 
-![The orders list](../../../assets/screens/admin-orders.png)
+![La lista de pedidos](../../../assets/screens/es/admin-orders.png)
 
-Search by **order number, name, email or phone**, or filter by **status**, **payment method** and a **date range**. The newest
-orders are on top. Click the number to open an order.
+Busca por **número, nombre, correo o teléfono**, o filtra por **estado**, **método de pago** y un **rango de fechas**. Los pedidos
+más nuevos aparecen arriba. Pulsa el número para abrir un pedido.
 
-On a phone the list becomes cards, so you can process orders from your pocket.
+En el celular la lista se convierte en tarjetas, así que puedes gestionar pedidos desde el bolsillo.
 
-![The orders list on a phone](../../../assets/screens/admin-orders-phone.png)
+![La lista de pedidos en un celular](../../../assets/screens/es/admin-orders-phone.png)
 
-## An order
+## Un pedido
 
-![An order](../../../assets/screens/admin-order-detail.png)
+![Un pedido](../../../assets/screens/es/admin-order-detail.png)
 
-The order page has everything in one place:
+La página del pedido reúne todo en un solo lugar:
 
-- **Customer:** name, email, phone, plus **Reply on WhatsApp** (opens a chat with the customer) and **Copy customer link** (the
-  private order page the customer sees).
-- **Shipping address, method and tracking code.**
-- **Items, totals and payment:** what was bought, the tax, the shipping, and when it was paid.
-- **Origin:** the campaign or referral that brought the customer, when the store recorded one.
-- **Invoice:** its number and status, with buttons to view it, send it again, download the PDF or regenerate the PDF.
-- **Timeline:** every step with its time.
-- **Messages sent:** each email or WhatsApp message for this order and whether it was delivered.
+- **Cliente:** nombre, correo y teléfono, más **Responder por WhatsApp** (abre un chat con el cliente) y **Copiar enlace del
+  cliente** (la página privada del pedido que ve el cliente).
+- **Dirección de envío, método de envío y código de seguimiento.**
+- **Productos, totales y pago:** lo comprado, el impuesto, el envío y cuándo se pagó.
+- **Origen:** la campaña o referencia que trajo al cliente, cuando la tienda la registró.
+- **Factura:** su número y estado, con botones para verla, enviarla de nuevo, descargar el PDF o generar el PDF de nuevo.
+- **Historial:** cada paso con su hora.
+- **Mensajes enviados:** cada correo o mensaje de WhatsApp de este pedido y si se entregó.
 
-## The order states
+## Los estados del pedido
 
-| State               | Meaning                                                                       | Set by                                   |
-| ------------------- | ----------------------------------------------------------------------------- | ---------------------------------------- |
-| **Pending payment** | The order is placed and waiting for the money.                                | The store, when the order is placed.     |
-| **Paid**            | The money arrived. An invoice is issued and the customer is told.             | Card and PayPal: automatic. Bank transfer, cash on delivery and WhatsApp: you. |
-| **Processing**      | You are preparing it ("Being prepared").                                      | You.                                     |
-| **Shipped**         | It left the shop. Add the **tracking code** here.                             | You.                                     |
-| **Delivered**       | The customer has it.                                                          | You.                                     |
-| **Cancelled**       | The order will not happen. Reserved stock goes back to the shelf.             | You, or the store when an online payment expires. |
-| **Refunded**        | You returned the money outside the store. This only records it.                | You.                                     |
+| Estado                  | Significado                                                                   | Quién lo cambia                                           |
+| ----------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **Pendiente de pago**   | El pedido se creó y espera el dinero.                                         | La tienda, al crear el pedido.                            |
+| **Pagado**              | Llegó el dinero. Se emite una factura y se avisa al cliente.                  | Tarjeta y PayPal: automático. Transferencia, contra entrega y WhatsApp: tú. |
+| **En preparación**      | Lo estás preparando.                                                          | Tú.                                                       |
+| **Enviado**             | Salió de la tienda. Añade aquí el **código de seguimiento**.                  | Tú.                                                       |
+| **Entregado**           | El cliente lo tiene.                                                          | Tú.                                                       |
+| **Cancelado**           | El pedido no se hará. El stock reservado vuelve al estante.                   | Tú, o la tienda cuando vence un pago online.              |
+| **Reembolsado**         | Devolviste el dinero fuera de la tienda. Esto solo lo registra.               | Tú.                                                       |
 
-## Changing the status
+## Cambiar el estado
 
-In **Change status**, choose the new state, optionally add a note for the timeline, and decide whether to **tell the customer by
-email**. A **tracking code** field appears for *Shipped*. Press **Change status**.
+En **Cambiar estado**, elige el **nuevo estado**, añade si quieres una **nota para el historial** y decide si **avisar al cliente
+por correo**. Para *Enviado* aparece el campo **Código de seguimiento**. Pulsa **Cambiar estado**.
 
-:::tip[A routine for bank transfers]
-1. The order arrives as **Pending payment** and the customer sees your bank details.
-2. When the transfer appears in your bank, open the order and set **Paid**. The invoice and the "payment received" email go out.
-3. Prepare it (**Processing**), ship it (**Shipped** with the tracking code), and mark it **Delivered**.
+:::tip[Una rutina para transferencias]
+1. El pedido llega como **Pendiente de pago** y el cliente ve tus datos bancarios.
+2. Cuando la transferencia aparece en tu banco, abre el pedido y ponlo en **Pagado**. Salen la factura y el correo de «pago
+   recibido».
+3. Prepáralo (**En preparación**), envíalo (**Enviado**, con el código de seguimiento) y márcalo como **Entregado**.
 :::
 
 :::caution
-Card and PayPal orders are marked **Paid** by the payment provider on their own. You do not need to, and should not, mark them by
-hand. If an online payment is not confirmed within the hold time (45 minutes by default), the order expires and the stock is
-released.
+Los pedidos con tarjeta y PayPal los marca como **Pagados** el propio proveedor. No hace falta, y no conviene, marcarlos a mano.
+Si un pago online no se confirma dentro del tiempo de reserva (45 minutos por defecto), el pedido vence y se libera el stock.
 :::
 
-## Refunds
+## Reembolsos
 
-Refunding a card payment is done in the payment provider's dashboard (dLocal Go or PayPal). When the provider confirms a full
-refund, the store marks the order **Refunded** by itself. For other methods, set **Refunded** after you return the money.
+Un reembolso de tarjeta se hace en el panel del proveedor (dLocal Go o PayPal). Cuando el proveedor confirma un reembolso total,
+la tienda marca el pedido como **Reembolsado** por sí sola. Con los demás métodos, pon **Reembolsado** después de devolver el
+dinero.

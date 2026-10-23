@@ -1,53 +1,59 @@
 ---
-title: What you get
-description: The features of the store, what is optional, and what is still being finished.
+title: Qué recibes
+description: Las funciones de la tienda, qué es opcional y qué se está terminando.
 sidebar:
   order: 1
 ---
 
-A client receives **their own store**: its own address, database, admin, pictures, emails and statistics. It is built from the same
-template as every other client's store, so improvements reach everyone, but nobody's data or settings are shared.
+Un cliente recibe **su propia tienda**: con su dirección, base de datos, panel, imágenes, correos y estadísticas. Se construye con
+la misma plantilla que la de cualquier otro cliente, así que las mejoras llegan a todos, pero los datos y la configuración de
+nadie se comparten.
 
-## The shop
+## La tienda
 
-- **Catalog** with categories, variants (size, colour…), sale prices, filters, search with suggestions, and related products.
-- **Cart and checkout** in one page, with delivery options, optional invoice details and **five payment methods**: card
-  (dLocal Go), PayPal, WhatsApp, bank transfer and cash on delivery.
-- **Order page and emails** so customers can follow their purchase, with invoices as PDFs.
-- **Spanish and English** everywhere, with separate web addresses for each language.
-- **Phone first:** designed for 360 px screens, with large touch targets and reduced motion for people who prefer it.
-- **Search-engine ready:** titles, descriptions, sitemap, structured data for products, and sharing previews.
-- **Fast:** pages are cached at the edge and images are served in the right size. Measured on a phone-sized test, the pages score
-  96–99 for performance, 100 for best practices and SEO, and 96–100 for accessibility in Google's Lighthouse.
+- **Catálogo** con categorías, variantes (talla, color…), precios de oferta, filtros, búsqueda con sugerencias y productos
+  relacionados.
+- **Carrito y pago** en una sola página, con opciones de entrega, datos de factura opcionales y **cinco métodos de pago**: tarjeta
+  (dLocal Go), PayPal, WhatsApp, transferencia bancaria y pago contra entrega.
+- **Página del pedido y correos** para que los clientes sigan su compra, con facturas en PDF.
+- **Español e inglés** en todas partes, con direcciones web distintas para cada idioma.
+- **Primero el celular:** pensada para pantallas de 360 px, con botones grandes y movimiento reducido para quien lo prefiere.
+- **Lista para buscadores:** títulos, descripciones, mapa del sitio, datos estructurados de producto y vistas previas al compartir.
+- **Rápida:** las páginas se guardan en caché en el borde y las imágenes se sirven en el tamaño justo. En una prueba con tamaño de
+  celular, las páginas obtienen 96–99 en rendimiento, 100 en buenas prácticas y SEO, y 96–100 en accesibilidad en Lighthouse de
+  Google.
 
-## The admin
+## El panel
 
-Products and variants, categories and attributes, a picture library, **inventory with a full history of every stock change**,
-orders with a timeline, invoices, customer messages, a **page builder** for the home page and content pages, email wording,
-shipping methods, testimonials, users with two roles, reports, and settings for everything. See the
-[admin guide](/admin/overview/).
+Productos y variantes, categorías y atributos, una biblioteca de imágenes, **inventario con el historial completo de cada cambio
+de stock**, pedidos con historial, facturas, mensajes de clientes, un **editor de páginas** para el inicio y las páginas de
+contenido, el texto de los correos, métodos de envío, testimonios, usuarios con dos roles, reportes y configuración para todo.
+Mira la [guía del panel](/admin/overview/).
 
-## Running it
+## Cómo funciona por dentro
 
-- **Automatic emails** for every order step, and optional **WhatsApp messages** (Meta-approved templates).
-- **Stock protection:** stock is reserved while a card payment is pending, released when it expires, and never oversold.
-- **Background jobs with retries:** if an email or a PDF fails, the store tries again, and parks the job where an owner can see it.
-- **Security basics built in:** bot protection on forms, limits on repeated attempts, signed payment notifications, private order
-  links, and protective browser headers. See [Operating the store](/clients/operations/).
+- **Correos automáticos** en cada paso del pedido y, opcionalmente, **mensajes de WhatsApp** (plantillas aprobadas por Meta).
+- **Protección del stock:** el stock se reserva mientras un pago con tarjeta está pendiente, se libera cuando vence y nunca se
+  sobrevende.
+- **Tareas en segundo plano con reintentos:** si falla un correo o un PDF, la tienda lo intenta de nuevo y, si sigue fallando, lo
+  deja a la vista de un propietario.
+- **Seguridad básica incluida:** protección anti-bots en los formularios, límites de intentos, notificaciones de pago firmadas,
+  enlaces privados de pedido y cabeceras de protección del navegador. Mira [Operar la tienda](/clients/operations/).
 
-## Optional modules
+## Módulos opcionales
 
-| Module                         | You need                                                           |
-| ------------------------------ | ------------------------------------------------------------------ |
-| **WhatsApp messages**          | A Meta Business account and a WhatsApp Business number. Meta charges per template message. |
-| **Meta Pixel and product feed**| A Meta account. Tracking waits for the visitor's consent.          |
-| **Google reviews on the home page** | A Google Business place.                                      |
-| **Electronic invoicing for the tax authority** | A certified provider, set up per client.              |
-| **AI help writing translations**| Nothing extra; it uses Cloudflare's AI and is off unless used.     |
+| Módulo                                    | Necesitas                                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **Mensajes de WhatsApp**                  | Una cuenta de Meta Business y un número de WhatsApp Business. Meta cobra por mensaje de plantilla. |
+| **Pixel de Meta y catálogo de productos** | Una cuenta de Meta. El seguimiento espera el consentimiento del visitante.                   |
+| **Reseñas de Google en el inicio**        | Un lugar de Google Business.                                                                |
+| **Facturación electrónica para la autoridad fiscal** | Un proveedor certificado, configurado por cliente.                              |
+| **Ayuda de IA para traducir textos**      | Nada extra; usa la IA de Cloudflare y solo actúa cuando se usa.                              |
 
-## How complete is it?
+## ¿Qué tan completa está?
 
-The shopping, payment, order, invoicing, stock, catalog, content and report features described in this guide are built and have
-been tested, including real card and PayPal payments in the providers' test environments. A few optional pieces are still being
-finished (for example some marketing and multi-client deployment tools). The repository's `docs/PROGRESS.md` lists the status of
-each stage, and your contact will tell you exactly what is included in your launch.
+Las funciones de compra, pago, pedidos, facturación, stock, catálogo, contenido y reportes que describe esta guía están
+construidas y probadas, incluidos pagos reales con tarjeta y PayPal en los entornos de prueba de los proveedores. Algunas piezas
+opcionales aún se están terminando (por ejemplo, parte del marketing y las herramientas de despliegue para varios clientes). El
+archivo `docs/PROGRESS.md` del repositorio lista el estado de cada etapa, y tu contacto te dirá exactamente qué incluye tu
+lanzamiento.

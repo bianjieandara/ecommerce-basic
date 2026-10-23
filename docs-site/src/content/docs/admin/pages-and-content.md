@@ -1,53 +1,56 @@
 ---
-title: Pages and content
-description: The page builder, the home page, content pages and customer reviews.
+title: Páginas y contenido
+description: El editor de páginas, la página de inicio, las páginas de contenido y las opiniones de clientes.
 sidebar:
   order: 8
 ---
 
-## Pages
+## Páginas
 
-**Pages** lists every page of the shop that is made of sections.
+**Páginas** lista todas las páginas de la tienda que se componen de secciones.
 
-![The page list](../../../assets/screens/admin-pages.png)
+![La lista de páginas](../../../assets/screens/es/admin-pages.png)
 
-- **System pages** exist in every store and cannot be deleted: **Home, About, Contact, Privacy, Terms** and **Shipping and
-  returns**. You can change what they say and how they are laid out.
-- **Custom pages** are yours: a size guide, a story, a wholesale page. Create one with **New page**, give it a name in both
-  languages and it gets an address such as `/en/p/size-guide`.
+- Las **páginas del sistema** existen en toda tienda y no se pueden eliminar: **Inicio, Nosotros, Contacto, Privacidad, Términos**
+  y **Envíos y devoluciones**. Puedes cambiar lo que dicen y cómo están organizadas.
+- Las **páginas propias** son tuyas: una guía de tallas, tu historia, una página para mayoristas. Créala con **Nueva página**,
+  dale un título en ambos idiomas y una dirección (letras, números y guiones) y quedará, por ejemplo, en `/es/p/guia-de-tallas`.
 
-## The page builder
+## El editor de páginas
 
-Open a page to edit it.
+Abre una página para editarla.
 
-![The page builder](../../../assets/screens/admin-page-builder.png)
+![El editor de páginas](../../../assets/screens/es/admin-page-builder.png)
 
-**Page texts** hold the title and the text Google shows (search title and description), each in Spanish and English, and a
-**Published** switch.
+**Textos de la página** guarda el título y los textos que muestra Google (título y descripción para buscadores), cada uno en
+español e inglés, y un interruptor **Publicada**.
 
-**Sections** are the building blocks, shown from top to bottom as the shopper sees them. For each one you can switch it on or
-off (the tick), move it up or down with the arrows, **Edit** its content, **Duplicate** it or **Remove** it. Add a new one from the
-list at the bottom and press **Add**.
+Las **Secciones** son los bloques, mostrados de arriba abajo tal como los ve quien compra. De cada una puedes activarla o
+desactivarla (la casilla), moverla con las flechas, **Editar** su contenido, **Duplicarla** o **Quitarla**. Añade una nueva desde
+la lista del final y pulsa **Añadir**.
 
-| Section                       | What it shows                                                             |
-| ----------------------------- | ------------------------------------------------------------------------- |
-| **Hero carousel**             | Large slides with a title, a subtitle and a button.                        |
-| **Featured products**         | A row or grid of products you choose, or the ones marked *Featured*.       |
-| **Category grid**             | Tiles that lead to categories.                                            |
-| **Trust badges**              | Short reasons to buy (secure payment, fast shipping, returns).             |
-| **Testimonials and reviews**  | The testimonials you wrote, and optionally Google reviews.                |
-| **WhatsApp call to action**   | A prominent button that opens a chat.                                      |
-| **Rich text**                 | Free text with headings, lists and links (Markdown).                       |
+| Sección                       | Qué muestra                                                                 |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| **Carrusel principal**        | Diapositivas grandes con título, subtítulo y un botón.                       |
+| **Productos destacados**      | Una fila o cuadrícula de productos que eliges, o los marcados como *Destacado*. |
+| **Cuadrícula de categorías**  | Mosaicos que llevan a las categorías.                                        |
+| **Banner promocional**        | Un aviso destacado para una oferta o una campaña.                            |
+| **Beneficios**                | Razones breves para comprar (pago seguro, envío rápido, devoluciones).        |
+| **Testimonios y reseñas**     | Los testimonios que escribiste y, opcionalmente, reseñas de Google.           |
+| **Galería**                   | Un conjunto de imágenes.                                                     |
+| **Preguntas frecuentes**      | Preguntas y respuestas desplegables.                                         |
+| **Llamado a WhatsApp**        | Un botón destacado que abre un chat.                                         |
+| **Texto**                     | Texto libre con títulos, listas y enlaces (Markdown).                         |
 
-Press **Save**, then **View page** to see it. The home page is a page like any other, so rearranging it is a matter of moving
-sections.
+Pulsa **Guardar** y luego **Ver página** para verla. La página de inicio es una página como cualquier otra, así que reorganizarla es
+cuestión de mover secciones.
 
-## Testimonials
+## Testimonios
 
-**Testimonials** are short quotes from happy customers. Add the name, a rating from 1 to 5, the text and the language, choose the
-order, and switch it on or off.
+Los **Testimonios** son citas breves de clientes contentos. Agrega el nombre del cliente, una calificación de 1 a 5, el texto y el
+idioma, elige el orden y decide si se muestra en la tienda.
 
-![Testimonials](../../../assets/screens/admin-testimonials.png)
+![Testimonios](../../../assets/screens/es/admin-testimonials.png)
 
-They appear in the *Testimonials and reviews* section of any page that includes it. Only show real opinions: it keeps your
-customers' trust, and in many countries it is a legal requirement.
+Aparecen en la sección *Testimonios y reseñas* de cualquier página que la incluya. Muestra solo opiniones reales: mantiene la
+confianza de tus clientes y, en muchos países, es una obligación legal.

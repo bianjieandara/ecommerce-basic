@@ -1,41 +1,43 @@
 ---
-title: How this guide is made
-description: Where the screenshots come from and how to refresh them.
+title: Cómo se hace esta guía
+description: De dónde salen las capturas y cómo renovarlas.
 sidebar:
   order: 2
 ---
 
-The pages are Markdown files in `docs-site/src/content/docs/`, shown by [Starlight](https://starlight.astro.build). The
-screenshots are **not** taken by hand: a script opens the real store in a headless Chrome and saves each screen, so they match
-the product and can be refreshed in minutes after a change.
+Las páginas son archivos Markdown en `docs-site/src/content/docs/`, que muestra [Starlight](https://starlight.astro.build).
+Las capturas **no** se hacen a mano: un script abre la tienda real en un Chrome sin ventana y guarda cada pantalla, así que
+coinciden con el producto y se pueden renovar en minutos después de un cambio.
 
-## Refreshing the screenshots
+## Renovar las capturas
 
-You need Node and Google Chrome on the machine. From the repository root:
-
-```sh
-npm run build                      # the store as it will be deployed
-npm run docs:store                 # starts a demo store on http://localhost:4400 with its own empty database
-npm run docs:data                  # fills it with sample products, pictures, orders, messages and testimonials
-npm run docs:screens               # takes every screenshot into docs-site/src/assets/screens/
-```
-
-`npm run docs:screens -- admin-orders` takes only the screenshots whose name starts with `admin-orders`.
-
-The demo store keeps its data in `.wrangler/docs-state/`, separate from the development database, so nothing you do for the
-guide touches real data. The sample owner account is created by the script and its login is saved in
-`.wrangler/docs-admin.json`, which is never committed.
-
-## Previewing and publishing the guide
+Necesitas Node y Google Chrome en la máquina. Desde la raíz del repositorio:
 
 ```sh
-npm run docs:dev                   # http://localhost:4500 with live reload
-npm run docs:build                 # static site in docs-site/dist/
+npm run build                      # la tienda tal como se publicará
+npm run docs:store                 # arranca una tienda demo en http://localhost:4400 con su propia base de datos
+npm run docs:data                  # la llena con productos, imágenes, pedidos, mensajes y testimonios de ejemplo
+npm run docs:screens               # toma todas las capturas en docs-site/src/assets/screens/es/
+DOCS_LANG=en npm run docs:screens  # las mismas capturas con la interfaz en inglés (carpeta en/)
 ```
 
-The output is plain static files. They can be hosted on Cloudflare Workers static assets or Pages, or on any web host.
+`npm run docs:screens -- admin-orders` toma solo las capturas cuyo nombre empieza por `admin-orders`.
 
-## Spanish
+La tienda demo guarda sus datos en `.wrangler/docs-state/`, separados de la base de datos de desarrollo, así que nada de lo que
+haces para la guía toca datos reales. La cuenta de ejemplo del propietario la crea el script y su acceso queda en
+`.wrangler/docs-admin.json`, que nunca se sube al repositorio.
 
-The site is set up for Spanish at `/es/`. A page that has no Spanish version yet shows the English text with a notice, so the
-guide can be translated page by page.
+## Ver y publicar la guía
+
+```sh
+npm run docs:dev                   # http://localhost:4500 con recarga en vivo
+npm run docs:build                 # sitio estático en docs-site/dist/
+```
+
+El resultado son archivos estáticos. Se pueden alojar en Cloudflare (Workers con recursos estáticos o Pages) o en cualquier
+hosting web.
+
+## Idiomas
+
+El español es el idioma principal y está en la raíz del sitio; el inglés está en `/en/`. Cada idioma tiene su propia carpeta de
+capturas, para que la interfaz que se ve coincida con el idioma del texto.

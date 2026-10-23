@@ -1,52 +1,53 @@
 ---
-title: Cart and checkout
-description: From the cart to a placed order, and the five ways to pay.
+title: Carrito y pago
+description: Del carrito al pedido realizado, y las cinco formas de pagar.
 sidebar:
   order: 3
 ---
 
-## The cart
+## El carrito
 
-The cart lives in the shopper's browser, so it survives closing the tab. The server **re-prices every line** before showing a
-total, so a price change made in the admin is reflected, and nobody can alter a price by editing their browser. Shoppers can
-change quantities (up to 20 per line) or remove items. Tax is shown; shipping is worked out at checkout, because it depends on
-the delivery choice.
+El carrito vive en el navegador de quien compra, así que sobrevive si cierra la pestaña. El servidor **vuelve a calcular el precio
+de cada línea** antes de mostrar un total, de modo que un cambio de precio hecho en el panel se refleja y nadie puede alterar un
+precio editando su navegador. Se pueden cambiar cantidades (hasta 20 por línea) o quitar productos. Se muestra el impuesto; el
+envío se calcula al pagar, porque depende de la entrega elegida.
 
-![The cart on a phone](../../../assets/screens/shop-cart-phone.png)
+![El carrito en un celular](../../../assets/screens/es/shop-cart-phone.png)
 
-## Checkout
+## Pagar
 
-Checkout is one page.
+El pago es una sola página.
 
-1. **Contact:** name, email and a phone number with country code. A box asks whether the shopper wants order updates by WhatsApp
-   (the owner can tick it by default in the [checkout settings](/admin/settings/)).
-2. **Delivery:** the shipping methods the owner has set up, each with its price. Choosing **Store pickup** hides the address.
-3. **Address:** street, apartment, city, region, postal code and country.
-4. **Invoice details (optional):** company name and tax ID, for shoppers who need a business invoice.
-5. **Payment:** the methods the owner has switched on.
-6. **Summary and Place order.** The total is checked again on the server when the order is placed.
+1. **Contacto:** nombre completo, correo y un teléfono con código de país. Una casilla pregunta si quiere recibir actualizaciones
+   por WhatsApp (el dueño puede dejarla marcada por defecto en la [configuración de pago](/admin/settings/)).
+2. **Entrega:** los métodos de envío que el dueño configuró, cada uno con su precio. Elegir **Recogida en tienda** oculta la
+   dirección.
+3. **Dirección:** calle, apartamento o referencias, ciudad, departamento o región, código postal y país.
+4. **Datos para la factura (opcional):** razón social e identificación fiscal, para quien necesita factura a nombre de una empresa.
+5. **Pago:** los métodos que el dueño tiene activados.
+6. **Resumen y Hacer pedido.** El total se comprueba de nuevo en el servidor al crear el pedido.
 
-![Checkout on a phone](../../../assets/screens/shop-checkout-phone.png)
+![El pago en un celular](../../../assets/screens/es/shop-checkout-phone.png)
 
-A bot check (Cloudflare Turnstile) runs in the background, so shoppers are not asked to solve puzzles.
+Una comprobación anti-bots (Cloudflare Turnstile) se ejecuta en segundo plano, así que no se pide resolver acertijos.
 
-![Checkout on a laptop](../../../assets/screens/shop-checkout-desktop.png)
+![El pago en un portátil](../../../assets/screens/es/shop-checkout-desktop.png)
 
-## Payment methods
+## Métodos de pago
 
-| Method               | What the shopper sees                                                                     | When the order becomes **paid**                     |
-| -------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **Card** (dLocal Go) | Redirected to the secure dLocal Go page to enter card details, then back to the store.     | Automatically, when dLocal Go confirms.             |
-| **PayPal**           | Redirected to PayPal to approve, then back to the store.                                  | Automatically, when the store captures the payment. |
-| **WhatsApp**         | A chat opens with the order summary so the shopper can agree payment with the store.       | By the owner, in the admin.                         |
-| **Bank transfer**    | The order page shows the bank details the owner wrote.                                     | By the owner, when the transfer arrives.            |
-| **Cash on delivery** | The order page shows the owner's note (for example "pay in cash or by card on delivery"). | By the owner, on delivery.                          |
+| Método                    | Qué ve quien compra                                                                   | Cuándo el pedido pasa a **Pagado**                      |
+| ------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Tarjeta** (dLocal Go)   | Lo lleva a la página segura de dLocal Go para poner la tarjeta y lo devuelve a la tienda. | Automáticamente, cuando dLocal Go lo confirma.          |
+| **PayPal**                | Lo lleva a PayPal para aprobar y lo devuelve a la tienda.                             | Automáticamente, cuando la tienda captura el pago.      |
+| **Pedido por WhatsApp**   | Se abre un chat con el resumen del pedido para acordar el pago con la tienda.          | Lo marca el dueño en el panel.                          |
+| **Transferencia bancaria**| La página del pedido muestra los datos bancarios que escribió el dueño.                | Lo marca el dueño cuando llega la transferencia.        |
+| **Pago contra entrega**   | La página del pedido muestra la nota del dueño (por ejemplo «paga en efectivo o con tarjeta al recibir»). | Lo marca el dueño al entregar.            |
 
-Card and PayPal payments are confirmed by the payment provider calling the store directly, so an order is marked paid even if
-the shopper closes the browser right after paying. The store never sees card numbers.
+Los pagos con tarjeta y PayPal los confirma el propio proveedor llamando a la tienda, así que un pedido se marca como pagado
+aunque la persona cierre el navegador justo después de pagar. La tienda nunca ve los números de tarjeta.
 
-## What happens to stock
+## Qué pasa con el stock
 
-The store **holds the stock** for an unpaid online payment for a set time (45 minutes by default). If the shopper does not pay,
-the order expires and the stock is released. If two shoppers go for the last unit, the second sees a friendly "no longer
-available in that quantity" message instead of an oversold order.
+La tienda **reserva el stock** de un pago online pendiente durante un tiempo (45 minutos por defecto). Si no se paga, el pedido
+vence y el stock se libera. Si dos personas van por la última unidad, la segunda ve un aviso amable («algunos productos ya no tienen
+esa cantidad disponible») en lugar de un pedido sobrevendido.

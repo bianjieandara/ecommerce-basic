@@ -1,43 +1,45 @@
 ---
-title: Reports
-description: The report types, date ranges, and how to read them.
+title: Reportes
+description: Los tipos de reporte, los periodos y cómo leerlos.
 sidebar:
   order: 12
 ---
 
-**Reports** turns your orders, stock and visitors into numbers you can act on.
+**Reportes** convierte tus pedidos, tu stock y tus visitas en números con los que puedes actuar.
 
-![The sales report](../../../assets/screens/admin-reports.png)
+![El reporte de ventas](../../../assets/screens/es/admin-reports.png)
 
-## Choosing a report
+## Elegir un reporte
 
-The tabs across the top are the reports:
+Las pestañas de arriba son los reportes:
 
-| Report                | Answers                                                              |
-| --------------------- | -------------------------------------------------------------------- |
-| **Sales**             | Revenue, orders, average order, units, tax, shipping and refunds.     |
-| **Products**          | Best sellers and slow movers.                                        |
-| **Categories**        | Which parts of the catalog sell.                                     |
-| **Payments**          | How customers pay, and how much each method brings.                  |
-| **Shipping**          | Shipping income and the methods used.                                |
-| **Taxes**             | Tax collected by rate, for your tax return.                          |
-| **Invoices**          | Invoices issued, voided and their totals.                            |
-| **Inventory**         | Stock value, low and out-of-stock items.                             |
-| **Customers**         | New and returning customers, and who buys most.                      |
-| **Funnel and traffic**| Visitors, product views, carts and purchases, and where they came from. |
-| **Notifications**     | Emails and messages sent, failed or skipped.                         |
+| Reporte                  | Responde a                                                              |
+| ------------------------ | ----------------------------------------------------------------------- |
+| **Ventas**               | Ingresos, pedidos, ticket medio, unidades, impuestos, envíos y reembolsos. |
+| **Productos**            | Los más vendidos y los de baja rotación.                                |
+| **Categorías**           | Qué partes del catálogo venden.                                         |
+| **Pagos**                | Cómo pagan los clientes y cuánto aporta cada método.                    |
+| **Envíos**               | Ingresos por envío y los métodos usados.                                |
+| **Impuestos**            | El impuesto cobrado por tasa, para tu declaración.                      |
+| **Facturas**             | Facturas emitidas y anuladas y sus totales.                             |
+| **Inventario**           | Valor del stock, productos con stock bajo y agotados.                   |
+| **Clientes**             | Clientes nuevos y recurrentes, y quién compra más.                      |
+| **Embudo y tráfico**     | Visitas, vistas de producto, carritos y compras, y de dónde vienen.     |
+| **Notificaciones**       | Correos y mensajes enviados, fallidos u omitidos.                       |
 
-## Choosing the period
+## Elegir el periodo
 
-Set **From** and **To**, or press **Last 7 days**, **Last 30 days** or **Last 90 days**. For sales you can group the chart by day,
-week or month. Each number shows how it compares with the period before it.
+Define **Desde** y **Hasta**, o pulsa **Últimos 7 días**, **Últimos 30 días** o **Últimos 90 días**. En ventas puedes **agrupar
+por** día, semana o mes. Cada cifra muestra cómo se compara con el periodo anterior («vs periodo anterior»). **Descargar CSV**
+exporta la tabla del reporte, y cada reporte lleva al pie notas que explican cómo se cuenta (por ejemplo, que los importes cuentan
+los pedidos el día en que se pagaron).
 
-## Weekly summary
+## Resumen semanal
 
-The store can email a short summary every week. Turn it on, and choose the weekday and hour, in
-[Settings](/admin/settings/) under **Reports**.
+La tienda puede enviarte por correo un resumen breve cada semana. Actívalo y elige el día y la hora en
+[Configuración](/admin/settings/), en **Reportes**.
 
-:::tip[A simple weekly habit]
-Every Monday: open **Sales** for the last 7 days, **Products** to see what sold, and **Inventory** for what to reorder. Ten minutes
-is enough to catch problems early.
+:::tip[Un hábito semanal sencillo]
+Cada lunes: abre **Ventas** de los últimos 7 días, **Productos** para ver qué se vendió e **Inventario** para saber qué reponer.
+Diez minutos bastan para detectar problemas a tiempo.
 :::

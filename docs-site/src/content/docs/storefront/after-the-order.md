@@ -1,34 +1,36 @@
 ---
-title: After the order
-description: The order page, emails, invoices and contacting the store.
+title: Después del pedido
+description: La página del pedido, los correos, las facturas y el contacto con la tienda.
 sidebar:
   order: 4
 ---
 
-## The order page
+## La página del pedido
 
-Right after placing an order the shopper lands on their **order page**: status, items, totals, payment method, and a history of
-what happened. The address contains a private key, so only people who have the link (the shopper, in their email) can open it.
-For bank transfer it shows the bank details; for cash on delivery, the owner's note.
+Justo después de hacer el pedido, la persona llega a su **página del pedido**: estado, productos, totales, método de pago y un
+historial de lo ocurrido. La dirección lleva una clave privada, así que solo quien tiene el enlace (el cliente, en su correo)
+puede abrirla. Para transferencia bancaria muestra los datos del banco; para pago contra entrega, la nota del dueño.
 
-![An order page on a phone](../../../assets/screens/shop-order-phone.png)
+![Una página de pedido en un celular](../../../assets/screens/es/shop-order-phone.png)
 
-## Emails
+## Correos
 
-The shopper receives an email when the order is placed and again when it is paid, shipped or delivered. The store also receives
-an email alert for every new order. If WhatsApp is switched on and the shopper agreed, the same messages go to WhatsApp. The
-owner can edit the wording in the [email templates](/admin/emails-and-shipping/).
+El cliente recibe un correo cuando el pedido se crea y otra vez cuando se paga, se envía o se entrega. La tienda también recibe
+un aviso por correo por cada pedido nuevo. Si WhatsApp está activado y el cliente aceptó, los mismos mensajes llegan por
+WhatsApp. El dueño puede editar los textos en las [plantillas de correo](/admin/emails-and-shipping/).
 
-## Invoices
+## Facturas
 
-When an order is paid, the store issues a numbered invoice (for example `FV-000005`) with the seller's and the customer's details,
-each line, the tax breakdown and the total. The shopper gets it by email as a PDF and can open it from the order page.
+Cuando un pedido se paga, la tienda emite una factura numerada (por ejemplo `FV-000005`) con los datos del vendedor y del
+cliente, cada línea, el desglose de impuestos y el total. El cliente la recibe por correo en PDF y puede abrirla desde la página
+del pedido.
 
-![An invoice](../../../assets/screens/shop-invoice-desktop.png)
+![Una factura](../../../assets/screens/es/shop-invoice-desktop.png)
 
-## Contact
+## Contacto
 
-The **Contact** page has a form (name, email, phone, message) and the store's address and WhatsApp. Messages arrive in the admin
-under [Messages](/admin/messages-and-notifications/), and a bot check and a limit on how often one person can send keep spam out.
+La página **Contacto** tiene un formulario (nombre, teléfono, mensaje) y la dirección y el WhatsApp de la tienda. Los mensajes
+llegan al panel, en [Mensajes](/admin/messages-and-notifications/), y una comprobación anti-bots y un límite de envíos por persona
+mantienen fuera el spam.
 
-![The contact page](../../../assets/screens/shop-contact-desktop.png)
+![La página de contacto](../../../assets/screens/es/shop-contact-desktop.png)

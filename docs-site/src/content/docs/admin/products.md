@@ -1,64 +1,68 @@
 ---
-title: Products
-description: Adding and editing products, options, pictures and prices.
+title: Productos
+description: Crear y editar productos, opciones, imágenes y precios.
 sidebar:
   order: 2
 ---
 
-## The product list
+## La lista de productos
 
-![The product list](../../../assets/screens/admin-products.png)
+![La lista de productos](../../../assets/screens/es/admin-products.png)
 
-Find products with the search box or the **Status**, **Category**, **On sale** and **Out of stock** filters. Each row shows the
-status, price, total stock, the number of variants and when it was last changed. Two quick actions sit on each row:
+Encuentra productos con el buscador o con los filtros **Estado**, **Categoría**, **En oferta** y **Agotados**. Cada fila muestra el
+estado, el precio, el stock total, el número de variantes y cuándo se cambió por última vez. En cada fila hay dos acciones
+rápidas:
 
-- **Unpublish / Publish:** hide a product from the shop without deleting it.
-- **Duplicate:** start a new product from an existing one (handy for similar items).
+- **Despublicar / Publicar:** oculta un producto de la tienda sin borrarlo.
+- **Duplicar:** empieza un producto nuevo a partir de uno existente (útil para artículos parecidos).
 
-Press **New product** to add one.
+Pulsa **Nuevo producto** para crear uno.
 
-## Editing a product
+## Editar un producto
 
-![Editing a product](../../../assets/screens/admin-product-edit.png)
+![Editar un producto](../../../assets/screens/es/admin-product-edit.png)
 
-**Details**
+**Datos**
 
-- **Status:** *Draft* (not visible), *Active* (for sale) or *Archived* (kept but hidden).
-- **Featured:** shows the product in featured blocks on the home page.
-- **Price** and **Compare-at price:** the compare-at price is the old price that is crossed out when you run a sale. Money is
-  entered in the store currency, for example `25.00`.
-- **Tax rate:** leave empty to use the store's rate, or set a different one (for example 0% for a tax-free item).
-- **Categories:** tick one or more.
+- **Estado:** *Borrador* (no visible), *Activo* (a la venta) o *Archivado* (guardado pero oculto).
+- **Destacado:** muestra el producto en los bloques de destacados de la página de inicio.
+- **Precio** y **Precio de comparación:** el de comparación es el precio anterior que aparece tachado cuando haces una oferta. El
+  dinero se escribe en la moneda de la tienda, por ejemplo `25.00`.
+- **Tasa de impuesto (%):** déjala vacía para usar la tasa de la tienda, o pon otra (por ejemplo 0 % para un artículo exento).
+- **Categorías:** marca una o varias. Si aún no hay, crea primero una categoría.
 
-**Text** has a tab for each language. Write the name, short description and a longer description in Markdown (use `**bold**`,
-lists and links). The **slug** is the web address of the product in that language; leave it empty and it is made from the name.
-**SEO title** and **SEO description** are what Google shows; if you leave them empty the store writes sensible ones.
+**Textos** tiene una pestaña por idioma. Escribe el nombre, la descripción corta y una descripción más larga en Markdown (puedes
+usar `**negrita**`, listas y enlaces). El **slug** es la dirección web del producto en ese idioma; si lo dejas vacío se genera
+desde el nombre. **Título SEO** y **Descripción SEO** son lo que muestra Google; si los dejas vacíos la tienda escribe unos
+razonables.
 
-**Images:** add pictures from the media library, drag them with the arrows to reorder them. The first one is the product's main
-picture and appears in listings and when a link is shared.
+**Imágenes:** agrégalas desde la biblioteca y reordénalas con las flechas. La primera es la imagen principal del producto y la que
+aparece en los listados y al compartir un enlace.
 
-## Options (variants)
+## Opciones (variantes)
 
-Many products come in sizes or colours. Each combination is a **variant** with its own SKU, barcode, stock and, if needed, its
-own price.
+Muchos productos vienen en tallas o colores. Cada combinación es una **variante** con su propio SKU, código de barras, stock y,
+si hace falta, su propio precio.
 
-![Variants of a product](../../../assets/screens/admin-product-variants.png)
+![Variantes de un producto](../../../assets/screens/es/admin-product-variants.png)
 
-1. Under **Generate variants from attributes**, tick the values you sell (for example sizes S, M, L and colours Black, White).
-2. Press **Generate variants**. The store creates every combination.
-3. Fill in each variant: **SKU** (your code), **Barcode**, **Stock**, **Cost** (what it costs you, used in inventory value and
-   reports), an optional **Price** if this option costs more, a **Low-stock alert** level, and an optional picture.
-4. **Track stock** turns stock counting on or off (turn it off for services or made-to-order items). **Deactivate** hides a
-   variant without losing its history.
+1. En **Generar variantes desde atributos**, marca los valores que vendes (por ejemplo tallas S, M, L y colores Negro, Blanco).
+2. Pulsa **Generar variantes**. La tienda crea todas las combinaciones.
+3. Rellena cada variante: **SKU** (tu código), **Código de barras**, **Stock**, **Costo** (lo que te cuesta; se usa en el valor
+   del inventario y en los reportes), un **Precio** opcional si esa opción cuesta más, una **Alerta de stock bajo** y una imagen
+   opcional.
+4. **Controlar stock** activa o desactiva el conteo de stock (desactívalo para servicios o productos bajo pedido).
+   **Desactivar** oculta una variante sin perder su historial.
 
-A product with no sizes or colours has a single variant; the form still shows it so you can set its SKU and stock.
+Un producto sin tallas ni colores tiene una sola variante («Producto simple»); el formulario la sigue mostrando para que pongas su
+SKU y su stock.
 
-Press **Save**. The **Note for stock changes** field at the bottom is saved with any stock change you made, so the
-[inventory history](/admin/inventory/) shows why.
+Pulsa **Guardar**. El campo **Nota para los cambios de stock** al final se guarda con cualquier cambio de stock que hayas hecho,
+de modo que el [historial del inventario](/admin/inventory/) muestre el motivo.
 
 :::tip
-Saving a product refreshes the shop pages that show it. Open the product page in a private window to see exactly what a shopper
-sees.
+Al guardar un producto se renuevan las páginas de la tienda que lo muestran. Abre la ficha en una ventana privada para ver
+exactamente lo que ve quien compra.
 :::
 
-Categories, attributes (sizes, colours) and pictures are set up in [Catalog setup](/admin/catalog-setup/).
+Las categorías, los atributos (tallas, colores) y las imágenes se preparan en [Categorías, atributos y multimedia](/admin/catalog-setup/).

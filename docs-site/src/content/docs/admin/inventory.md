@@ -1,48 +1,50 @@
 ---
-title: Inventory
-description: Counting stock, adjusting it, and reading the history of every change.
+title: Inventario
+description: Contar el stock, ajustarlo y leer el historial de cada cambio.
 sidebar:
   order: 4
 ---
 
-The inventory screen is the fastest way to see and change stock for every variant, without opening each product.
+La pantalla de inventario es la forma más rápida de ver y cambiar el stock de todas las variantes, sin abrir cada producto.
 
-![The inventory screen](../../../assets/screens/admin-inventory.png)
+![La pantalla de inventario](../../../assets/screens/es/admin-inventory.png)
 
-## Reading the screen
+## Leer la pantalla
 
-- **Units on hand, Value at cost, Value at price** at the top add up everything you currently hold, using each variant's cost and
-  price.
-- Filter by **name, SKU or barcode**, by **category**, or by **stock level** (all, in stock, low, out of stock), and sort by name
-  or stock.
-- Each row shows the stock, the **Low at** level (when the store warns you) and a status: *In stock*, *Low* or *Out*.
-- **Find by SKU or barcode** jumps straight to a variant. On a phone, **Scan barcode** uses the camera where the browser supports
-  it; otherwise type the code.
+- **Unidades en stock, Valor a costo y Valor a precio** arriba suman todo lo que tienes ahora, usando el costo y el precio de cada
+  variante.
+- Filtra por **nombre, SKU o código de barras**, por **categoría** o por **nivel de stock** (en stock, stock bajo, agotado, sin
+  control de stock), y ordena por nombre, stock o valor.
+- Cada fila muestra el stock, el nivel **Bajo desde** (cuando la tienda te avisa) y un estado: *En stock*, *Stock bajo* o *Agotado*.
+- **SKU o código de barras** te lleva directo a una variante. En el celular, **Escanear código** usa la cámara si el navegador lo
+  permite; si no, escribe el código.
 
-## Changing stock
+## Cambiar el stock
 
-- **− / +** change the stock by one.
-- **Adjust** opens a panel where you either add or remove a quantity, or **set to a counted value** (what you counted on the
-  shelf). Choose a **reason** (*Restock*, *Manual adjustment*, *Customer return* or *Damaged or lost*) and an optional note.
-- Tick several rows and press **Adjust selected** to change many variants at once.
-- **Import** reads a CSV file. It first shows a preview of what would change and any rows with problems, and nothing is saved until
-  you confirm. **Export CSV** gives you the current list for a spreadsheet.
+- **−** y **+** cambian el stock de una unidad en una unidad.
+- **Ajustar** abre un panel donde puedes **sumar o restar unidades**, o **fijar a una cantidad contada** (lo que contaste en el
+  estante). Elige un **motivo** (*Reposición*, *Ajuste manual*, *Devolución de cliente* o *Dañado o perdido*) y una nota opcional.
+- Marca varias filas (hasta 50) y pulsa **Ajustar seleccionadas** para cambiar muchas variantes a la vez.
+- **Importar una hoja de conteo:** sube un archivo CSV (hasta 2 MB) con las columnas `sku`, `mode` (`set` para fijar o `add` para
+  sumar) y `quantity`, y opcionalmente el costo. Primero **Revisar archivo** muestra qué cambiaría y qué filas tienen problemas, y
+  no se guarda nada hasta que pulses **Aplicar importación**. **Exportar CSV** te da la lista actual para una hoja de cálculo.
 
-Sales and cancellations change stock automatically: an order takes stock when it is placed, and a cancelled or expired order puts
-it back.
+Las ventas y las cancelaciones cambian el stock solas: un pedido descuenta stock al crearse, y un pedido cancelado o vencido lo
+devuelve.
 
-## Low and out-of-stock alerts
+## Alertas de stock bajo y agotado
 
-When a variant reaches its **low-stock level**, the store sends a single email listing all the variants that crossed the line (so
-a big import does not flood your inbox). When a sold-out variant is restocked, shoppers who asked to be told are notified once.
-The default low-stock level is set in [Settings](/admin/settings/) (Inventory) and can be changed per variant.
+Cuando una variante llega a su **nivel de stock bajo**, la tienda envía un solo correo con todas las variantes que cruzaron la línea
+(así una importación grande no inunda tu bandeja). Cuando se repone una variante agotada, quienes pidieron que se les avisara reciben
+un aviso una sola vez. El nivel por defecto se define en [Configuración](/admin/settings/) (Inventario) y se puede cambiar por
+variante.
 
-## History
+## Historial
 
-Every change is recorded, forever: who made it, when, the reason, the quantity and the stock before and after. Open **History**
-on a row for one variant, or **Movements** at the top for all of them.
+Cada cambio queda registrado para siempre: quién lo hizo, cuándo, el motivo, la cantidad y el stock antes y después. Abre
+**Historial** en una fila para ver una variante, o **Movimientos** arriba para verlas todas.
 
-![Stock movements](../../../assets/screens/admin-inventory-movements.png)
+![Movimientos de stock](../../../assets/screens/es/admin-inventory-movements.png)
 
-Use it to answer "why is this number what it is?": a sale shows the order number, a manual change shows the person and the note.
-Movements can be exported to CSV too.
+Úsalo para responder «¿por qué esta cifra es la que es?»: una venta muestra el número de pedido, un cambio manual muestra a la
+persona y la nota. Los movimientos también se pueden exportar a CSV.
