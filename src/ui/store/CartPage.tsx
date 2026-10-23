@@ -129,11 +129,11 @@ export default function CartPage(props: CartPageProps) {
 
   if (lines.length === 0) {
     return (
-      <div class="flex flex-col items-center gap-4 py-12 text-center">
-        <p class="text-lg font-semibold">{props.labels.empty}</p>
+      <div class="flex flex-col items-center gap-6 py-20 text-center">
+        <p class="font-display text-2xl font-semibold tracking-tight md:text-3xl">{props.labels.empty}</p>
         <a
           href={props.continueHref}
-          class="rounded-brand border-text/20 inline-flex min-h-11 items-center border px-4"
+          class="bg-primary text-on-primary inline-flex min-h-12 items-center rounded-full px-7 font-medium transition hover:opacity-90"
         >
           {props.labels.continueShopping}
         </a>
@@ -164,7 +164,7 @@ export default function CartPage(props: CartPageProps) {
                 <div class="flex items-center gap-2">
                   <button
                     type="button"
-                    class="rounded-brand border-text/20 min-h-11 min-w-11 border"
+                    class="border-text/20 hover:border-text min-h-11 min-w-11 rounded-full border transition-colors"
                     aria-label="−"
                     onClick={() => setCartQuantity(line.variantId, line.quantity - 1)}
                   >
@@ -175,7 +175,7 @@ export default function CartPage(props: CartPageProps) {
                   </output>
                   <button
                     type="button"
-                    class="rounded-brand border-text/20 min-h-11 min-w-11 border"
+                    class="border-text/20 hover:border-text min-h-11 min-w-11 rounded-full border transition-colors"
                     aria-label="+"
                     onClick={() => setCartQuantity(line.variantId, line.quantity + 1)}
                   >
@@ -195,7 +195,10 @@ export default function CartPage(props: CartPageProps) {
         </ul>
       </section>
 
-      <aside class="rounded-brand bg-surface flex h-fit flex-col gap-3 p-4" aria-label={props.labels.total}>
+      <aside
+        class="rounded-card bg-surface flex h-fit flex-col gap-4 p-6 md:sticky md:top-28"
+        aria-label={props.labels.total}
+      >
         <p class="flex justify-between text-sm">
           <span>{props.labels.subtotal}</span>
           <span>{quote ? fmt(quote.totals.subtotalMinor) : '…'}</span>
@@ -214,7 +217,7 @@ export default function CartPage(props: CartPageProps) {
         <a
           href={props.checkoutHref}
           aria-disabled={loading || failed ? 'true' : undefined}
-          class="rounded-brand bg-primary text-on-primary inline-flex min-h-12 items-center justify-center font-semibold"
+          class="rounded-brand bg-primary text-on-primary inline-flex min-h-14 items-center justify-center text-base font-semibold transition hover:opacity-90"
         >
           {props.labels.checkout}
         </a>

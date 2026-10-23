@@ -1,5 +1,6 @@
 ---
 // Call-to-action block that opens a WhatsApp chat with a prefilled message.
+import Icon from '@/ui/components/Icon.astro';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import type { WidgetProps } from './types';
@@ -10,15 +11,21 @@ const href = whatsappLink(whatsapp.number, whatsapp.message);
 ---
 
 {href && (
-  <section class="flex flex-col gap-3 rounded-brand bg-surface p-6" data-reveal>
-    <h2 class="text-xl font-semibold">{pickText(config.title, view.locale, 'es')}</h2>
-    <p class="text-sm text-text/80">{pickText(config.text, view.locale, 'es')}</p>
+  <section
+    class="flex flex-col gap-6 rounded-card bg-surface p-8 md:flex-row md:items-center md:justify-between md:p-14"
+    data-reveal
+  >
+    <div class="flex max-w-xl flex-col gap-3">
+      <h2 class="text-3xl md:text-5xl">{pickText(config.title, view.locale, 'es')}</h2>
+      <p class="text-text/70 md:text-lg">{pickText(config.text, view.locale, 'es')}</p>
+    </div>
     <a
       href={href}
       target="_blank"
       rel="noopener"
-      class="inline-flex min-h-12 w-fit items-center rounded-brand bg-emerald-700 px-6 font-semibold text-white"
+      class="inline-flex min-h-14 w-fit shrink-0 items-center gap-2 rounded-full bg-primary px-8 font-semibold text-on-primary transition hover:opacity-90"
     >
+      <Icon name="chat" size={20} />
       {pickText(config.buttonLabel, view.locale, 'es')}
     </a>
   </section>

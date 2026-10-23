@@ -16,7 +16,7 @@ const items = (config.items ?? []).map((item) => ({
 {items.length > 0 && (
   <div class="flex max-w-3xl flex-col gap-2" data-reveal>
     {items.map((item) => (
-      <details class="group rounded-brand bg-surface px-5 py-1">
+      <details class="group rounded-2xl bg-surface px-6 py-1">
         <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 font-medium">
           {item.question}
           <span class="text-xl transition group-open:rotate-45" aria-hidden="true">

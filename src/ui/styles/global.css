@@ -34,8 +34,8 @@
 :root {
   --brand-primary: #111111;
   --brand-on-primary: #ffffff;
-  --brand-accent: #e03b2e;
-  --brand-accent-soft: color-mix(in srgb, #e03b2e 20%, #ffffff);
+  --brand-accent: #cf3426;
+  --brand-accent-soft: color-mix(in srgb, #cf3426 20%, #ffffff);
   --brand-background: #ffffff;
   --brand-surface: #f4f4f2;
   --brand-text: #111111;

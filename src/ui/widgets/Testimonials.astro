@@ -14,12 +14,12 @@ const STAR_COUNT = 5;
 ---
 
 {items.length > 0 && (
-  <section class="flex flex-col gap-4" data-reveal>
-    <h2 class="text-xl font-semibold">{title}</h2>
+  <section class="flex flex-col gap-8" data-reveal>
+    <h2 class="text-3xl md:text-5xl">{title}</h2>
     <ul class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] md:grid md:grid-cols-3 md:overflow-visible [&::-webkit-scrollbar]:hidden">
       {items.map((item) => (
         <li class="flex w-[80%] shrink-0 snap-start md:w-auto">
-          <figure class="flex w-full flex-col gap-3 rounded-brand bg-surface p-5">
+          <figure class="flex w-full flex-col gap-5 rounded-card bg-surface p-7 md:p-8">
             <p
               class="flex gap-0.5"
               role="img"
@@ -29,8 +29,8 @@ const STAR_COUNT = 5;
                 <Icon name="star" size={18} class={index < item.rating ? 'text-accent' : 'text-text/20'} />
               ))}
             </p>
-            <blockquote class="text-sm leading-relaxed">{item.body}</blockquote>
-            <figcaption class="mt-auto text-sm font-medium">{item.authorName}</figcaption>
+            <blockquote class="text-lg leading-snug font-medium">{item.body}</blockquote>
+            <figcaption class="eyebrow mt-auto">{item.authorName}</figcaption>
           </figure>
         </li>
       ))}

@@ -1,12 +1,97 @@
-/* Look of the user guide: it wears the demo store's type (Inter, text #111111) with a brand-colour header, shows ordered lists as guided
-   steps and styles the role tiles of the home page. Change --guide-primary to re-skin the whole guide for another brand. */
+/* Design tokens and base look of the user guide: Inter, the demo store's text colour and a brand-colour header. This is the only file
+   with raw values; guide-content.css and guide-home.css use var(--guide-*) only. Change --guide-primary to re-skin the guide. */
 :root {
+  /* Brand and neutral colours. */
   --guide-primary: #111111;
   --guide-accent: #d62828;
   --guide-on-primary: #ffffff;
+  --guide-on-primary-muted: #e6e6e6;
+  --guide-on-primary-subtle: rgb(255 255 255 / 0.45);
+  --guide-on-primary-soft: rgb(255 255 255 / 0.16);
+  --guide-shade: rgb(0 0 0 / 0.2);
+  --guide-shadow-color: rgb(17 17 17 / 0.14);
+
+  /* Type: families, the size scale, line heights, weights and tracking. */
   --guide-font-display: 'Inter', system-ui, sans-serif;
+  --guide-text-xs: 0.8125rem;
+  --guide-text-sm: 0.9375rem;
+  --guide-text-md: 1rem;
+  --guide-text-base: 1.0625rem;
+  --guide-text-lg: 1.25rem;
+  --guide-text-xl: 1.375rem;
+  --guide-text-code: 0.875em;
+  --guide-text-h1: 2.25rem;
+  --guide-text-h2: 1.75rem;
+  --guide-text-h3: 1.25rem;
+  --guide-text-hero: clamp(2rem, 5vw, 3.25rem);
+  --guide-leading-tight: 1.2;
+  --guide-leading-snug: 1.3;
+  --guide-leading-normal: 1.65;
+  --guide-leading-relaxed: 1.8;
+  --guide-weight-semibold: 600;
+  --guide-weight-bold: 700;
+  --guide-tracking-tight: -0.02em;
+  --guide-tracking-wide: 0.04em;
+
+  /* Spacing scale. */
+  --guide-space-xs: 0.25rem;
+  --guide-space-sm: 0.5rem;
+  --guide-space-md: 0.75rem;
+  --guide-space-lg: 1rem;
+  --guide-space-xl: 1.25rem;
+  --guide-space-2xl: 1.5rem;
+  --guide-space-3xl: 2rem;
+  --guide-space-4xl: 2.5rem;
+  --guide-space-5xl: 3.5rem;
+
+  /* Shape: radii, borders, focus ring, icon and marker sizes. */
+  --guide-radius-sm: 0.5rem;
+  --guide-radius-md: 0.75rem;
+  --guide-radius-lg: 0.875rem;
+  --guide-radius-xl: 1rem;
+  --guide-radius-pill: 999px;
+  --guide-border-width: 1px;
+  --guide-focus-width: 3px;
+  --guide-focus-offset: 3px;
+  --guide-icon-sm: 1.35rem;
+  --guide-icon-lg: 2.5rem;
+  --guide-dot-size: 0.4rem;
+  --guide-dot-top: 0.8em;
+
+  /* Layout: reading column, table and tile minimums, and the guided-step cards (the mobile media query below narrows them). */
+  --guide-content-width: 46rem;
+  --guide-col-min: 11rem;
+  --guide-tile-min-height: 15rem;
+  --guide-step-size: 2.25rem;
+  --guide-step-gutter: 4rem;
+  --guide-step-inset: var(--guide-space-lg);
+  --guide-step-min-height: 3.5rem;
+
+  /* Motion. */
+  --guide-duration: 0.15s;
+  --guide-ease: ease;
+  --guide-lift: -0.125rem;
+
+  /* Starlight's own tokens, fed from ours. */
   --sl-font: 'Inter', system-ui, sans-serif;
   --sl-color-bg-nav: var(--guide-primary);
+  --sl-content-width: var(--guide-content-width);
+  --sl-text-h1: var(--guide-text-h1);
+  --sl-text-h2: var(--guide-text-h2);
+  --sl-text-h3: var(--guide-text-h3);
+  --sl-text-h4: var(--guide-text-base);
+}
+
+/* Media queries cannot read custom properties, so 50rem (Starlight's own breakpoint) is repeated in the three guide files. */
+@media (max-width: 50rem) {
+  :root {
+    --guide-text-h1: 1.875rem;
+    --guide-text-h2: 1.375rem;
+    --guide-text-h3: 1.125rem;
+    --guide-step-size: 2rem;
+    --guide-step-gutter: 3.5rem;
+    --guide-step-inset: var(--guide-space-md);
+  }
 }
 
 :root[data-theme='light'] {
@@ -38,213 +123,31 @@
 
 /* Brand header: the controls inside it read white on the brand colour in both themes. */
 header.header {
-  --sl-color-text: #ffffff;
-  --sl-color-white: #ffffff;
-  --sl-color-gray-1: #ffffff;
-  --sl-color-gray-2: #e6e6e6;
-  --sl-color-gray-3: #e6e6e6;
-  --sl-color-gray-5: rgb(255 255 255 / 0.45);
-  --sl-color-gray-6: rgb(255 255 255 / 0.16);
+  --sl-color-text: var(--guide-on-primary);
+  --sl-color-white: var(--guide-on-primary);
+  --sl-color-gray-1: var(--guide-on-primary);
+  --sl-color-gray-2: var(--guide-on-primary-muted);
+  --sl-color-gray-3: var(--guide-on-primary-muted);
+  --sl-color-gray-5: var(--guide-on-primary-subtle);
+  --sl-color-gray-6: var(--guide-on-primary-soft);
   --sl-color-black: var(--guide-primary);
-  --sl-color-hairline-shade: rgb(0 0 0 / 0.2);
+  --sl-color-hairline-shade: var(--guide-shade);
 }
 
 .site-title {
-  color: #ffffff;
+  color: var(--guide-on-primary);
   font-family: var(--guide-font-display);
-  font-size: 1.25rem;
-}
-
-.hero h1 {
-  font-size: clamp(2rem, 5vw, 3.25rem);
-}
-
-/* Type scale: Starlight's defaults make h2 about 2.2x the body text and h1 barely bigger than h2. This keeps a clear step from
-   h1 to h2 to h3 to body, and the same 16px body size everywhere (paragraphs, lists, tables). */
-:root {
-  --sl-text-h1: 2.25rem;
-  --sl-text-h2: 1.5rem;
-  --sl-text-h3: 1.25rem;
-  --sl-text-h4: 1.0625rem;
-}
-
-@media (max-width: 50rem) {
-  :root {
-    --sl-text-h1: 1.875rem;
-    --sl-text-h2: 1.375rem;
-    --sl-text-h3: 1.125rem;
-  }
-}
-
-/* Tables are reference material: a notch under the body size, with small caps-style headers so they read as labels. */
-.sl-markdown-content table {
-  font-size: 0.9375rem;
-  line-height: 1.55;
-}
-
-.sl-markdown-content th {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--guide-muted);
-}
-
-/* Previous/next cards: the title is a link label, not a heading, so it stays at body size. */
-.pagination-links a .link-title {
-  font-size: var(--sl-text-body);
-  font-weight: 600;
-  line-height: 1.3;
+  font-size: var(--guide-text-lg);
 }
 
 h1,
 .sl-markdown-content h2,
 .hero h1 {
   font-family: var(--guide-font-display);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: var(--guide-weight-bold);
+  letter-spacing: var(--guide-tracking-tight);
 }
 
-/* Guided steps: every top-level numbered list becomes numbered cards. */
-.sl-markdown-content > ol {
-  list-style: none;
-  padding: 0;
-  margin-inline-start: 0;
-  counter-reset: guide-step;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.sl-markdown-content > ol > li {
-  counter-increment: guide-step;
-  position: relative;
-  margin: 0 !important;
-  padding: 0.9rem 1rem 0.9rem 4rem;
-  min-height: 3.5rem;
-  background: var(--guide-card);
-  border: 1px solid var(--sl-color-hairline);
-  border-radius: 0.875rem;
-}
-
-.sl-markdown-content > ol > li::before {
-  content: counter(guide-step);
-  position: absolute;
-  inset-inline-start: 1rem;
-  top: 0.8rem;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: var(--sl-color-accent);
-  color: var(--sl-color-text-invert);
-  font-weight: 700;
-  font-size: 1.05rem;
-}
-
-.sl-markdown-content > ol > li > * + * {
-  margin-top: 0.5rem;
-}
-
-.sl-markdown-content > ol > li img {
-  border-radius: 0.5rem;
-  border: 1px solid var(--sl-color-hairline);
-}
-
-/* Role tiles on the home page. */
-.role-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  margin-block: 1.5rem;
-}
-
-.role-tile {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-height: 15rem;
-  padding: 1.25rem;
-  border-radius: 1rem;
-  border: 1px solid var(--sl-color-hairline);
-  background: var(--guide-card);
-  color: var(--sl-color-text);
-  text-decoration: none;
-}
-
-.role-tile.is-featured {
-  background: var(--guide-primary);
-  border-color: var(--guide-primary);
-  color: var(--guide-on-primary);
-}
-
-.role-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.75rem;
-  display: grid;
-  place-items: center;
-  background: var(--sl-color-accent-low);
-  color: var(--sl-color-accent-high);
-}
-
-.role-tile.is-featured .role-icon {
-  background: rgb(255 255 255 / 0.18);
-  color: var(--guide-on-primary);
-}
-
-.role-title {
-  font-family: var(--guide-font-display);
-  font-weight: 700;
-  font-size: 1.35rem;
-  line-height: 1.2;
-  margin-top: 0.25rem;
-}
-
-.role-text {
-  color: var(--guide-muted);
-}
-
-.role-tile.is-featured .role-text {
-  color: #e6e6e6;
-}
-
-.role-go {
-  margin-top: auto;
-  font-weight: 600;
-}
-
-.role-tile:focus-visible {
-  outline: 3px solid var(--sl-color-accent);
-  outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .role-tile {
-    transition:
-      transform 0.15s ease,
-      box-shadow 0.15s ease;
-  }
-  .role-tile:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgb(17 17 17 / 0.14);
-  }
-}
-
-@media (max-width: 50rem) {
-  .role-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .role-tile {
-    min-height: 0;
-  }
-  .sl-markdown-content > ol > li {
-    padding-inline-start: 3.5rem;
-  }
-  .sl-markdown-content > ol > li::before {
-    width: 2rem;
-    height: 2rem;
-    inset-inline-start: 0.75rem;
-  }
+.hero h1 {
+  font-size: var(--guide-text-hero);
 }

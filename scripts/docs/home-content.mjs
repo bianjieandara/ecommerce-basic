@@ -153,7 +153,7 @@ export async function applyDemoTheme(cookie) {
       values: {
         colorPrimary: '#111111',
         colorOnPrimary: '#ffffff',
-        colorAccent: '#e03b2e',
+        colorAccent: '#cf3426',
         colorBackground: '#ffffff',
         colorSurface: '#f4f4f2',
         colorText: '#111111',

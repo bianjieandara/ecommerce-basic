@@ -52,9 +52,9 @@ de Meta se confirma al día siguiente, cuando Meta ya mostró los eventos.
 
 1. En la app de Meta, **WhatsApp > Configuración de la API** te da un número de pruebas gratuito. Añade tu propio teléfono como
    destinatario y envía el mensaje de ejemplo `hello_world` para confirmar que todo conecta.
-2. En el panel, **WhatsApp**: revisa el texto de cada plantilla, **Enviar a Meta** y luego **Sincronizar estado**. Meta responde en
+2. En el panel, **WhatsApp**: revisa el texto de cada plantilla, **Presentar en Meta** y luego **Actualizar estado**. Meta responde en
    hasta 24 horas. Si la rechaza, el motivo aparece ahí.
-3. Con la plantilla aprobada, pulsa **Enviar prueba**. Después marca un pedido como enviado y comprueba que el mensaje trae el
+3. Con la plantilla aprobada, pulsa **Enviar prueba a mí**. Después marca un pedido como enviado y comprueba que el mensaje trae el
    código de seguimiento y el enlace al pedido.
 4. En **Mensajes y notificaciones** debe verse el estado pasar de enviado a entregado y leído.
 

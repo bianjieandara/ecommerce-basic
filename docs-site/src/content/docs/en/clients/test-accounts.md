@@ -55,7 +55,7 @@ confirmed the next day, when Meta has shown the events.
    `hello_world` message to confirm everything connects.
 2. In the admin, **WhatsApp**: review each template's text, **Submit to Meta**, then **Sync status**. Meta answers within up to 24
    hours. If it rejects one, the reason shows there.
-3. With the template approved, press **Send test**. Then mark an order as shipped and check the message carries the tracking code
+3. With the template approved, press **Send test to me**. Then mark an order as shipped and check the message carries the tracking code
    and the order link.
 4. In **Messages and notifications** you should see the status go from sent to delivered and read.
 

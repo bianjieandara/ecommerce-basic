@@ -37,7 +37,7 @@ const DISPLAY_FONT_VALUES: Record<SettingsMap['theme']['fontPreset'], string> = 
  */
 export function themeToCss(theme: SettingsMap['theme']): string {
   const primary = sanitizeHex(theme.colorPrimary, '#111111');
-  const accent = sanitizeHex(theme.colorAccent, '#e03b2e');
+  const accent = sanitizeHex(theme.colorAccent, '#cf3426');
   const background = sanitizeHex(theme.colorBackground, '#ffffff');
   const declarations = [
     `--brand-primary:${primary}`,

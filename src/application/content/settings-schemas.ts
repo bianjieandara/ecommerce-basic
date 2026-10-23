@@ -76,7 +76,7 @@ export const contactSettings = z.object({
 export const themeSettings = z.object({
   colorPrimary: hexColor('#111111'),
   colorOnPrimary: hexColor('#ffffff'),
-  colorAccent: hexColor('#e03b2e'),
+  colorAccent: hexColor('#cf3426'),
   colorBackground: hexColor('#ffffff'),
   colorSurface: hexColor('#f4f4f2'),
   colorText: hexColor('#111111'),

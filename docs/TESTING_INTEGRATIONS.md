@@ -183,7 +183,7 @@ enabled, and Meta approved the template in the recipient's language; anything el
    24 hours ([docs](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-review)).
    Rejections are commonly caused by variables not numbered in order, a template that starts or ends with a variable, special
    characters such as `#`, `$`, `%`, missing sample values, or too many variables for the text length.
-4. After approval: **Send test** to your phone. Then mark an order shipped with a tracking code and check the message carries
+4. After approval: **Send test to me** (it goes to your own phone). Then mark an order shipped with a tracking code and check the message carries
    the code and the order link; issue an invoice and check the PDF arrives as a document.
 5. Check `/admin/notification-log`: `sent`, then `delivered` and `read` as Meta calls the webhook.
 

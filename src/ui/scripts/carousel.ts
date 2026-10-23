@@ -13,7 +13,11 @@ export function initCarousel(root: HTMLElement): void {
   const track = root.querySelector<HTMLElement>('[data-carousel-track]');
   if (!track) return;
   const slides = [...track.children] as HTMLElement[];
-  if (slides.length < 2) return;
+  if (slides.length < 2) {
+    // Nothing to scroll: the arrows and dots would do nothing.
+    root.querySelector<HTMLElement>('[data-carousel-controls]')?.classList.add('hidden');
+    return;
+  }
 
   const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
   const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
