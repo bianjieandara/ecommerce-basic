@@ -22,7 +22,7 @@ const categories =
         <li>
           <a
             href={routes.category(view.locale, category.slug)}
-            class="group relative flex aspect-square items-end justify-between gap-3 overflow-hidden rounded-card bg-surface p-5 font-display text-lg font-semibold tracking-tight transition-colors hover:bg-text hover:text-background md:aspect-4/3 md:p-8 md:text-2xl"
+            class="group relative flex aspect-square items-end overflow-hidden rounded-card bg-surface p-5 font-display text-lg font-semibold tracking-tight transition-colors hover:bg-text hover:text-background md:aspect-4/3 md:p-8 md:text-2xl"
           >
             {category.imageKey && (
               <>
@@ -40,7 +40,7 @@ const categories =
             )}
             <span class={`relative ${category.imageKey ? 'text-white' : ''}`}>{category.name}</span>
             <span
-              class={`relative flex size-10 shrink-0 items-center justify-center rounded-full border transition group-hover:rotate-45 md:size-12 ${category.imageKey ? 'border-white/60 text-white' : 'border-current'}`}
+              class={`absolute right-4 top-4 flex size-10 items-center justify-center rounded-full border transition group-hover:rotate-45 md:right-6 md:top-6 md:size-12 ${category.imageKey ? 'border-white/60 text-white' : 'border-current'}`}
             >
               <Icon name="arrow-up-right" size={18} />
             </span>

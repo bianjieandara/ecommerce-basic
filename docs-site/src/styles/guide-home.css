@@ -1,0 +1,88 @@
+/* Role tiles of the guide's home page (index.mdx): three cards, one per audience, the featured one in the brand colour. Tokens: guide.css. */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--guide-space-lg);
+  margin-block: var(--guide-space-2xl);
+}
+
+.role-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-sm);
+  min-height: var(--guide-tile-min-height);
+  padding: var(--guide-space-xl);
+  border-radius: var(--guide-radius-xl);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  background: var(--guide-card);
+  color: var(--sl-color-text);
+  text-decoration: none;
+}
+
+.role-tile.is-featured {
+  background: var(--guide-primary);
+  border-color: var(--guide-primary);
+  color: var(--guide-on-primary);
+}
+
+.role-icon {
+  width: var(--guide-icon-lg);
+  height: var(--guide-icon-lg);
+  border-radius: var(--guide-radius-md);
+  display: grid;
+  place-items: center;
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+}
+
+.role-tile.is-featured .role-icon {
+  background: var(--guide-on-primary-soft);
+  color: var(--guide-on-primary);
+}
+
+.role-title {
+  font-family: var(--guide-font-display);
+  font-weight: var(--guide-weight-bold);
+  font-size: var(--guide-text-xl);
+  line-height: var(--guide-leading-tight);
+  margin-top: var(--guide-space-xs);
+}
+
+.role-text {
+  color: var(--guide-muted);
+}
+
+.role-tile.is-featured .role-text {
+  color: var(--guide-on-primary-muted);
+}
+
+.role-go {
+  margin-top: auto;
+  font-weight: var(--guide-weight-semibold);
+}
+
+.role-tile:focus-visible {
+  outline: var(--guide-focus-width) solid var(--sl-color-accent);
+  outline-offset: var(--guide-focus-offset);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .role-tile {
+    transition:
+      transform var(--guide-duration) var(--guide-ease),
+      box-shadow var(--guide-duration) var(--guide-ease);
+  }
+  .role-tile:hover {
+    transform: translateY(var(--guide-lift));
+    box-shadow: 0 var(--guide-space-xs) var(--guide-space-xl) var(--guide-shadow-color);
+  }
+}
+
+@media (max-width: 50rem) {
+  .role-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .role-tile {
+    min-height: 0;
+  }
+}

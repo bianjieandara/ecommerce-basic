@@ -30,8 +30,10 @@ const {
   overlay = false,
   class: className = '',
 } = Astro.props;
-const arrow =
-  'inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-text/15 transition hover:bg-text hover:text-background';
+// The button is the 44px touch target; the visible circle inside it is smaller, so the controls stay light on screen.
+const arrow = 'group inline-flex size-11 items-center justify-center rounded-full';
+const arrowFace =
+  'flex size-9 items-center justify-center rounded-full border border-text/15 transition group-hover:bg-text group-hover:text-background';
 ---
 
 <section
@@ -53,19 +55,23 @@ const arrow =
     data-carousel-controls
     class={
       overlay
-        ? 'absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-background/90 p-1 shadow-sm backdrop-blur md:bottom-6 md:right-6'
+        ? 'absolute bottom-6 left-6 flex items-center rounded-full bg-background/90 p-0.5 shadow-sm backdrop-blur md:bottom-14 md:left-auto md:right-14'
         : 'mt-4 flex items-center gap-2'
     }
   >
     <div
       data-carousel-dots
-      class="flex min-w-0 flex-1 items-center justify-start overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
+      class={`min-w-0 flex-1 items-center justify-start overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden ${overlay ? 'hidden px-1 md:flex' : 'flex'}`}
     ></div>
     <button type="button" data-carousel-prev class={arrow} aria-label={previousLabel}>
-      <Icon name="arrow-left" size={18} />
+      <span class={arrowFace}>
+        <Icon name="arrow-left" size={16} />
+      </span>
     </button>
     <button type="button" data-carousel-next class={arrow} aria-label={nextLabel}>
-      <Icon name="arrow-right" size={18} />
+      <span class={arrowFace}>
+        <Icon name="arrow-right" size={16} />
+      </span>
     </button>
   </div>
 </section>

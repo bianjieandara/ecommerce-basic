@@ -18,13 +18,13 @@ const { storeName, locale, email = '', address = '' } = Astro.props;
 const year = new Date().getFullYear();
 // Text and background swap roles here, so links use the page background colour at reduced opacity.
 const link =
-  'inline-flex min-h-11 min-w-11 items-center text-sm text-background/70 underline-offset-4 transition hover:text-background hover:underline';
+  'inline-flex min-h-11 min-w-11 items-center text-sm text-background/70 md:min-h-9 underline-offset-4 transition hover:text-background hover:underline';
 const heading = 'eyebrow mb-3 !text-background/50';
 ---
 
-<footer class="mt-24 overflow-hidden bg-text pb-20 text-background md:mt-32 md:pb-0">
-  <div class="mx-auto grid max-w-7xl gap-12 px-5 pt-16 md:grid-cols-[2fr_1fr_1fr] md:px-8 md:pt-20">
-    <div class="flex flex-col gap-4">
+<footer class="mt-16 overflow-hidden bg-text pb-20 text-background md:mt-24 md:pb-0">
+  <div class="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-8 px-5 pt-10 md:grid-cols-[2fr_1fr_1fr] md:gap-12 md:px-8 md:pt-14">
+    <div class="col-span-2 flex flex-col gap-2 md:col-span-1 md:gap-3">
       <p class="font-display text-2xl font-semibold tracking-tight">{storeName}</p>
       {address && <p class="max-w-xs text-sm text-background/70">{address}</p>}
       {email && (
@@ -56,7 +56,7 @@ const heading = 'eyebrow mb-3 !text-background/50';
       <ConsentSettingsLink client:idle label={t(locale, 'consent.settings')} />
     </nav>
   </div>
-  <div class="mx-auto mt-16 max-w-7xl border-t border-background/15 px-5 py-5 md:px-8">
+  <div class="mx-auto mt-8 max-w-7xl border-t border-background/15 px-5 py-4 md:mt-10 md:px-8">
     <p class="text-sm text-background/60">
       © {year} {storeName}. {t(locale, 'footer.rights')}
     </p>
@@ -64,7 +64,7 @@ const heading = 'eyebrow mb-3 !text-background/50';
   {/* Decorative: the name repeated at the width of the page. Hidden from screen readers, which already read it above. */}
   <p
     aria-hidden="true"
-    class="pointer-events-none -mb-[0.09em] select-none whitespace-nowrap text-center font-display text-[17vw] font-semibold leading-[0.8] tracking-tighter text-background/[0.07] max-md:hidden"
+    class="pointer-events-none -mb-[0.09em] select-none whitespace-nowrap text-center font-display text-[12vw] font-semibold leading-[0.8] tracking-tighter text-background/[0.07] max-md:hidden"
   >
     {storeName}
   </p>

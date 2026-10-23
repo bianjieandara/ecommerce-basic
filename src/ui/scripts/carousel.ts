@@ -29,7 +29,7 @@ export function initCarousel(root: HTMLElement): void {
   const dots = slides.map((_, index) => {
     const dot = document.createElement('button');
     dot.type = 'button';
-    dot.className = 'group flex min-h-11 min-w-11 items-center justify-center';
+    dot.className = 'group flex min-h-11 min-w-7 items-center justify-center';
     dot.setAttribute('aria-label', `${index + 1} / ${slides.length}`);
     const bar = document.createElement('span');
     bar.className =

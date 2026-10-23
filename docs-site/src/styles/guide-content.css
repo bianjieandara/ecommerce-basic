@@ -1,0 +1,229 @@
+/* Reading comfort for guide pages: a roomy column with a lead paragraph, sectioned h2s, marked lists, table, feature cards and callouts.
+   Starlight's defaults pack everything at 16px/1.75 with 1rem gaps, which reads as a wall of text on long pages. Tokens: guide.css. */
+.sl-markdown-content {
+  font-size: var(--guide-text-base);
+  line-height: var(--guide-leading-relaxed);
+}
+
+.sl-markdown-content > * + * {
+  margin-top: var(--guide-space-xl);
+}
+
+/* The first paragraph is the page's lead: bigger and softer so it reads as an introduction, not as body text. */
+.sl-markdown-content > p:first-child {
+  font-size: var(--guide-text-lg);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+/* Each h2 opens a section: a hairline above it and plenty of air, with the heading kept close to its own content. */
+.sl-markdown-content > .sl-heading-wrapper.level-h2 {
+  margin-top: var(--guide-space-5xl);
+  padding-top: var(--guide-space-3xl);
+  border-top: var(--guide-border-width) solid var(--sl-color-hairline);
+}
+
+/* A page that opens with an h2 already has the title bar's line above it, so the first section skips its own. */
+.sl-markdown-content > .sl-heading-wrapper.level-h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.sl-markdown-content > .sl-heading-wrapper.level-h2 + * {
+  margin-top: var(--guide-space-lg);
+}
+
+.sl-markdown-content > .sl-heading-wrapper.level-h3 {
+  margin-top: var(--guide-space-4xl);
+}
+
+/* Bullet lists carry the content on most pages: roomy items with a small brand-coloured marker instead of the browser's disc. */
+.sl-markdown-content > ul {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.sl-markdown-content > ul > li {
+  position: relative;
+  padding-inline-start: var(--guide-space-2xl);
+  margin-top: var(--guide-space-lg);
+}
+
+.sl-markdown-content > ul > li:first-child {
+  margin-top: 0;
+}
+
+.sl-markdown-content > ul > li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: var(--guide-space-xs);
+  top: var(--guide-dot-top);
+  width: var(--guide-dot-size);
+  height: var(--guide-dot-size);
+  border-radius: var(--guide-radius-pill);
+  background: var(--guide-accent);
+}
+
+.sl-markdown-content > ul > li > strong:first-child {
+  color: var(--sl-color-white);
+}
+
+/* Tables sit in a rounded card with a tinted header row, so they read as one block rather than loose rows. Headers are small labels. */
+.sl-markdown-content table {
+  width: 100%;
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-lg);
+  overflow: hidden;
+}
+
+.sl-markdown-content :is(th, td),
+.sl-markdown-content :is(th, td):first-child,
+.sl-markdown-content :is(th, td):last-child {
+  padding: var(--guide-space-lg) var(--guide-space-xl);
+  vertical-align: top;
+}
+
+.sl-markdown-content th {
+  background: var(--sl-color-accent-low);
+  font-size: var(--guide-text-xs);
+  font-weight: var(--guide-weight-semibold);
+  letter-spacing: var(--guide-tracking-wide);
+  text-transform: uppercase;
+  color: var(--guide-muted);
+}
+
+.sl-markdown-content tr:last-child td {
+  border-bottom: 0;
+}
+
+.sl-markdown-content tbody td:first-child {
+  min-width: var(--guide-col-min);
+}
+
+/* Feature cards (Starlight's Card / CardGrid): the same rounded, hairline look as the role tiles, with the icon in a tinted square.
+   A lone card on the last row spans the grid so it does not leave a hole. */
+.sl-markdown-content .card-grid {
+  gap: var(--guide-space-lg);
+}
+
+.sl-markdown-content .card-grid > .card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.sl-markdown-content .card {
+  padding: var(--guide-space-xl) var(--guide-space-2xl);
+  border-radius: var(--guide-radius-lg);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  background: var(--guide-card);
+}
+
+.sl-markdown-content .card .title {
+  gap: var(--guide-space-md);
+  font-size: var(--guide-text-base);
+  line-height: var(--guide-leading-snug);
+  color: var(--sl-color-white);
+}
+
+/* Starlight sizes the icon to 1em with border-box sizing, so padding would squeeze the glyph: size the glyph and pad around it. */
+.sl-markdown-content .card .icon {
+  box-sizing: content-box;
+  width: var(--guide-icon-sm);
+  height: var(--guide-icon-sm);
+  padding: var(--guide-space-sm);
+  border: 0;
+  border-radius: var(--guide-radius-md);
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+}
+
+.sl-markdown-content .card .body {
+  margin-top: var(--guide-space-sm);
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+.sl-markdown-content .card .body strong {
+  color: var(--sl-color-white);
+}
+
+/* Callouts (:::note) take the guide's neutral tint and red accent instead of Starlight's blue, and the cards' corner radius. */
+.sl-markdown-content .starlight-aside {
+  padding: var(--guide-space-lg) var(--guide-space-xl);
+  border-radius: var(--guide-radius-lg);
+}
+
+.sl-markdown-content .starlight-aside--note {
+  --sl-color-asides-text-accent: var(--sl-color-purple-high);
+  border-color: var(--guide-accent);
+  background-color: var(--sl-color-accent-low);
+  color: var(--sl-color-text);
+}
+
+/* Inline code reads as a chip, not as a different font dropped into the sentence. */
+.sl-markdown-content :not(pre) > code {
+  padding: var(--guide-space-xs) var(--guide-space-sm);
+  border-radius: var(--guide-radius-sm);
+  font-size: var(--guide-text-code);
+}
+
+.sl-markdown-content img {
+  border-radius: var(--guide-radius-lg);
+}
+
+/* Previous/next cards: the title is a link label, not a heading, so it stays at body size. */
+.pagination-links a .link-title {
+  font-size: var(--guide-text-md);
+  font-weight: var(--guide-weight-semibold);
+  line-height: var(--guide-leading-snug);
+}
+
+/* Guided steps: every top-level numbered list becomes numbered cards. The mobile sizes come from the tokens. */
+.sl-markdown-content > ol {
+  list-style: none;
+  padding: 0;
+  margin-inline-start: 0;
+  counter-reset: guide-step;
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-md);
+}
+
+.sl-markdown-content > ol > li {
+  counter-increment: guide-step;
+  position: relative;
+  margin: 0 !important;
+  padding: var(--guide-space-lg) var(--guide-space-lg) var(--guide-space-lg) var(--guide-step-gutter);
+  min-height: var(--guide-step-min-height);
+  background: var(--guide-card);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-lg);
+}
+
+.sl-markdown-content > ol > li::before {
+  content: counter(guide-step);
+  position: absolute;
+  inset-inline-start: var(--guide-step-inset);
+  top: var(--guide-space-md);
+  width: var(--guide-step-size);
+  height: var(--guide-step-size);
+  border-radius: var(--guide-radius-pill);
+  display: grid;
+  place-items: center;
+  background: var(--sl-color-accent);
+  color: var(--sl-color-text-invert);
+  font-weight: var(--guide-weight-bold);
+  font-size: var(--guide-text-base);
+}
+
+.sl-markdown-content > ol > li > * + * {
+  margin-top: var(--guide-space-sm);
+}
+
+.sl-markdown-content > ol > li img {
+  border-radius: var(--guide-radius-sm);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+}

@@ -16,9 +16,9 @@ const STAR_COUNT = 5;
 {items.length > 0 && (
   <section class="flex flex-col gap-8" data-reveal>
     <h2 class="text-3xl md:text-5xl">{title}</h2>
-    <ul class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] md:grid md:grid-cols-3 md:overflow-visible [&::-webkit-scrollbar]:hidden">
+    <ul class="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
       {items.map((item) => (
-        <li class="flex w-[80%] shrink-0 snap-start md:w-auto">
+        <li class="flex w-[82%] shrink-0 snap-start md:w-auto">
           <figure class="flex w-full flex-col gap-5 rounded-card bg-surface p-7 md:p-8">
             <p
               class="flex gap-0.5"
