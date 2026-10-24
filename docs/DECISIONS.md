@@ -726,3 +726,7 @@ Ten test files now live in `scripts/test/` (`npm run test:all`). They drove thes
 - **Reportes: list and compare.** The report list is a column on the left (a scrolling row on a phone); `?compare=1` shows each indicator beside the previous period and the change, from the same read as the summary.
 - **Shared look.** The class constants in `ui/admin/lib/classes.ts` (`PANEL`, `TABLE_WRAP`, `FIELD`, the buttons, `BADGE`) and every inline `rounded-brand bg-surface` in the admin became the bordered white card used by the new screens, so the pages that were not redesigned (invoices, logs, jobs, users, testimonials, pages, emails, shipping, WhatsApp) match.
 - **Select arrows in the admin.** The browser's arrow is replaced by one chevron, drawn from custom properties (`--select-chevron` and its size, inset and padding) in `global.css`, for every `select` inside an element with the `admin` class (the admin layout's `main`). One rule covers the 24 selects, in Astro pages and Preact islands. The arrow is an image, so its stroke is a fixed mid grey.
+
+## 2026-10-23 — Contact form leftovers removed
+
+- **Migration 0004 drops `contact_messages`.** Nothing writes to it or reads it since the contact page lost its form, and it held no rows on the live demo store (checked with a read-only count before the migration). The code, the Messages screen and the `contact_*` emails were already gone; the table and the guide's "unread messages" mentions were the last traces. A form that comes back brings its own migration.

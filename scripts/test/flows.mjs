@@ -373,7 +373,6 @@ try {
     `DELETE FROM notification_log WHERE recipient = '${EMAIL}' OR order_id IN (SELECT id FROM orders WHERE customer_email = '${EMAIL}')`,
   );
   sql(`DELETE FROM orders WHERE customer_email = '${EMAIL}'`);
-  sql(`DELETE FROM contact_messages WHERE email = '${EMAIL}'`);
   sql(`DELETE FROM stock_subscriptions WHERE email = '${EMAIL}'`);
   console.log(
     `cleaned up (orders before ${ordersBefore}, after ${sql('SELECT COUNT(*) AS n FROM orders')[0].n} including the flow orders removed)`,

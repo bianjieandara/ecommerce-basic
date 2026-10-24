@@ -9,7 +9,7 @@ sidebar:
 
 | Where                                           | Look for                                       | How often          |
 | ----------------------------------------------- | ---------------------------------------------- | ------------------ |
-| [Dashboard](/en/admin/overview/)                   | Orders to process, out of stock, unread messages | Every working day  |
+| [Dashboard](/en/admin/overview/)                   | Orders to process, out of stock, failed messages and jobs | Every working day  |
 | **Failed jobs** and **Message log**             | Anything failed or skipped for a bad reason    | Daily at first, then weekly |
 | [Reports](/en/admin/reports/)                      | Sales, best sellers, stock to reorder          | Weekly             |
 | Payment provider dashboards                     | Disputes and refunds                           | Weekly             |

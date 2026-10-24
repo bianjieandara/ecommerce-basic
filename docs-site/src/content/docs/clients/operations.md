@@ -9,7 +9,7 @@ sidebar:
 
 | Dónde                                          | Qué buscar                                         | Cada cuánto                  |
 | ---------------------------------------------- | -------------------------------------------------- | ---------------------------- |
-| [Panel](/admin/overview/)                      | Pedidos por preparar, agotados, mensajes sin leer  | Cada día laborable           |
+| [Panel](/admin/overview/)                      | Pedidos por preparar, agotados, mensajes y trabajos fallidos  | Cada día laborable           |
 | **Trabajos fallidos** y **Registro de mensajes** | Cualquier fallo u omisión por un mal motivo      | A diario al principio, luego cada semana |
 | [Reportes](/admin/reports/)                    | Ventas, más vendidos, stock por reponer            | Cada semana                  |
 | Paneles de los proveedores de pago             | Disputas y reembolsos                              | Cada semana                  |
