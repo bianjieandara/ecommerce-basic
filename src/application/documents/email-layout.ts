@@ -36,7 +36,7 @@ export function renderEmailLayout(input: EmailLayoutInput): string {
 <tr><td style="padding:24px;font:16px/1.5 Arial,sans-serif;color:#111111">${input.bodyHtml}</td></tr>
 <tr><td style="padding:16px 24px;font:12px/1.5 Arial,sans-serif;color:#666666;border-top:1px solid #eeeeee">
 ${escapeHtml(input.footerText)}<br>
-<a href="mailto:${escapeHtml(input.contactEmail)}" style="color:${escapeHtml(input.primaryColor)}">${escapeHtml(input.contactEmail)}</a>
+<a href="mailto:${escapeHtml(input.contactEmail)}" style="display:inline-block;padding:13px 0;line-height:18px;color:${escapeHtml(input.primaryColor)}">${escapeHtml(input.contactEmail)}</a>
 </td></tr>
 </table>
 </td></tr>
@@ -54,6 +54,6 @@ ${escapeHtml(input.footerText)}<br>
  */
 export function emailButton(label: string, href: string, color: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px 0"><tr><td style="border-radius:6px;background:${escapeHtml(color)}">
-<a href="${escapeHtml(href)}" style="display:inline-block;padding:12px 20px;font:600 15px Arial,sans-serif;color:#ffffff;text-decoration:none">${escapeHtml(label)}</a>
+<a href="${escapeHtml(href)}" style="display:inline-block;padding:13px 20px;font:600 15px/18px Arial,sans-serif;color:#ffffff;text-decoration:none">${escapeHtml(label)}</a>
 </td></tr></table>`;
 }
