@@ -8,5 +8,5 @@ export const POST = defineEndpoint({
   input: adjustStockInput,
   invalidatesCache: true,
   handler: ({ input, context }) =>
-    context.locals.app.inventory.adjustStock.execute(input, requireAdmin(context.locals.admin).id),
+    context.locals.app.inventory.adjustStock.execute(requireAdmin(context.locals.admin), input),
 });

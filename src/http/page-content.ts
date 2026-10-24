@@ -4,6 +4,7 @@ import type { Container } from '@/composition/create-container';
 import type { WidgetInstance } from '@/application/content/widgets/registry';
 import { DEFAULT_SYSTEM_PAGES } from '@/application/content/defaults/system-pages';
 import type { CategoryDto, ProductCardDto } from '@/application/dto/catalog-dto';
+import type { CatalogQueryService } from '@/application/ports/catalog';
 import type { Testimonial } from '@/application/ports/content';
 import { parseCatalogQuery, type CatalogOptions } from '@/domain/catalog/catalog-query';
 import type { Locale } from '@/domain/shared/locale';
@@ -113,41 +114,57 @@ export async function loadSectionData(
       section.type === 'testimonials' &&
       (section.config as { includeManual?: boolean }).includeManual !== false,
   );
-  const [categories, testimonials] = await Promise.all([
+  // The three reads are independent, so they go out together. The pictures of the sections do not wait for the products.
+  const [categories, testimonials, media] = await Promise.all([
     needsCategories ? service.listCategories(locale) : Promise.resolve<CategoryDto[]>([]),
     wantsTestimonials ? app.testimonials.listVisible() : Promise.resolve<Testimonial[]>([]),
+    loadSectionImages(app, enabled, locale),
   ]);
 
-  const productsBySection: Record<string, ProductCardDto[]> = {};
-  for (const section of enabled) {
-    if (section.type !== 'featured_products') continue;
-    const config = section.config as {
-      source?: string;
-      limit?: number;
-      categoryIds?: string[];
-      productIds?: string[];
-    };
-    const limit = Math.min(MAX_FEATURED, Math.max(1, config.limit ?? 8));
-    if (config.source === 'manual') {
-      productsBySection[section.id] = await service.listProductsByIds(locale, config.productIds ?? []);
-      continue;
-    }
-    const sort =
-      config.source === 'newest' ? 'newest' : config.source === 'best_sellers' ? 'best_sellers' : 'featured';
-    const params = new URLSearchParams({ sort });
-    if (config.source === 'category') {
-      const slug = categories.find((category) => category.id === config.categoryIds?.[0])?.slug;
-      if (slug) params.set('category', slug);
-    }
-    const query = parseCatalogQuery(params, locale, options);
-    productsBySection[section.id] = (await service.listProducts(query, limit)).items;
-  }
-  return {
-    productsBySection,
-    categories,
-    testimonials,
-    media: await loadSectionImages(app, enabled, locale),
+  // Each featured section is its own read; they run side by side, not one after the other.
+  const featured = enabled.filter((section) => section.type === 'featured_products');
+  const lists = await Promise.all(
+    featured.map(async (section): Promise<[string, ProductCardDto[]]> => [
+      section.id,
+      await featuredProducts(service, section, categories, locale, options),
+    ]),
+  );
+  return { productsBySection: Object.fromEntries(lists), categories, testimonials, media };
+}
+
+/**
+ * The cards one featured-products section shows.
+ * @param service Catalog read model.
+ * @param section The section.
+ * @param categories Active categories, to find the slug of a chosen one.
+ * @param locale Page language.
+ * @param options Catalog parsing options.
+ * @returns The cards, at most MAX_FEATURED.
+ */
+async function featuredProducts(
+  service: CatalogQueryService,
+  section: WidgetInstance,
+  categories: CategoryDto[],
+  locale: Locale,
+  options: CatalogOptions,
+): Promise<ProductCardDto[]> {
+  const config = section.config as {
+    source?: string;
+    limit?: number;
+    categoryIds?: string[];
+    productIds?: string[];
   };
+  if (config.source === 'manual') return service.listProductsByIds(locale, config.productIds ?? []);
+  const limit = Math.min(MAX_FEATURED, Math.max(1, config.limit ?? 8));
+  const sort =
+    config.source === 'newest' ? 'newest' : config.source === 'best_sellers' ? 'best_sellers' : 'featured';
+  const params = new URLSearchParams({ sort });
+  if (config.source === 'category') {
+    const slug = categories.find((category) => category.id === config.categoryIds?.[0])?.slug;
+    if (slug) params.set('category', slug);
+  }
+  // A section never pages, so it asks for the cards alone: the total the shop page counts would be a wasted read here.
+  return service.listTopProducts(parseCatalogQuery(params, locale, options), limit);
 }
 
 /**

@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { MAX_UPLOAD_BYTES } from '@/domain/media/media-asset';
 import { DomainError } from '@/domain/shared/errors';
+import { requireAdmin } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 
 const SIZE_FIELD = /^size-(\d{2,5})$/;
@@ -51,7 +52,7 @@ export const POST = defineEndpoint({
     const variants = await Promise.all(
       sizesOf(input).map(async ({ width, file }) => ({ width, bytes: await file.arrayBuffer() })),
     );
-    return context.locals.app.mediaLibrary.upload({
+    return context.locals.app.mediaLibrary.upload(requireAdmin(context.locals.admin), {
       originalName: input.originalName,
       width: input.width,
       height: input.height,

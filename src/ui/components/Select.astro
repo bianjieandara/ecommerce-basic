@@ -11,8 +11,8 @@ interface Props {
   required?: boolean;
   disabled?: boolean;
   describedBy?: string;
-  /** Inline handler, for a select that submits its form when it changes. */
-  onchange?: string;
+  /** Submits the form when the choice changes. Done by the script below, because a page policy refuses inline handlers. */
+  submitOnChange?: boolean;
   class?: string;
 }
 
@@ -23,7 +23,7 @@ const {
   required = false,
   disabled = false,
   describedBy,
-  onchange,
+  submitOnChange = false,
   class: className = '',
 } = Astro.props;
 const shapes = {
@@ -39,7 +39,7 @@ const shapes = {
     required={required}
     disabled={disabled}
     aria-describedby={describedBy}
-    onchange={onchange}
+    data-submit-on-change={submitOnChange ? '' : undefined}
     class={`${shapes[shape]} border-text/15 bg-background text-text hover:border-text/40 focus:border-text cursor-pointer appearance-none border py-2 pr-11 pl-4 transition-colors disabled:opacity-50 ${className}`}
   >
     <slot />
@@ -50,3 +50,9 @@ const shapes = {
     class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 opacity-70"
   />
 </div>
+
+<script>
+  document.querySelectorAll<HTMLSelectElement>('select[data-submit-on-change]').forEach((select) => {
+    select.addEventListener('change', () => select.form?.requestSubmit());
+  });
+</script>

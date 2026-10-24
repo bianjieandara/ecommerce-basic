@@ -1,4 +1,6 @@
 // Attribute admin: codes and names per language, the value list, and the rule that a value in use cannot be removed.
+import type { AdminUser } from '../ports/identity';
+import { assertCan } from '@/domain/identity/role';
 import { DomainError } from '@/domain/shared/errors';
 import { SUPPORTED_LOCALES, type Locale } from '@/domain/shared/locale';
 import type { AdminAttribute, AttributeRepository } from '../ports/catalog-admin';
@@ -18,11 +20,13 @@ export class ManageAttributes {
 
   /**
    * Creates or updates an attribute. A value that a variant uses cannot be removed from the list.
+   * @param actor The signed-in admin; needs the catalog permission.
    * @param input Validated attribute input.
    * @returns The attribute id.
-   * @throws DomainError NOT_FOUND, VALIDATION_FAILED (missing names, foreign values), CONFLICT (value in use, code taken).
+   * @throws DomainError FORBIDDEN, NOT_FOUND, VALIDATION_FAILED (missing names, foreign values), CONFLICT (value in use, code taken).
    */
-  async upsert(input: AttributeInput): Promise<{ id: string }> {
+  async upsert(actor: AdminUser, input: AttributeInput): Promise<{ id: string }> {
+    assertCan(actor.role, 'catalog.edit');
     const existing = input.id ? await this.deps.attributes.findById(input.id) : null;
     if (input.id && !existing) throw new DomainError('NOT_FOUND', 'Attribute not found');
     const ownValues = new Set(existing?.values.map((value) => value.id) ?? []);
@@ -64,10 +68,12 @@ export class ManageAttributes {
 
   /**
    * Deletes an attribute that no variant uses.
+   * @param actor The signed-in admin; needs the catalog permission.
    * @param id Attribute id.
-   * @throws DomainError NOT_FOUND, or CONFLICT while a product uses one of its values.
+   * @throws DomainError FORBIDDEN, NOT_FOUND, or CONFLICT while a product uses one of its values.
    */
-  async remove(id: string): Promise<void> {
+  async remove(actor: AdminUser, id: string): Promise<void> {
+    assertCan(actor.role, 'catalog.edit');
     if (!(await this.deps.attributes.findById(id))) throw new DomainError('NOT_FOUND', 'Attribute not found');
     if (await this.deps.attributes.attributeInUse(id)) {
       throw new DomainError('CONFLICT', 'Products use this attribute. Remove it from them first.');

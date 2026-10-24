@@ -101,6 +101,7 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     links,
     clock,
     siteUrl,
+    log: logEvent,
   });
 
   const dlocalgo = new DLocalGoGateway({

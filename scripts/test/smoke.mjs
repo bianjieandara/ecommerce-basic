@@ -102,7 +102,6 @@ const adminPages = [
   `/admin/invoices/${ids.invoice}`,
   '/admin/pages',
   `/admin/pages/${ids.page}`,
-  '/admin/settings',
   '/admin/settings/general',
   '/admin/settings/theme',
   '/admin/settings/checkout',
@@ -130,6 +129,12 @@ for (const key of [
   );
   record(`email preview ${key}`, preview.status === 200, String(preview.status));
 }
+// The settings have no page of their own: the index sends the owner to the first group.
+await get('/admin/settings', {
+  admin: true,
+  expect: 302,
+  label: 'admin /admin/settings redirects to the first group',
+});
 for (const path of adminPages) {
   await get(path, { admin: true, label: `admin ${path}` });
   const anon = await fetch(BASE + path, { redirect: 'manual' });
@@ -217,6 +222,7 @@ async function checkout(method) {
     items: [{ variantId: variant, quantity: 1 }],
     customer,
     whatsappOptIn: false,
+    acceptedLegal: true,
     shippingMethodId: 'ship-pickup',
     address: null,
     paymentMethod: method,

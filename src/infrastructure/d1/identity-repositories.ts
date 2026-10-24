@@ -191,10 +191,14 @@ export class D1PasswordResetRepository implements PasswordResetRepository {
     return row ? { userId: row.user_id } : null;
   }
 
-  async markUsed(tokenHash: string, nowIso: string): Promise<void> {
-    await statement(this.db, 'UPDATE password_reset_tokens SET used_at = ? WHERE token_hash = ?', [
-      nowIso,
-      tokenHash,
-    ]).run();
+  async claim(tokenHash: string, nowIso: string): Promise<{ userId: string } | null> {
+    // One statement checks and spends the token, so two simultaneous requests cannot both succeed.
+    const row = await queryFirst<{ user_id: string }>(
+      this.db,
+      `UPDATE password_reset_tokens SET used_at = ?
+       WHERE token_hash = ? AND used_at IS NULL AND expires_at > ? RETURNING user_id`,
+      [nowIso, tokenHash, nowIso],
+    );
+    return row ? { userId: row.user_id } : null;
   }
 }

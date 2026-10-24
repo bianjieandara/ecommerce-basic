@@ -156,5 +156,5 @@ WHERE stock > 0;
 
 -- Shipping methods.
 INSERT INTO shipping_methods (id, kind, name_json, description_json, price_minor, free_over_minor, is_active, position) VALUES
-('ship-flat', 'flat', '{"es":"Envío estándar","en":"Standard shipping"}', '{"es":"Entrega en 3 a 5 días hábiles","en":"Delivered in 3 to 5 business days"}', 800, 8000, 1, 1),
+('ship-flat', 'flat', '{"es":"Envío estándar","en":"Standard shipping"}', '{"es":"Entrega en 3 a 5 días hábiles","en":"Delivered in 3 to 5 business days"}', 800, 5000, 1, 1),
 ('ship-pickup', 'pickup', '{"es":"Recoger en tienda","en":"Store pickup"}', '{"es":"Sin costo, de lunes a sábado","en":"Free, Monday to Saturday"}', 0, NULL, 1, 2);

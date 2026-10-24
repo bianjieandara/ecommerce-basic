@@ -12,8 +12,8 @@ export const POST = defineEndpoint({
   handler: async ({ input, context }) => {
     const dryRun = input.dryRun === '1';
     const result = await context.locals.app.inventory.importStock.execute(
+      requireAdmin(context.locals.admin),
       await input.file.text(),
-      requireAdmin(context.locals.admin).id,
       { dryRun },
     );
     // Only an applied import changes what the storefront shows; a preview must not flush the page cache.

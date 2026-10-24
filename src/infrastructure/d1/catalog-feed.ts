@@ -2,7 +2,7 @@
 import type { Locale } from '@/domain/shared/locale';
 import type { FeedItemDto } from '@/application/dto/catalog-dto';
 import { cardImageKey } from './catalog-text';
-import { variantAttributes } from './catalog-variants';
+import { feedVariantAttributes } from './catalog-variants';
 import { queryAll } from './d1-client';
 
 /**
@@ -36,11 +36,7 @@ export async function loadFeed(db: D1Database, locale: Locale): Promise<FeedItem
        WHERE v.is_active = 1`,
     [locale],
   );
-  const attributes = await variantAttributes(
-    db,
-    rows.map((row) => row.variant_id),
-    locale,
-  );
+  const attributes = await feedVariantAttributes(db, locale);
   return rows.map((row) => ({
     productId: row.product_id,
     variantId: row.variant_id,

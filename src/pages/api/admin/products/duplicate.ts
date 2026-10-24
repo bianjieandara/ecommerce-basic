@@ -8,5 +8,5 @@ export const POST = defineEndpoint({
   input: idInput,
   invalidatesCache: true,
   handler: ({ input, context }) =>
-    context.locals.app.catalogAdmin.duplicateProduct.execute(input.id, requireAdmin(context.locals.admin).id),
+    context.locals.app.catalogAdmin.duplicateProduct.execute(requireAdmin(context.locals.admin), input.id),
 });

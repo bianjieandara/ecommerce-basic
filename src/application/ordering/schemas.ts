@@ -42,6 +42,8 @@ export const placeOrderInput = z.object({
     phone: z.string().trim().min(6).max(30),
   }),
   whatsappOptIn: z.boolean().default(false),
+  /** The buyer agreed to the privacy policy and the terms. The form requires it; the server must too. */
+  acceptedLegal: z.literal(true),
   shippingMethodId: z.string().min(1).max(64),
   address: shippingAddressInput.nullable().default(null),
   paymentMethod: z.enum(PAYMENT_METHODS),

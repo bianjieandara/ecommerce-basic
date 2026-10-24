@@ -185,13 +185,38 @@ export class D1OrderRepository implements OrderRepository {
    * @returns The order, or null when none matches.
    */
   private async load(where: string, params: SqlValue[]): Promise<Order | null> {
-    const row = await queryFirst<OrderRow>(this.db, `SELECT * FROM orders WHERE ${where}`, params);
+    // The items are chosen by the same condition, so the order and its items come in one round trip.
+    const [orders, items] = await this.db.batch([
+      statement(this.db, `SELECT * FROM orders WHERE ${where}`, params),
+      statement(
+        this.db,
+        `SELECT * FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE ${where}) ORDER BY rowid`,
+        params,
+      ),
+    ]);
+    const row = ((orders?.results ?? []) as OrderRow[])[0];
     if (!row) return null;
-    const items = await queryAll<ItemRow>(
-      this.db,
-      'SELECT * FROM order_items WHERE order_id = ? ORDER BY rowid',
-      [row.id],
+    const own = ((items?.results ?? []) as ItemRow[]).filter((item) => item.order_id === row.id);
+    return toOrder(row, own.map(toItem));
+  }
+
+  async findByIds(ids: string[]): Promise<Order[]> {
+    if (ids.length === 0) return [];
+    const list = JSON.stringify(ids);
+    const [orders, items] = await this.db.batch([
+      statement(this.db, 'SELECT * FROM orders WHERE id IN (SELECT value FROM json_each(?))', [list]),
+      statement(
+        this.db,
+        'SELECT * FROM order_items WHERE order_id IN (SELECT value FROM json_each(?)) ORDER BY rowid',
+        [list],
+      ),
+    ]);
+    const itemsByOrder = new Map<string, ItemRow[]>();
+    for (const item of (items?.results ?? []) as ItemRow[]) {
+      itemsByOrder.set(item.order_id, [...(itemsByOrder.get(item.order_id) ?? []), item]);
+    }
+    return ((orders?.results ?? []) as OrderRow[]).map((row) =>
+      toOrder(row, (itemsByOrder.get(row.id) ?? []).map(toItem)),
     );
-    return toOrder(row, items.map(toItem));
   }
 }

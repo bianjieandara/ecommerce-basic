@@ -18,6 +18,8 @@ import type {
 /** Storefront read model for listings, search, product pages and feeds. */
 export interface CatalogQueryService {
   listProducts(query: CatalogQuery, pageSize: number): Promise<Paginated<ProductCardDto>>;
+  /** The first `limit` cards of a query with no total, for sections that never page (the home page). One read instead of two. */
+  listTopProducts(query: CatalogQuery, limit: number): Promise<ProductCardDto[]>;
   /** Number of products matching the query (used by the live result counter). */
   countProducts(query: CatalogQuery): Promise<number>;
   /** Facets with disjunctive counts: each facet ignores its own selection. */

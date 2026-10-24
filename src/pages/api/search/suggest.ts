@@ -15,6 +15,8 @@ const LIMIT = 6;
 export const GET = defineEndpoint({
   method: 'GET',
   rateLimit: 'api',
+  // Backspacing over a term asks for suggestions already shown; the shopper's browser answers that.
+  browserCacheSeconds: 60,
   handler: async ({ context }) => {
     const app = context.locals.app;
     const locale = context.url.searchParams.get('locale') ?? '';

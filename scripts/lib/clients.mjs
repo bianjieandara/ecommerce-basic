@@ -159,3 +159,23 @@ export function cloudflareEnv(slug, accountId) {
     CLOUDFLARE_API_TOKEN: file.CLOUDFLARE_API_TOKEN,
   };
 }
+
+/** Cloudflare's published Turnstile test keys (1x, 2x and 3x series) all start like this; their widgets always pass. */
+const TURNSTILE_TEST_KEY = /^[123]x0{20}/;
+
+/**
+ * Refuses a client whose Turnstile site key is one of Cloudflare's test keys, unless the client opts in. A test key makes the
+ * bot check pass for any token, so a real store would have no protection on sign-in, checkout and password reset. The demo
+ * store opts in with `"allowTestTurnstile": true` in its client.jsonc.
+ * @param {any} client Parsed client configuration.
+ * @throws {Error} When the key is a test key and the client has not opted in.
+ */
+export function assertRealTurnstileKey(client) {
+  const key = String(client.vars?.TURNSTILE_SITE_KEY ?? '');
+  if (TURNSTILE_TEST_KEY.test(key) && client.allowTestTurnstile !== true)
+    throw new Error(
+      `clients/${client.slug}/client.jsonc uses a Cloudflare test Turnstile key, which lets any bot pass. ` +
+        'Create a Turnstile widget for the store, put its site key in vars.TURNSTILE_SITE_KEY and set its secret with ' +
+        '`wrangler secret put TURNSTILE_SECRET_KEY` (a demo may set "allowTestTurnstile": true).',
+    );
+}

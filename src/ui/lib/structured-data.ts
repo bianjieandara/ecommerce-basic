@@ -25,13 +25,23 @@ export interface ProductOffer {
   url: string;
 }
 
+/** Characters that can end or confuse a script element: the markup characters and the two line separators (U+2028, U+2029). */
+const UNSAFE_IN_SCRIPT = new RegExp(`[<>&${String.fromCharCode(0x2028)}${String.fromCharCode(0x2029)}]`, 'g');
+
+/** Start of a JSON unicode escape: a backslash and "u". Built from the code point so no tool can mistake it for an escape. */
+const JSON_ESCAPE_PREFIX = `${String.fromCharCode(0x5c)}u`;
+
 /**
- * Serializes JSON-LD for a script tag. "<" is escaped so a product name can never close the tag.
+ * Serializes JSON-LD for a script tag. "<", ">" and "&" become unicode escapes (the same text once parsed as JSON), so a
+ * product name can never close the tag or open a comment; the two line separators are escaped for old parsers.
  * @param data One node or a list of nodes.
  * @returns JSON text that is safe inside a script element.
  */
 export function serializeJsonLd(data: JsonLd | JsonLd[]): string {
-  return JSON.stringify(data).replace(/</g, String.raw`<`);
+  return JSON.stringify(data).replace(
+    UNSAFE_IN_SCRIPT,
+    (char) => JSON_ESCAPE_PREFIX + char.charCodeAt(0).toString(16).padStart(4, '0'),
+  );
 }
 
 /**

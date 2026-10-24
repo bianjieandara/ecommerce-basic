@@ -77,7 +77,8 @@ export interface ProductDetailDto {
   compareAtPriceMinor: number | null;
   taxRateBp: number | null;
   currency: string;
-  images: { key: string; alt: string }[];
+  /** Each picture: the key of its largest card-size file, its sizes for `srcset`, and its description. */
+  images: { key: string; alt: string; variants: { width: number; key: string }[] }[];
   categories: CategoryDto[];
   variants: QuoteVariantDto[];
   attributes: AttributeFacetDto[];

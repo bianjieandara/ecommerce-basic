@@ -1,4 +1,6 @@
 // Media library: stores the resized variants a browser produced, and removes assets that no product or category uses.
+import type { AdminUser } from '../ports/identity';
+import { assertCan } from '@/domain/identity/role';
 import {
   MAX_UPLOAD_BYTES,
   MEDIA_WIDTHS,
@@ -47,12 +49,14 @@ export class MediaLibrary {
 
   /**
    * Stores the variants of one image. Each variant is checked by its bytes, not by its name or declared type.
+   * @param actor The signed-in admin; needs the media permission.
    * @param upload Original size and the resized variants.
    * @returns The stored asset.
-   * @throws DomainError VALIDATION_FAILED for a bad size, an unknown or repeated width, a file that is not WebP or JPEG,
+   * @throws DomainError FORBIDDEN, VALIDATION_FAILED for a bad size, an unknown or repeated width, a file that is not WebP or JPEG,
    * or more than 10 MB in total.
    */
-  async upload(upload: MediaUpload): Promise<MediaAsset> {
+  async upload(actor: AdminUser, upload: MediaUpload): Promise<MediaAsset> {
+    assertCan(actor.role, 'media.manage');
     const widths = new Set(upload.variants.map((variant) => variant.width));
     // A size is a store width, or the original's own width when the original is narrower than the smallest store width.
     const knownWidths: readonly number[] = [...MEDIA_WIDTHS, upload.width];
@@ -131,15 +135,18 @@ export class MediaLibrary {
   /**
    * Replaces the alternative text of an image, the description screen readers and search engines use. A language left empty is
    * dropped, so the page falls back to the product's name there.
+   * @param actor The signed-in admin; needs the media permission.
    * @param id Asset id.
    * @param alt Text per language, up to 200 characters each.
    * @returns The text that was stored.
-   * @throws DomainError NOT_FOUND for an unknown image, VALIDATION_FAILED for a text that is too long.
+   * @throws DomainError FORBIDDEN, NOT_FOUND for an unknown image, VALIDATION_FAILED for a text that is too long.
    */
   async updateAlt(
+    actor: AdminUser,
     id: string,
     alt: Partial<Record<Locale, string>>,
   ): Promise<Partial<Record<Locale, string>>> {
+    assertCan(actor.role, 'media.manage');
     if (!(await this.deps.media.findById(id))) throw new DomainError('NOT_FOUND', 'Image not found');
     const clean: Partial<Record<Locale, string>> = {};
     for (const locale of ['es', 'en'] as const) {
@@ -154,10 +161,12 @@ export class MediaLibrary {
 
   /**
    * Deletes an asset and its stored sizes. Refused while a product, a category or a testimonial still uses it.
+   * @param actor The signed-in admin; needs the media permission.
    * @param id Asset id.
-   * @throws DomainError NOT_FOUND, or CONFLICT while the asset is in use.
+   * @throws DomainError FORBIDDEN, NOT_FOUND, or CONFLICT while the asset is in use.
    */
-  async remove(id: string): Promise<void> {
+  async remove(actor: AdminUser, id: string): Promise<void> {
+    assertCan(actor.role, 'media.manage');
     const asset = await this.deps.media.findById(id);
     if (!asset) throw new DomainError('NOT_FOUND', 'Image not found');
     if (await this.deps.media.isInUse(id)) {

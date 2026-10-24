@@ -8,5 +8,5 @@ export const POST = defineEndpoint({
   input: productInput,
   invalidatesCache: true,
   handler: ({ input, context }) =>
-    context.locals.app.catalogAdmin.upsertProduct.execute(input, requireAdmin(context.locals.admin).id),
+    context.locals.app.catalogAdmin.upsertProduct.execute(requireAdmin(context.locals.admin), input),
 });

@@ -58,7 +58,11 @@ export interface SessionRepository {
 export interface PasswordResetRepository {
   create(tokenHash: string, userId: string, expiresAt: string): Promise<void>;
   findValid(tokenHash: string, nowIso: string): Promise<{ userId: string } | null>;
-  markUsed(tokenHash: string, nowIso: string): Promise<void>;
+  /**
+   * Spends a token in one step: it returns the owner of a token that is unused and not expired and marks it used, or null.
+   * Two requests with the same token never both get the user.
+   */
+  claim(tokenHash: string, nowIso: string): Promise<{ userId: string } | null>;
 }
 
 /** Password hashing (PBKDF2 via WebCrypto in the adapter). */

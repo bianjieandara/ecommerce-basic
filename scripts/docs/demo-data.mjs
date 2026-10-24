@@ -112,6 +112,7 @@ async function addOrders(cookie) {
       items: plan.items.map(([productId, quantity]) => ({ variantId: variantOf(productId), quantity })),
       customer: { name, email, phone },
       whatsappOptIn: false,
+      acceptedLegal: true,
       shippingMethodId: plan.ship,
       address:
         plan.ship === 'ship-flat'

@@ -47,7 +47,8 @@ the values they produce.
 
 1. **Domain.** Either a zone in our account, or a subdomain of the client's domain. Add the hostname to `customDomains`.
 2. **Turnstile.** Create a widget for the hostname. Put its site key in `TURNSTILE_SITE_KEY` (client.jsonc) and its secret key in
-   `TURNSTILE_SECRET_KEY` (secrets file).
+   `TURNSTILE_SECRET_KEY` (secrets file). Never keep Cloudflare's test keys (`1x000…`): any bot passes them. `deploy-client`
+   refuses a test site key unless the client sets `"allowTestTurnstile": true`, which only the public demo does.
 3. **Email Service.** Add the sending domain and use an address on it in `EMAIL_FROM`.
 4. **Payments.** dLocal Go keys (`DLOCALGO_API_KEY`, `DLOCALGO_SECRET_KEY`) and PayPal keys (`PAYPAL_CLIENT_ID`,
    `PAYPAL_CLIENT_SECRET`, `PAYPAL_WEBHOOK_ID`). Register the webhooks at `<PUBLIC_SITE_URL>/api/webhooks/dlocalgo` and

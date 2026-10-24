@@ -14,6 +14,8 @@ import { CONSENT_CHANGE_EVENT } from '@/ui/lib/track';
 
 /** Copy for the banner, passed from the layout so the island holds no user-visible text. */
 export interface ConsentBannerLabels {
+  /** Accessible name of the banner region; not shown. */
+  title: string;
   text: string;
   accept: string;
   refuse: string;
@@ -62,7 +64,10 @@ export default function ConsentBanner({ labels, mode, marketingToolEnabled }: Co
     'min-h-11 min-w-11 rounded border-2 border-text bg-background px-4 py-2 text-sm font-bold text-text';
 
   return (
+    // A named region (not a modal dialog): the page stays usable, so screen readers can reach the banner as a landmark.
     <div
+      role="region"
+      aria-label={labels.title}
       class={`border-text bg-surface fixed inset-x-0 bottom-0 z-50 border-t px-4 py-4 shadow-lg motion-safe:transition-transform motion-safe:duration-300 ${
         entered ? 'translate-y-0' : 'translate-y-full'
       }`}

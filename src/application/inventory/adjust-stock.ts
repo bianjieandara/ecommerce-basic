@@ -1,5 +1,7 @@
 // AdjustStock: manual stock changes from the inventory screens. Each change writes a ledger row with its reason, its note and
 // the admin who made it. The alerts are evaluated once the batch has applied.
+import type { AdminUser } from '../ports/identity';
+import { assertCan } from '@/domain/identity/role';
 import { planStockChange } from '@/domain/inventory/stock';
 import { DomainError } from '@/domain/shared/errors';
 import type { SettingsRepository } from '../ports/content';
@@ -25,12 +27,14 @@ export class AdjustStock {
   /**
    * Adds, removes or sets stock for one or more variants. A "set" value becomes the difference from the stock on record, so a
    * variant already at its counted value is left out of the batch.
+   * @param actor The signed-in admin who makes the change; needs the inventory permission.
    * @param input Validated request.
-   * @param actorId Admin who makes the change.
    * @returns The stock changes (empty when every count already matched).
-   * @throws DomainError NOT_FOUND, VALIDATION_FAILED (a repeated variant, or a StockProblem in `details.reason`), OUT_OF_STOCK.
+   * @throws DomainError FORBIDDEN, NOT_FOUND, VALIDATION_FAILED (a repeated variant, or a StockProblem in `details.reason`), OUT_OF_STOCK.
    */
-  async execute(input: AdjustStockInput, actorId: string): Promise<StockChange[]> {
+  async execute(actor: AdminUser, input: AdjustStockInput): Promise<StockChange[]> {
+    assertCan(actor.role, 'inventory.adjust');
+    const actorId = actor.id;
     const variantIds = input.items.map((item) => item.variantId);
     if (new Set(variantIds).size !== variantIds.length) {
       throw new DomainError('VALIDATION_FAILED', 'Each variant can appear only once in one adjustment');

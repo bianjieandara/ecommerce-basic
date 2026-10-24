@@ -496,8 +496,7 @@ try {
   check(
     'lookup by SKU finds the variant',
     (await (await get('/api/admin/inventory/lookup?code=AUDIT-WIDGET', true)).json())?.data?.sku ===
-      'AUDIT-WIDGET' ||
-      (await (await get('/api/admin/inventory/lookup?code=AUDIT-WIDGET', true)).status) === 200,
+      'AUDIT-WIDGET' || (await get('/api/admin/inventory/lookup?code=AUDIT-WIDGET', true)).status === 200,
   );
   check(
     'lookup of an unknown code is a clean 404',
@@ -757,7 +756,8 @@ try {
   console.log('settings');
   const groups = [
     ...new Set(
-      (await (await get('/admin/settings', true)).text())
+      // The index redirects to the first group, whose page lists every group beside the form.
+      (await (await get('/admin/settings/general', true)).text())
         .match(/\/admin\/settings\/([a-z_]+)/g)
         ?.map((m) => m.split('/').pop()) ?? [],
     ),
@@ -810,10 +810,40 @@ try {
     'an unknown currency is refused',
     refused(await api('/api/admin/settings/general', { values: { ...generalNow, currency: 'ZZZ' } })),
   );
+  // A saved value Intl rejects makes every admin date throw, so these must be refused, never stored.
   check(
-    'an unknown time zone is refused or ignored without a 500',
-    (await api('/api/admin/settings/general', { values: { ...generalNow, timezone: 'Mars/Base' } })).status <
-      500,
+    'an unknown time zone is refused',
+    refused(await api('/api/admin/settings/general', { values: { ...generalNow, timezone: 'Mars/Base' } })),
+  );
+  check('the refused time zone was not stored', group('general').timezone === generalNow.timezone);
+  check(
+    'an unknown country code is refused',
+    refused(await api('/api/admin/settings/general', { values: { ...generalNow, country: 'ZZ' } })),
+  );
+  const contactNow = group('contact');
+  check(
+    'a javascript: social link is refused',
+    refused(
+      await api('/api/admin/settings/contact', {
+        values: { ...contactNow, social: { ...contactNow.social, instagram: 'javascript:alert(1)' } },
+      }),
+    ),
+  );
+  check(
+    'a social link without https is refused',
+    refused(
+      await api('/api/admin/settings/contact', {
+        values: { ...contactNow, social: { ...contactNow.social, facebook: 'facebook.com/store' } },
+      }),
+    ),
+  );
+  check(
+    'a malformed contact email is refused',
+    refused(await api('/api/admin/settings/contact', { values: { ...contactNow, email: 'not an email' } })),
+  );
+  check(
+    'the refused contact values were not stored',
+    JSON.stringify(group('contact')) === JSON.stringify(contactNow),
   );
   const themeChange = await api('/api/admin/settings/theme', {
     values: { ...themeNow, colorAccent: '#123456' },

@@ -91,7 +91,11 @@ export class QuoteCart {
     const requested = new Map<string, QuoteItem>();
     for (const item of input.items) requested.set(item.variantId, item);
 
-    const variants = await this.deps.catalog.getQuoteVariants([...requested.keys()], input.locale);
+    // The variants and the shipping methods do not depend on each other, so both are read at once.
+    const [variants, methods] = await Promise.all([
+      this.deps.catalog.getQuoteVariants([...requested.keys()], input.locale),
+      this.deps.shipping.listActive(),
+    ]);
     const byId = new Map(variants.map((variant) => [variant.id, variant]));
 
     const lines: QuotedLine[] = [];
@@ -134,7 +138,6 @@ export class QuoteCart {
       settings.tax,
     );
 
-    const methods = await this.deps.shipping.listActive();
     const shippingOptions = methods.map((method) => ({
       id: method.id,
       name: method.name[input.locale],

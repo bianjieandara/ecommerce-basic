@@ -1,14 +1,17 @@
 // dLocal Go notification. The signature is checked on the raw body before anything is parsed. A verified notification names a
 // payment (or refund); the gateway asks dLocal Go for it and ConfirmPayment applies the answer, ignoring repeats. Any failure
 // answers with an error status, so dLocal Go retries (every 10 minutes for up to 30 days). Anything else answers 200.
+// Public by design: readWebhookBody rate limits the caller and caps the body before the signature is checked.
 import type { APIRoute } from 'astro';
 import { errorResponse } from '@/http/errors';
 import { logEvent } from '@/http/log';
+import { readWebhookBody } from '@/http/webhook-body';
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async (context) => {
+  const { request, locals } = context;
   const app = locals.app;
-  const raw = await request.text();
   try {
+    const raw = await readWebhookBody(context, 'dlocalgo');
     const signed = await app.providers.dlocalgo.verifyWebhook(raw, request.headers.get('authorization'));
     if (!signed) {
       logEvent('webhook.rejected', {

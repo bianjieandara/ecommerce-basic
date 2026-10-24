@@ -19,7 +19,6 @@ if ('redirectTo' in load) return Astro.redirect(load.redirectTo, 301);
 
 const view = storeViewFor(load.store, lang);
 const contact = contactFor(load.store, lang);
-const categories = await app.catalog(load.store.catalog).listCategories(lang);
 const title = t(lang, 'shop.title');
 ---
 
@@ -47,7 +46,7 @@ const title = t(lang, 'shop.title');
     options={load.options}
     listing={load.listing}
     facets={load.facets}
-    categories={categories}
+    categories={load.categories}
     view={view}
     showCategoryLinks={true}
   />

@@ -165,6 +165,11 @@ export const businessFieldDefinitions = {
       label: bilingual('Código de prueba de Meta', 'Meta test event code'),
       max: 40,
     },
+    ga4MeasurementId: {
+      kind: 'text',
+      label: bilingual('ID de medición de Google Analytics 4 (G-…)', 'Google Analytics 4 measurement ID (G-…)'),
+      max: 20,
+    },
     feedEnabled: {
       kind: 'boolean',
       label: bilingual('Publicar el catálogo de productos', 'Publish the product feed'),

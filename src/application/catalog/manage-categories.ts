@@ -1,4 +1,6 @@
 // Category admin: names and slugs per language, the parent tree, and the order of siblings.
+import type { AdminUser } from '../ports/identity';
+import { assertCan } from '@/domain/identity/role';
 import { DomainError } from '@/domain/shared/errors';
 import { SUPPORTED_LOCALES, type Locale } from '@/domain/shared/locale';
 import { slugify } from '@/domain/shared/slug';
@@ -25,11 +27,13 @@ export class ManageCategories {
 
   /**
    * Creates or updates a category. Each language that has a name gets a slug, generated from the name when left empty.
+   * @param actor The signed-in admin; needs the catalog permission.
    * @param input Validated category input.
    * @returns The category id.
-   * @throws DomainError NOT_FOUND, VALIDATION_FAILED (unknown parent or image, a cycle, no name), CONFLICT (slug taken).
+   * @throws DomainError FORBIDDEN, NOT_FOUND, VALIDATION_FAILED (unknown parent or image, a cycle, no name), CONFLICT (slug taken).
    */
-  async upsert(input: CategoryInput): Promise<{ id: string }> {
+  async upsert(actor: AdminUser, input: CategoryInput): Promise<{ id: string }> {
+    assertCan(actor.role, 'catalog.edit');
     const now = this.deps.clock.now().toISOString();
     const tree = await this.deps.categories.list();
     const existing = input.id ? tree.find((category) => category.id === input.id) : undefined;
@@ -61,10 +65,12 @@ export class ManageCategories {
 
   /**
    * Deletes a category that has no subcategories and no products.
+   * @param actor The signed-in admin; needs the catalog permission.
    * @param id Category id.
-   * @throws DomainError NOT_FOUND, or CONFLICT while subcategories or products still use it.
+   * @throws DomainError FORBIDDEN, NOT_FOUND, or CONFLICT while subcategories or products still use it.
    */
-  async remove(id: string): Promise<void> {
+  async remove(actor: AdminUser, id: string): Promise<void> {
+    assertCan(actor.role, 'catalog.edit');
     if (!(await this.deps.categories.findById(id))) throw new DomainError('NOT_FOUND', 'Category not found');
     const usage = await this.deps.categories.usage(id);
     if (usage.childCount > 0 || usage.productCount > 0) {
@@ -75,10 +81,12 @@ export class ManageCategories {
 
   /**
    * Sets the order of categories: each id's position is its index in the list.
+   * @param actor The signed-in admin; needs the catalog permission.
    * @param ids Category ids in the new order.
-   * @throws DomainError VALIDATION_FAILED for unknown or repeated ids.
+   * @throws DomainError FORBIDDEN, VALIDATION_FAILED for unknown or repeated ids.
    */
-  async reorder(ids: string[]): Promise<void> {
+  async reorder(actor: AdminUser, ids: string[]): Promise<void> {
+    assertCan(actor.role, 'catalog.edit');
     const unique = [...new Set(ids)];
     const known = await this.deps.categories.existingIds(unique);
     if (unique.length !== ids.length || known.length !== unique.length) {

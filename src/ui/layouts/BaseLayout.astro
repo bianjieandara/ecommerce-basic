@@ -47,6 +47,8 @@ interface Props {
   webAnalyticsToken?: string;
   /** Meta Pixel id from the marketing settings. Empty means no Pixel; it loads only after marketing consent. */
   metaPixelId?: string;
+  /** Google Analytics 4 measurement ID. Empty means no GA4; it loads only after marketing consent. */
+  ga4MeasurementId?: string;
   /** Store currency, sent to the Pixel with the value of each event. */
   currency?: CurrencyCode;
 }
@@ -67,8 +69,12 @@ const {
   fontPreset,
   webAnalyticsToken = '',
   metaPixelId = '',
+  ga4MeasurementId = '',
   currency = 'USD',
 } = Astro.props;
+
+// Browser chrome (the mobile address bar) follows the store's primary colour; the default is the one global.css declares.
+const browserColor = /--brand-primary:\s*(#[0-9a-fA-F]{6})/.exec(themeCss)?.[1] ?? '#111111';
 ---
 
 <!doctype html>
@@ -91,7 +97,7 @@ const {
       ogType={ogType}
       jsonLd={jsonLd}
     />
-    <meta name="theme-color" content="#111111" />
+    <meta name="theme-color" content={browserColor} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {fontPreset && (
       <link rel="preload" as="font" type="font/woff2" href={FONT_FILES[fontPreset]} crossorigin />
@@ -105,7 +111,12 @@ const {
       />
     )}
   </head>
-  <body class="antialiased" data-meta-pixel-id={metaPixelId} data-currency={currency}>
+  <body
+    class="antialiased"
+    data-meta-pixel-id={metaPixelId}
+    data-ga4-id={ga4MeasurementId}
+    data-currency={currency}
+  >
     <!-- First Tab stop: lets keyboard and screen-reader users jump past the header to the page. It shows only when focused. -->
     <a
       href="#main"

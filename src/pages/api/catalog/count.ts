@@ -10,6 +10,8 @@ import { catalogOptionsFor } from '@/http/storefront';
 export const GET = defineEndpoint({
   method: 'GET',
   rateLimit: 'api',
+  // Stepping a filter back and forth asks for the same count again; the shopper's browser answers that.
+  browserCacheSeconds: 60,
   handler: async ({ context }) => {
     const app = context.locals.app;
     const locale = context.url.searchParams.get('locale') ?? '';

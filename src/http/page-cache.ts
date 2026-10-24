@@ -1,6 +1,7 @@
 // Page cache: repeat visits to storefront pages are answered from the Cloudflare edge cache without running the page.
 // The key holds a version that every admin save bumps (see defineEndpoint `invalidatesCache`), so a change makes the next
 // visit a MISS and the page renders again. Only public, cookie-free 200 pages are stored; anything personal never is.
+import { STOREFRONT_QUERY_PARAMS } from '@/domain/catalog/catalog-query';
 import { logEvent } from './log';
 
 /** How long the edge keeps a page, in seconds. A bump of the version makes it stale sooner. */
@@ -14,6 +15,22 @@ const SEO_FILES = new Set(['/sitemap.xml', '/robots.txt']);
 
 /** Content types worth storing. */
 const CACHEABLE_TYPE = /^(?:text\/html|application\/xml|text\/plain)/;
+
+/** Query parameters that can change a page. */
+const KEY_PARAMS: ReadonlySet<string> = new Set(STOREFRONT_QUERY_PARAMS);
+
+/**
+ * The part of the query string that belongs in a cache key: only the parameters a page reads, in a fixed order. Without this
+ * every ad click (a unique `fbclid` or `gclid`) and every `?x=random` would be its own entry and its own full render: the
+ * cache would give ad traffic nothing, and anyone could force a render per request.
+ * @param url Request URL.
+ * @returns A query string with its "?", or an empty string when no parameter matters.
+ */
+export function cacheKeySearch(url: URL): string {
+  const kept = [...url.searchParams].filter(([name]) => KEY_PARAMS.has(name));
+  kept.sort(([a, x], [b, y]) => (a === b ? Number(x > y) - Number(x < y) : Number(a > b) - Number(a < b)));
+  return kept.length > 0 ? `?${new URLSearchParams(kept).toString()}` : '';
+}
 
 /** What the cache needs from the request and the platform. */
 export interface PageCacheContext {
@@ -80,7 +97,7 @@ export async function withPageCache(
   // The DOM typings of CacheStorage lack `default`, the Workers edge cache; the runtime has it.
   const cache = (caches as unknown as { default: Cache }).default;
   const version = `${context.buildId}.${await context.version()}`;
-  const key = `https://page-cache.internal/${version}${context.url.pathname}${context.url.search}`;
+  const key = `https://page-cache.internal/${version}${context.url.pathname}${cacheKeySearch(context.url)}`;
   const hit = await cache.match(key);
   if (hit) return withHeader(hit, 'x-page-cache', 'HIT');
 

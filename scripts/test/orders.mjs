@@ -72,6 +72,7 @@ async function place(overrides = {}) {
     items: [{ variantId: VARIANT, quantity: 1 }],
     customer: { name: 'Orders Tester', email: EMAIL, phone: '+57 300 555 0142' },
     whatsappOptIn: false,
+    acceptedLegal: true,
     shippingMethodId: 'ship-pickup',
     address: null,
     paymentMethod: 'bank_transfer',
@@ -205,7 +206,7 @@ async function main() {
   );
   const wrongKey = keyed.replace(/key=.*/, 'key=wrong-key');
   check('a wrong key opens nothing', (await get(wrongKey)).status === 404);
-  const piiProbe = await (await get(`/en/orders/${n1 + 100000}?key=x`)).status;
+  const piiProbe = (await get(`/en/orders/${n1 + 100000}?key=x`)).status;
   check('an unknown order number is a 404 (no leak of which exist)', piiProbe === 404);
 
   // ===================================================================================================== simultaneous buyers

@@ -1,6 +1,8 @@
 // ImportStock: applies a stock CSV. The file is checked row by row before anything is written, so the preview and the import
 // agree. The rows that can apply then go through in batches of 50: one D1 batch each, with the ledger rows tagged with the
 // import's id. A batch that fails never stops the others, and the result always says which rows went in.
+import type { AdminUser } from '../ports/identity';
+import { assertCan } from '@/domain/identity/role';
 import { planStockChange } from '@/domain/inventory/stock';
 import { chunk } from '@/domain/shared/chunk';
 import { CURRENCIES } from '@/domain/shared/currency';
@@ -60,13 +62,15 @@ export class ImportStock {
 
   /**
    * Checks the file and, unless it is a preview, applies its rows that can apply.
+   * @param actor The signed-in admin who imports; needs the inventory permission.
    * @param text CSV contents.
-   * @param actorId Admin who imports.
    * @param options `dryRun`: report what would happen and change nothing.
    * @returns The row results and, for an import, the batch id.
-   * @throws DomainError VALIDATION_FAILED for an unusable header or too many rows (before anything is written).
+   * @throws DomainError FORBIDDEN, VALIDATION_FAILED for an unusable header or too many rows (before anything is written).
    */
-  async execute(text: string, actorId: string, options: { dryRun: boolean }): Promise<ImportStockResult> {
+  async execute(actor: AdminUser, text: string, options: { dryRun: boolean }): Promise<ImportStockResult> {
+    assertCan(actor.role, 'inventory.adjust');
+    const actorId = actor.id;
     const [general, inventory] = await Promise.all([
       this.deps.settings.get('general'),
       this.deps.settings.get('inventory'),

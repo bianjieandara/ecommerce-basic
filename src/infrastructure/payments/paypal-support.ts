@@ -59,3 +59,20 @@ export interface PayPalEvent {
     supplementary_data?: { related_ids?: { order_id?: string } };
   };
 }
+
+/**
+ * True for the certificate address of a PayPal webhook: https, on a paypal.com host. PayPal fetches that address itself to
+ * verify the signature, so one that points anywhere else is not a real delivery.
+ * @param value Value of the PAYPAL-CERT-URL header.
+ * @returns Whether the address is on a PayPal host.
+ */
+export function isPayPalCertUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === 'https:' && (url.hostname === 'paypal.com' || url.hostname.endsWith('.paypal.com'))
+    );
+  } catch {
+    return false;
+  }
+}

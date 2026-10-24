@@ -24,6 +24,11 @@ export interface EndpointOptions<S extends z.ZodType, R> {
   /** Set on admin changes: the page cache is invalidated once the handler succeeds. */
   invalidatesCache?: boolean;
   /**
+   * Lets the visitor's browser reuse a successful answer for this many seconds. For public, read-only GET endpoints whose
+   * answer is the same for everyone (search suggestions, result counts); every other endpoint answers `no-store`.
+   */
+  browserCacheSeconds?: number;
+  /**
    * Limits requests per client IP before anything else runs, so a flood is turned away without parsing its body. A bucket name
    * uses that bucket; `{ bucket, scope }` keeps its own counter, for an endpoint that must not share one with the others.
    */
@@ -54,7 +59,10 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
       if (options.invalidatesCache) await bumpPageCache(context.locals.app.platform.pageCache, requestId);
       // A handler that needs more than JSON (for example a session cookie) returns its own Response.
       if (data instanceof Response) return data;
-      return Response.json({ ok: true, data }, { headers: { 'Cache-Control': 'no-store' } });
+      const cacheControl = options.browserCacheSeconds
+        ? `public, max-age=${options.browserCacheSeconds}`
+        : 'no-store';
+      return Response.json({ ok: true, data }, { headers: { 'Cache-Control': cacheControl } });
     } catch (error) {
       return errorResponse(error, requestId);
     }
@@ -69,7 +77,7 @@ export function defineEndpoint<S extends z.ZodType, R>(options: EndpointOptions<
  * @returns The body bytes.
  * @throws DomainError VALIDATION_FAILED when the body is larger than the limit.
  */
-async function readCapped(request: Request, limit: number): Promise<Uint8Array<ArrayBuffer>> {
+export async function readCapped(request: Request, limit: number): Promise<Uint8Array<ArrayBuffer>> {
   const tooLarge = () => new DomainError('VALIDATION_FAILED', 'Request body too large');
   if (Number(request.headers.get('content-length') ?? '0') > limit) throw tooLarge();
   const reader = request.body?.getReader();
@@ -149,7 +157,7 @@ function parse<S extends z.ZodType>(schema: S, raw: unknown): z.infer<S> {
  * @param limit Bucket, or bucket and scope.
  * @throws DomainError RATE_LIMITED.
  */
-async function enforceRateLimit(
+export async function enforceRateLimit(
   context: APIContext,
   limit: NonNullable<EndpointOptions<z.ZodType, unknown>['rateLimit']>,
 ): Promise<void> {

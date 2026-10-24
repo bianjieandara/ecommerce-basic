@@ -23,7 +23,18 @@ export default defineConfig({
   integrations: [preact()],
   prefetch: { defaultStrategy: 'hover' },
   build: { inlineStylesheets: 'auto' },
-  security: { checkOrigin: true },
+  security: {
+    checkOrigin: true,
+    // Scripts run only when they are the page's own bundles or inline scripts Astro hashed at build time, or come from the two
+    // Cloudflare hosts the store uses (Turnstile, Web Analytics). A script injected through stored text has no hash, so it cannot
+    // run. Inline styles stay allowed: components set style attributes, and style injection is not a script risk.
+    csp: {
+      scriptDirective: {
+        resources: ["'self'", 'https://challenges.cloudflare.com', 'https://static.cloudflareinsights.com'],
+      },
+      styleDirective: { resources: ["'self'", "'unsafe-inline'"] },
+    },
+  },
   vite: {
     // Names this build. The page cache key includes it, so pages cached by an older deploy (which point at asset files the
     // new deploy no longer has) are never served.

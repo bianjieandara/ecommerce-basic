@@ -69,6 +69,7 @@ async function place(whatsappOptIn = true) {
     items: [{ variantId: 'var-bottle', quantity: 1 }],
     customer: { name: 'Wanda Tester', email: EMAIL, phone: '+57 300 555 0142' },
     whatsappOptIn,
+    acceptedLegal: true,
     shippingMethodId: 'ship-pickup',
     address: null,
     paymentMethod: 'bank_transfer',

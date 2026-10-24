@@ -1,5 +1,5 @@
 // Settings persistence. Each group is one JSON row; reads are validated with zod, so a missing or old row gets its defaults
-// and invalid stored data falls back to defaults instead of breaking pages. The whole table is read in one query and kept for
+// and an invalid stored field falls back to its default instead of breaking pages. The whole table is read in one query and kept for
 // the request (and, in production, briefly across requests), because a page asks for many groups.
 import type { SettingsRepository } from '@/application/ports/content';
 import {
@@ -30,6 +30,46 @@ export interface SettingsRepositoryOptions {
   sharedTtlMs: number;
 }
 
+/** How many rounds of dropping invalid fields a read tries before it gives up and uses the group's defaults. */
+const MAX_REPAIR_ROUNDS = 5;
+
+/**
+ * Parses a stored group. A value that no longer passes the schema (a rule added after it was saved, or a row edited by hand)
+ * falls back to its own default only, so one bad field never resets the rest of the group.
+ * @param schema Zod schema of the group.
+ * @param stored Raw JSON of the stored row.
+ * @returns The parsed group.
+ */
+function readGroup(schema: (typeof SETTINGS_SCHEMAS)[SettingsGroup], stored: unknown): unknown {
+  let candidate = stored;
+  for (let round = 0; round <= MAX_REPAIR_ROUNDS; round += 1) {
+    const parsed = schema.safeParse(candidate);
+    if (parsed.success) return parsed.data;
+    if (typeof candidate !== 'object' || candidate === null) break;
+    const repaired = structuredClone(candidate) as Record<string, unknown>;
+    for (const issue of parsed.error.issues) removePath(repaired, issue.path);
+    candidate = repaired;
+  }
+  return schema.parse({});
+}
+
+/**
+ * Deletes the value an issue points at, so the schema default applies to it.
+ * @param root Object to change.
+ * @param path Zod issue path.
+ */
+function removePath(root: Record<string, unknown>, path: PropertyKey[]): void {
+  let node: unknown = root;
+  for (const key of path.slice(0, -1)) {
+    if (typeof node !== 'object' || node === null) return;
+    node = (node as Record<PropertyKey, unknown>)[key];
+  }
+  const last = path[path.length - 1];
+  if (last !== undefined && typeof node === 'object' && node !== null) {
+    delete (node as Record<PropertyKey, unknown>)[last];
+  }
+}
+
 /** D1-backed settings repository. */
 export class D1SettingsRepository implements SettingsRepository {
   /** Rows read for this request, or being read. Dropped by save(), so a request sees its own writes. */
@@ -46,9 +86,7 @@ export class D1SettingsRepository implements SettingsRepository {
 
   async get<G extends SettingsGroup>(group: G): Promise<SettingsMap[G]> {
     const raw = parseJson<unknown>((await this.rows()).get(group), {});
-    const parsed = SETTINGS_SCHEMAS[group].safeParse(raw);
-    // Invalid stored data falls back to the schema defaults; the admin sees the saved value on the settings page.
-    return (parsed.success ? parsed.data : SETTINGS_SCHEMAS[group].parse({})) as SettingsMap[G];
+    return readGroup(SETTINGS_SCHEMAS[group], raw) as SettingsMap[G];
   }
 
   async save<G extends SettingsGroup>(group: G, value: SettingsMap[G], nowIso: string): Promise<void> {

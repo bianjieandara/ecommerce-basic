@@ -87,7 +87,7 @@ const activeFilters = [
           <label class="sr-only text-sm md:not-sr-only" for="catalog-sort">
             {t(locale, 'shop.sortBy')}
           </label>
-          <Select id="catalog-sort" name="sort" shape="pill" onchange="this.form.requestSubmit()">
+          <Select id="catalog-sort" name="sort" shape="pill" submitOnChange>
             {CATALOG_SORTS.map((sort) => (
               <option value={sort} selected={sort === query.sort}>
                 {t(locale, `sort.${sort}`)}

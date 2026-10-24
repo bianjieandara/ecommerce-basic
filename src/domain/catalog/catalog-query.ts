@@ -40,6 +40,24 @@ export interface CatalogQuery {
   page: number;
 }
 
+/**
+ * The query parameters a storefront page reads: the ones parseCatalogQuery understands (the product page's `v` is one of them).
+ * Any other parameter, such as `utm_*` or `fbclid`, cannot change what a page shows, so the page cache leaves it out of its key.
+ * Add a name here when parseCatalogQuery starts reading it.
+ */
+export const STOREFRONT_QUERY_PARAMS = [
+  'q',
+  'category',
+  'v',
+  'min',
+  'max',
+  'stock',
+  'sale',
+  'new',
+  'sort',
+  'page',
+] as const;
+
 const MAX_SEARCH_LENGTH = 100;
 const MAX_VALUE_IDS = 20;
 const MAX_PAGE = 1000;

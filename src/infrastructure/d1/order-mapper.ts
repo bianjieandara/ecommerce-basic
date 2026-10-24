@@ -41,6 +41,7 @@ export interface OrderRow {
 
 /** Row shape of order_items. */
 export interface ItemRow {
+  order_id: string;
   product_id: string;
   variant_id: string;
   product_name: string;

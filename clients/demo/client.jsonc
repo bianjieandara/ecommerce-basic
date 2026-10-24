@@ -20,6 +20,8 @@
   "rateLimitNamespaceBase": 1000,
   "cron": "*/15 * * * *",
   "customDomains": ["ecommerce.relion-app.com"],
+  // The public demo uses Cloudflare's test Turnstile key on purpose (see docs/DECISIONS.md). Real stores must not set this.
+  "allowTestTurnstile": true,
   "vars": {
     "PUBLIC_SITE_URL": "https://ecommerce.relion-app.com",
     "EMAIL_FROM": "Store <orders@ecommerce.relion-app.com>",

@@ -1,27 +1,10 @@
 // Meta webhook checks: the subscription token of the GET handshake and the X-Hub-Signature-256 of every POST delivery. Both
 // compare in constant time, and both refuse when their secret is not set, so a missing setting can never open the endpoint.
 import type { WhatsAppWebhookAuth } from '@/application/ports/whatsapp';
+import { constantTimeEqual } from '@/domain/shared/constant-time';
 
 /** Prefix Meta puts before the hex digest in X-Hub-Signature-256. */
 const SIGNATURE_PREFIX = 'sha256=';
-
-/**
- * Compares two strings without stopping at the first difference, so the time taken does not reveal how much matched.
- * @param a First value.
- * @param b Second value.
- * @returns True when both are equal.
- */
-export function constantTimeEqual(a: string, b: string): boolean {
-  const encoder = new TextEncoder();
-  const left = encoder.encode(a);
-  const right = encoder.encode(b);
-  if (left.length !== right.length) return false;
-  let difference = 0;
-  for (let index = 0; index < left.length; index += 1) {
-    difference |= (left[index] ?? 0) ^ (right[index] ?? 0);
-  }
-  return difference === 0;
-}
 
 /**
  * HMAC-SHA256 of a message as lowercase hex.

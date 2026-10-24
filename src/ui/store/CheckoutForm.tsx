@@ -16,6 +16,7 @@ import { cartLines } from '../stores/cart';
 import { CheckoutAddressFields } from './CheckoutAddressFields';
 import { CheckoutSummary } from './CheckoutSummary';
 import { goToNextStep, type CheckoutLabels } from './checkout-support';
+import { LegalAcceptance, LEGAL_FIELD, type LegalAcceptanceProps } from './LegalAcceptance';
 
 export type { CheckoutLabels } from './checkout-support';
 
@@ -29,6 +30,8 @@ export interface CheckoutFormProps {
   cartHref: string;
   continueHref: string;
   labels: CheckoutLabels;
+  /** Sentence and links of the privacy and terms checkbox. */
+  legal: LegalAcceptanceProps;
   /** Whether the checkout asks for the buyer's company name and tax ID, for the invoice. */
   askTaxId: boolean;
 }
@@ -113,6 +116,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
           })),
           customer: { name: field('name'), email: field('email'), phone: field('phone') },
           whatsappOptIn: data.get('whatsappOptIn') === 'on',
+          acceptedLegal: data.get(LEGAL_FIELD) === 'on',
           shippingMethodId: shippingId,
           address:
             selected?.kind === 'flat'
@@ -216,7 +220,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
                 />
                 {option.name}
               </span>
-              <span>{option.costMinor === 0 ? '—' : fmt(option.costMinor)}</span>
+              <span>{option.costMinor === 0 ? labels.shippingFree : fmt(option.costMinor)}</span>
             </label>
           ))}
           {needsAddress && (
@@ -263,6 +267,7 @@ export default function CheckoutForm(props: CheckoutFormProps) {
               {labels.methods[option]}
             </label>
           ))}
+          <LegalAcceptance {...props.legal} />
         </section>
 
         {formError && (

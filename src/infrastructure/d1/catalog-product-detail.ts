@@ -1,9 +1,9 @@
 // The product page read model: one active product with its images, categories, variants and the attributes they use.
 import type { Locale } from '@/domain/shared/locale';
-import type { AttributeFacetDto, ProductDetailDto, QuoteVariantDto } from '@/application/dto/catalog-dto';
-import { cardImageKey, pickLabel } from './catalog-text';
-import { loadQuoteVariants } from './catalog-variants';
-import { queryAll, queryFirst } from './d1-client';
+import type { AttributeFacetDto, ProductDetailDto } from '@/application/dto/catalog-dto';
+import { cardImageKey, cardImageVariants, pickLabel } from './catalog-text';
+import { loadProductVariants } from './catalog-variants';
+import { queryFirst, statement } from './d1-client';
 
 /**
  * Loads an active product by its slug in a language.
@@ -37,36 +37,38 @@ export async function loadProductBySlug(
   );
   if (!product) return null;
 
-  const [alternates, images, categories, variants] = await Promise.all([
-    queryAll<{ locale: Locale; slug: string }>(
-      db,
-      'SELECT locale, slug FROM product_translations WHERE product_id = ?',
-      [product.id],
-    ),
-    queryAll<{ variants_json: string; alt_json: string }>(
-      db,
-      'SELECT m.variants_json, m.alt_json FROM product_images pi JOIN media_assets m ON m.id = pi.media_id WHERE pi.product_id = ? ORDER BY pi.position',
-      [product.id],
-    ),
-    queryAll<{
-      id: string;
-      slug: string;
-      name: string;
-      description: string;
-      image_media_id: string | null;
-    }>(
-      db,
-      `SELECT c.id, ct.slug, ct.name, ct.description, c.image_media_id
+  // Everything below depends only on the product id, so it all goes out together: one batch for the small lookups and the
+  // variants' own batch next to it, instead of a chain of reads.
+  const [lookups, variants] = await Promise.all([
+    db.batch([
+      statement(db, 'SELECT locale, slug FROM product_translations WHERE product_id = ?', [product.id]),
+      statement(
+        db,
+        'SELECT m.variants_json, m.alt_json FROM product_images pi JOIN media_assets m ON m.id = pi.media_id WHERE pi.product_id = ? ORDER BY pi.position',
+        [product.id],
+      ),
+      statement(
+        db,
+        `SELECT c.id, ct.slug, ct.name, ct.description, c.image_media_id
          FROM product_categories pc JOIN categories c ON c.id = pc.category_id
          JOIN category_translations ct ON ct.category_id = c.id AND ct.locale = ?
          WHERE pc.product_id = ?`,
-      [locale, product.id],
-    ),
-    activeVariants(db, product.id, locale),
+        [locale, product.id],
+      ),
+      attributeSummaryStatement(db, product.id),
+    ]),
+    loadProductVariants(db, product.id, locale),
   ]);
-
-  const attributeIds = [...new Set(variants.flatMap((variant) => variant.attributeValueIds))];
-  const attributeFacets = await attributeSummaries(db, attributeIds, locale);
+  const alternates = (lookups[0]?.results ?? []) as { locale: Locale; slug: string }[];
+  const images = (lookups[1]?.results ?? []) as { variants_json: string; alt_json: string }[];
+  const categories = (lookups[2]?.results ?? []) as {
+    id: string;
+    slug: string;
+    name: string;
+    description: string;
+    image_media_id: string | null;
+  }[];
+  const attributeFacets = attributeSummaries((lookups[3]?.results ?? []) as SummaryRow[], locale);
 
   const alternateSlugs: Partial<Record<Locale, string>> = {};
   for (const alternate of alternates) alternateSlugs[alternate.locale] = alternate.slug;
@@ -86,6 +88,7 @@ export async function loadProductBySlug(
       .map((image) => ({
         key: cardImageKey(image.variants_json) ?? '',
         alt: pickLabel(image.alt_json, locale),
+        variants: cardImageVariants(image.variants_json),
       }))
       .filter((image) => image.key !== ''),
     categories: categories.map((category) => ({
@@ -103,56 +106,44 @@ export async function loadProductBySlug(
   };
 }
 
+/** Row of the attribute summary query. */
+interface SummaryRow {
+  av_id: string;
+  label_json: string;
+  color_hex: string | null;
+  attribute_id: string;
+  code: string;
+  name_json: string;
+  display: 'buttons' | 'swatches';
+  position: number;
+}
+
 /**
- * Active variants of one product with prices and attribute labels.
+ * Statement for the attribute values the active variants of a product use, in attribute order.
  * @param db D1 binding.
  * @param productId Product id.
- * @param locale Language for labels.
- * @returns Variant DTOs.
+ * @returns A statement that returns SummaryRow rows.
  */
-async function activeVariants(db: D1Database, productId: string, locale: Locale): Promise<QuoteVariantDto[]> {
-  const ids = await queryAll<{ id: string }>(
+function attributeSummaryStatement(db: D1Database, productId: string): D1PreparedStatement {
+  return statement(
     db,
-    'SELECT id FROM product_variants WHERE product_id = ? AND is_active = 1 ORDER BY position',
+    `SELECT av.id AS av_id, av.label_json, av.color_hex, av.attribute_id, a.code, a.name_json, a.display, av.position
+       FROM attribute_values av JOIN attributes a ON a.id = av.attribute_id
+       WHERE av.id IN (SELECT vav.attribute_value_id FROM variant_attribute_values vav
+                       JOIN product_variants v ON v.id = vav.variant_id
+                       WHERE v.product_id = ? AND v.is_active = 1)
+       ORDER BY a.position, av.position`,
     [productId],
-  );
-  return loadQuoteVariants(
-    db,
-    ids.map((row) => row.id),
-    locale,
   );
 }
 
 /**
- * Attribute names and the values used by the given value ids, for product pages.
- * @param db D1 binding.
- * @param valueIds Attribute value ids in use.
+ * Groups the attribute values a product uses by attribute, for product pages.
+ * @param rows Rows of the summary statement.
  * @param locale Language.
  * @returns Facet-shaped summaries without counts.
  */
-async function attributeSummaries(
-  db: D1Database,
-  valueIds: string[],
-  locale: Locale,
-): Promise<AttributeFacetDto[]> {
-  if (valueIds.length === 0) return [];
-  const rows = await queryAll<{
-    av_id: string;
-    label_json: string;
-    color_hex: string | null;
-    attribute_id: string;
-    code: string;
-    name_json: string;
-    display: 'buttons' | 'swatches';
-    position: number;
-  }>(
-    db,
-    `SELECT av.id AS av_id, av.label_json, av.color_hex, av.attribute_id, a.code, a.name_json, a.display, av.position
-       FROM attribute_values av JOIN attributes a ON a.id = av.attribute_id
-       WHERE av.id IN (${valueIds.map(() => '?').join(',')})
-       ORDER BY a.position, av.position`,
-    valueIds,
-  );
+function attributeSummaries(rows: SummaryRow[], locale: Locale): AttributeFacetDto[] {
   const byAttribute = new Map<string, AttributeFacetDto>();
   for (const row of rows) {
     const facet = byAttribute.get(row.attribute_id) ?? {

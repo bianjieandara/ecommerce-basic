@@ -22,17 +22,19 @@ export class InvoiceAttachments implements AttachmentLoader {
    * @returns The files that exist.
    */
   async load(refs: EmailAttachmentRef[]): Promise<EmailAttachment[]> {
-    const files: EmailAttachment[] = [];
-    for (const ref of refs) {
-      const invoice = await this.invoices.findById(ref.invoiceId);
-      const content = invoice?.pdfKey ? await this.media.getBytes(invoice.pdfKey) : null;
-      if (!invoice || !content) continue;
-      files.push({
-        filename: `${formatInvoiceNumber(invoice.series, invoice.number)}.pdf`,
-        contentType: 'application/pdf',
-        content,
-      });
-    }
-    return files;
+    // The references are independent, so their invoices and files are read side by side.
+    const loaded = await Promise.all(
+      refs.map(async (ref): Promise<EmailAttachment | null> => {
+        const invoice = await this.invoices.findById(ref.invoiceId);
+        const content = invoice?.pdfKey ? await this.media.getBytes(invoice.pdfKey) : null;
+        if (!invoice || !content) return null;
+        return {
+          filename: `${formatInvoiceNumber(invoice.series, invoice.number)}.pdf`,
+          contentType: 'application/pdf',
+          content,
+        };
+      }),
+    );
+    return loaded.filter((file): file is EmailAttachment => file !== null);
   }
 }

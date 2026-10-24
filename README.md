@@ -11,12 +11,12 @@ Live demo: <https://ecommerce.relion-app.com/en/>
 
 - Catalog with filters and search, product variants, gallery, reviews and stock alerts.
 - Cart, checkout and card payments through dLocal Go and PayPal; order tracking and PDF invoices.
-- Content pages built in the admin, contact form, SEO (sitemap, structured data, product feeds).
+- Content pages built in the admin, a contact page (WhatsApp first, email, phone, map, social links), SEO (sitemap, structured data, product feeds).
 
 **Admin**
 
 - Products, categories, attributes and media; inventory with a stock ledger.
-- Orders, invoices, customer messages, shipping, testimonials, dashboard and background-job monitor.
+- Orders, invoices, refunds, shipping, testimonials, reports, dashboard and background-job monitor.
 - Page builder, settings, email templates, users and roles.
 
 **Platform**
@@ -27,8 +27,8 @@ Live demo: <https://ecommerce.relion-app.com/en/>
 
 ### Status
 
-Stages 0 to 17, 21 to 24 are done. Still open: WhatsApp Cloud API adapter (18), tracking, consent and Meta marketing (19), reports
-(20) and the multi-client provisioning polish (25). See [docs/PROGRESS.md](./docs/PROGRESS.md).
+Stages 0 to 17 and 20 to 24 are done. Still open: WhatsApp Cloud API adapter (18), tracking, consent and Meta marketing (19) and
+the multi-client provisioning polish (25). See [docs/PROGRESS.md](./docs/PROGRESS.md).
 
 ## Stack
 

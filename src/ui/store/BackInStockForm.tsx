@@ -2,6 +2,7 @@
 // the answer comes from the stock-subscriptions endpoint, which runs the bot check and keeps the request.
 import { useState } from 'preact/hooks';
 import { useTurnstile } from '@/ui/lib/turnstile';
+import { LegalAcceptance, LEGAL_FIELD, type LegalAcceptanceProps } from './LegalAcceptance';
 
 /** Translated text of the form. */
 export interface BackInStockLabels {
@@ -26,6 +27,8 @@ export interface BackInStockFormProps {
   locale: 'es' | 'en';
   siteKey: string;
   labels: BackInStockLabels;
+  /** Sentence and links of the privacy and terms checkbox. */
+  legal: LegalAcceptanceProps;
 }
 
 /** Form state: editing, sending, finished, or failed with a message. */
@@ -84,6 +87,7 @@ export default function BackInStockForm(props: BackInStockFormProps) {
           phone: phone || null,
           locale: props.locale,
           whatsappOptIn: data.get('whatsappOptIn') === 'on',
+          acceptedLegal: data.get(LEGAL_FIELD) === 'on',
           turnstileToken: turnstile.token(),
         }),
       });
@@ -124,6 +128,7 @@ export default function BackInStockForm(props: BackInStockFormProps) {
         <input type="checkbox" name="whatsappOptIn" class="accent-primary h-5 w-5" />
         <span>{labels.whatsapp}</span>
       </label>
+      <LegalAcceptance {...props.legal} />
       <div ref={turnstile.element} />
       {status === 'error' && (
         <p role="alert" class="text-accent text-sm">

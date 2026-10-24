@@ -68,6 +68,8 @@ export interface OrderRepository {
    */
   place(draft: NewOrder): Promise<{ id: string; number: number; stockChanges: StockChange[] }>;
   findById(id: string): Promise<Order | null>;
+  /** Several orders with their items in one read; an unknown id is missing from the result. */
+  findByIds(ids: string[]): Promise<Order[]>;
   findByNumber(number: number): Promise<Order | null>;
   /** Id and access-key hash for an order number. Checked before anything else is loaded. */
   findAccessKeyHash(number: number): Promise<{ id: string; accessKeyHash: string } | null>;
@@ -111,5 +113,7 @@ export interface ShippingMethodRepository {
   listActive(): Promise<ShippingMethodRecord[]>;
   listAll(): Promise<ShippingMethodRecord[]>;
   save(method: ShippingMethodRecord): Promise<void>;
+  /** Inserts the methods only when the table has none, in one statement, so two setups cannot both seed. */
+  seedIfEmpty(methods: ShippingMethodRecord[]): Promise<void>;
   delete(id: string): Promise<void>;
 }

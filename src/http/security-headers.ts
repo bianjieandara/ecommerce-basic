@@ -15,14 +15,29 @@ const STATIC_HEADERS: Record<string, string> = {
   'X-Frame-Options': 'DENY',
 };
 
+/** The one document the admin screens embed in a frame of their own: the invoice preview. */
+const ADMIN_FRAMED_DOCUMENT = /^\/api\/admin\/invoices\/[^/]+\/document$/;
+
+/**
+ * Headers for the invoice preview: the admin page may frame it (same origin only), and it may run no script at all.
+ * Replaces the framing and policy headers of every other response, which forbid all framing.
+ */
+const FRAMED_DOCUMENT_HEADERS: Record<string, string> = {
+  'Content-Security-Policy': "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; script-src 'none'",
+  'X-Frame-Options': 'SAMEORIGIN',
+};
+
 /**
  * Sets the security headers on a response. HSTS is sent only over HTTPS, where browsers honor it.
  * @param response Response to decorate. A response whose headers are frozen (a redirect built by the platform) is copied.
- * @param url Request URL, for its protocol.
+ * @param url Request URL, for its protocol and for the one document that may be framed by the admin.
  * @returns The decorated response.
  */
 export function withSecurityHeaders(response: Response, url: URL): Response {
-  const headers: Record<string, string> = { ...STATIC_HEADERS };
+  const headers: Record<string, string> = {
+    ...STATIC_HEADERS,
+    ...(ADMIN_FRAMED_DOCUMENT.test(url.pathname) ? FRAMED_DOCUMENT_HEADERS : {}),
+  };
   if (url.protocol === 'https:')
     headers['Strict-Transport-Security'] = `max-age=${HSTS_MAX_AGE}; includeSubDomains`;
   try {

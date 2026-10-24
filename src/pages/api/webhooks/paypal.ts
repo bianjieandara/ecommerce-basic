@@ -1,13 +1,16 @@
 // PayPal webhook. PayPal verifies the signature through its own API, so the event is checked before it is applied.
 // A verified event goes to ConfirmPayment, which ignores repeats. Failures answer with an error status for a retry.
+// Public by design: readWebhookBody rate limits the caller and caps the body before PayPal's API is called.
 import type { APIRoute } from 'astro';
 import { errorResponse } from '@/http/errors';
 import { logEvent } from '@/http/log';
+import { readWebhookBody } from '@/http/webhook-body';
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async (context) => {
+  const { request, locals } = context;
   const app = locals.app;
-  const raw = await request.text();
   try {
+    const raw = await readWebhookBody(context, 'paypal');
     const signed = await app.providers.paypal.verifyWebhook(request.headers, raw);
     if (!signed) {
       logEvent('webhook.rejected', {

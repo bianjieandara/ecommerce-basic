@@ -1,6 +1,7 @@
 // Two small storefront reads that follow a product or a category: the same category in the other language, and the products
 // to suggest next to a product.
 import type { Locale } from '@/domain/shared/locale';
+import { cardSelect, type CardRow } from './catalog-cards';
 import { queryAll } from './d1-client';
 
 /**
@@ -22,31 +23,37 @@ export async function loadCategoryAlternates(
 }
 
 /**
- * Ids of active products that share a category with a product, most shared categories first, then featured, then best selling.
+ * Cards of active products that share a category with a product, most shared categories first, then featured, then best selling.
+ * The ids and the cards come from one statement: the ranking picks the ids, then the cards are loaded for those ids only.
  * @param db D1 binding.
  * @param productId The product the suggestions are for (never in the result).
  * @param locale Language: products without a translation in it are skipped, since their card could not be built.
- * @param limit Most ids to return.
- * @returns Product ids in suggestion order.
+ * @param limit Most cards to return.
+ * @returns Card rows in suggestion order.
  */
-export async function loadRelatedProductIds(
+export async function loadRelatedCards(
   db: D1Database,
   productId: string,
   locale: Locale,
   limit: number,
-): Promise<string[]> {
-  const rows = await queryAll<{ id: string }>(
+): Promise<CardRow[]> {
+  return queryAll<CardRow>(
     db,
-    `SELECT p.id
-       FROM product_categories mine
-       JOIN product_categories pc ON pc.category_id = mine.category_id AND pc.product_id <> mine.product_id
-       JOIN products p ON p.id = pc.product_id AND p.status = 'active'
-       JOIN product_translations t ON t.product_id = p.id AND t.locale = ?
-       WHERE mine.product_id = ?
-       GROUP BY p.id
-       ORDER BY COUNT(*) DESC, p.is_featured DESC, p.sales_count DESC, p.id
-       LIMIT ?`,
-    [locale, productId, limit],
+    `WITH related AS (
+       SELECT p.id
+         FROM product_categories mine
+         JOIN product_categories pc ON pc.category_id = mine.category_id AND pc.product_id <> mine.product_id
+         JOIN products p ON p.id = pc.product_id AND p.status = 'active'
+         JOIN product_translations t ON t.product_id = p.id AND t.locale = ?
+         WHERE mine.product_id = ?
+         GROUP BY p.id
+         ORDER BY COUNT(*) DESC, p.is_featured DESC, p.sales_count DESC, p.id
+         LIMIT ?)
+     ${cardSelect(false)}
+     WHERE p.id IN (SELECT id FROM related)
+     ORDER BY (SELECT COUNT(*) FROM product_categories a JOIN product_categories b ON b.category_id = a.category_id
+                WHERE a.product_id = ? AND b.product_id = p.id) DESC,
+              p.is_featured DESC, p.sales_count DESC, p.id`,
+    [locale, productId, limit, locale, locale, productId],
   );
-  return rows.map((row) => row.id);
 }

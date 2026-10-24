@@ -1,5 +1,7 @@
 // UpsertProduct: checks every reference, turns the editor's stock values into ledger changes, and saves the whole product.
 // The editor validates with the same schema before it posts, so a rejection here means a stale or hand-made request.
+import type { AdminUser } from '../ports/identity';
+import { assertCan } from '@/domain/identity/role';
 import {
   assertVariantsConsistent,
   type Product,
@@ -33,12 +35,14 @@ export class UpsertProduct {
 
   /**
    * Saves a product. Stock is applied as a change from what the editor loaded, so a sale made in the meantime is kept.
+   * @param actor The signed-in admin who saves it; needs the catalog permission, and is stored on the stock ledger.
    * @param input Validated product input.
-   * @param actorId Admin who saves it; stored on the stock ledger.
    * @returns The product id.
-   * @throws DomainError NOT_FOUND, VALIDATION_FAILED (broken rules or unknown references), CONFLICT (taken slug or SKU).
+   * @throws DomainError FORBIDDEN, NOT_FOUND, VALIDATION_FAILED (broken rules or unknown references), CONFLICT (taken slug or SKU).
    */
-  async execute(input: ProductInput, actorId: string): Promise<{ id: string }> {
+  async execute(actor: AdminUser, input: ProductInput): Promise<{ id: string }> {
+    assertCan(actor.role, 'catalog.edit');
+    const actorId = actor.id;
     const now = this.deps.clock.now().toISOString();
     const existing = input.id ? await this.deps.products.findById(input.id) : null;
     if (input.id && !existing) throw new DomainError('NOT_FOUND', 'Product not found');

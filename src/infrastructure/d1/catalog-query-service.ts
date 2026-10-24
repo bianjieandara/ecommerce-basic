@@ -20,12 +20,19 @@ import { loadFacets } from './catalog-facets';
 import { cardImageKey } from './catalog-text';
 import { loadFeed } from './catalog-feed';
 import { loadSitemapCatalog } from './catalog-sitemap';
-import { buildWhere, IN_STOCK_SQL, newCutoff, orderByFor, type CatalogQueryOptions } from './catalog-filters';
+import {
+  buildWhere,
+  IN_STOCK_SQL,
+  newCutoff,
+  orderByFor,
+  type CatalogQueryOptions,
+  type Clause,
+} from './catalog-filters';
 import { loadProductBySlug } from './catalog-product-detail';
-import { loadCategoryAlternates, loadRelatedProductIds } from './catalog-related';
+import { loadCategoryAlternates, loadRelatedCards } from './catalog-related';
 import { toPrefixQuery } from './catalog-text';
 import { loadQuoteVariants } from './catalog-variants';
-import { queryAll, queryFirst } from './d1-client';
+import { queryAll, queryFirst, statement } from './d1-client';
 
 export type { CatalogQueryOptions } from './catalog-filters';
 
@@ -54,52 +61,90 @@ export class D1CatalogQueryService implements CatalogQueryService {
     if (valueIds.length === 0) return new Map();
     const rows = await queryAll<{ id: string; attribute_id: string }>(
       this.db,
-      `SELECT id, attribute_id FROM attribute_values WHERE id IN (${valueIds.map(() => '?').join(',')})`,
-      valueIds,
+      'SELECT id, attribute_id FROM attribute_values WHERE id IN (SELECT value FROM json_each(?))',
+      [JSON.stringify(valueIds)],
     );
     return new Map(rows.map((row) => [row.id, row.attribute_id]));
   }
 
-  async listProducts(query: CatalogQuery, pageSize: number): Promise<Paginated<ProductCardDto>> {
-    const cutoff = newCutoff(this.options);
-    const where = buildWhere(
-      query,
-      await this.valueAttributes(query.valueIds),
-      cutoff,
-      [],
-      this.hidesOutOfStock(),
-    );
-    const offset = (query.page - 1) * pageSize;
-    const rows = await queryAll<CardRow>(
+  /**
+   * The statement that loads one page of cards. The page's ids are chosen first, from the filter and the sort alone, and only
+   * those products get their card subqueries (pictures, category, variants). Sorting every match with the card columns
+   * computed (the "out of stock last" order does this) cost 10 times more at 5,000 products.
+   * @param query Normalized query.
+   * @param where Filter from buildWhere.
+   * @param limit Cards in the page.
+   * @param offset Cards to skip.
+   * @returns A statement that returns CardRow rows.
+   */
+  private pageStatement(
+    query: CatalogQuery,
+    where: Clause,
+    limit: number,
+    offset: number,
+  ): D1PreparedStatement {
+    const order = orderByFor(query.sort, this.options.showOutOfStock === 'last');
+    return statement(
       this.db,
-      `${cardSelect(true)}
-       WHERE ${where.sql}
-       ORDER BY ${orderByFor(query.sort, this.options.showOutOfStock === 'last')}
-       LIMIT ? OFFSET ?`,
-      [query.locale, query.locale, ...where.params, pageSize, offset],
+      `WITH page AS (
+         SELECT p.id FROM products p JOIN product_translations t ON t.product_id = p.id AND t.locale = ?
+         WHERE ${where.sql}
+         ORDER BY ${order}
+         LIMIT ? OFFSET ?)
+       ${cardSelect(true)}
+       WHERE p.id IN (SELECT id FROM page)
+       ORDER BY ${order}`,
+      [query.locale, ...where.params, limit, offset, query.locale, query.locale],
     );
-    const count = await queryFirst<{ n: number }>(
+  }
+
+  /**
+   * The statement that counts the products a query matches.
+   * @param query Normalized query.
+   * @param where Filter from buildWhere.
+   * @returns A statement that returns one row with `n`.
+   */
+  private countStatement(query: CatalogQuery, where: Clause): D1PreparedStatement {
+    return statement(
       this.db,
       `SELECT COUNT(*) AS n FROM products p JOIN product_translations t ON t.product_id = p.id AND t.locale = ? WHERE ${where.sql}`,
       [query.locale, ...where.params],
     );
-    const items = rows.map((row) => toCard(row, cutoff));
-    return toPaginated(items, count?.n ?? 0, { page: query.page, pageSize });
+  }
+
+  /**
+   * The filter of a query, with the attribute lookup it needs.
+   * @param query Normalized query.
+   * @param cutoff Start of the "new" window.
+   * @returns The WHERE clause and its binds.
+   */
+  private async filterOf(query: CatalogQuery, cutoff: string): Promise<Clause> {
+    return buildWhere(query, await this.valueAttributes(query.valueIds), cutoff, [], this.hidesOutOfStock());
+  }
+
+  async listProducts(query: CatalogQuery, pageSize: number): Promise<Paginated<ProductCardDto>> {
+    const cutoff = newCutoff(this.options);
+    const where = await this.filterOf(query, cutoff);
+    // The page and the total are independent, so they go out in one round trip.
+    const [rows, count] = await this.db.batch([
+      this.pageStatement(query, where, pageSize, (query.page - 1) * pageSize),
+      this.countStatement(query, where),
+    ]);
+    const items = ((rows?.results ?? []) as CardRow[]).map((row) => toCard(row, cutoff));
+    const total = ((count?.results?.[0] ?? null) as { n: number } | null)?.n ?? 0;
+    return toPaginated(items, total, { page: query.page, pageSize });
+  }
+
+  async listTopProducts(query: CatalogQuery, limit: number): Promise<ProductCardDto[]> {
+    const cutoff = newCutoff(this.options);
+    const where = await this.filterOf(query, cutoff);
+    const { results } = await this.pageStatement(query, where, limit, 0).all<CardRow>();
+    return results.map((row) => toCard(row, cutoff));
   }
 
   async countProducts(query: CatalogQuery): Promise<number> {
-    const where = buildWhere(
-      query,
-      await this.valueAttributes(query.valueIds),
-      newCutoff(this.options),
-      [],
-      this.hidesOutOfStock(),
-    );
-    const row = await queryFirst<{ n: number }>(
-      this.db,
-      `SELECT COUNT(*) AS n FROM products p JOIN product_translations t ON t.product_id = p.id AND t.locale = ? WHERE ${where.sql}`,
-      [query.locale, ...where.params],
-    );
+    const where = await this.filterOf(query, newCutoff(this.options));
+    const row = await this.countStatement(query, where).first<{ n: number }>();
     return row?.n ?? 0;
   }
 
@@ -192,17 +237,17 @@ export class D1CatalogQueryService implements CatalogQueryService {
     const rows = await queryAll<CardRow>(
       this.db,
       `${cardSelect(false)}
-       WHERE p.id IN (${ids.map(() => '?').join(',')}) AND p.status = 'active'`,
-      [locale, locale, ...ids],
+       WHERE p.id IN (SELECT value FROM json_each(?)) AND p.status = 'active'`,
+      [locale, locale, JSON.stringify(ids)],
     );
     const byId = new Map(rows.map((row) => [row.id, toCard(row, cutoff)]));
     return ids.map((id) => byId.get(id)).filter((card): card is ProductCardDto => card !== undefined);
   }
 
   async listRelatedProducts(locale: Locale, productId: string, limit: number): Promise<ProductCardDto[]> {
-    const cards = await this.listProductsByIds(
-      locale,
-      await loadRelatedProductIds(this.db, productId, locale, limit),
+    const cutoff = newCutoff(this.options);
+    const cards = (await loadRelatedCards(this.db, productId, locale, limit)).map((row) =>
+      toCard(row, cutoff),
     );
     return this.hidesOutOfStock() ? cards.filter((card) => card.inStock) : cards;
   }

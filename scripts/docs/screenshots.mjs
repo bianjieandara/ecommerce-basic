@@ -51,6 +51,7 @@ async function placeDemoOrder(cookie) {
     items: [{ variantId: variant, quantity: 1 }],
     customer: { name: 'Camila Torres', email: 'camila.torres@example.com', phone: '+57 300 555 0101' },
     whatsappOptIn: false,
+    acceptedLegal: true,
     shippingMethodId: 'ship-pickup',
     address: null,
     paymentMethod: 'bank_transfer',

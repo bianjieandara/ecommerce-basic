@@ -5,6 +5,13 @@ import type { AdminUser, AdminUserRepository, PasswordHasher } from '../ports/id
 import type { BotVerifier, Clock, RateLimiter } from '../ports/platform';
 import type { SessionService } from './sessions';
 
+/**
+ * Hash of a random password nobody knows, in the stored format with the same iteration count as real hashes. An unknown or
+ * inactive email is checked against it, so the answer takes as long as a real account's and timing cannot reveal which emails exist.
+ */
+const UNKNOWN_ACCOUNT_HASH =
+  'pbkdf2_sha256$100000$A-Mzn_GHJgBMNHEtis2zMg$MjZUJUfEYTa4YkCf-4PCenWoe5e5HvBzZt0bOZYE864';
+
 /** Dependencies of Login. */
 export interface LoginDeps {
   users: AdminUserRepository;
@@ -40,7 +47,11 @@ export class Login {
       throw new DomainError('RATE_LIMITED', 'Too many attempts. Please wait a moment.');
     }
     const found = await this.deps.users.findByEmail(email);
-    const passwordOk = found ? await this.deps.passwords.verify(input.password, found.passwordHash) : false;
+    // The password is always checked, against a dummy hash when there is no account, so every failure costs the same time.
+    const passwordOk = await this.deps.passwords.verify(
+      input.password,
+      found ? found.passwordHash : UNKNOWN_ACCOUNT_HASH,
+    );
     if (!found || !found.isActive || !passwordOk) {
       throw new DomainError('UNAUTHORIZED', 'Invalid email or password');
     }

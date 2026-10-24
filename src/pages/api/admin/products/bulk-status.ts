@@ -1,5 +1,6 @@
 // Status change of several products at once, from the bulk bar of the product list. It never rewrites stock.
 import { productBulkStatusInput } from '@/application/catalog/schemas';
+import { requireAdmin } from '@/http/admin-session';
 import { defineEndpoint } from '@/http/define-endpoint';
 
 export const POST = defineEndpoint({
@@ -8,6 +9,7 @@ export const POST = defineEndpoint({
   invalidatesCache: true,
   handler: async ({ input, context }) => {
     const changed = await context.locals.app.catalogAdmin.changeProductStatuses.execute(
+      requireAdmin(context.locals.admin),
       input.ids,
       input.status,
     );

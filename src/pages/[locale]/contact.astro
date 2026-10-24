@@ -23,10 +23,9 @@ if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
 const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
-const store = await loadStoreContext(app);
+const [store, page] = await Promise.all([loadStoreContext(app), loadPageContent(app, 'contact', lang)]);
 const view = storeViewFor(store, lang);
 const contact = contactFor(store, lang);
-const page = await loadPageContent(app, 'contact', lang);
 const data = page
   ? await loadSectionData(app, page.sections, lang, catalogOptionsFor(store), store.catalog)
   : { productsBySection: {}, categories: [] };

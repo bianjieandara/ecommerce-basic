@@ -15,8 +15,11 @@ const { locale } = Astro.params;
 if (!isLocale(locale ?? '')) return Astro.rewrite('/404');
 
 const app = Astro.locals.app;
-const store = await loadStoreContext(app);
-const page = await loadPageContent(app, 'home', locale as 'es' | 'en');
+// The settings and the stored page are independent reads, so they go out together.
+const [store, page] = await Promise.all([
+  loadStoreContext(app),
+  loadPageContent(app, 'home', locale as 'es' | 'en'),
+]);
 if (!page) return Astro.rewrite('/404');
 
 const view = storeViewFor(store, locale as 'es' | 'en');

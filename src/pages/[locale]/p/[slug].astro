@@ -17,8 +17,7 @@ if (!isLocale(locale ?? '') || !slug || slug === 'home') return Astro.rewrite('/
 const lang = locale as 'es' | 'en';
 
 const app = Astro.locals.app;
-const store = await loadStoreContext(app);
-const page = await loadPageContent(app, slug, lang);
+const [store, page] = await Promise.all([loadStoreContext(app), loadPageContent(app, slug, lang)]);
 if (!page) return Astro.rewrite('/404');
 
 const view = storeViewFor(store, lang);

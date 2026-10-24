@@ -3,7 +3,9 @@
 // The maxima match the form definitions in settings-fields-store.ts and settings-fields-business.ts, so the server refuses
 // what the form would refuse.
 import { z } from 'zod';
+import { GA4_MEASUREMENT_ID } from '@/domain/consent/consent';
 import { CURRENCY_CODES } from '@/domain/shared/currency';
+import { isHttpsUrl, isKnownCountry, isValidTimeZone } from '@/domain/shared/validators';
 import { PAYMENT_METHODS } from '../ports/payments';
 
 /**
@@ -24,6 +26,16 @@ const hexColor = (fallback: string) =>
     .regex(/^#[0-9a-fA-F]{6}$/)
     .default(fallback);
 
+/** A social profile link: empty, or an https address. Anything else (javascript:, data:) would become a clickable href. */
+const socialLink = z
+  .string()
+  .max(300)
+  .refine((value) => value === '' || isHttpsUrl(value), {
+    message: 'Use an https:// address',
+    params: { code: 'INVALID_LINK' },
+  })
+  .default('');
+
 /** General store identity: name, logos, languages, currency and time zone. */
 export const generalSettings = z.object({
   storeName: z.string().min(1).max(120).default('My Store'),
@@ -31,15 +43,31 @@ export const generalSettings = z.object({
   faviconMediaId: z.uuid().nullable().default(null),
   defaultLocale: z.enum(['es', 'en']).default('es'),
   currency: z.enum(CURRENCY_CODES).default('USD'),
-  country: z.string().length(2).default('CO'),
-  timezone: z.string().min(1).max(60).default('America/Bogota'),
+  country: z
+    .string()
+    .length(2)
+    .refine(isKnownCountry, { message: 'Unknown country code', params: { code: 'INVALID_COUNTRY' } })
+    .default('CO'),
+  timezone: z
+    .string()
+    .min(1)
+    .max(60)
+    .refine(isValidTimeZone, { message: 'Unknown time zone', params: { code: 'INVALID_TIMEZONE' } })
+    .default('America/Bogota'),
   // One line shown in a strip above the header (a shipping offer, a sale). Empty hides the strip.
   announcement: localized('', '', 120),
 });
 
 /** Contact details, the WhatsApp button, the map and the social links. */
 export const contactSettings = z.object({
-  email: z.string().max(254).default(''),
+  email: z
+    .string()
+    .max(254)
+    .refine((value) => value === '' || z.email().safeParse(value).success, {
+      message: 'Not an email address',
+      params: { code: 'INVALID_EMAIL' },
+    })
+    .default(''),
   phone: z.string().max(40).default(''),
   whatsappNumber: z
     .string()
@@ -63,11 +91,11 @@ export const contactSettings = z.object({
   openingHours: localized('', '', 300),
   social: z
     .object({
-      instagram: z.string().max(300).default(''),
-      facebook: z.string().max(300).default(''),
-      tiktok: z.string().max(300).default(''),
-      youtube: z.string().max(300).default(''),
-      x: z.string().max(300).default(''),
+      instagram: socialLink,
+      facebook: socialLink,
+      tiktok: socialLink,
+      youtube: socialLink,
+      x: socialLink,
     })
     .default({ instagram: '', facebook: '', tiktok: '', youtube: '', x: '' }),
 });
@@ -160,6 +188,11 @@ export const marketingSettings = z.object({
   metaPixelId: z.string().max(40).default(''),
   metaCapiEnabled: z.boolean().default(false),
   metaTestEventCode: z.string().max(40).default(''),
+  ga4MeasurementId: z
+    .string()
+    .trim()
+    .refine((value) => value === '' || GA4_MEASUREMENT_ID.test(value))
+    .default(''),
   feedEnabled: z.boolean().default(true),
   feedBrand: z.string().max(100).default(''),
   feedColorAttribute: z.string().max(40).default('color'),

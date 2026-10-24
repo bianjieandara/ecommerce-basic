@@ -2,6 +2,7 @@
 // (for error messages) and on the server (for safety), so the rules can never drift apart.
 import { z } from 'zod';
 import type { Locale } from '@/domain/shared/locale';
+import { isSafeHref } from '@/domain/shared/validators';
 import type { FieldDescriptor } from './field-descriptor';
 
 /** Options that change how required localized fields are checked. */
@@ -91,15 +92,10 @@ function fieldSchema(field: FieldDescriptor, options: SchemaOptions): z.ZodType 
       return z.array(z.uuid()).max(field.max ?? 50);
     case 'link':
       return z.object({
-        href: z
-          .string()
-          .refine(
-            (value) => value.startsWith('/') || value.startsWith('https://') || value.startsWith('mailto:'),
-            {
-              message: 'Use /, https:// or mailto:',
-              params: { code: 'LINK_HREF' },
-            },
-          ),
+        href: z.string().refine(isSafeHref, {
+          message: 'Use /, https:// or mailto:',
+          params: { code: 'LINK_HREF' },
+        }),
         label: z.object({ es: z.string().max(200), en: z.string().max(200) }),
       });
     case 'repeater': {

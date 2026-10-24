@@ -22,12 +22,14 @@ const { product, price, statusLabel, stockLabel, selectLabel } = Astro.props;
     <a href={`${ADMIN_PATHS.products}/${product.id}`} tabindex="-1" aria-hidden="true">
       <ProductThumb imageKey={product.imageKey} name={product.name} tile />
     </a>
-    <input
-      type="checkbox"
-      data-bulk-id={product.id}
-      aria-label={selectLabel}
-      class="absolute top-3 left-3 size-6 cursor-pointer rounded-md border-text/30 accent-primary"
-    />
+    <label class="absolute top-0.5 left-0.5 flex size-11 cursor-pointer items-center justify-center">
+      <input
+        type="checkbox"
+        data-bulk-id={product.id}
+        aria-label={selectLabel}
+        class="size-6 cursor-pointer rounded-md border-text/30 accent-primary"
+      />
+    </label>
   </div>
   <div class="flex min-w-0 flex-col gap-1 px-1 pb-1">
     <a

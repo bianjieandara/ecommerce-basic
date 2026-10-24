@@ -11,8 +11,9 @@ import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import { isLocale } from '@/domain/shared/locale';
 import { PATHS, withQuery } from '@/domain/shared/paths';
 import { t } from '@/ui/i18n';
+import { legalAcceptanceFor } from '@/ui/lib/legal-acceptance';
 import { renderMarkdown } from '@/ui/lib/markdown';
-import { mediaUrl } from '@/ui/lib/media-url';
+import { buildSrcSet, mediaUrl } from '@/ui/lib/media-url';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { loadStoreContext } from '@/http/store-context';
 import { buildTitle, catalogOptionsFor, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
@@ -81,6 +82,9 @@ const pageDescription = metaDescription(
     .slice(0, 155),
 );
 const mainImage = product.images[0];
+// A picture with one stored size has nothing to choose from, so it gets no srcset.
+const srcsetOf = (image: { variants: { width: number; key: string }[] }) =>
+  image.variants.length > 1 ? buildSrcSet(image.variants) : undefined;
 const category = product.categories[0];
 ---
 
@@ -116,6 +120,8 @@ const category = product.categories[0];
       {mainImage ? (
         <img
           src={mediaUrl(mainImage.key)}
+          srcset={srcsetOf(mainImage)}
+          sizes={srcsetOf(mainImage) ? '(min-width: 768px) 55vw, 100vw' : undefined}
           alt={mainImage.alt || product.name}
           width="960"
           height="960"
@@ -137,6 +143,8 @@ const category = product.categories[0];
             <li>
               <img
                 src={mediaUrl(image.key)}
+                srcset={srcsetOf(image)}
+                sizes={srcsetOf(image) ? '(min-width: 768px) 14vw, 24vw' : undefined}
                 alt={image.alt || product.name}
                 width="240"
                 height="240"
@@ -264,6 +272,7 @@ const category = product.categories[0];
           variantId={selected.id}
           locale={lang}
           siteKey={app.config.turnstileSiteKey}
+          legal={legalAcceptanceFor(lang)}
           labels={{
             title: t(lang, 'product_page.backInStockTitle'),
             intro: t(lang, 'product_page.backInStockIntro'),

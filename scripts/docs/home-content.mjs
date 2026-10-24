@@ -85,7 +85,7 @@ function homeSections(hero) {
       enabled: true,
       config: {
         image: hero[1],
-        title: text('Envío gratis desde 50 USD', 'Free shipping over 50 USD'),
+        title: text('Envío gratis desde 50 USD', 'Free shipping from 50 USD'),
         text: text(
           'Compra hoy y recíbelo en casa sin costo de envío.',
           'Order today and get it delivered with no shipping cost.',

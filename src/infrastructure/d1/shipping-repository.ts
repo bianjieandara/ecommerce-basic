@@ -69,6 +69,29 @@ export class D1ShippingMethodRepository implements ShippingMethodRepository {
     ).run();
   }
 
+  async seedIfEmpty(methods: ShippingMethodRecord[]): Promise<void> {
+    if (methods.length === 0) return;
+    // One statement per method, each guarded by the emptiness check, so the batch seeds only a table that has no rows.
+    await this.db.batch(
+      methods.map((method) =>
+        statement(
+          this.db,
+          ,
+          [
+            method.id,
+            method.kind,
+            JSON.stringify(method.name),
+            JSON.stringify(method.description),
+            method.priceMinor,
+            method.freeOverMinor,
+            method.isActive ? 1 : 0,
+            method.position,
+          ],
+        ),
+      ),
+    );
+  }
+
   async delete(id: string): Promise<void> {
     await statement(this.db, 'DELETE FROM shipping_methods WHERE id = ?', [id]).run();
   }

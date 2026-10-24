@@ -32,6 +32,8 @@ export const subscribeInput = z.object({
   /** Language of the storefront page the request came from. Missing means the store's default language. */
   locale: z.enum(SUPPORTED_LOCALES).optional(),
   whatsappOptIn: z.boolean().default(false),
+  /** The shopper agreed to the privacy policy and the terms. The form requires it; the server must too. */
+  acceptedLegal: z.literal(true),
   turnstileToken: z.string().max(2048).nullable().default(null),
 });
 

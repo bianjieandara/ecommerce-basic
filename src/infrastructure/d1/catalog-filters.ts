@@ -94,9 +94,9 @@ export function buildWhere(
   for (const [attributeId, values] of groups) {
     if (skip({ attributeId })) continue;
     parts.push(
-      `EXISTS (SELECT 1 FROM product_variants v JOIN variant_attribute_values vav ON vav.variant_id = v.id WHERE v.product_id = p.id AND vav.attribute_value_id IN (${values.map(() => '?').join(',')}))`,
+      'EXISTS (SELECT 1 FROM product_variants v JOIN variant_attribute_values vav ON vav.variant_id = v.id WHERE v.product_id = p.id AND vav.attribute_value_id IN (SELECT value FROM json_each(?)))',
     );
-    params.push(...values);
+    params.push(JSON.stringify(values));
   }
 
   if (query.minPriceMinor !== null && !skip('price')) {

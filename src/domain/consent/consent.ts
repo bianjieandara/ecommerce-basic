@@ -10,7 +10,7 @@ export const CONSENT_VERSION = 'v1';
 /** Lifetime of a choice in seconds (365 days). */
 export const CONSENT_MAX_AGE_SECONDS = 365 * 24 * 60 * 60;
 
-/** Consent categories. `necessary` is always on and is not a choice; `marketing` covers the Meta Pixel and Conversions API. */
+/** Consent categories. `necessary` is always on and is not a choice; `marketing` covers the Meta Pixel, the Conversions API and Google Analytics 4. */
 export const CONSENT_CATEGORIES = ['necessary', 'marketing'] as const;
 
 /** A consent category. */
@@ -64,14 +64,22 @@ export function marketingAllowed(consent: Consent): boolean {
   return consent.marketing === true;
 }
 
+/** Shape of a Google Analytics 4 measurement ID, for example G-ABC123XYZ. The setting may also be empty (no GA4). */
+export const GA4_MEASUREMENT_ID = /^G-[A-Z0-9]{4,12}$/;
+
 /**
  * Whether a marketing tool is configured. The banner in `auto` mode is only worth showing when there is something to consent to.
  * @param metaPixelId The `metaPixelId` setting (empty when unset).
  * @param metaCapiEnabled The `metaCapiEnabled` setting.
- * @returns True when the Pixel has an ID or the Conversions API is switched on.
+ * @param ga4MeasurementId The `ga4MeasurementId` setting (empty when unset). GA4 sets cookies, so it runs under the same consent.
+ * @returns True when the Pixel or GA4 has an ID, or the Conversions API is switched on.
  */
-export function isMarketingToolEnabled(metaPixelId: string, metaCapiEnabled: boolean): boolean {
-  return metaPixelId.trim().length > 0 || metaCapiEnabled;
+export function isMarketingToolEnabled(
+  metaPixelId: string,
+  metaCapiEnabled: boolean,
+  ga4MeasurementId: string,
+): boolean {
+  return metaPixelId.trim().length > 0 || metaCapiEnabled || ga4MeasurementId.trim().length > 0;
 }
 
 /**

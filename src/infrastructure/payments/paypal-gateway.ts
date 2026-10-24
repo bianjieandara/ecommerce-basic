@@ -16,6 +16,7 @@ import { PATHS, withQuery } from '@/domain/shared/paths';
 import { workersFetch } from '../system/http-fetch';
 import { providerAmountMinor } from './provider-amounts';
 import {
+  isPayPalCertUrl,
   PAYPAL_CURRENCIES,
   TOKEN_KEY,
   TOKEN_MARGIN_SECONDS,
@@ -182,18 +183,32 @@ export class PayPalGateway implements PaymentGateway {
    */
   async verifyWebhook(headers: Headers, rawBody: string): Promise<boolean> {
     if (!this.config.webhookId) return false;
+    // A body that is not JSON cannot be a PayPal event: refuse it here instead of failing the request.
+    let webhookEvent: unknown;
+    try {
+      webhookEvent = JSON.parse(rawBody);
+    } catch {
+      return false;
+    }
+    // Every header a real delivery carries, and a certificate on a PayPal host. A request without them is refused here, so an
+    // unsigned flood costs no call to the PayPal API (each call would also spend the store's API quota).
+    const signature = {
+      auth_algo: headers.get('paypal-auth-algo'),
+      cert_url: headers.get('paypal-cert-url'),
+      transmission_id: headers.get('paypal-transmission-id'),
+      transmission_sig: headers.get('paypal-transmission-sig'),
+      transmission_time: headers.get('paypal-transmission-time'),
+    };
+    if (Object.values(signature).some((value) => !value) || !isPayPalCertUrl(signature.cert_url ?? ''))
+      return false;
     const response = await this.api<{ verification_status?: string }>(
       '/v1/notifications/verify-webhook-signature',
       {
         method: 'POST',
         body: {
-          auth_algo: headers.get('paypal-auth-algo'),
-          cert_url: headers.get('paypal-cert-url'),
-          transmission_id: headers.get('paypal-transmission-id'),
-          transmission_sig: headers.get('paypal-transmission-sig'),
-          transmission_time: headers.get('paypal-transmission-time'),
+          ...signature,
           webhook_id: this.config.webhookId,
-          webhook_event: JSON.parse(rawBody) as unknown,
+          webhook_event: webhookEvent,
         },
       },
     );

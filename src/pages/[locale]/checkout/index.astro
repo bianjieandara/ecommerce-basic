@@ -7,6 +7,7 @@ import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 import { PATHS } from '@/domain/shared/paths';
 import { t } from '@/ui/i18n';
+import { legalAcceptanceFor } from '@/ui/lib/legal-acceptance';
 import { loadStoreContext } from '@/http/store-context';
 import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
 import { themeToCss } from '@/ui/lib/theme-css';
@@ -49,6 +50,7 @@ const labels = {
   shipping: t(lang, 'order.shipping'),
   total: t(lang, 'cart.total'),
   shippingPending: t(lang, 'checkout.shippingPending'),
+  shippingFree: t(lang, 'checkout.shippingFree'),
   empty: t(lang, 'cart.empty'),
   continueShopping: t(lang, 'common.continueShopping'),
   quoteError: t(lang, 'checkout.quoteError'),
@@ -101,6 +103,7 @@ const labels = {
     cartHref={PATHS.cart(lang)}
     continueHref={PATHS.shop(lang)}
     labels={labels}
+    legal={legalAcceptanceFor(lang)}
     askTaxId={invoicing.enabled && invoicing.askBuyerTaxId}
   />
 </StoreLayout>

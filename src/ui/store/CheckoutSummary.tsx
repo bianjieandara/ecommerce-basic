@@ -50,7 +50,13 @@ export function CheckoutSummary(props: CheckoutSummaryProps) {
       </p>
       <p class="flex justify-between text-sm">
         <span>{labels.shipping}</span>
-        <span>{shipping ? fmt(shipping.costMinor) : labels.shippingPending}</span>
+        <span>
+          {shipping
+            ? shipping.costMinor === 0
+              ? labels.shippingFree
+              : fmt(shipping.costMinor)
+            : labels.shippingPending}
+        </span>
       </p>
       <p class="border-text/10 flex justify-between border-t pt-3 text-base font-semibold">
         <span>{labels.total}</span>

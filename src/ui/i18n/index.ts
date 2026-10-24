@@ -25,13 +25,17 @@ const DICTIONARIES: Record<Locale, Dictionary> = { en, es };
  * @returns The translated text.
  */
 export function t(locale: Locale, key: DotPath, params?: Record<string, string | number>): string {
-  const value = key
-    .split('.')
-    .reduce<unknown>(
-      (node, part) =>
-        node && typeof node === 'object' ? (node as Record<string, unknown>)[part] : undefined,
-      DICTIONARIES[locale],
-    );
+  const lookup = (path: string): unknown =>
+    path
+      .split('.')
+      .reduce<unknown>(
+        (node, part) =>
+          node && typeof node === 'object' ? (node as Record<string, unknown>)[part] : undefined,
+        DICTIONARIES[locale],
+      );
+  // A count of exactly 1 uses the "<key>One" text when the dictionary has one ("1 product"); both languages share this rule.
+  const singular = params && String(params.count) === '1' ? lookup(`${key}One`) : undefined;
+  const value = typeof singular === 'string' ? singular : lookup(key);
   if (typeof value !== 'string') return key;
   if (!params) return value;
   return value.replace(/\{(\w+)\}/g, (match, name: string) => String(params[name] ?? match));

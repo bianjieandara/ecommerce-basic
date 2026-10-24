@@ -12,7 +12,7 @@ import { CURRENCIES, type CurrencyCode } from '@/domain/shared/currency';
 import type { Locale } from '@/domain/shared/locale';
 import type { Paginated } from '@/domain/shared/pagination';
 import { PATHS } from '@/domain/shared/paths';
-import type { FacetsDto, ProductCardDto } from '@/application/dto/catalog-dto';
+import type { CategoryDto, FacetsDto, ProductCardDto } from '@/application/dto/catalog-dto';
 import { loadStoreContext, type StoreContext } from './store-context';
 
 /** Everything a catalog page needs to render. */
@@ -24,6 +24,8 @@ export interface CatalogPage {
   store: StoreContext;
   listing: Paginated<ProductCardDto>;
   facets: FacetsDto;
+  /** Active categories, for the filter panel's category links. */
+  categories: CategoryDto[];
 }
 
 /** Either the page data, or a redirect to the canonical URL. */
@@ -84,9 +86,10 @@ export async function loadCatalogPage(
   if (url.pathname + url.search !== canonical) return { redirectTo: canonical };
 
   const service = app.catalog(store.catalog);
-  const [listing, facets] = await Promise.all([
+  const [listing, facets, categories] = await Promise.all([
     service.listProducts(query, store.catalog.pageSize),
     service.getFacets(query),
+    service.listCategories(locale),
   ]);
   // A page past the end would be an empty page that search engines could index, under a message that blames the filters. Send
   // the visitor to the last page that exists instead.
@@ -106,5 +109,6 @@ export async function loadCatalogPage(
     store,
     listing,
     facets,
+    categories,
   };
 }

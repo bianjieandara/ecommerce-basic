@@ -1,10 +1,16 @@
-// Browser tracking. Each shopper event is one track() call: the Meta Pixel gets it only after marketing consent, and the
+// Browser tracking. Each shopper event is one track() call: the Meta Pixel and GA4 get it only after marketing consent, and the
 // three events the browser owns also go to /api/events, whatever the choice, because they hold no personal data.
 // Nothing here may throw into the shopper's page.
 import type { TrackedEventName, TrackedItem } from '@/application/ports/analytics';
-import { consentCookieValue, marketingAllowed, parseConsent } from '@/domain/consent/consent';
+import {
+  consentCookieValue,
+  GA4_MEASUREMENT_ID,
+  marketingAllowed,
+  parseConsent,
+} from '@/domain/consent/consent';
 import { CURRENCIES, isCurrencyCode, type CurrencyCode } from '@/domain/shared/currency';
 import { captureAttribution, syncFbcCookie } from './attribution';
+import { loadGa4, sendGa4Event } from './ga4';
 
 /** Window event the consent banner fires after a choice. This module enables the Pixel when it is a grant. */
 export const CONSENT_CHANGE_EVENT = 'consent:change';
@@ -54,14 +60,15 @@ interface PixelWindow extends Window {
   _fbq?: PixelFunction;
 }
 
-/** Pixel id and the store currency, read once from the body's data attributes. */
-interface PixelConfig {
-  pixelId: string;
+/** Tool ids and the store currency, read once from the body's data attributes. A tool without an id is off. */
+interface TrackingConfig {
+  pixelId: string | null;
+  ga4Id: string | null;
   currency: CurrencyCode;
 }
 
-let config: PixelConfig | null = null;
-let pixelLoaded = false;
+let config: TrackingConfig | null = null;
+let toolsLoaded = false;
 
 /**
  * Whether the visitor has granted marketing, read from the cookie in the browser.
@@ -95,11 +102,12 @@ function loadPixel(pixelId: string): void {
   fbq('init', pixelId);
 }
 
-/** Loads the Pixel once, and only when a Pixel id is configured. */
-function enablePixel(): void {
-  if (!config || pixelLoaded) return;
-  pixelLoaded = true;
-  loadPixel(config.pixelId);
+/** Loads each configured tool once (the Pixel and GA4). Call it only after marketing consent. */
+function enableTools(): void {
+  if (!config || toolsLoaded) return;
+  toolsLoaded = true;
+  if (config.pixelId) loadPixel(config.pixelId);
+  if (config.ga4Id) loadGa4(config.ga4Id);
 }
 
 /**
@@ -183,10 +191,20 @@ export function track(name: TrackedEventName, data: TrackData = {}): void {
     const eventId = newEventId();
     const occurredAt = new Date().toISOString();
     if (config && marketingGranted()) {
-      enablePixel();
-      (window as PixelWindow).fbq?.('track', META_EVENT[name], pixelParams(name, data, config.currency), {
-        eventID: eventId,
-      });
+      enableTools();
+      if (config.pixelId) {
+        (window as PixelWindow).fbq?.('track', META_EVENT[name], pixelParams(name, data, config.currency), {
+          eventID: eventId,
+        });
+      }
+      if (config.ga4Id) {
+        sendGa4Event(name, {
+          items: data.items,
+          value: data.valueMinor === undefined ? undefined : toMajor(data.valueMinor, config.currency),
+          currency: config.currency,
+          transactionId: data.orderId,
+        });
+      }
     }
     sendToServer(name, eventId, occurredAt, data);
   } catch {
@@ -194,11 +212,11 @@ export function track(name: TrackedEventName, data: TrackData = {}): void {
   }
 }
 
-/** Runs after the visitor chooses. A grant loads the Pixel now and sends the PageView of this page. */
+/** Runs after the visitor chooses. A grant loads the tools now and sends the page view of this page. */
 function onConsentChange(): void {
   if (!marketingGranted()) return;
   syncFbcCookie();
-  enablePixel();
+  enableTools();
   track('page_view');
 }
 
@@ -211,9 +229,16 @@ export function initTracking(): void {
   try {
     const dataset = document.body.dataset;
     const pixelId = (dataset.metaPixelId ?? '').trim();
-    if (/^\d{1,20}$/.test(pixelId)) {
+    const ga4Id = (dataset.ga4Id ?? '').trim();
+    const hasPixel = /^\d{1,20}$/.test(pixelId);
+    const hasGa4 = GA4_MEASUREMENT_ID.test(ga4Id);
+    if (hasPixel || hasGa4) {
       const currency = dataset.currency ?? '';
-      config = { pixelId, currency: isCurrencyCode(currency) ? currency : 'USD' };
+      config = {
+        pixelId: hasPixel ? pixelId : null,
+        ga4Id: hasGa4 ? ga4Id : null,
+        currency: isCurrencyCode(currency) ? currency : 'USD',
+      };
     }
     captureAttribution(location.search);
     if (marketingGranted()) syncFbcCookie();

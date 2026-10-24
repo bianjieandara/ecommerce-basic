@@ -1,4 +1,6 @@
 // Product actions from the admin list: a status change that never touches stock, and a duplicate that starts as a draft.
+import type { AdminUser } from '../ports/identity';
+import { assertCan } from '@/domain/identity/role';
 import type { Product, ProductStatus, ProductTranslation } from '@/domain/catalog/product';
 import { DomainError } from '@/domain/shared/errors';
 import { slugify } from '@/domain/shared/slug';
@@ -21,11 +23,13 @@ export class ChangeProductStatus {
 
   /**
    * Sets the status.
+   * @param actor The signed-in admin; needs the catalog permission.
    * @param id Product id.
    * @param status New status.
-   * @throws DomainError NOT_FOUND for an unknown product.
+   * @throws DomainError FORBIDDEN, or NOT_FOUND for an unknown product.
    */
-  async execute(id: string, status: ProductStatus): Promise<void> {
+  async execute(actor: AdminUser, id: string, status: ProductStatus): Promise<void> {
+    assertCan(actor.role, 'catalog.edit');
     if (!(await this.deps.products.findById(id))) throw new DomainError('NOT_FOUND', 'Product not found');
     await this.deps.products.setStatus(id, status, this.deps.clock.now().toISOString());
   }
@@ -38,11 +42,14 @@ export class ChangeProductStatuses {
 
   /**
    * Sets the status of every product in the list.
+   * @param actor The signed-in admin; needs the catalog permission.
    * @param ids Product ids; repeats are ignored.
    * @param status New status.
+   * @throws DomainError FORBIDDEN.
    * @returns The ids that were changed. An unknown id is skipped, not an error: the list may be stale.
    */
-  async execute(ids: readonly string[], status: ProductStatus): Promise<string[]> {
+  async execute(actor: AdminUser, ids: readonly string[], status: ProductStatus): Promise<string[]> {
+    assertCan(actor.role, 'catalog.edit');
     const unique = [...new Set(ids)];
     return this.deps.products.setStatusMany(unique, status, this.deps.clock.now().toISOString());
   }
@@ -55,12 +62,14 @@ export class DuplicateProduct {
 
   /**
    * Makes the copy. Each variant starts with the stock of the original, recorded as an initial ledger change.
+   * @param actor The signed-in admin who duplicates it; needs the catalog permission.
    * @param id Product to copy.
-   * @param actorId Admin who duplicates it.
    * @returns The new product id.
-   * @throws DomainError NOT_FOUND for an unknown product.
+   * @throws DomainError FORBIDDEN, or NOT_FOUND for an unknown product.
    */
-  async execute(id: string, actorId: string): Promise<{ id: string }> {
+  async execute(actor: AdminUser, id: string): Promise<{ id: string }> {
+    assertCan(actor.role, 'catalog.edit');
+    const actorId = actor.id;
     const source = await this.deps.products.findById(id);
     if (!source) throw new DomainError('NOT_FOUND', 'Product not found');
     const now = this.deps.clock.now().toISOString();

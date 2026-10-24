@@ -1,4 +1,5 @@
 // Admin roles and the permission map. Permissions are checked by use cases, not by the UI, so hiding a button is never the only guard.
+import { DomainError } from '../shared/errors';
 
 /** Admin roles, the one closed set. Owners can do everything; editors manage the day-to-day store. */
 export const ROLES = ['owner', 'editor'] as const;
@@ -13,6 +14,7 @@ export type Permission =
   | 'orders.refund'
   | 'inventory.adjust'
   | 'content.edit'
+  | 'media.manage'
   | 'emails.edit'
   | 'emails.disable_store_alerts'
   | 'invoices.void'
@@ -28,6 +30,7 @@ const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
     'orders.refund',
     'inventory.adjust',
     'content.edit',
+    'media.manage',
     'emails.edit',
     'emails.disable_store_alerts',
     'invoices.void',
@@ -35,7 +38,14 @@ const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
     'users.manage',
     'jobs.manage',
   ],
-  editor: ['catalog.edit', 'orders.manage', 'inventory.adjust', 'content.edit', 'emails.edit'],
+  editor: [
+    'catalog.edit',
+    'orders.manage',
+    'inventory.adjust',
+    'content.edit',
+    'media.manage',
+    'emails.edit',
+  ],
 };
 
 /**
@@ -46,4 +56,14 @@ const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
  */
 export function can(role: Role, permission: Permission): boolean {
   return ROLE_PERMISSIONS[role].includes(permission);
+}
+
+/**
+ * Throws unless a role holds a permission. Use cases call it first, so an endpoint that forgets its own check is still refused.
+ * @param role Admin role.
+ * @param permission Permission the action needs.
+ * @throws DomainError FORBIDDEN when the role does not hold the permission.
+ */
+export function assertCan(role: Role, permission: Permission): void {
+  if (!can(role, permission)) throw new DomainError('FORBIDDEN', 'You do not have permission to do this.');
 }

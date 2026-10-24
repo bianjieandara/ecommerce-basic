@@ -29,6 +29,8 @@ export interface CheckoutLabels {
   shipping: string;
   total: string;
   shippingPending: string;
+  /** Shown instead of a price when a shipping option costs nothing (pickup, or a flat rate waived by the threshold). */
+  shippingFree: string;
   empty: string;
   continueShopping: string;
   quoteError: string;

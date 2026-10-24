@@ -97,7 +97,8 @@ export class ResetPassword {
   async execute(input: { token: string; password: string }): Promise<void> {
     const now = this.deps.clock.now();
     const tokenHash = await this.deps.hasher.sha256Hex(input.token);
-    const found = await this.deps.resets.findValid(tokenHash, now.toISOString());
+    // The token is spent first, in one statement, so a second request with the same link finds it already used.
+    const found = await this.deps.resets.claim(tokenHash, now.toISOString());
     if (!found) throw new DomainError('INVALID_STATE', 'This link is not valid or has expired');
     const user = await this.deps.users.findById(found.userId);
     if (!user || !user.isActive)
@@ -107,7 +108,6 @@ export class ResetPassword {
       ...user,
       passwordHash: await this.deps.passwords.hash(input.password),
     });
-    await this.deps.resets.markUsed(tokenHash, now.toISOString());
     await this.deps.sessions.revokeAllFor(user.id);
   }
 }
