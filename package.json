@@ -35,6 +35,7 @@
     "test:admin-actions": "node scripts/test/admin-actions.mjs",
     "test:orders": "node scripts/test/orders.mjs",
     "test:reports": "node scripts/test/reports.mjs",
+    "test:whatsapp": "node scripts/test/whatsapp.mjs",
     "test:keyboard": "node scripts/test/keyboard.mjs",
     "docs:data": "node scripts/docs/demo-data.mjs",
     "docs:screens": "node scripts/docs/screenshots.mjs",

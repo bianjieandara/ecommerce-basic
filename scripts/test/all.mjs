@@ -18,6 +18,7 @@ const TESTS = [
   ['flows', 'cart, checkout, search, forms in Chrome'],
   ['orders', 'order lifecycle, stock, invoices, reports, accounts'],
   ['reports', 'report figures against independent SQL, change vs previous period'],
+  ['whatsapp', 'WhatsApp templates, shipped and invoice messages, statuses (fake Graph API)'],
 ];
 const wanted = process.argv.slice(2);
 const todo = TESTS.filter(([name]) => wanted.length === 0 || wanted.includes(name));

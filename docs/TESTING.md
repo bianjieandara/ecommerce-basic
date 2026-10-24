@@ -37,6 +37,7 @@ npm run test:admin-actions    # every admin create, edit, delete, setting and em
 npm run test:flows            # cart, checkout, search and forms in Chrome
 npm run test:orders           # order lifecycle, stock, invoices, reports, accounts
 npm run test:reports          # report figures against independent SQL, weekly summary
+npm run test:whatsapp         # WhatsApp templates and messages against a fake Graph API
 npm run test:keyboard         # keyboard, dialogs and focus rings in Chrome
 npm run test:all              # all of the above, one after the other (about 25 minutes)
 ```
@@ -109,6 +110,18 @@ checks the change against the previous period on two real days, that no report p
 nothing is sent outside the configured weekday and hour or when it is off, one e-mail goes out at that hour, and a second tick in the
 same hour sends nothing. It changes the reports setting through the API and puts it back. It creates no orders: run `test:orders`
 first for a fuller database.
+
+**`npm run test:whatsapp`** ([scripts/test/whatsapp.mjs](../scripts/test/whatsapp.mjs)) runs the whole WhatsApp flow of Stage 18 with no
+Meta account. It starts [fake-graph.mjs](../scripts/test/fake-graph.mjs), a stand-in for the Graph API that applies the rules Meta
+documents (variables numbered in order with a sample each, no variable at the start or end, a URL button ending in `{{1}}`, only
+approved templates can be sent, the parameter count must match), and the demo store talks to it because `npm run docs:store` starts
+with `META_GRAPH_BASE_URL` pointing there (restart the store after updating). The test saves, submits, reviews and syncs templates,
+ships an order with a tracking code and checks the message to the customer's number (name, order number, code, order link that opens),
+issues an invoice and checks the PDF upload and the document header, sends signed delivery statuses (`delivered`, `read`, a late
+`failed` that must change nothing, a wrong signature that must be refused), and checks that a disabled template, one Meta has not
+approved, a customer who did not opt in, and WhatsApp turned off all send nothing and are logged. It puts the two templates it uses
+back as they were. What it cannot show is what only Meta decides: see "With Meta" in
+[TESTING_INTEGRATIONS.md](./TESTING_INTEGRATIONS.md#whatsapp).
 
 **`npm run test:keyboard`** ([scripts/test/keyboard.mjs](../scripts/test/keyboard.mjs)) presses real keys in Chrome: the skip link is
 the first Tab stop, every Tab stop of six pages shows a focus ring, the search overlay and the cart drawer open from the keyboard,

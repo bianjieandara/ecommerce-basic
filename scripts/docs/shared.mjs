@@ -16,6 +16,15 @@ export const DEMO_WEBHOOK_VARS = {
   WHATSAPP_VERIFY_TOKEN: 'local-test-verify-token',
 };
 
+/**
+ * Where the demo store reaches "Meta": the fake Graph API of scripts/test/fake-graph.mjs, started by scripts/test/whatsapp.mjs. The store
+ * is given this address on its command line, which wins over .dev.vars, so the local demo never calls Meta even with real keys there.
+ */
+export const DEMO_GRAPH_VARS = {
+  META_GRAPH_BASE_URL: `http://localhost:${process.env.DOCS_GRAPH_PORT ?? 5801}`,
+  META_APP_ID: 'local-test-app-id',
+};
+
 /** Test token the Turnstile test keys accept. */
 export const TURNSTILE_TEST_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
 

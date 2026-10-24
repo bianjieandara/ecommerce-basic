@@ -194,6 +194,10 @@ enabled, and Meta approved the template in the recipient's language; anything el
 
 **Locally (no Meta account)**
 
+0. `npm run test:whatsapp` runs the whole flow against a fake Graph API (templates, review, shipped message with tracking code and
+   link, invoice PDF, delivery statuses, skips). The fake enforces the template rules Meta documents, so a rejected-format mistake
+   shows up here first. It is not Meta: it cannot tell whether a number is on WhatsApp, how review ends, or how a handset shows the message.
+
 1. `npm run test:webhooks -- whatsapp-verify` checks the handshake: Meta calls `GET /api/webhooks/whatsapp` with `hub.mode`,
    `hub.verify_token`, `hub.challenge`; the store must answer the challenge as plain text, and answer 403 for a wrong token.
 2. `npm run test:webhooks -- whatsapp-status wamid.TEST1 delivered` (then `read`, then `failed`) shows status updates:
