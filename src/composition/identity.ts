@@ -6,7 +6,9 @@ import { RequestPasswordReset, ResetPassword } from '@/application/identity/pass
 import { SessionService } from '@/application/identity/sessions';
 import { SetupFirstOwner } from '@/application/identity/setup-first-owner';
 import type { NotificationService } from '@/application/notifications/notification-service';
+import type { SettingsRepository } from '@/application/ports/content';
 import type { AdminUserRepository } from '@/application/ports/identity';
+import type { ShippingMethodRepository } from '@/application/ports/ordering';
 import type { BotVerifier, Clock, Hasher, IdGenerator, RateLimiter } from '@/application/ports/platform';
 import { readSecret } from '@/infrastructure/cloudflare/env';
 import {
@@ -37,6 +39,8 @@ export interface IdentityDeps {
   botVerifier: BotVerifier;
   rateLimiter: RateLimiter;
   siteUrl: string;
+  shipping: ShippingMethodRepository;
+  settings: SettingsRepository;
 }
 
 /**
@@ -62,6 +66,8 @@ export function createIdentity(env: Env, deps: IdentityDeps): IdentityServices {
       ids,
       clock,
       setupToken: readSecret('SETUP_TOKEN'),
+      shipping: deps.shipping,
+      settings: deps.settings,
     }),
     login: new Login({ users: adminUsers, passwords, sessions, botVerifier, rateLimiter, clock }),
     requestPasswordReset: new RequestPasswordReset({

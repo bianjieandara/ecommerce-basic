@@ -32,6 +32,7 @@ export interface JobHandlerDeps {
   sendNotificationEmail: SendNotificationEmail;
   notifyWhatsapp: JobHandler;
   metaCapi: JobHandler;
+  ga4Purchase: JobHandler;
   expireStaleOrders: ExpireStaleOrders;
   issueInvoice: IssueInvoice;
   renderInvoicePdf: RenderInvoicePdf;
@@ -52,6 +53,7 @@ export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, 
   return {
     'notify.whatsapp': deps.notifyWhatsapp,
     'marketing.meta_capi': deps.metaCapi,
+    'marketing.ga4_purchase': deps.ga4Purchase,
     'maintenance.purge': async (payload) => {
       const input = maintenancePurgePayload.parse(payload);
       await deps.purgeOldRecords.execute(input.resolvedFailedJobsOlderThanDays);

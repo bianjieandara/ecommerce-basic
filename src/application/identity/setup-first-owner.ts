@@ -2,7 +2,11 @@
 // stranger who finds the setup page cannot take over the store.
 import { constantTimeEqual } from '@/domain/shared/constant-time';
 import { DomainError } from '@/domain/shared/errors';
+import { STARTER_PAYMENT_METHODS, STARTER_SHIPPING_METHODS } from '../content/defaults/starter-content';
+import { checkoutSettings } from '../content/settings-schemas';
+import type { SettingsRepository } from '../ports/content';
 import type { AdminUser, AdminUserRepository, PasswordHasher } from '../ports/identity';
+import type { ShippingMethodRepository } from '../ports/ordering';
 import type { Clock, IdGenerator } from '../ports/platform';
 import type { SessionService } from './sessions';
 import type { z } from 'zod';
@@ -17,6 +21,10 @@ export interface SetupFirstOwnerDeps {
   clock: Clock;
   /** The SETUP_TOKEN secret, or null when it is not configured (then setup is impossible). */
   setupToken: string | null;
+  /** Gets the starter shipping methods, so checkout works on a new store. */
+  shipping: ShippingMethodRepository;
+  /** Turns on the starter payment method. */
+  settings: SettingsRepository;
 }
 
 /** Creates the first owner. */
@@ -55,6 +63,25 @@ export class SetupFirstOwner {
     };
     await this.deps.users.create({ ...user, passwordHash: await this.deps.passwords.hash(input.password) });
     const token = await this.deps.sessions.create(user.id, client);
+    // The owner is committed, so a failed seed must not fail setup: the owner can add these in the admin.
+    try {
+      await this.deps.shipping.seedIfEmpty(STARTER_SHIPPING_METHODS);
+    } catch (error) {
+      console.error('setup.starter_shipping_failed', {
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+    try {
+      await this.deps.settings.save(
+        'checkout',
+        checkoutSettings.parse({ enabledMethods: [...STARTER_PAYMENT_METHODS] }),
+        now,
+      );
+    } catch (error) {
+      console.error('setup.starter_checkout_failed', {
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
     return { token, user };
   }
 }

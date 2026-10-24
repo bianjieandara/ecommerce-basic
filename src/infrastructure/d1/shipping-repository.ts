@@ -70,13 +70,18 @@ export class D1ShippingMethodRepository implements ShippingMethodRepository {
   }
 
   async seedIfEmpty(methods: ShippingMethodRecord[]): Promise<void> {
-    if (methods.length === 0) return;
-    // One statement per method, each guarded by the emptiness check, so the batch seeds only a table that has no rows.
+    const [counted] = await queryAll<{ total: number }>(
+      this.db,
+      'SELECT COUNT(*) AS total FROM shipping_methods',
+    );
+    if ((counted?.total ?? 0) > 0) return;
+    // Fixed ids and INSERT OR IGNORE: two setups that race can never write a method twice.
     await this.db.batch(
       methods.map((method) =>
         statement(
           this.db,
-          ,
+          `INSERT OR IGNORE INTO shipping_methods (id, kind, name_json, description_json, price_minor, free_over_minor, is_active, position)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             method.id,
             method.kind,

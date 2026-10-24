@@ -167,7 +167,10 @@ export const businessFieldDefinitions = {
     },
     ga4MeasurementId: {
       kind: 'text',
-      label: bilingual('ID de medición de Google Analytics 4 (G-…)', 'Google Analytics 4 measurement ID (G-…)'),
+      label: bilingual(
+        'ID de medición de Google Analytics 4 (G-…)',
+        'Google Analytics 4 measurement ID (G-…)',
+      ),
       max: 20,
     },
     feedEnabled: {

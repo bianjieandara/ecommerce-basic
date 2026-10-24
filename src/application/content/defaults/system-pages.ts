@@ -1,4 +1,4 @@
-// Default content for the system pages. Setup creates them once from these definitions; afterwards admins edit them.
+// Default content for the system pages. A page with no row shows these definitions until an admin saves it, which creates the row.
 import type { LocalizedText } from '@/domain/shared/localized-text';
 import type { SystemPageSlug } from '@/domain/content/page';
 import { LEGAL_PAGE_SECTIONS } from './legal-pages';

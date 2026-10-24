@@ -1,6 +1,7 @@
 // What the checkout form needs besides its markup: the translated labels, and the small browser helpers it calls.
 import type { PlacedOrder } from '@/application/ordering/place-order';
 import type { PaymentMethod } from '@/application/ports/payments';
+import { track } from '@/ui/lib/track';
 
 /** Labels of the checkout form. Translated on the server; error labels are keyed by error code. */
 export interface CheckoutLabels {
@@ -37,6 +38,25 @@ export interface CheckoutLabels {
   formError: string;
   methods: Record<PaymentMethod, string>;
   errors: Record<string, string>;
+}
+
+/**
+ * Reports that the shopper reached the checkout with a cart. Value and prices come from the browser's cart: this is analytics,
+ * and the order itself is priced by the server.
+ * @param lines Cart lines.
+ */
+export function trackBeginCheckout(
+  lines: { productId: string; variantId: string; quantity: number; unitPriceMinor: number }[],
+): void {
+  track('begin_checkout', {
+    items: lines.map((line) => ({
+      productId: line.productId,
+      variantId: line.variantId,
+      quantity: line.quantity,
+      priceMinor: line.unitPriceMinor,
+    })),
+    valueMinor: lines.reduce((sum, line) => sum + line.unitPriceMinor * line.quantity, 0),
+  });
 }
 
 /**

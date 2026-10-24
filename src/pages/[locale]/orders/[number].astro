@@ -9,6 +9,7 @@ import { PATHS } from '@/domain/shared/paths';
 import { pickNamespace, t } from '@/ui/i18n';
 import { renderMarkdown } from '@/ui/lib/markdown';
 import { orderEventLabel } from '@/ui/lib/order-event-label';
+import { purchaseAttribute } from '@/ui/lib/track-order';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { loadStoreContext } from '@/http/store-context';
 import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
@@ -37,6 +38,8 @@ const price = (amountMinor: number) => formatMoney(money(amountMinor, view.curre
 const checkoutMethods = pickNamespace(lang, 'checkout').methods;
 
 const pending = found?.order.status === 'pending_payment';
+// The browser reports the purchase from this attribute, only while the order is paid and recent (see ui/lib/track-order.ts).
+const purchase = found ? purchaseAttribute(found.order, Date.now()) : null;
 const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsappMessage} #${number}`) : '';
 ---
 
@@ -55,6 +58,7 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
 >
   {found ? (
     <article class="flex flex-col gap-8">
+      {purchase && <div hidden data-purchase={purchase} />}
       <header class="flex flex-col gap-2">
         <h1 class="text-2xl md:text-3xl">{title}</h1>
         <p class="text-sm">

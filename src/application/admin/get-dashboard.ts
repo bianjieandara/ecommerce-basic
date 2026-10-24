@@ -1,5 +1,6 @@
 // GetDashboard: the admin home. The two settings it needs are read once here and passed down, so the snapshot costs two settings reads.
-import type { DashboardQueries, DashboardSnapshot } from '../ports/dashboard';
+import { storeReadiness } from '@/domain/content/store-readiness';
+import type { DashboardQueries, DashboardView } from '../ports/dashboard';
 import type { SettingsRepository } from '../ports/content';
 import type { Clock } from '../ports/platform';
 
@@ -16,16 +17,26 @@ export class GetDashboard {
   constructor(private readonly deps: GetDashboardDeps) {}
 
   /** @returns Everything the dashboard shows, for the current moment. */
-  async execute(): Promise<DashboardSnapshot> {
-    const [general, inventory] = await Promise.all([
+  async execute(): Promise<DashboardView> {
+    const [general, inventory, checkout] = await Promise.all([
       this.deps.settings.get('general'),
       this.deps.settings.get('inventory'),
+      this.deps.settings.get('checkout'),
     ]);
-    return this.deps.queries.snapshot({
+    const { readinessCounts, ...snapshot } = await this.deps.queries.snapshot({
       nowIso: this.deps.clock.now().toISOString(),
       timeZone: general.timezone,
       currency: general.currency,
       defaultLowStockThreshold: inventory.defaultLowStockThreshold,
     });
+    return {
+      ...snapshot,
+      readiness: storeReadiness({
+        storeName: general.storeName,
+        hasLogo: general.logoMediaId !== null,
+        enabledPaymentMethods: checkout.enabledMethods.length,
+        ...readinessCounts,
+      }),
+    };
   }
 }

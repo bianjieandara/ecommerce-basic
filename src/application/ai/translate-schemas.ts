@@ -1,4 +1,5 @@
 // Input of the translate endpoint. The limit keeps one call small and cheap; the UI checks the same limit before it sends.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';
 

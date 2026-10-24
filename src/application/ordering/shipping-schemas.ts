@@ -1,5 +1,6 @@
 // Input of one shipping method as the admin saves it. Money is integer minor units; the kind-dependent price rule is applied by
 // ManageShipping, so a pickup can never be stored with a charge.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { SHIPPING_KINDS } from '@/domain/ordering/shipping';
 

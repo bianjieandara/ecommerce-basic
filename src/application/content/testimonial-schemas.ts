@@ -1,4 +1,5 @@
 // Input of one testimonial, as the admin list sends it. The same limits hold in the database and in the form.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';
 

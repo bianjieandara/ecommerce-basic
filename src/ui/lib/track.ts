@@ -11,6 +11,7 @@ import {
 import { CURRENCIES, isCurrencyCode, type CurrencyCode } from '@/domain/shared/currency';
 import { captureAttribution, syncFbcCookie } from './attribution';
 import { loadGa4, sendGa4Event } from './ga4';
+import { trackOrderPurchase } from './track-order';
 
 /** Window event the consent banner fires after a choice. This module enables the Pixel when it is a grant. */
 export const CONSENT_CHANGE_EVENT = 'consent:change';
@@ -42,6 +43,8 @@ export interface TrackData {
   items?: TrackedItem[];
   valueMinor?: number;
   orderId?: string;
+  /** Event id to use instead of a fresh one, when the server sends the same event (the purchase). */
+  eventId?: string;
 }
 
 /** The fbq function of Meta's Pixel, with the fields its base snippet sets. */
@@ -188,7 +191,7 @@ function sendToServer(name: TrackedEventName, eventId: string, occurredAt: strin
  */
 export function track(name: TrackedEventName, data: TrackData = {}): void {
   try {
-    const eventId = newEventId();
+    const eventId = data.eventId ?? newEventId();
     const occurredAt = new Date().toISOString();
     if (config && marketingGranted()) {
       enableTools();
@@ -212,12 +215,21 @@ export function track(name: TrackedEventName, data: TrackData = {}): void {
   }
 }
 
-/** Runs after the visitor chooses. A grant loads the tools now and sends the page view of this page. */
+/** Sends the purchase of the order page, when it has one and the tools may run. */
+function trackPagePurchase(): void {
+  trackOrderPurchase(
+    () => config !== null && marketingGranted(),
+    (data) => track('purchase', data),
+  );
+}
+
+/** Runs after the visitor chooses. A grant loads the tools now and sends the page view (and the purchase) of this page. */
 function onConsentChange(): void {
   if (!marketingGranted()) return;
   syncFbcCookie();
   enableTools();
   track('page_view');
+  trackPagePurchase();
 }
 
 /**
@@ -244,6 +256,7 @@ export function initTracking(): void {
     if (marketingGranted()) syncFbcCookie();
     window.addEventListener(CONSENT_CHANGE_EVENT, onConsentChange);
     track('page_view');
+    trackPagePurchase();
   } catch {
     // Tracking must never break the page.
   }

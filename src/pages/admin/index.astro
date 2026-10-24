@@ -86,6 +86,30 @@ const alertRows = alerts.map((alert) => ({
   href: alert.href,
   tone: alert.value > 0 ? ('alert' as const) : undefined,
 }));
+// The setup checklist: shown until every item is done. Each row links to the screen where the owner fixes it.
+const readinessLinks = {
+  storeName: `${ADMIN_PATHS.settings}/general`,
+  logo: `${ADMIN_PATHS.settings}/general`,
+  product: `${ADMIN_PATHS.products}/new`,
+  shipping: ADMIN_PATHS.shipping,
+  payment: `${ADMIN_PATHS.settings}/checkout`,
+  legalPages: ADMIN_PATHS.pages,
+} as const;
+const readinessLabels = {
+  storeName: t(lang, 'admin.dashboard.readinessStoreName'),
+  logo: t(lang, 'admin.dashboard.readinessLogo'),
+  product: t(lang, 'admin.dashboard.readinessProduct'),
+  shipping: t(lang, 'admin.dashboard.readinessShipping'),
+  payment: t(lang, 'admin.dashboard.readinessPayment'),
+  legalPages: t(lang, 'admin.dashboard.readinessLegalPages'),
+} as const;
+const readinessRows = snapshot.readiness.map((status) => ({
+  label: readinessLabels[status.item],
+  value: t(lang, status.done ? 'admin.dashboard.readinessDone' : 'admin.dashboard.readinessTodo'),
+  href: status.done ? undefined : readinessLinks[status.item],
+  tone: status.done ? undefined : ('alert' as const),
+}));
+const showReadiness = snapshot.readiness.some((status) => !status.done);
 const chartTitle = t(lang, 'admin.dashboard.chart');
 const chartPoints = snapshot.chart.map((day) => ({ label: day.day, value: day.revenueMinor }));
 ---
@@ -98,6 +122,12 @@ const chartPoints = snapshot.chart.map((day) => ({ label: day.day, value: day.re
 
   <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
     <div class="flex min-w-0 flex-col gap-6">
+      {showReadiness && (
+        <AdminCard title={t(lang, 'admin.dashboard.readinessTitle')}>
+          <p class="px-5 pt-3 text-sm text-text/70">{t(lang, 'admin.dashboard.readinessIntro')}</p>
+          <AdminStatList rows={readinessRows} />
+        </AdminCard>
+      )}
       <AdminCard title={chartTitle}>
         <LineChart title={chartTitle} points={chartPoints} format={price} width={760} />
       </AdminCard>

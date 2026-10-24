@@ -1,5 +1,6 @@
 // Admin identity inputs. Passwords are at least 12 characters: the store is run by people who can lose access, and short
 // passwords are the usual way in.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { ROLES } from '@/domain/identity/role';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';

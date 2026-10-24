@@ -34,7 +34,11 @@ import { readSecret } from '@/infrastructure/cloudflare/env';
 import { GooglePlacesReviews } from '@/infrastructure/google/places-reviews-provider';
 import { CloudflareJobQueue } from '@/infrastructure/queues/cloudflare-job-queue';
 import { KvCacheStore, KvPageCacheVersion } from '@/infrastructure/kv/kv-adapters';
-import { CloudflareEmailSender, ConsoleEmailSender } from '@/infrastructure/email/email-adapters';
+import {
+  CloudflareEmailSender,
+  ConsoleEmailSender,
+  OutboxEmailSender,
+} from '@/infrastructure/email/email-adapters';
 import { InvoiceAttachments } from '@/infrastructure/invoicing/invoice-attachments';
 import { CloudflareRateLimiter, TurnstileVerifier } from '@/infrastructure/security/security-adapters';
 import { CryptoIdGenerator, SystemClock, WebCryptoHasher } from '@/infrastructure/system/system-adapters';
@@ -49,6 +53,7 @@ import { createCatalogAdmin, createMediaLibrary } from './admin-catalog';
 import { createContentAdmin } from './admin-content';
 import { createInventory } from './inventory';
 import { createAdminOperations } from './admin-operations';
+import { createGa4PurchaseHandler } from './ga4';
 import { createIdentity } from './identity';
 import { createOrdering } from './ordering';
 import type { Container } from './container';
@@ -85,10 +90,13 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   const siteUrl = env.PUBLIC_SITE_URL;
 
   // EMAIL_TRANSPORT=console (set in .dev.vars for local work) logs each email instead of sending it.
+  // EMAIL_TRANSPORT=outbox (the public demo) keeps each message in storage instead of sending it; see OutboxEmailSender.
   const email: EmailSender =
-    env.EMAIL && env.EMAIL_TRANSPORT !== 'console'
-      ? new CloudflareEmailSender(env.EMAIL, env.EMAIL_FROM)
-      : new ConsoleEmailSender();
+    env.EMAIL_TRANSPORT === 'outbox'
+      ? new OutboxEmailSender(media, () => ids.newId())
+      : env.EMAIL && env.EMAIL_TRANSPORT !== 'console'
+        ? new CloudflareEmailSender(env.EMAIL, env.EMAIL_FROM)
+        : new ConsoleEmailSender();
   const notifications = new NotificationService({
     settings,
     logs: notificationLog,
@@ -124,6 +132,8 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     botVerifier,
     rateLimiter,
     siteUrl,
+    shipping: new D1ShippingMethodRepository(env.DB),
+    settings,
   });
 
   const inventory = createInventory(env, {
@@ -183,6 +193,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     sendNotificationEmail,
     notifyWhatsapp: whatsapp.notifyWhatsapp,
     metaCapi,
+    ga4Purchase: createGa4PurchaseHandler({ settings, log: logEvent }),
     expireStaleOrders: orderingServices.expireStaleOrders,
     issueInvoice: orderingServices.issueInvoice,
     renderInvoicePdf,

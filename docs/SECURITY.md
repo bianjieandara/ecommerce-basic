@@ -4,35 +4,45 @@ What protects the store, where the code is, and a checklist to run before every 
 
 ## Threats and what answers them
 
-| Threat                                  | Answer                                                                                                                                                                                                                                                             |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Bots posting forms, credential stuffing | Per-IP rate limit (`rateLimit` in `defineEndpoint`, Workers rate-limit bindings `RL_AUTH` 5/60 s, `RL_FORMS` 10/60 s, `RL_API` 60/10 s) before the body is read, then a Turnstile check in the use case.                                                           |
-| Admin takeover                          | Session cookie `HttpOnly; SameSite=Lax; Secure` (https), session checked in `src/middleware.ts` for every `/admin` page and `/api/admin` endpoint, roles checked in the use cases, password hashing and login attempt limits in `application/identity`.            |
-| Cross-site request forgery              | `SameSite=Lax` plus Astro `security.checkOrigin` (form-type posts from another origin answer 403); JSON bodies cannot be sent cross-site without a CORS preflight, which the Worker never allows.                                                                  |
-| Clickjacking                            | `frame-ancestors 'none'` and `X-Frame-Options: DENY` on every response.                                                                                                                                                                                            |
-| Forged payment notifications            | Webhooks verify the signature on the raw body (dLocal Go HMAC; PayPal through its verify API), then read the payment from the provider's API; `ConfirmPayment` ignores repeats.                                                                                    |
-| Guessing someone's order or invoice     | Order and invoice URLs need the access key (256 bits). The key is stored as a hash and compared in constant time (`domain/shared/constant-time.ts`).                                                                                                               |
-| Injection                               | Every query is parameterized; lists go in as one JSON parameter. Astro escapes output; Markdown renders through micromark with raw HTML and unsafe links disabled; theme CSS only takes validated hex colours and fixed font and radius maps; JSON-LD escapes `<`. |
-| Spreadsheet formula injection           | `toCsv` prefixes a cell that starts with `=`, `+`, `-` or `@` (`application/documents/csv.ts`).                                                                                                                                                                    |
-| Oversized requests                      | JSON 64 KB, forms and uploads 11 MB (a 10 MB image plus fields), CSV import 2 MB. The limit is enforced on the bytes received, not on the `Content-Length` header.                                                                                                 |
-| Secrets in the repository               | Secrets live in `.dev.vars` (ignored) and Cloudflare secrets; `.dev.vars.example` holds names only.                                                                                                                                                                |
+| Threat                                  | Answer                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bots posting forms, credential stuffing | Per-IP rate limit (`rateLimit` in `defineEndpoint`, Workers rate-limit bindings `RL_AUTH` 5/60 s, `RL_FORMS` 10/60 s, `RL_API` 60/10 s) before the body is read, then a Turnstile check in the use case.                                                                                                                                        |
+| Admin takeover                          | Session cookie `HttpOnly; SameSite=Lax; Secure` (https), session checked in `src/middleware.ts` for every `/admin` page and `/api/admin` endpoint, roles checked in the use cases, password hashing and login attempt limits in `application/identity`.                                                                                         |
+| Cross-site request forgery              | `SameSite=Lax` plus Astro `security.checkOrigin` (form-type posts from another origin answer 403); JSON bodies cannot be sent cross-site without a CORS preflight, which the Worker never allows.                                                                                                                                               |
+| Clickjacking                            | `frame-ancestors 'none'` and `X-Frame-Options: DENY` on every response.                                                                                                                                                                                                                                                                         |
+| Forged payment notifications            | Webhooks verify the signature on the raw body (dLocal Go HMAC; PayPal through its verify API), then read the payment from the provider's API; `ConfirmPayment` ignores repeats.                                                                                                                                                                 |
+| Guessing someone's order or invoice     | Order and invoice URLs need the access key (256 bits). The key is stored as a hash and compared in constant time (`domain/shared/constant-time.ts`).                                                                                                                                                                                            |
+| Injection                               | Every query is parameterized; lists go in as one JSON parameter. Astro escapes output; Markdown renders through micromark with raw HTML and unsafe links disabled; theme CSS only takes validated hex colours and fixed font and radius maps; JSON-LD escapes `<`, `>`, `&` and the two line separators as unicode escapes (`serializeJsonLd`). |
+| Script injected through stored text     | `script-src` (Astro's `security.csp`): only the page's own bundles, inline scripts Astro hashed at build time, and Turnstile and Cloudflare Web Analytics run. Inline event handlers (`onclick=`) are refused, so use a listener in a script.                                                                                                   |
+| An editor taking over an owner          | Every use case that changes the catalog, media or stock checks the role first (`assertCan`), as the users, settings and refund use cases do. A new role gets no permission it was not given.                                                                                                                                                    |
+| Spreadsheet formula injection           | `toCsv` prefixes a cell that starts with `=`, `+`, `-` or `@` (`application/documents/csv.ts`).                                                                                                                                                                                                                                                 |
+| Oversized requests                      | JSON 64 KB, forms and uploads 11 MB (a 10 MB image plus fields), CSV import 2 MB. The limit is enforced on the bytes received, not on the `Content-Length` header.                                                                                                                                                                              |
+| Secrets in the repository               | Secrets live in `.dev.vars` (ignored) and Cloudflare secrets; `.dev.vars.example` holds names only.                                                                                                                                                                                                                                             |
 
 ## Response headers
 
 Set for every Worker response by `src/http/security-headers.ts` (called from the middleware) and, for static files that
 never reach the Worker, by `public/_headers`. Keep the two in sync.
 
-| Header                      | Value                                                                                    |
-| --------------------------- | ---------------------------------------------------------------------------------------- |
-| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains`, only over https                                   |
-| `X-Content-Type-Options`    | `nosniff`                                                                                |
-| `Referrer-Policy`           | `strict-origin-when-cross-origin`                                                        |
-| `Permissions-Policy`        | `camera=(self), microphone=(), geolocation=()` (camera is for the admin barcode scanner) |
-| `Content-Security-Policy`   | `frame-ancestors 'none'; base-uri 'self'; object-src 'none'`                             |
-| `X-Frame-Options`           | `DENY`                                                                                   |
+| Header                      | Value                                                                                                                |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains`, only over https                                                               |
+| `X-Content-Type-Options`    | `nosniff`                                                                                                            |
+| `Referrer-Policy`           | `strict-origin-when-cross-origin`                                                                                    |
+| `Permissions-Policy`        | `camera=(self), microphone=(), geolocation=()` (camera is for the admin barcode scanner)                             |
+| `Content-Security-Policy`   | Astro's `script-src` and `style-src` for the page, then `frame-ancestors 'none'; base-uri 'self'; object-src 'none'` |
+| `X-Frame-Options`           | `DENY`                                                                                                               |
 
-There is no `script-src` yet. A script policy has to allow Turnstile, Cloudflare Web Analytics and Astro's inline
-scripts (nonces or hashes), so it is a separate decision, recorded in `DECISIONS.md`.
+The invoice preview (`/api/admin/invoices/<id>/document`) is the one exception: the admin page frames it, so it gets
+`SAMEORIGIN` and `frame-ancestors 'self'`, plus `script-src 'none'`. Nothing else may be framed.
+
+`withSecurityHeaders` joins the policy a page already carries with ours; it never replaces it, because that would silently drop
+Astro's script hashes. Static files that never reach the Worker only get the second part from `public/_headers`.
+
+`script-src` allows `'self'`, `challenges.cloudflare.com` (Turnstile), `static.cloudflareinsights.com` (Web Analytics) and the
+hashes Astro adds at build time. `style-src` keeps `'unsafe-inline'`: components set `style` attributes, and injected CSS is not
+a script risk. A new third-party script needs its host in `astro.config.mjs` (`security.csp.scriptDirective.resources`). Zod's
+compiled validators are off (`src/application/zod-config.ts`), because they probe with `new Function`, which the policy reports.
 
 ## Endpoint checklist
 
@@ -50,20 +60,20 @@ Run through it for every new route.
 
 ### Current endpoints
 
-| Endpoint                                                                    | Guard                                                                    |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `POST /api/checkout`                                                        | rate limit `forms`, Turnstile                                            |
-| `POST /api/stock-subscriptions`                                             | rate limit `forms`, Turnstile                                            |
-| `POST /api/cart/quote`, `GET /api/catalog/count`, `GET /api/search/suggest` | rate limit `api`                                                         |
-| `GET /api/health`                                                           | none; answers only `ok` and whether D1 responds                          |
-| `GET /api/orders/[number]/invoice.pdf`                                      | access key, constant-time compare                                        |
-| `POST /api/webhooks/dlocalgo`, `/api/webhooks/paypal`                       | signature on the raw body, then provider lookup                          |
-| `POST /api/admin/login`                                                     | rate limit `auth` (scope `login`), Turnstile, attempt limit              |
-| `POST /api/admin/password/forgot`                                           | rate limit `auth` (scope `forgot`), Turnstile, same answer for any email |
-| `POST /api/admin/password/reset`                                            | rate limit `auth` (scope `reset`), single-use token                      |
-| `POST /api/admin/setup`                                                     | rate limit `auth` (scope `setup`), setup token (constant-time)           |
-| `POST /api/admin/logout`                                                    | open on purpose, so a stale cookie can be cleared                        |
-| every other `/api/admin/**`                                                 | admin session in the middleware, role in the use case                    |
+| Endpoint                                                                    | Guard                                                                                                                                                                                    |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/checkout`                                                        | rate limit `forms`, Turnstile                                                                                                                                                            |
+| `POST /api/stock-subscriptions`                                             | rate limit `forms`, Turnstile                                                                                                                                                            |
+| `POST /api/cart/quote`, `GET /api/catalog/count`, `GET /api/search/suggest` | rate limit `api`                                                                                                                                                                         |
+| `GET /api/health`                                                           | none; answers only `ok` and whether D1 responds                                                                                                                                          |
+| `GET /api/orders/[number]/invoice.pdf`                                      | access key, constant-time compare                                                                                                                                                        |
+| `POST /api/webhooks/dlocalgo`, `/paypal`, `GET`/`POST /whatsapp`            | rate limit `api` per provider and a 128 KB body cap (`readWebhookBody`), then the signature on the raw body, then provider lookup; PayPal's headers are checked before its API is called |
+| `POST /api/admin/login`                                                     | rate limit `auth` (scope `login`), Turnstile, attempt limit                                                                                                                              |
+| `POST /api/admin/password/forgot`                                           | rate limit `auth` (scope `forgot`), Turnstile, same answer for any email                                                                                                                 |
+| `POST /api/admin/password/reset`                                            | rate limit `auth` (scope `reset`), single-use token                                                                                                                                      |
+| `POST /api/admin/setup`                                                     | rate limit `auth` (scope `setup`), setup token (constant-time)                                                                                                                           |
+| `POST /api/admin/logout`                                                    | open on purpose, so a stale cookie can be cleared                                                                                                                                        |
+| every other `/api/admin/**`                                                 | admin session in the middleware, role in the use case                                                                                                                                    |
 
 ## Logs
 

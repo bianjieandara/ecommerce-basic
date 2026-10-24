@@ -1,5 +1,6 @@
 // Input of the email editor endpoints, and the lookup of an email key from a URL. Length limits come from the template engine,
 // so the editor and the use case agree on how long a subject or a body may be.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { DomainError } from '@/domain/shared/errors';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';

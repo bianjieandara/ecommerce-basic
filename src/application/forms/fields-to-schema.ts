@@ -1,5 +1,6 @@
 // Builds zod validation schemas from field descriptors. The same schema validates admin forms on the client
 // (for error messages) and on the server (for safety), so the rules can never drift apart.
+import '@/application/zod-config';
 import { z } from 'zod';
 import type { Locale } from '@/domain/shared/locale';
 import { isSafeHref } from '@/domain/shared/validators';

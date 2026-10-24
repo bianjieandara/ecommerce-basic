@@ -1,5 +1,6 @@
 // Input of POST /api/events. A batch holds at most ten browser events; each one is checked before anything is recorded,
 // so a refused batch changes nothing.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { BROWSER_EVENT_NAMES, localeOfPath } from '@/domain/analytics/tracked-events';
 

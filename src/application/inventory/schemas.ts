@@ -1,5 +1,6 @@
 // Inventory inputs: manual adjustments, the back-in-stock subscription, the scanner lookup and the CSV import. The admin
 // screens and the endpoints validate with these same schemas.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { MANUAL_STOCK_REASONS, MAX_ADJUST_ITEMS } from '@/domain/inventory/stock';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';

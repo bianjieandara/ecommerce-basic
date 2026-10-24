@@ -1,5 +1,6 @@
 // Input of the page builder: the page's texts, its publication and its sections. A section's settings are checked against its
 // widget's fields by the use case, because every widget has its own fields.
+import '@/application/zod-config';
 import { z } from 'zod';
 
 /** Text in both languages, as the page builder sends it. */

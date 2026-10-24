@@ -24,11 +24,11 @@ export function placeOrderStatements(db: D1Database, draft: NewOrder): Placement
       db,
       `INSERT INTO orders (id, number, access_key_hash, status, payment_method, payment_reference, currency, locale,
            prices_include_tax, subtotal_minor, tax_minor, shipping_minor, total_minor, customer_name, customer_email,
-           customer_phone, whatsapp_opt_in, marketing_consent, billing_json, shipping_method_id, shipping_method_name,
-           shipping_address_json, customer_note, tracking_code, attribution_json, stock_released, expires_at, paid_at,
-           created_at, updated_at)
+           customer_phone, whatsapp_opt_in, marketing_consent, ga_client_id, ga_session_id, billing_json,
+           shipping_method_id, shipping_method_name, shipping_address_json, customer_note, tracking_code, attribution_json,
+           stock_released, expires_at, paid_at, created_at, updated_at)
          VALUES (?, (SELECT last_number FROM order_counter WHERE id = 1), ?, 'pending_payment', ?, NULL, ?, ?, ?, ?, ?,
-           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, 0, ?, NULL, ?, ?)`,
+           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, 0, ?, NULL, ?, ?)`,
       [
         draft.id,
         draft.accessKeyHash,
@@ -45,6 +45,8 @@ export function placeOrderStatements(db: D1Database, draft: NewOrder): Placement
         draft.customer.phone,
         boolToInt(draft.customer.whatsappOptIn),
         boolToInt(draft.marketingConsent),
+        draft.gaClientId,
+        draft.gaSessionId,
         JSON.stringify(draft.billing),
         draft.shippingMethodId,
         draft.shippingMethodName,

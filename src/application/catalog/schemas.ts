@@ -1,5 +1,6 @@
 // Admin catalog inputs. The product editor validates with these same schemas before it posts, and the endpoints validate
 // again, so the two can never disagree about what a valid product is.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { MAX_ATTRIBUTES_PER_PRODUCT, MAX_VARIANTS_PER_PRODUCT } from '@/domain/catalog/product';
 

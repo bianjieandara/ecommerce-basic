@@ -69,7 +69,7 @@ export class ManageShipping {
 }
 
 /**
- * Refuses the change unless the actor may edit content.
+ * Refuses the change unless the actor may change shipping prices (owners only).
  * @param actor The signed-in admin.
  * @throws DomainError FORBIDDEN
  */

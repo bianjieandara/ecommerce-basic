@@ -2,8 +2,10 @@
 // (a fresh store) still parses and the store works. Stored values are always validated before use.
 // The maxima match the form definitions in settings-fields-store.ts and settings-fields-business.ts, so the server refuses
 // what the form would refuse.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { GA4_MEASUREMENT_ID } from '@/domain/consent/consent';
+import { DEFAULT_STORE_NAME } from '@/domain/content/store-defaults';
 import { CURRENCY_CODES } from '@/domain/shared/currency';
 import { isHttpsUrl, isKnownCountry, isValidTimeZone } from '@/domain/shared/validators';
 import { PAYMENT_METHODS } from '../ports/payments';
@@ -38,7 +40,7 @@ const socialLink = z
 
 /** General store identity: name, logos, languages, currency and time zone. */
 export const generalSettings = z.object({
-  storeName: z.string().min(1).max(120).default('My Store'),
+  storeName: z.string().min(1).max(120).default(DEFAULT_STORE_NAME),
   logoMediaId: z.uuid().nullable().default(null),
   faviconMediaId: z.uuid().nullable().default(null),
   defaultLocale: z.enum(['es', 'en']).default('es'),

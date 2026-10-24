@@ -15,7 +15,8 @@ if (!admin) return Astro.redirect(ADMIN_PATHS.login);
 const lang = admin.locale;
 const app = Astro.locals.app;
 const store = await loadStoreContext(app);
-const canEdit = can(admin.role, 'content.edit');
+// Shipping prices move money, so only owners edit them. The use case checks the same permission (manage-shipping.ts).
+const canEdit = can(admin.role, 'settings.manage');
 const methods = canEdit ? await app.shipping.listAll() : [];
 const exponent = CURRENCIES[store.general.currency].exponent;
 const nextPosition = Math.min(999, methods.reduce((max, method) => Math.max(max, method.position), -1) + 1);

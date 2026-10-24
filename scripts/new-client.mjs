@@ -112,6 +112,7 @@ export function buildClientConfig({ slug, accountId, d1Id, kvId, rateLimitNamesp
       EMAIL_FROM: 'Store <orders@example.com>',
       PAYPAL_ENV: 'sandbox',
       DLOCALGO_ENV: 'sandbox',
+      // Cloudflare's test key, only a placeholder: deploy-client refuses it until the store has a widget of its own.
       TURNSTILE_SITE_KEY: '1x00000000000000000000AA',
       PUBLIC_MEDIA_BASE_URL: '',
       WHATSAPP_PHONE_NUMBER_ID: '',

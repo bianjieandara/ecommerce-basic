@@ -1,5 +1,6 @@
 // PlaceOrder: checks the cart on the server, stores the order, starts the chosen payment and queues the emails.
 // The order is stored before the provider is called, so a payment never refers to an order that does not exist.
+import type { GaIdentity } from '@/domain/analytics/ga-identity';
 import { DomainError } from '@/domain/shared/errors';
 import { PATHS, withQuery } from '@/domain/shared/paths';
 import type { Order, OrderSummary } from '../dto/order-dto';
@@ -37,13 +38,13 @@ export class PlaceOrder {
   /**
    * Places an order.
    * @param input Parsed checkout request.
-   * @param client Client IP, used by the bot check.
+   * @param client Client IP (bot check), marketing consent from the buyer's cookie, and their GA4 identity.
    * @returns The order number, the payment step and the order page.
    * @throws DomainError with the code of the first problem found.
    */
   async execute(
     input: PlaceOrderInput,
-    client: { ip: string | null; marketingConsent: boolean },
+    client: { ip: string | null; marketingConsent: boolean; ga: GaIdentity | null },
   ): Promise<PlacedOrder> {
     if (!(await this.deps.botVerifier.verify(input.turnstileToken, client.ip))) {
       throw new DomainError('BOT_CHECK_FAILED', 'The security check failed');
@@ -55,6 +56,8 @@ export class PlaceOrder {
       this.deps.settings.get('contact'),
       this.deps.settings.get('catalog'),
     ]);
+    // The GA4 identity is personal data: it is kept only for a buyer who granted marketing.
+    const ga = client.marketingConsent ? client.ga : null;
     const gatewaySettings = { checkout, contact, country: general.country };
     const paymentMethods = availablePaymentMethods(this.deps.gateways, gatewaySettings, general.currency);
     if (!paymentMethods.includes(input.paymentMethod)) {
@@ -131,6 +134,8 @@ export class PlaceOrder {
       attribution: input.attribution,
       billing: billingRecord(input.billing),
       marketingConsent: client.marketingConsent,
+      gaClientId: ga?.clientId ?? null,
+      gaSessionId: ga?.sessionId ?? null,
       expiresAt,
       createdAt: nowIso,
       items,
@@ -189,6 +194,8 @@ export class PlaceOrder {
       id,
       number: placed.number,
       marketingConsent: client.marketingConsent,
+      gaClientId: ga?.clientId ?? null,
+      gaSessionId: ga?.sessionId ?? null,
       status: 'pending_payment',
       paymentMethod: input.paymentMethod,
       paymentReference: initiation.kind === 'redirect' ? (initiation.providerReference ?? null) : null,

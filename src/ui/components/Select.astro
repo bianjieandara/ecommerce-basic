@@ -11,7 +11,7 @@ interface Props {
   required?: boolean;
   disabled?: boolean;
   describedBy?: string;
-  /** Submits the form when the choice changes. Done by the script below, because a page policy refuses inline handlers. */
+  /** Submits the form when the choice changes. Done by `initSelects` (ui/scripts/select.ts), because a page policy refuses inline handlers. */
   submitOnChange?: boolean;
   class?: string;
 }
@@ -50,9 +50,3 @@ const shapes = {
     class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 opacity-70"
   />
 </div>
-
-<script>
-  document.querySelectorAll<HTMLSelectElement>('select[data-submit-on-change]').forEach((select) => {
-    select.addEventListener('change', () => select.form?.requestSubmit());
-  });
-</script>

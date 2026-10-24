@@ -24,6 +24,16 @@ export const BROWSER_EVENT_NAMES = ['view_item', 'add_to_cart', 'begin_checkout'
 export type BrowserEventName = (typeof BROWSER_EVENT_NAMES)[number];
 
 /**
+ * Id of the Purchase event of an order. The server (Meta Conversions API, GA4) and the order page in the browser send the
+ * same id, so each platform counts the purchase once.
+ * @param orderId Order id.
+ * @returns The event id.
+ */
+export function purchaseEventId(orderId: string): string {
+  return `purchase-${orderId}`;
+}
+
+/**
  * Reads the language from a storefront path: "/es/products/x" gives "es". Admin, API and feed paths carry no
  * language prefix, so they give null and are never recorded as storefront events.
  * @param path URL path, starting with "/".

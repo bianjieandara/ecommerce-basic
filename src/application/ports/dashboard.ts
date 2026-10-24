@@ -1,6 +1,7 @@
 // Dashboard reads: one snapshot of the numbers the admin home shows. Read-only, so it needs no use case of its own.
 import type { CurrencyCode } from '@/domain/shared/currency';
 import type { OrderStatus } from '@/domain/ordering/order-status';
+import type { ReadinessStatus } from '@/domain/content/store-readiness';
 
 /** Sales over one period. Revenue counts orders that were paid and are not refunded or cancelled. */
 export interface PeriodKpis {
@@ -53,6 +54,20 @@ export interface DashboardSnapshot {
   recentOrders: RecentOrder[];
   /** The last 14 store-local days, oldest first. Days without sales are present with zeros. */
   chart: DashboardDay[];
+  /** Counts the setup checklist needs (see store-readiness.ts). */
+  readinessCounts: ReadinessCounts;
+}
+
+/** The database counts behind the setup checklist. */
+export interface ReadinessCounts {
+  activeProducts: number;
+  activeShippingMethods: number;
+  legalPagesSaved: number;
+}
+
+/** The dashboard as the page shows it: the snapshot plus the checklist, which also needs the store settings. */
+export interface DashboardView extends Omit<DashboardSnapshot, 'readinessCounts'> {
+  readiness: ReadinessStatus[];
 }
 
 /** Inputs the snapshot needs. Settings are read by the caller, once. */

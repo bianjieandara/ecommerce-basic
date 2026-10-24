@@ -7,7 +7,13 @@
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { buildClientConfig } from '../new-client.mjs';
-import { allocateRateLimitBase, listClientSlugs, readClient, ROOT } from '../lib/clients.mjs';
+import {
+  allocateRateLimitBase,
+  assertRealTurnstileKey,
+  listClientSlugs,
+  readClient,
+  ROOT,
+} from '../lib/clients.mjs';
 import { buildWranglerConfig } from '../use-client.mjs';
 
 const SLUG = 'zz-test-client';
@@ -48,9 +54,34 @@ try {
     kvId: '00000000000000000000000000000002',
     rateLimitNamespaceBase: allocateRateLimitBase(),
   });
+  // A fresh client carries Cloudflare's test Turnstile key, which deploy refuses (checked below). This one stands for a store
+  // that has its own widget, so the dry run of every client can pass.
+  const templateKey = config.vars.TURNSTILE_SITE_KEY;
+  config.vars.TURNSTILE_SITE_KEY = '0x4AAAAAAAtestStoreSiteKey';
   mkdirSync(`${dir}/extensions`, { recursive: true });
   writeFileSync(`${dir}/client.jsonc`, JSON.stringify(config, null, 2) + '\n');
   copyFileSync(`${ROOT}/clients/_default/extensions/index.ts`, `${dir}/extensions/index.ts`);
+  const refuses = (client) => {
+    try {
+      assertRealTurnstileKey(client);
+      return false;
+    } catch {
+      return true;
+    }
+  };
+  check(
+    'deploy refuses the template Turnstile test key',
+    refuses({ ...config, vars: { ...config.vars, TURNSTILE_SITE_KEY: templateKey } }),
+  );
+  check(
+    'a client may opt in to the test key (the public demo does)',
+    !refuses({
+      ...config,
+      allowTestTurnstile: true,
+      vars: { ...config.vars, TURNSTILE_SITE_KEY: templateKey },
+    }),
+  );
+  check('a real site key passes', !refuses(config));
   check(
     'the new client is found and valid',
     listClientSlugs().includes(SLUG) && readClient(SLUG).slug === SLUG,

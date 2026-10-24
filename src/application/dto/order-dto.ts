@@ -57,6 +57,9 @@ export interface Order {
   billing?: Record<string, string>;
   /** Whether the buyer agreed to marketing when ordering. Purchase events are sent to Meta only when this is true. */
   marketingConsent: boolean;
+  /** GA4 visitor and session ids, stored only with marketing consent. The GA4 purchase needs the client id. */
+  gaClientId: string | null;
+  gaSessionId: string | null;
   createdAt: string;
   updatedAt: string;
 }

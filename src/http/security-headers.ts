@@ -5,12 +5,15 @@
 /** Seconds HSTS is remembered: one year. */
 const HSTS_MAX_AGE = 31_536_000;
 
+/** The header that carries the Content-Security-Policy. */
+const POLICY_HEADER = 'Content-Security-Policy';
+
 /** Headers every response gets. */
 const STATIC_HEADERS: Record<string, string> = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(self), microphone=(), geolocation=()',
-  'Content-Security-Policy': "frame-ancestors 'none'; base-uri 'self'; object-src 'none'",
+  [POLICY_HEADER]: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'",
   // The CSP above covers modern browsers; this is the same rule for old ones.
   'X-Frame-Options': 'DENY',
 };
@@ -23,12 +26,13 @@ const ADMIN_FRAMED_DOCUMENT = /^\/api\/admin\/invoices\/[^/]+\/document$/;
  * Replaces the framing and policy headers of every other response, which forbid all framing.
  */
 const FRAMED_DOCUMENT_HEADERS: Record<string, string> = {
-  'Content-Security-Policy': "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; script-src 'none'",
+  [POLICY_HEADER]: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; script-src 'none'",
   'X-Frame-Options': 'SAMEORIGIN',
 };
 
 /**
- * Sets the security headers on a response. HSTS is sent only over HTTPS, where browsers honor it.
+ * Sets the security headers on a response. HSTS is sent only over HTTPS, where browsers honor it. A page already carries the
+ * script and style policy Astro built for it (hashes of its own scripts); ours is added to that policy, never put in its place.
  * @param response Response to decorate. A response whose headers are frozen (a redirect built by the platform) is copied.
  * @param url Request URL, for its protocol and for the one document that may be framed by the admin.
  * @returns The decorated response.
@@ -38,6 +42,9 @@ export function withSecurityHeaders(response: Response, url: URL): Response {
     ...STATIC_HEADERS,
     ...(ADMIN_FRAMED_DOCUMENT.test(url.pathname) ? FRAMED_DOCUMENT_HEADERS : {}),
   };
+  const pagePolicy = response.headers.get(POLICY_HEADER);
+  // Astro ends its policy with "; ", so the trailing separators go before the two are joined.
+  if (pagePolicy) headers[POLICY_HEADER] = `${pagePolicy.replace(/[;\s]+$/, '')}; ${headers[POLICY_HEADER]}`;
   if (url.protocol === 'https:')
     headers['Strict-Transport-Security'] = `max-age=${HSTS_MAX_AGE}; includeSubDomains`;
   try {

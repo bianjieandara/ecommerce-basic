@@ -9,6 +9,7 @@ export type JobType =
   | 'invoice.render_pdf'
   | 'invoice.legal_issue'
   | 'marketing.meta_capi'
+  | 'marketing.ga4_purchase'
   | 'inventory.low_stock_alert'
   | 'inventory.back_in_stock'
   | 'orders.expire_stale'

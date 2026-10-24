@@ -26,6 +26,9 @@ export interface NewOrder {
   billing: Record<string, string>;
   /** Whether the buyer agreed to marketing at checkout (from the consent cookie). */
   marketingConsent: boolean;
+  /** GA4 ids from the buyer's cookies. Null without marketing consent. */
+  gaClientId: string | null;
+  gaSessionId: string | null;
   expiresAt: string | null;
   createdAt: string;
   items: OrderItem[];

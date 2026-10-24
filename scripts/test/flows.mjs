@@ -205,6 +205,9 @@ try {
   await js(`document.querySelector('main [name="shipping"][value="ship-pickup"]')?.click()`);
   await wait(600);
   check('the summary total changes with the shipping method', (await text('main')) !== totalWithShipping);
+  // The legal checkbox is required: a shopper ticks it before placing the order.
+  await js(`document.querySelector('main [name="acceptedLegal"]')?.click()`);
+  await wait(200);
   await clickText('main button', /place order/i);
   const reachedOrder = await until("location.pathname.startsWith('/en/orders/')", 15000);
   check('a valid checkout creates the order and opens its page', reachedOrder, await path());
@@ -316,6 +319,8 @@ try {
     );
     if (hasForm) {
       await browser.type('main input[type=email]', EMAIL);
+      await js(`document.querySelector('main [name="acceptedLegal"]')?.click()`);
+      await wait(200);
       await clickText('main button', /(notify|alert|tell me|avís)/i);
       await wait(2500);
       check(

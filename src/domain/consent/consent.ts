@@ -1,6 +1,8 @@
 // Cookie consent model. The visitor's marketing choice lives in one readable cookie (v1.m1 granted, v1.m0 refused) shared by
 // the server, the banner and the tests. Pure rules only: nothing here reads or writes a cookie itself.
 
+import { readCookie } from '../shared/cookies';
+
 /** Cookie that stores the consent choice. The server reads it, so it can decide whether marketing events may be sent. */
 export const CONSENT_COOKIE_NAME = 'consent';
 
@@ -105,12 +107,7 @@ export function bannerRequired(
  * @returns The raw value of the consent cookie, or null when it is absent.
  */
 export function consentCookieValue(cookieHeader: string | null): string | null {
-  if (!cookieHeader) return null;
-  for (const part of cookieHeader.split(';')) {
-    const eq = part.indexOf('=');
-    if (eq !== -1 && part.slice(0, eq).trim() === CONSENT_COOKIE_NAME) return part.slice(eq + 1).trim();
-  }
-  return null;
+  return readCookie(cookieHeader, CONSENT_COOKIE_NAME);
 }
 
 /**

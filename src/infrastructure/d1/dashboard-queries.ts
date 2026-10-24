@@ -8,6 +8,7 @@ import type {
   PeriodKpis,
   TopProduct,
 } from '@/application/ports/dashboard';
+import { LEGAL_PAGE_SLUGS } from '@/domain/content/page';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import { PAID_OR_LATER, type OrderStatus } from '@/domain/ordering/order-status';
 import { dayStartUtc } from '@/domain/shared/day-bounds';
@@ -26,12 +27,12 @@ const TOP_PRODUCTS = 5;
 const RECENT_ORDERS = 6;
 
 /**
- * Placeholders and binds for a list of statuses, for an IN (...) condition.
- * @param statuses Statuses to match.
+ * Placeholders and binds for a list of values, for an IN (...) condition.
+ * @param values Values to match (order statuses, page slugs).
  * @returns The placeholders and the values to bind.
  */
-function inList(statuses: readonly OrderStatus[]): { sql: string; binds: SqlValue[] } {
-  return { sql: `(${statuses.map(() => '?').join(', ')})`, binds: [...statuses] };
+function inList<T extends string>(values: readonly T[]): { sql: string; binds: SqlValue[] } {
+  return { sql: `(${values.map(() => '?').join(', ')})`, binds: [...values] };
 }
 
 /**
@@ -80,6 +81,7 @@ export class D1DashboardQueries implements DashboardQueries {
     const toProcess = inList(TO_PROCESS);
     const chartStart = dayStartUtc(addDays(today, -(CHART_DAYS - 1)), timeZone);
     const offset = `${offsetMinutes(nowIso, timeZone)} minutes`;
+    const legal = inList(LEGAL_PAGE_SLUGS);
 
     const results = await this.db.batch([
       // Orders placed, per period: statements 0 to 2.
@@ -139,6 +141,10 @@ export class D1DashboardQueries implements DashboardQueries {
          FROM orders ORDER BY created_at DESC, id DESC LIMIT ?`,
         [RECENT_ORDERS],
       ),
+      // Setup checklist counts: statements 13 to 15. They go last so the statements above keep their positions.
+      statement(this.db, "SELECT COUNT(*) AS n FROM products WHERE status = 'active'"),
+      statement(this.db, 'SELECT COUNT(*) AS n FROM shipping_methods WHERE is_active = 1'),
+      statement(this.db, `SELECT COUNT(*) AS n FROM pages WHERE slug IN ${legal.sql}`, legal.binds),
     ]);
 
     const placed = (index: number) => rowsAt<{ n: number }>(results, index)[0]?.n ?? 0;
@@ -196,6 +202,11 @@ export class D1DashboardQueries implements DashboardQueries {
         createdAt: row.created_at,
       })),
       chart,
+      readinessCounts: {
+        activeProducts: rowsAt<{ n: number }>(results, 13)[0]?.n ?? 0,
+        activeShippingMethods: rowsAt<{ n: number }>(results, 14)[0]?.n ?? 0,
+        legalPagesSaved: rowsAt<{ n: number }>(results, 15)[0]?.n ?? 0,
+      },
     };
   }
 }

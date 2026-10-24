@@ -87,3 +87,25 @@ export interface ConversionsSink {
   isConfigured(): boolean;
   send(event: ConversionEvent, settings: ConversionSettings): Promise<void>;
 }
+
+/** One purchase for GA4's Measurement Protocol, as the job queue carries it. Sent only for orders whose buyer granted marketing. */
+export interface Ga4Purchase {
+  /** The order id. GA4 counts a transaction id once, so this purchase and the browser's are one sale. */
+  transactionId: string;
+  /** Visitor id read from the buyer's `_ga` cookie at checkout. */
+  clientId: string;
+  /** Session id from the buyer's `_ga_<id>` cookie, or null. It lets GA4 credit the purchase to the session's traffic source. */
+  sessionId: string | null;
+  currency: CurrencyCode;
+  valueMinor: number;
+  taxMinor: number;
+  shippingMinor: number;
+  items: TrackedItem[];
+}
+
+/** Sends purchases to GA4's Measurement Protocol. Temporary failures throw RetryableError, so the queue retries them. */
+export interface Ga4Sink {
+  /** False when the API secret is missing. The handler then skips the job instead of failing it. */
+  isConfigured(): boolean;
+  send(purchase: Ga4Purchase, measurementId: string): Promise<void>;
+}

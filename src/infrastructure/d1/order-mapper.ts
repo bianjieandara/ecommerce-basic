@@ -35,6 +35,8 @@ export interface OrderRow {
   attribution_json: string;
   billing_json: string;
   marketing_consent: number;
+  ga_client_id: string | null;
+  ga_session_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -114,6 +116,8 @@ export function toOrder(row: OrderRow, items: OrderItem[]): Order {
     attribution: parseJson<Record<string, string>>(row.attribution_json, {}),
     billing: parseJson<Record<string, string>>(row.billing_json, {}),
     marketingConsent: row.marketing_consent === 1,
+    gaClientId: row.ga_client_id,
+    gaSessionId: row.ga_session_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

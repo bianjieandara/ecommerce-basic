@@ -1,5 +1,6 @@
 // QuoteCart: re-prices a cart on the server. The browser's copy of prices and stock is only a display hint;
 // this use case is the only source of trusted prices and quantities.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { clampQuantity, MAX_LINE_QUANTITY } from '@/domain/ordering/cart-line';
 import { computeOrderTotals, type OrderTotals } from '@/domain/ordering/totals';

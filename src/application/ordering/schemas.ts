@@ -1,4 +1,5 @@
 // Checkout input. The browser sends what the customer typed and the cart lines; the server re-checks everything.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { MAX_LINE_QUANTITY } from '@/domain/ordering/cart-line';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';

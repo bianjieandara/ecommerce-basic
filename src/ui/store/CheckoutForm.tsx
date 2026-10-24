@@ -15,7 +15,7 @@ import { useTurnstile } from '@/ui/lib/turnstile';
 import { cartLines } from '../stores/cart';
 import { CheckoutAddressFields } from './CheckoutAddressFields';
 import { CheckoutSummary } from './CheckoutSummary';
-import { goToNextStep, type CheckoutLabels } from './checkout-support';
+import { goToNextStep, trackBeginCheckout, type CheckoutLabels } from './checkout-support';
 import { LegalAcceptance, LEGAL_FIELD, type LegalAcceptanceProps } from './LegalAcceptance';
 
 export type { CheckoutLabels } from './checkout-support';
@@ -51,6 +51,12 @@ export default function CheckoutForm(props: CheckoutFormProps) {
   const [formError, setFormError] = useState('');
   const turnstile = useTurnstile(props.siteKey);
   const key = `${lines.map((line) => `${line.variantId}:${line.quantity}:${line.unitPriceMinor}`).join('|')}#${shippingId}`;
+
+  // Once per page load: it runs when the cart first has lines, not on every price or shipping change.
+  const hasLines = lines.length > 0;
+  useEffect(() => {
+    if (hasLines) trackBeginCheckout(lines);
+  }, [hasLines]);
 
   useEffect(() => {
     if (lines.length === 0) return;

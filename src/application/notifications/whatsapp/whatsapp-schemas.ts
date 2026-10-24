@@ -1,5 +1,6 @@
 // Input schemas of the WhatsApp admin endpoints and of the notify.whatsapp job, plus the URL-segment lookup of a key.
 // The editor and the use case read the same limits, so a body the editor accepts is one the use case accepts.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { DomainError } from '@/domain/shared/errors';
 import { SUPPORTED_LOCALES } from '@/domain/shared/locale';

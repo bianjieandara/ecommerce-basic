@@ -56,6 +56,10 @@ the values they produce.
 5. **WhatsApp (optional).** WhatsApp Business Account, phone number id, a permanent token (`WHATSAPP_TOKEN`), and a verify token
    (`WHATSAPP_VERIFY_TOKEN`). Register the webhook for the same host.
 6. **Meta (optional).** Pixel and Conversions API token (`META_CAPI_TOKEN`), and the app secret (`META_APP_SECRET`).
+7. **Google Analytics 4 (optional).** Create a GA4 property and a web data stream; its measurement ID (`G-…`) goes in
+   Settings > Marketing. For purchases from the server (bank transfer, cash on delivery, WhatsApp), create a Measurement
+   Protocol API secret (data stream > Measurement Protocol API secrets) and put it in `GA4_API_SECRET`. See
+   [ANALYTICS.md](./ANALYTICS.md#google-analytics-4).
 
 ## 4. Secrets file
 
@@ -94,6 +98,11 @@ this order has not been run against a real account yet. If `client:secrets` repo
 ## 6. First login and setup
 
 1. Open `<PUBLIC_SITE_URL>/admin/setup` and enter `SETUP_TOKEN`. The first owner is created once; the token works only for that.
+   Setup also adds two starter shipping methods (`src/application/content/defaults/starter-content.ts`): "Store pickup", on and
+   free, and "Standard shipping", off and unpriced, so checkout works and no guessed price is charged. Pages and settings are
+   not written at setup: a page with no row shows its code default until the owner saves it, and settings use the zod
+   defaults. The dashboard shows a "Get your store ready" checklist until the store name, logo, a published product, an active
+   shipping method and the legal pages are done.
 2. Change or remove `SETUP_TOKEN`: edit `.secrets/acme-shop.json`, then run `npm run client:secrets -- acme-shop`.
 3. In the admin, set the store settings, upload the logo, add products, and (if used) submit and sync the WhatsApp templates.
 

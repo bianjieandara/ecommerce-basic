@@ -42,7 +42,9 @@
     "docs:screens": "node scripts/docs/screenshots.mjs",
     "docs:dev": "npm --prefix docs-site run dev",
     "docs:build": "npm --prefix docs-site run build",
-    "db:seed:local": "wrangler d1 execute DB --local --file=db/seed/dev.sql"
+    "db:seed:local": "wrangler d1 execute DB --local --file=db/seed/dev.sql",
+    "demo:snapshot": "node scripts/demo/snapshot.mjs",
+    "demo:publish": "node scripts/demo/publish.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.2",

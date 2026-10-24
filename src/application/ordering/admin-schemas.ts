@@ -1,4 +1,5 @@
 // Inputs of the admin order actions. The order number comes from the path; these fields come from the screen.
+import '@/application/zod-config';
 import { z } from 'zod';
 import { MANUAL_ORDER_TARGETS } from '@/domain/ordering/order-status';
 
