@@ -26,4 +26,6 @@ export interface MediaOption {
   id: string;
   src: string;
   name: string;
+  /** Alternative text per language; empty when none was written. */
+  alt: { es: string; en: string };
 }

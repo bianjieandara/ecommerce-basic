@@ -104,6 +104,12 @@ export const attributeInput = z.object({
 /** Reference to one record by id. */
 export const idInput = z.object({ id });
 
+/** The alternative text of an image, in both languages. An empty text clears that language. */
+export const mediaAltInput = z.object({
+  id,
+  alt: z.object({ es: z.string().max(200), en: z.string().max(200) }),
+});
+
 /** Quick status change of a product. */
 export const productStatusInput = z.object({
   id,

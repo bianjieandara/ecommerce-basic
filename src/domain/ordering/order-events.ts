@@ -12,6 +12,7 @@ export const ORDER_EVENT_TYPES = [
   'expired',
   'cancelled',
   'refunded',
+  'refund_requested',
   'invoice_voided',
 ] as const;
 

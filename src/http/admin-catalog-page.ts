@@ -81,7 +81,12 @@ export function attributeOptions(attributes: AdminAttribute[], locale: Locale): 
 export function mediaOptions(assets: MediaAsset[]): MediaOption[] {
   return assets.map((asset) => {
     const smallest = [...asset.variants].sort((a, b) => a.width - b.width)[0];
-    return { id: asset.id, src: smallest ? PATHS.media(smallest.key) : '', name: asset.originalName };
+    return {
+      id: asset.id,
+      src: smallest ? PATHS.media(smallest.key) : '',
+      name: asset.originalName,
+      alt: { es: asset.alt.es ?? '', en: asset.alt.en ?? '' },
+    };
   });
 }
 

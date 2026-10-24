@@ -16,6 +16,7 @@ const STATUS_BY_CODE: Record<ErrorCode, number> = {
   BOT_CHECK_FAILED: 400,
   PAYMENT_METHOD_UNAVAILABLE: 422,
   PAYMENT_PROVIDER_ERROR: 502,
+  REFUND_REFUSED: 422,
 };
 
 /** Refusals worth a log line: who is being turned away, and provider failures. Validation and not-found stay quiet. */
@@ -25,6 +26,7 @@ const LOGGED_CODES: ReadonlySet<ErrorCode> = new Set([
   'RATE_LIMITED',
   'BOT_CHECK_FAILED',
   'PAYMENT_PROVIDER_ERROR',
+  'REFUND_REFUSED',
 ]);
 
 /**

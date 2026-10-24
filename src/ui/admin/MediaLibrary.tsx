@@ -1,7 +1,7 @@
 // Media library: upload photos (resized in the browser first), browse the library, and delete what nothing uses.
 import { useState } from 'preact/hooks';
 import { getJson, postForm, postJson } from './lib/api-client';
-import { BUTTON, CARD, ERROR_TEXT, PANEL } from './lib/classes';
+import { BUTTON, BUTTON_PRIMARY, CARD, ERROR_TEXT, FIELD, LABEL, PANEL } from './lib/classes';
 import { resizeImage } from './lib/image-processing';
 import type { AdminLabels } from './ProductFields';
 
@@ -10,6 +10,8 @@ export interface MediaItem {
   id: string;
   src: string;
   name: string;
+  /** Alternative text per language; empty when none was written. */
+  alt: { es: string; en: string };
 }
 
 /** Props of the media library. */
@@ -33,7 +35,12 @@ interface StoredAsset {
  */
 function toItem(asset: StoredAsset): MediaItem {
   const smallest = [...asset.variants].sort((a, b) => a.width - b.width)[0];
-  return { id: asset.id, src: smallest ? `/media/${smallest.key}` : '', name: asset.originalName };
+  return {
+    id: asset.id,
+    src: smallest ? `/media/${smallest.key}` : '',
+    name: asset.originalName,
+    alt: { es: '', en: '' },
+  };
 }
 
 /**
@@ -47,6 +54,38 @@ export default function MediaLibrary(props: MediaLibraryProps) {
   const [message, setMessage] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = assets.find((asset) => asset.id === selectedId) ?? null;
+  const [altDraft, setAltDraft] = useState({ es: '', en: '' });
+  const [altState, setAltState] = useState<'idle' | 'saving' | 'saved' | 'failed'>('idle');
+
+  /**
+   * Opens an image in the side panel, with its alternative text ready to edit.
+   * @param item The image chosen.
+   */
+  function select(item: MediaItem) {
+    setSelectedId(item.id);
+    setAltDraft(item.alt);
+    setAltState('idle');
+  }
+
+  /**
+   * Saves the alternative text of the open image and keeps it in the list.
+   */
+  async function saveAlt() {
+    if (!selected) return;
+    setAltState('saving');
+    const result = await postJson('/api/admin/media/alt', { id: selected.id, alt: altDraft });
+    if (!result.ok) {
+      setAltState('failed');
+      setMessage(errors[result.code] ?? errors.generic ?? '');
+      return;
+    }
+    const stored = { es: altDraft.es.trim(), en: altDraft.en.trim() };
+    setAssets((current) =>
+      current.map((asset) => (asset.id === selected.id ? { ...asset, alt: stored } : asset)),
+    );
+    setAltDraft(stored);
+    setAltState('saved');
+  }
 
   /**
    * Resizes and uploads every chosen file, one after another, so a slow connection shows steady progress.
@@ -142,7 +181,7 @@ export default function MediaLibrary(props: MediaLibraryProps) {
                 type="button"
                 class={`${CARD} hover:border-text/40 aria-[current=true]:border-text block w-full overflow-hidden p-2 text-left transition-colors`}
                 aria-current={item.id === selectedId ? 'true' : undefined}
-                onClick={() => setSelectedId(item.id)}
+                onClick={() => select(item)}
               >
                 {item.src && (
                   <img
@@ -168,6 +207,34 @@ export default function MediaLibrary(props: MediaLibraryProps) {
                 />
               )}
               <p class="font-semibold break-all">{selected.name}</p>
+              <p class="text-text/70 text-sm">{labels.media.altHelp}</p>
+              {(['es', 'en'] as const).map((language) => (
+                <label class={LABEL}>
+                  {labels.media.altLabel} ({language.toUpperCase()})
+                  <input
+                    class={FIELD}
+                    maxLength={200}
+                    value={altDraft[language]}
+                    onInput={(event) => {
+                      setAltDraft({ ...altDraft, [language]: event.currentTarget.value });
+                      setAltState('idle');
+                    }}
+                  />
+                </label>
+              ))}
+              <button
+                type="button"
+                class={BUTTON_PRIMARY}
+                disabled={altState === 'saving'}
+                onClick={() => void saveAlt()}
+              >
+                {altState === 'saving' ? labels.common.submitting : labels.media.altSave}
+              </button>
+              {altState === 'saved' && (
+                <p role="status" class="text-sm">
+                  {labels.media.altSaved}
+                </p>
+              )}
               <button type="button" class={BUTTON} onClick={() => remove(selected)}>
                 {labels.media.delete}
               </button>

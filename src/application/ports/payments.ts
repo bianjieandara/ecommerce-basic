@@ -19,6 +19,9 @@ export const PAYMENT_METHODS = [
 /** One payment method. */
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
+/** Payment methods whose money the store can send back through the provider. The others are refunded by hand, outside the store. */
+export const REFUNDABLE_METHODS = ['dlocalgo', 'paypal'] as const satisfies readonly PaymentMethod[];
+
 /** What the customer does next after placing an order. */
 export type PaymentInitiation =
   { kind: 'redirect'; url: string; providerReference?: string } | { kind: 'confirmation' };
@@ -41,6 +44,24 @@ export interface PaymentConfirmation {
   currency: string;
 }
 
+/** What a gateway needs to refund an order. The whole payment is returned: partial refunds are settled by hand. */
+export interface RefundInput {
+  /** The order: its id makes the request safe to repeat, its total and currency are what comes back. */
+  order: { id: string; number: number; totalMinor: number; currency: string };
+  /** The reference stored with the order: the dLocal Go payment id, or the PayPal order id. */
+  providerReference: string;
+  /** Public site URL without a trailing slash, for the address the provider reports the outcome to. */
+  origin: string;
+}
+
+/** A refund the provider accepted. */
+export interface RefundResult {
+  /** The provider's id of the refund, written on the order's timeline. */
+  providerRefundId: string;
+  /** The event to apply when the provider has already finished the refund. Null while it is pending: its notification follows. */
+  confirmation: PaymentConfirmation | null;
+}
+
 /** One payment gateway. */
 export interface PaymentGateway {
   readonly method: PaymentMethod;
@@ -60,9 +81,18 @@ export interface PaymentGateway {
    * status. Null means there is nothing to apply yet (the payment is still pending). Only gateways whose customers return need it.
    */
   capture?(providerReference: string, requestId: string): Promise<PaymentConfirmation | null>;
+  /**
+   * Sends the whole payment back to the customer. A definite refusal by the provider throws REFUND_REFUSED; a failure that leaves
+   * it unknown whether the refund was created (a timeout) throws PAYMENT_PROVIDER_ERROR.
+   */
+  refund?(input: RefundInput): Promise<RefundResult>;
+  /** True when asking twice for the same order's refund can never refund twice, so a failed attempt may simply be repeated. */
+  readonly refundsAreIdempotent?: boolean;
 }
 
 /** Records webhook event ids so each event is processed once. */
 export interface PaymentEventLog {
   recordIfNew(provider: string, eventId: string, nowIso: string): Promise<boolean>;
+  /** Removes a record, so a claim made before a call that definitely failed can be made again. */
+  forget(provider: string, eventId: string): Promise<void>;
 }

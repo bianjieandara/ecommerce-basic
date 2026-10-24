@@ -10,6 +10,7 @@ export type Role = (typeof ROLES)[number];
 export type Permission =
   | 'catalog.edit'
   | 'orders.manage'
+  | 'orders.refund'
   | 'inventory.adjust'
   | 'content.edit'
   | 'emails.edit'
@@ -24,6 +25,7 @@ const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
   owner: [
     'catalog.edit',
     'orders.manage',
+    'orders.refund',
     'inventory.adjust',
     'content.edit',
     'emails.edit',

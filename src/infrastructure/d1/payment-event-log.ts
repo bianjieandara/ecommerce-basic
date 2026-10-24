@@ -15,4 +15,8 @@ export class D1PaymentEventLog implements PaymentEventLog {
     ).run();
     return result.meta.changes > 0;
   }
+
+  async forget(provider: string, eventId: string): Promise<void> {
+    await statement(this.db, 'DELETE FROM payment_events WHERE provider = ? AND event_id = ?', [provider, eventId]).run();
+  }
 }

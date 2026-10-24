@@ -7,6 +7,7 @@ import {
   sniffImageMime,
 } from '@/domain/media/media-asset';
 import { DomainError } from '@/domain/shared/errors';
+import type { Locale } from '@/domain/shared/locale';
 import type { Paginated } from '@/domain/shared/pagination';
 import type { MediaAsset, MediaRepository, MediaStorage } from '../ports/media';
 import type { Clock, IdGenerator } from '../ports/platform';
@@ -35,6 +36,9 @@ export interface MediaLibraryDeps {
 
 /** Largest pixel size accepted for the original. Larger values are not photos, they are mistakes. */
 const MAX_DIMENSION = 20000;
+
+/** Longest alternative text per language. */
+export const MAX_ALT_LENGTH = 200;
 
 /** Stores, lists and removes images. */
 export class MediaLibrary {
@@ -122,6 +126,30 @@ export class MediaLibrary {
    */
   getMany(ids: string[]): Promise<MediaAsset[]> {
     return ids.length > 0 ? this.deps.media.findManyByIds(ids) : Promise.resolve([]);
+  }
+
+  /**
+   * Replaces the alternative text of an image, the description screen readers and search engines use. A language left empty is
+   * dropped, so the page falls back to the product's name there.
+   * @param id Asset id.
+   * @param alt Text per language, up to 200 characters each.
+   * @returns The text that was stored.
+   * @throws DomainError NOT_FOUND for an unknown image, VALIDATION_FAILED for a text that is too long.
+   */
+  async updateAlt(
+    id: string,
+    alt: Partial<Record<Locale, string>>,
+  ): Promise<Partial<Record<Locale, string>>> {
+    if (!(await this.deps.media.findById(id))) throw new DomainError('NOT_FOUND', 'Image not found');
+    const clean: Partial<Record<Locale, string>> = {};
+    for (const locale of ['es', 'en'] as const) {
+      const text = (alt[locale] ?? '').trim();
+      if (text.length > MAX_ALT_LENGTH)
+        throw new DomainError('VALIDATION_FAILED', 'The description is too long');
+      if (text) clean[locale] = text;
+    }
+    await this.deps.media.updateAlt(id, clean);
+    return clean;
   }
 
   /**
