@@ -49,6 +49,11 @@
   --eyebrow-weight: 500;
   --eyebrow-tracking: 0.16em;
   --brand-text-muted: color-mix(in srgb, var(--brand-text) 62%, transparent);
+  /* The arrow drawn inside a select of the admin. It is an image, so it cannot take the text colour: the stroke is a mid grey. */
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  --select-chevron-size: 1rem;
+  --select-chevron-inset: 1rem;
+  --select-padding-end: 2.75rem;
   --brand-font: 'Outfit Variable';
   --brand-font-display: 'Sora Variable';
 }
@@ -62,6 +67,18 @@ h2 {
   letter-spacing: var(--title-tracking);
   line-height: var(--title-leading);
   text-wrap: balance;
+}
+
+/* Selects of the admin: the browser's arrow is replaced by one drawn the same way everywhere. The admin layout marks its page
+   with the "admin" class; the storefront has its own Select component. */
+.admin select {
+  appearance: none;
+  background-image: var(--select-chevron);
+  background-repeat: no-repeat;
+  background-position: right var(--select-chevron-inset) center;
+  background-size: var(--select-chevron-size);
+  padding-right: var(--select-padding-end);
+  cursor: pointer;
 }
 
 @view-transition {
