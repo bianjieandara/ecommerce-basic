@@ -38,6 +38,7 @@ npm run test:flows            # cart, checkout, search and forms in Chrome
 npm run test:orders           # order lifecycle, stock, invoices, reports, accounts
 npm run test:reports          # report figures against independent SQL, weekly summary
 npm run test:whatsapp         # WhatsApp templates and messages against a fake Graph API
+npm run test:clients          # a second client: dry-run deploy:all, no shared resources
 npm run test:keyboard         # keyboard, dialogs and focus rings in Chrome
 npm run test:all              # all of the above, one after the other (about 25 minutes)
 ```
@@ -122,6 +123,12 @@ issues an invoice and checks the PDF upload and the document header, sends signe
 approved, a customer who did not opt in, and WhatsApp turned off all send nothing and are logged. It puts the two templates it uses
 back as they were. What it cannot show is what only Meta decides: see "With Meta" in
 [TESTING_INTEGRATIONS.md](./TESTING_INTEGRATIONS.md#whatsapp).
+
+**`npm run test:clients`** ([scripts/test/clients.mjs](../scripts/test/clients.mjs)) needs no store and calls no Cloudflare API. It writes a
+second client with placeholder ids, runs `deploy:all --dry-run`, checks both clients are planned with their own commands, that
+their generated worker configs share no worker, database, bucket, queue, cache namespace, analytics dataset or rate-limit
+namespace, and that a malformed or unknown slug is refused. It removes the client again. The real deployment of two clients and a
+purchase on each is the manual part of [NEW_CLIENT.md](./NEW_CLIENT.md).
 
 **`npm run test:keyboard`** ([scripts/test/keyboard.mjs](../scripts/test/keyboard.mjs)) presses real keys in Chrome: the skip link is
 the first Tab stop, every Tab stop of six pages shows a focus ring, the search overlay and the cart drawer open from the keyboard,

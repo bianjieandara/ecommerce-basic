@@ -18,6 +18,7 @@ const TESTS = [
   ['flows', 'cart, checkout, search, forms in Chrome'],
   ['orders', 'order lifecycle, stock, invoices, reports, accounts'],
   ['reports', 'report figures against independent SQL, change vs previous period'],
+  ['clients', 'second client: dry-run deploy:all and isolation of resources'],
   ['whatsapp', 'WhatsApp templates, shipped and invoice messages, statuses (fake Graph API)'],
 ];
 const wanted = process.argv.slice(2);
