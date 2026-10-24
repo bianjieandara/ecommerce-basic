@@ -52,15 +52,15 @@ const price = (amount: number, code: typeof currency) => formatMoney(money(amoun
   )}
 
   <section class="grid grid-cols-2 gap-3 md:grid-cols-3" aria-label={labels.issuedTotal}>
-    <div class="rounded-brand bg-surface flex flex-col gap-1 p-4">
+    <div class="rounded-card border border-text/10 bg-background flex flex-col gap-1 p-4">
       <span class="text-sm text-text/70">{labels.issuedTotal}</span>
       <span class="text-xl font-semibold">{price(result.totals.totalMinor, currency)}</span>
     </div>
-    <div class="rounded-brand bg-surface flex flex-col gap-1 p-4">
+    <div class="rounded-card border border-text/10 bg-background flex flex-col gap-1 p-4">
       <span class="text-sm text-text/70">{labels.tax}</span>
       <span class="text-xl font-semibold">{price(result.totals.taxMinor, currency)}</span>
     </div>
-    <div class="rounded-brand bg-surface flex flex-col gap-1 p-4">
+    <div class="rounded-card border border-text/10 bg-background flex flex-col gap-1 p-4">
       <span class="text-sm text-text/70">
         {t(lang, 'admin.invoices.issuedCount', { count: result.totals.issued })}
       </span>

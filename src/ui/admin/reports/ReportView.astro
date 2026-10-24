@@ -5,6 +5,8 @@ import type { ReportView as View } from '@/application/reports/view';
 import { formatMoney, formatNumber, formatDate } from '@/domain/shared/format';
 import { money } from '@/domain/shared/money';
 import { t } from '@/ui/i18n';
+import AdminCard from '../AdminCard.astro';
+import ReportCompare from './ReportCompare.astro';
 import ReportKpis from './ReportKpis.astro';
 import ReportTable from './ReportTable.astro';
 import type { FormatContext } from './report-format';
@@ -16,9 +18,11 @@ interface Props {
   csvPath: string;
   /** The period and filters of the screen, as a query string (without "?"), so each file covers what the screen shows. */
   query: string;
+  /** Show the indicators next to the previous period instead of as cards. */
+  compare?: boolean;
 }
 
-const { view, format, csvPath, query } = Astro.props;
+const { view, format, csvPath, query, compare = false } = Astro.props;
 const lang = format.lang;
 const chart = view.chart;
 const formatPoint = (value: number) =>
@@ -32,17 +36,23 @@ const chartPoints = (chart?.points ?? []).map((point) => ({
 const csvHref = (table: string) => `${csvPath}?${query}${query ? '&' : ''}table=${encodeURIComponent(table)}`;
 ---
 
-<ReportKpis kpis={view.kpis} format={format} />
+{compare ? (
+  <AdminCard title={t(lang, 'admin.reports.viewCompare')} bleed>
+    <ReportCompare kpis={view.kpis} format={format} />
+  </AdminCard>
+) : (
+  <ReportKpis kpis={view.kpis} format={format} />
+)}
 
 {chart && (
-  <section class="rounded-brand bg-surface flex flex-col gap-3 p-4">
+  <section class="rounded-card border border-text/10 bg-background flex flex-col gap-3 p-4">
     <h2 class="text-base font-semibold">{t(lang, `admin.reports.${chart.title}`)}</h2>
     <LineChart title={t(lang, `admin.reports.${chart.title}`)} points={chartPoints} format={formatPoint} />
   </section>
 )}
 
 {view.tables.map((table) => (
-  <section class="rounded-brand bg-surface flex flex-col gap-3 p-4">
+  <section class="rounded-card border border-text/10 bg-background flex flex-col gap-3 p-4">
     <ReportTable table={table} format={format} csvHref={csvHref(table.id)} />
   </section>
 ))}

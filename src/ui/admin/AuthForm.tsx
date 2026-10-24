@@ -149,7 +149,7 @@ export default function AuthForm(props: AuthFormProps) {
 
   if (status === 'done') {
     return (
-      <div role="status" class="rounded-brand bg-surface flex flex-col gap-3 p-4">
+      <div role="status" class="rounded-card border-text/10 bg-background flex flex-col gap-3 border p-4">
         <p class="text-sm">{labels.done}</p>
         <a href={ADMIN_PATHS.login} class="inline-flex min-h-11 items-center font-semibold underline">
           {labels.signIn}

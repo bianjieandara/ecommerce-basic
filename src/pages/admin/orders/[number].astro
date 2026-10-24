@@ -1,21 +1,12 @@
 ---
-// Admin order detail: the customer, what was bought and paid, the totals and timeline, the messages sent for the order and its
-// invoice. The status form moves the order to the states it may still reach. The page only reads; each change goes through an endpoint.
+// Admin order detail: the order as a document with its actions beside it (OrderDocument). The page only reads; each change goes
+// through an endpoint.
 import AdminLayout from '@/ui/layouts/AdminLayout.astro';
-import CopyButton from '@/ui/admin/CopyButton.tsx';
-import DataTable from '@/ui/admin/DataTable.astro';
-import StatusBadge from '@/ui/admin/StatusBadge.astro';
-import OrderInvoicePanel from '@/ui/admin/orders/OrderInvoicePanel.astro';
-import OrderMessages from '@/ui/admin/orders/OrderMessages.astro';
-import OrderStatusForm, { ORDER_STATUS_TONE } from '@/ui/admin/orders/OrderStatusForm.tsx';
-import { BUTTON, DETAIL_LIST, HEADING, LINK_BUTTON, PANEL } from '@/ui/admin/lib/classes';
-import { canTransition, isPaidOrLater, MANUAL_ORDER_TARGETS } from '@/domain/ordering/order-status';
-import { formatDateTime, formatMoney } from '@/domain/shared/format';
-import { money } from '@/domain/shared/money';
-import { ADMIN_PATHS, PATHS } from '@/domain/shared/paths';
+import OrderDocument from '@/ui/admin/orders/OrderDocument.astro';
+import { LINK_BUTTON } from '@/ui/admin/lib/classes';
+import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { loadAdminOrderView } from '@/http/admin-order-view';
 import { pickNamespace, t } from '@/ui/i18n';
-import { orderEventLabel } from '@/ui/lib/order-event-label';
-import { whatsappLink } from '@/ui/lib/whatsapp';
 
 const admin = Astro.locals.admin;
 if (!admin) return Astro.redirect(ADMIN_PATHS.login);
@@ -24,251 +15,23 @@ const app = Astro.locals.app;
 const general = await app.settings.get('general');
 // Only a positive whole number names an order; anything else is the not-found page.
 const text = Astro.params.number ?? '';
-const orderNumber = /^\d+$/.test(text) ? Number(text) : 0;
+const view = await loadAdminOrderView(app, /^\d+$/.test(text) ? Number(text) : 0);
 // The not-found text is the shared error text, so this page says the same as every other missing page.
-const notFound = () => new Response(t(lang, 'errors.NOT_FOUND'), { status: 404 });
-if (!Number.isSafeInteger(orderNumber) || orderNumber < 1) return notFound();
-const order = await app.adminOps.reads.orderRecords.findByNumber(orderNumber);
-if (!order) return notFound();
-
-const [events, messages, invoice] = await Promise.all([
-  app.adminOps.reads.orderRecords.listEvents(order.id),
-  app.adminOps.reads.notificationLog.listForOrder(order.id, 20),
-  app.adminOps.reads.invoiceRecords.findByOrderId(order.id),
-]);
+if (!view) return new Response(t(lang, 'errors.NOT_FOUND'), { status: 404 });
 const labels = pickNamespace(lang, 'admin').orders;
-const invoiceLabels = pickNamespace(lang, 'admin').invoices;
-const errorTexts = pickNamespace(lang, 'errors');
-const { country, timezone } = general;
-const when = (iso: string) => formatDateTime(iso, lang, country, timezone);
-const price = (amountMinor: number) => formatMoney(money(amountMinor, order.currency), lang, country);
-const title = t(lang, 'admin.orders.detailTitle', { number: order.number });
-// The timeline is stored oldest first; the screen shows the newest change first.
-const timeline = [...events].reverse();
-// The issue action is offered for a paid order with no invoice, while the store's invoicing is on.
-const invoicing = await app.settings.get('invoicing');
-const canIssue = !invoice && isPaidOrLater(order.status) && invoicing.enabled;
-// The customer's order link carries the key the order page accepts; the owner copies it into a chat. The PDF download uses the
-// same key, through the customer's PDF address.
-const accessKey = await app.adminOps.reads.orderLinks.keyFor(order);
-const customerLink = accessKey
-  ? `${app.config.siteUrl}${PATHS.order(order.locale, order.number)}?key=${encodeURIComponent(accessKey)}`
-  : null;
-const pdfHref =
-  accessKey && invoice
-    ? `/api/orders/${order.number}/invoice.pdf?key=${encodeURIComponent(accessKey)}`
-    : null;
-// Attribution captured at checkout: the campaign and referral values, in the order they were recorded.
-const origin = Object.entries(order.attribution ?? {});
-// Billing details the buyer gave at checkout, for the invoice.
-const billing = [
-  [labels.legalName, order.billing?.legalName ?? ''],
-  [labels.taxId, order.billing?.taxId ?? ''],
-].filter(([, value]) => value !== '');
-// The states the owner may still set from here; the form is left out when there are none.
-const targets = MANUAL_ORDER_TARGETS.filter((to) => canTransition(order.status, to));
-const whatsapp = whatsappLink(order.customer.phone, '');
-const address = Object.values(order.shippingAddress).filter(Boolean).join(', ');
-const productLabel = t(lang, 'admin.products.columnName');
-const quantityLabel = t(lang, 'cart.quantity');
-const itemColumns = [productLabel, quantityLabel, labels.total];
-const totals: [string, number][] = [
-  [t(lang, 'cart.subtotal'), order.subtotalMinor],
-  [invoiceLabels.tax, order.taxMinor],
-  [t(lang, 'order.shipping'), order.shippingMinor],
-];
+const title = t(lang, 'admin.orders.detailTitle', { number: view.order.number });
 ---
 
 <AdminLayout title={title} locale={lang} storeName={general.storeName}>
   <a href={ADMIN_PATHS.orders} class={LINK_BUTTON}>
     {labels.back}
   </a>
-  <div class="flex flex-col gap-1">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-2xl font-semibold">{title}</h1>
-      <StatusBadge label={labels.states[order.status]} tone={ORDER_STATUS_TONE[order.status]} />
-    </div>
-    <p class="text-text/70 text-sm">{when(order.createdAt)}</p>
-  </div>
-
-  <div class="grid gap-4 md:grid-cols-2">
-    <section class={PANEL} aria-label={labels.customerTitle}>
-      <h2 class={HEADING}>{labels.customerTitle}</h2>
-      <p class="font-semibold wrap-break-word">{order.customer.name}</p>
-      <dl class={DETAIL_LIST}>
-        <dt>{t(lang, 'admin.common.email')}</dt>
-        <dd class="wrap-break-word">{order.customer.email}</dd>
-        <dt>{t(lang, 'admin.orderContact.phone')}</dt>
-        <dd>{order.customer.phone}</dd>
-        {order.note && (
-          <>
-            <dt>{labels.customerNote}</dt>
-            <dd class="wrap-break-word whitespace-pre-line">{order.note}</dd>
-          </>
-        )}
-      </dl>
-      {whatsapp && (
-        <a href={whatsapp} target="_blank" rel="noopener noreferrer" class={BUTTON}>
-          {t(lang, 'admin.orderContact.replyWhatsApp')}
-        </a>
-      )}
-      {customerLink && (
-        <CopyButton
-          client:visible
-          value={customerLink}
-          label={labels.copyLink}
-          copiedLabel={labels.linkCopied}
-          errorLabel={labels.copyFailed}
-        />
-      )}
-    </section>
-
-    {billing.length > 0 && (
-      <section class={PANEL} aria-label={labels.billingTitle}>
-        <h2 class={HEADING}>{labels.billingTitle}</h2>
-        <dl class={DETAIL_LIST}>
-          {billing.map(([name, value]) => (
-            <>
-              <dt>{name}</dt>
-              <dd class="wrap-break-word">{value}</dd>
-            </>
-          ))}
-        </dl>
-      </section>
-    )}
-
-    <section class={PANEL} aria-label={labels.shipping}>
-      <h2 class={HEADING}>{labels.shipping}</h2>
-      <dl class={DETAIL_LIST}>
-        <dt>{labels.shippingMethod}</dt>
-        <dd class="wrap-break-word">{order.shippingMethodName}</dd>
-      </dl>
-      {address && <p class="text-sm wrap-break-word">{address}</p>}
-      {order.trackingCode && (
-        <dl class={DETAIL_LIST}>
-          <dt>{labels.tracking}</dt>
-          <dd class="break-all">{order.trackingCode}</dd>
-        </dl>
-      )}
-    </section>
-
-    <section class="flex flex-col gap-2 md:col-span-2" aria-label={labels.items}>
-      <h2 class={HEADING}>{labels.items}</h2>
-      <DataTable>
-        <thead>
-          <tr>
-            {itemColumns.map((column) => (
-              <th scope="col">{column}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {order.items.map((item) => (
-            <tr>
-              <td data-label={productLabel}>
-                <span class="flex min-w-0 flex-col">
-                  <span class="font-semibold wrap-break-word">{item.productName}</span>
-                  {item.variantLabel && <span class="text-text/70 text-sm">{item.variantLabel}</span>}
-                </span>
-              </td>
-              <td data-label={quantityLabel}>{item.quantity}</td>
-              <td data-label={labels.total}>{price(item.lineTotalMinor)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </DataTable>
-    </section>
-
-    <section class={PANEL} aria-label={labels.totals}>
-      <h2 class={HEADING}>{labels.totals}</h2>
-      <dl class={DETAIL_LIST}>
-        {totals.map(([label, amount]) => (
-          <>
-            <dt>{label}</dt>
-            <dd class="justify-self-end">{price(amount)}</dd>
-          </>
-        ))}
-        <dt class="font-semibold">{labels.total}</dt>
-        <dd class="justify-self-end font-semibold">{price(order.totalMinor)}</dd>
-      </dl>
-    </section>
-
-    <section class={PANEL} aria-label={labels.paymentTitle}>
-      <h2 class={HEADING}>{labels.paymentTitle}</h2>
-      <dl class={DETAIL_LIST}>
-        <dt>{labels.method}</dt>
-        <dd>{labels.methods[order.paymentMethod] ?? order.paymentMethod}</dd>
-        {order.paymentReference && (
-          <>
-            <dt>{labels.reference}</dt>
-            <dd class="break-all">{order.paymentReference}</dd>
-          </>
-        )}
-        {order.paidAt && (
-          <>
-            <dt>{labels.paidAt}</dt>
-            <dd>{when(order.paidAt)}</dd>
-          </>
-        )}
-      </dl>
-    </section>
-
-    <section class={PANEL} aria-label={labels.originTitle}>
-      <h2 class={HEADING}>{labels.originTitle}</h2>
-      {origin.length === 0 ? (
-        <p class="text-text/70 text-sm">{labels.noOrigin}</p>
-      ) : (
-        <dl class={DETAIL_LIST}>
-          {origin.map(([name, value]) => (
-            <>
-              <dt class="break-all">{name}</dt>
-              <dd class="break-all">{value}</dd>
-            </>
-          ))}
-        </dl>
-      )}
-    </section>
-
-    {targets.length > 0 && (
-      <section class={PANEL} aria-label={labels.changeTitle}>
-        <h2 class={HEADING}>{labels.changeTitle}</h2>
-        <OrderStatusForm
-          client:load
-          orderNumber={order.number}
-          targets={targets}
-          labels={labels}
-          errors={errorTexts}
-        />
-      </section>
-    )}
-
-    <OrderInvoicePanel
-      invoice={invoice}
-      orderNumber={order.number}
-      canIssue={canIssue}
-      pdfHref={pdfHref}
-      locale={lang}
-      country={country}
-      timezone={timezone}
-    />
-
-    <section class={PANEL} aria-label={labels.timeline}>
-      <h2 class={HEADING}>{labels.timeline}</h2>
-      {timeline.length === 0 ? (
-        <p class="text-text/70 text-sm">{labels.noEvents}</p>
-      ) : (
-        <ol class="flex flex-col gap-3 text-sm">
-          {timeline.map((event) => (
-            <li class="border-text/15 flex flex-col gap-0.5 border-l-2 pl-3">
-              <span class="font-semibold wrap-break-word">{orderEventLabel(lang, event.type)}</span>
-              <time datetime={event.createdAt}>{when(event.createdAt)}</time>
-              {event.note && <span class="wrap-break-word">{event.note}</span>}
-            </li>
-          ))}
-        </ol>
-      )}
-    </section>
-
-    <OrderMessages entries={messages} locale={lang} country={country} timezone={timezone} />
-  </div>
+  <h1 class="text-2xl md:text-3xl">{title}</h1>
+  <OrderDocument
+    view={view}
+    lang={lang}
+    country={general.country}
+    timezone={general.timezone}
+    storeName={general.storeName}
+  />
 </AdminLayout>

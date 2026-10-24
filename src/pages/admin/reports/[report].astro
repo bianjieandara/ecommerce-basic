@@ -1,12 +1,15 @@
 ---
-// One report for the period and filters in the URL. The screen and the CSV files below each table come from the same read.
+// One report for the period and filters in the URL, with the list of reports beside it. `?compare=1` shows the indicators next
+// to the period before instead of the cards. The screen and the CSV files below each table come from the same read.
 import AdminLayout from '@/ui/layouts/AdminLayout.astro';
 import ReportFilters from '@/ui/admin/reports/ReportFilters.astro';
-import ReportTabs from '@/ui/admin/reports/ReportTabs.astro';
+import SideMenu from '@/ui/admin/SideMenu.astro';
+import ViewSwitch from '@/ui/admin/ViewSwitch.astro';
 import ReportBody from '@/ui/admin/reports/ReportView.astro';
 import { formatDate } from '@/domain/shared/format';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { isReportKind } from '@/application/reports/build-report';
+import { REPORT_KINDS } from '@/application/reports/view';
 import { GRAIN_REPORTS } from '@/application/reports/report-definitions';
 import { lastDays } from '@/application/reports/ranges';
 import { reportRequestFrom } from '@/application/reports/request';
@@ -35,6 +38,15 @@ const shortcuts = {
   last90: lastDays(result.today, 90),
 };
 const title = t(lang, `admin.reports.kinds.${kind}`);
+const compare = Astro.url.searchParams.get('compare') === '1';
+/** The same report and period, summary or compared. */
+const viewHref = (withCompare: boolean) => {
+  const next = new URLSearchParams(Astro.url.searchParams);
+  if (withCompare) next.set('compare', '1');
+  else next.delete('compare');
+  const text = next.toString();
+  return `${ADMIN_PATHS.reports}/${kind}${text ? `?${text}` : ''}`;
+};
 const period = `${formatDate(`${result.range.from}T12:00:00Z`, lang, result.country, result.timeZone)} – ${formatDate(`${result.range.to}T12:00:00Z`, lang, result.country, result.timeZone)}`;
 ---
 
@@ -43,19 +55,48 @@ const period = `${formatDate(`${result.range.from}T12:00:00Z`, lang, result.coun
   locale={lang}
   storeName={store.general.storeName}
 >
-  <h1 class="text-2xl font-semibold">{t(lang, 'admin.reports.title')}</h1>
-  <ReportTabs lang={lang} current={kind} />
-  <ReportFilters
-    lang={lang}
-    action={`${ADMIN_PATHS.reports}/${kind}`}
-    from={result.range.from}
-    to={result.range.to}
-    grain={hasGrain ? result.grain : null}
-    shortcuts={shortcuts}
-  />
-  <div class="flex flex-col gap-1">
-    <h2 class="text-xl font-semibold">{title}</h2>
-    <p class="text-text/70 text-sm">{period}</p>
+  <h1 class="text-2xl md:text-3xl">{t(lang, 'admin.reports.title')}</h1>
+  <div class="grid items-start gap-6 lg:grid-cols-[13rem_minmax(0,1fr)]">
+    <div class="lg:sticky lg:top-24">
+      <SideMenu
+        label={t(lang, 'admin.reports.title')}
+        items={REPORT_KINDS.map((item) => ({
+          href: `${ADMIN_PATHS.reports}/${item}`,
+          label: t(lang, `admin.reports.kinds.${item}`),
+          current: item === kind,
+        }))}
+      />
+    </div>
+    <div class="flex min-w-0 flex-col gap-6">
+      <ReportFilters
+        lang={lang}
+        action={`${ADMIN_PATHS.reports}/${kind}`}
+        from={result.range.from}
+        to={result.range.to}
+        grain={hasGrain ? result.grain : null}
+        shortcuts={shortcuts}
+      />
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-xl md:text-2xl">{title}</h2>
+          <p class="text-sm text-text/70">{period}</p>
+        </div>
+        <ViewSwitch
+          label={t(lang, 'admin.reports.viewLabel')}
+          current={compare ? 'compare' : 'summary'}
+          options={[
+            { value: 'summary', label: t(lang, 'admin.reports.viewSummary'), href: viewHref(false) },
+            { value: 'compare', label: t(lang, 'admin.reports.viewCompare'), href: viewHref(true) },
+          ]}
+        />
+      </div>
+      <ReportBody
+        view={result.view}
+        format={format}
+        csvPath={`/api/admin/reports/${kind}.csv`}
+        query={query}
+        compare={compare}
+      />
+    </div>
   </div>
-  <ReportBody view={result.view} format={format} csvPath={`/api/admin/reports/${kind}.csv`} query={query} />
 </AdminLayout>

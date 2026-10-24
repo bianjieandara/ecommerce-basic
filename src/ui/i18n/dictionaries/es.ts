@@ -235,6 +235,14 @@ export const es: Dictionary = {
   admin: {
     reports: {
       title: 'Reportes',
+      viewLabel: 'Vista',
+      viewSummary: 'Resumen',
+      viewCompare: 'Comparar',
+      indicator: 'Indicador',
+      thisPeriod: 'Este periodo',
+      previousPeriod: 'Periodo anterior',
+      change: 'Cambio',
+      noPrevious: 'Este reporte no compara con el periodo anterior.',
       kinds: {
         sales: 'Ventas',
         products: 'Productos',
@@ -784,6 +792,7 @@ export const es: Dictionary = {
     },
     orders: {
       title: 'Pedidos',
+      actions: 'Acciones',
       status: 'Estado',
       method: 'Pago',
       from: 'Desde',
@@ -1124,6 +1133,8 @@ export const es: Dictionary = {
       archived: 'Archivado',
     },
     product: {
+      previewTitle: 'Así se verá en la tienda',
+      previewNoName: 'Sin nombre todavía',
       titleNew: 'Nuevo producto',
       titleEdit: 'Editar producto',
       saved: 'Guardado. El stock y los precios muestran ahora los valores almacenados.',

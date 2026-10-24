@@ -1,0 +1,56 @@
+---
+// A report's indicators side by side: this period, the period before it and the change. Only indicators that have a previous
+// value are listed. The numbers come from the same read as the summary view, so the two never disagree.
+import type { ReportKpi } from '@/application/reports/view';
+import { t } from '@/ui/i18n';
+import { formatCell, formatChange, type FormatContext } from './report-format';
+
+interface Props {
+  kpis: ReportKpi[];
+  format: FormatContext;
+}
+
+const { kpis, format } = Astro.props;
+const lang = format.lang;
+const rows = kpis.filter((kpi) => kpi.previous !== null);
+---
+
+{rows.length === 0 ? (
+  <p class="text-sm text-text/70">{t(lang, 'admin.reports.noPrevious')}</p>
+) : (
+  <table class="admin-table w-full text-sm">
+    <thead>
+      <tr>
+        <th scope="col">{t(lang, 'admin.reports.indicator')}</th>
+        <th scope="col" class="text-right!">
+          {t(lang, 'admin.reports.thisPeriod')}
+        </th>
+        <th scope="col" class="text-right!">
+          {t(lang, 'admin.reports.previousPeriod')}
+        </th>
+        <th scope="col" class="text-right!">
+          {t(lang, 'admin.reports.change')}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((kpi) => (
+        <tr>
+          <td data-label={t(lang, 'admin.reports.indicator')}>{t(lang, `admin.reports.${kpi.label}`)}</td>
+          <td data-label={t(lang, 'admin.reports.thisPeriod')} class="text-right! font-semibold tabular-nums">
+            {formatCell(kpi.value, format)}
+          </td>
+          <td
+            data-label={t(lang, 'admin.reports.previousPeriod')}
+            class="text-right! tabular-nums text-text/70"
+          >
+            {kpi.previous === null ? '—' : formatCell(kpi.previous, format)}
+          </td>
+          <td data-label={t(lang, 'admin.reports.change')} class="text-right! tabular-nums">
+            {kpi.changeBp === null ? t(lang, 'admin.reports.changeNone') : formatChange(kpi.changeBp, format)}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)}

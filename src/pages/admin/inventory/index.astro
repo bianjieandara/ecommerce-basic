@@ -2,7 +2,9 @@
 // Inventory: every variant with its stock, filtered in the URL. The table handles adjustments, bulk changes and the barcode
 // lookup; the CSV import sits below it, and the ledger has its own page.
 import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import AdminCard from '@/ui/admin/AdminCard.astro';
 import ListToolbar from '@/ui/admin/ListToolbar.astro';
+import StockMovementList from '@/ui/admin/inventory/StockMovementList.astro';
 import InventoryPanel from '@/ui/admin/inventory/InventoryPanel.tsx';
 import CsvImport from '@/ui/admin/inventory/CsvImport.tsx';
 import { BUTTON, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
@@ -14,6 +16,9 @@ import { listHref } from '@/http/list-query';
 import { loadStoreContext } from '@/http/store-context';
 import { pickNamespace, t } from '@/ui/i18n';
 
+/** Stock changes listed beside the table. */
+const RECENT_MOVEMENTS = 8;
+
 const admin = Astro.locals.admin;
 if (!admin) return Astro.redirect(ADMIN_PATHS.login);
 const lang = admin.locale;
@@ -22,10 +27,22 @@ const store = await loadStoreContext(app);
 const params = Astro.url.searchParams;
 const inventory = await app.settings.get('inventory');
 const filter = inventoryFilterFrom(params, lang, inventory.defaultLowStockThreshold, ADMIN_LIST_PAGE_SIZE);
-const [result, totals, categories] = await Promise.all([
+const [result, totals, categories, recent] = await Promise.all([
   app.inventory.queries.listRows(filter),
   app.inventory.queries.totals(),
   app.catalogAdmin.categories.list(),
+  // The latest changes, for the timeline beside the table.
+  app.inventory.queries.listMovements({
+    search: '',
+    variantId: null,
+    reason: null,
+    from: null,
+    to: null,
+    timeZone: store.general.timezone,
+    locale: lang,
+    page: 1,
+    pageSize: RECENT_MOVEMENTS,
+  }),
 ]);
 const choices = categoryOptions(categories, lang);
 const labels = pickNamespace(lang, 'admin').inventory;
@@ -107,35 +124,54 @@ const exportHref = query ? `/api/admin/inventory/export?${query}` : '/api/admin/
     </label>
   </ListToolbar>
 
-  <InventoryPanel
-    client:load
-    rows={result.items}
-    totals={totals}
-    labels={labels}
-    locale={lang}
-    currency={store.general.currency}
-    country={store.general.country}
-  />
+  <div class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
+    <div class="flex min-w-0 flex-col gap-6">
+      <InventoryPanel
+        client:load
+        rows={result.items}
+        totals={totals}
+        labels={labels}
+        locale={lang}
+        currency={store.general.currency}
+        country={store.general.country}
+      />
 
-  <nav class="flex items-center justify-between gap-3 text-sm" aria-label={labels.title}>
-    {result.page > 1 ? (
-      <a href={listHref(ADMIN_PATHS.inventory, params, result.page - 1)} class={LINK_BUTTON}>
-        {labels.prev}
-      </a>
-    ) : (
-      <span />
-    )}
-    <span>{t(lang, 'admin.inventory.pageOf', { page: result.page, total: result.totalPages })}</span>
-    {result.page < result.totalPages ? (
-      <a href={listHref(ADMIN_PATHS.inventory, params, result.page + 1)} class={LINK_BUTTON}>
-        {labels.next}
-      </a>
-    ) : (
-      <span />
-    )}
-  </nav>
+      <nav class="flex items-center justify-between gap-3 text-sm" aria-label={labels.title}>
+        {result.page > 1 ? (
+          <a href={listHref(ADMIN_PATHS.inventory, params, result.page - 1)} class={LINK_BUTTON}>
+            {labels.prev}
+          </a>
+        ) : (
+          <span />
+        )}
+        <span>{t(lang, 'admin.inventory.pageOf', { page: result.page, total: result.totalPages })}</span>
+        {result.page < result.totalPages ? (
+          <a href={listHref(ADMIN_PATHS.inventory, params, result.page + 1)} class={LINK_BUTTON}>
+            {labels.next}
+          </a>
+        ) : (
+          <span />
+        )}
+      </nav>
+    </div>
+    <div class="xl:sticky xl:top-24">
+      <AdminCard
+        title={labels.movements}
+        action={{ href: ADMIN_PATHS.inventoryMovements, label: t(lang, 'admin.dashboard.seeAll') }}
+      >
+        <StockMovementList
+          movements={recent.items}
+          reasons={labels.reasons}
+          empty={labels.movementsPage.empty}
+          locale={lang}
+          country={store.general.country}
+          timezone={store.general.timezone}
+        />
+      </AdminCard>
+    </div>
+  </div>
 
-  <details class="rounded-brand bg-surface p-4">
+  <details class="rounded-card border border-text/10 bg-background p-4">
     <summary class="min-h-11 cursor-pointer py-2 text-sm font-semibold">{labels.csv.title}</summary>
     <div class="mt-4">
       <CsvImport client:visible labels={labels} />

@@ -1,0 +1,232 @@
+---
+// One order as a document: who it is for, what was bought, the totals, the payment and the delivery, with the actions (status,
+// invoice, WhatsApp, the customer's link) in a rail beside it and the timeline, messages and origin below. The component sizes
+// itself by the width it is given (container queries), so it fits the full order page and the narrower side pane of the list.
+import CopyButton from '@/ui/admin/CopyButton.tsx';
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import OrderInvoicePanel from './OrderInvoicePanel.astro';
+import OrderMessages from './OrderMessages.astro';
+import OrderStatusForm, { ORDER_STATUS_TONE } from './OrderStatusForm.tsx';
+import { BUTTON, DETAIL_LIST, HEADING, PANEL } from '@/ui/admin/lib/classes';
+import type { AdminOrderView } from '@/http/admin-order-view';
+import { formatDateTime, formatMoney } from '@/domain/shared/format';
+import { money } from '@/domain/shared/money';
+import type { Locale } from '@/domain/shared/locale';
+import { pickNamespace, t } from '@/ui/i18n';
+import { orderEventLabel } from '@/ui/lib/order-event-label';
+import { whatsappLink } from '@/ui/lib/whatsapp';
+
+interface Props {
+  view: AdminOrderView;
+  lang: Locale;
+  country: string;
+  timezone: string;
+  storeName: string;
+}
+
+const { view, lang, country, timezone, storeName } = Astro.props;
+const { order, timeline, messages, invoice, canIssue, customerLink, pdfHref, targets } = view;
+const labels = pickNamespace(lang, 'admin').orders;
+const invoiceLabels = pickNamespace(lang, 'admin').invoices;
+const errorTexts = pickNamespace(lang, 'errors');
+const when = (iso: string) => formatDateTime(iso, lang, country, timezone);
+const price = (amountMinor: number) => formatMoney(money(amountMinor, order.currency), lang, country);
+const origin = Object.entries(order.attribution ?? {});
+// Billing details the buyer gave at checkout, for the invoice.
+const billing = [
+  [labels.legalName, order.billing?.legalName ?? ''],
+  [labels.taxId, order.billing?.taxId ?? ''],
+].filter(([, value]) => value !== '');
+const whatsapp = whatsappLink(order.customer.phone, '');
+const address = Object.values(order.shippingAddress).filter(Boolean).join(', ');
+const productLabel = t(lang, 'admin.products.columnName');
+const quantityLabel = t(lang, 'cart.quantity');
+const totals: [string, number][] = [
+  [t(lang, 'cart.subtotal'), order.subtotalMinor],
+  [invoiceLabels.tax, order.taxMinor],
+  [t(lang, 'order.shipping'), order.shippingMinor],
+];
+const facts: [string, string][] = [
+  [labels.method, labels.methods[order.paymentMethod] ?? order.paymentMethod],
+  ...(order.paymentReference ? ([[labels.reference, order.paymentReference]] as [string, string][]) : []),
+  ...(order.paidAt ? ([[labels.paidAt, when(order.paidAt)]] as [string, string][]) : []),
+  [labels.shippingMethod, order.shippingMethodName],
+  ...(order.trackingCode ? ([[labels.tracking, order.trackingCode]] as [string, string][]) : []),
+];
+---
+
+<div class="@container flex flex-col gap-6">
+  <div class="grid gap-6 @4xl:grid-cols-[minmax(0,1fr)_17rem] @4xl:items-start">
+    <article class="flex min-w-0 flex-col gap-6 rounded-card border border-text/10 bg-background p-5 @xl:p-8">
+      <header class="flex flex-wrap items-start justify-between gap-3">
+        <div class="flex flex-col gap-1">
+          <p class="font-display text-lg font-semibold tracking-tight">{storeName}</p>
+          <p class="text-sm text-text/70">{when(order.createdAt)}</p>
+        </div>
+        <div class="flex flex-col items-end gap-2">
+          <p class="font-display text-xl font-semibold tracking-tight">#{order.number}</p>
+          <StatusBadge label={labels.states[order.status]} tone={ORDER_STATUS_TONE[order.status]} />
+        </div>
+      </header>
+
+      <section aria-label={labels.customerTitle} class="flex flex-col gap-1 text-sm">
+        <p class="eyebrow">{labels.customerTitle}</p>
+        <p class="font-semibold wrap-break-word">{order.customer.name}</p>
+        <p class="wrap-break-word text-text/70">{order.customer.email}</p>
+        <p class="text-text/70">{order.customer.phone}</p>
+        {address && <p class="wrap-break-word text-text/70">{address}</p>}
+        {order.note && (
+          <p class="mt-2 rounded-xl bg-surface p-3 wrap-break-word whitespace-pre-line">
+            <span class="eyebrow block">{labels.customerNote}</span>
+            {order.note}
+          </p>
+        )}
+      </section>
+
+      <section aria-label={labels.items}>
+        <table class="admin-table w-full text-sm">
+          <thead>
+            <tr>
+              <th scope="col">{productLabel}</th>
+              <th scope="col" class="text-right!">
+                {quantityLabel}
+              </th>
+              <th scope="col" class="text-right!">
+                {labels.total}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {order.items.map((item) => (
+              <tr>
+                <td data-label={productLabel}>
+                  <span class="flex min-w-0 flex-col">
+                    <span class="font-semibold wrap-break-word">{item.productName}</span>
+                    {item.variantLabel && <span class="text-sm text-text/70">{item.variantLabel}</span>}
+                  </span>
+                </td>
+                <td data-label={quantityLabel} class="text-right! tabular-nums">
+                  {item.quantity}
+                </td>
+                <td data-label={labels.total} class="text-right! tabular-nums">
+                  {price(item.lineTotalMinor)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <dl class="mt-2 ml-auto flex max-w-xs flex-col gap-1 px-5 text-sm">
+          {totals.map(([label, amount]) => (
+            <div class="flex justify-between gap-6">
+              <dt class="text-text/70">{label}</dt>
+              <dd class="tabular-nums">{price(amount)}</dd>
+            </div>
+          ))}
+          <div class="mt-1 flex items-baseline justify-between gap-6 border-t border-text/15 pt-2">
+            <dt class="font-semibold">{labels.total}</dt>
+            <dd class="font-display text-xl font-semibold tabular-nums">{price(order.totalMinor)}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section aria-label={labels.paymentTitle}>
+        <dl class="grid gap-x-6 gap-y-3 text-sm @xl:grid-cols-2">
+          {facts.map(([name, value]) => (
+            <div class="flex flex-col">
+              <dt class="eyebrow">{name}</dt>
+              <dd class="break-words">{value}</dd>
+            </div>
+          ))}
+          {billing.map(([name, value]) => (
+            <div class="flex flex-col">
+              <dt class="eyebrow">{name}</dt>
+              <dd class="break-words">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    </article>
+
+    <aside
+      class="flex min-w-0 flex-col gap-4 @4xl:sticky @4xl:top-24"
+      aria-label={t(lang, 'admin.orders.actions')}
+    >
+      {targets.length > 0 && (
+        <section class={PANEL} aria-label={labels.changeTitle}>
+          <h2 class={HEADING}>{labels.changeTitle}</h2>
+          <OrderStatusForm
+            client:load
+            orderNumber={order.number}
+            targets={targets}
+            labels={labels}
+            errors={errorTexts}
+          />
+        </section>
+      )}
+      {(whatsapp || customerLink) && (
+        <section class={PANEL} aria-label={t(lang, 'admin.orders.actions')}>
+          {whatsapp && (
+            <a href={whatsapp} target="_blank" rel="noopener noreferrer" class={BUTTON}>
+              {t(lang, 'admin.orderContact.replyWhatsApp')}
+            </a>
+          )}
+          {customerLink && (
+            <CopyButton
+              client:visible
+              value={customerLink}
+              label={labels.copyLink}
+              copiedLabel={labels.linkCopied}
+              errorLabel={labels.copyFailed}
+            />
+          )}
+        </section>
+      )}
+      <OrderInvoicePanel
+        invoice={invoice}
+        orderNumber={order.number}
+        canIssue={canIssue}
+        pdfHref={pdfHref}
+        locale={lang}
+        country={country}
+        timezone={timezone}
+      />
+    </aside>
+  </div>
+
+  <div class="grid gap-4 @2xl:grid-cols-2">
+    <section class={PANEL} aria-label={labels.timeline}>
+      <h2 class={HEADING}>{labels.timeline}</h2>
+      {timeline.length === 0 ? (
+        <p class="text-sm text-text/70">{labels.noEvents}</p>
+      ) : (
+        <ol class="flex flex-col gap-3 text-sm">
+          {timeline.map((event) => (
+            <li class="flex flex-col gap-0.5 border-l-2 border-text/15 pl-3">
+              <span class="font-semibold wrap-break-word">{orderEventLabel(lang, event.type)}</span>
+              <time datetime={event.createdAt}>{when(event.createdAt)}</time>
+              {event.note && <span class="wrap-break-word">{event.note}</span>}
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+    <section class={PANEL} aria-label={labels.originTitle}>
+      <h2 class={HEADING}>{labels.originTitle}</h2>
+      {origin.length === 0 ? (
+        <p class="text-sm text-text/70">{labels.noOrigin}</p>
+      ) : (
+        <dl class={DETAIL_LIST}>
+          {origin.map(([name, value]) => (
+            <>
+              <dt class="break-all">{name}</dt>
+              <dd class="break-all">{value}</dd>
+            </>
+          ))}
+        </dl>
+      )}
+    </section>
+    <div class="@2xl:col-span-2">
+      <OrderMessages entries={messages} locale={lang} country={country} timezone={timezone} />
+    </div>
+  </div>
+</div>

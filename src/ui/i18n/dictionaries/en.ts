@@ -234,6 +234,14 @@ export const en = {
   admin: {
     reports: {
       title: 'Reports',
+      viewLabel: 'View',
+      viewSummary: 'Summary',
+      viewCompare: 'Compare',
+      indicator: 'Indicator',
+      thisPeriod: 'This period',
+      previousPeriod: 'Previous period',
+      change: 'Change',
+      noPrevious: 'This report does not compare with the previous period.',
       kinds: {
         sales: 'Sales',
         products: 'Products',
@@ -778,6 +786,7 @@ export const en = {
     },
     orders: {
       title: 'Orders',
+      actions: 'Actions',
       status: 'Status',
       method: 'Payment',
       from: 'From',
@@ -1118,6 +1127,8 @@ export const en = {
       archived: 'Archived',
     },
     product: {
+      previewTitle: 'How it looks in the store',
+      previewNoName: 'No name yet',
       titleNew: 'New product',
       titleEdit: 'Edit product',
       saved: 'Saved. The stock and prices now show the stored values.',

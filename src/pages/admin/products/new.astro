@@ -30,5 +30,11 @@ if (!editor) return new Response('Not found', { status: 404 });
     currency={editor.currency}
     defaultLowStockThreshold={editor.defaultLowStockThreshold}
     listHref={ADMIN_PATHS.products}
+    locale={lang}
+    preview={{
+      title: t(lang, 'admin.product.previewTitle'),
+      onSale: t(lang, 'product.onSale'),
+      noName: t(lang, 'admin.product.previewNoName'),
+    }}
   />
 </AdminLayout>

@@ -1,9 +1,10 @@
 ---
-// One settings group, edited with the schema form. Only owners may save; the endpoint checks the same permission.
+// One settings group, edited with the schema form, with the list of groups beside it. Only owners may save; the endpoint checks the same permission.
 import AdminLayout from '@/ui/layouts/AdminLayout.astro';
+import AdminCard from '@/ui/admin/AdminCard.astro';
 import SchemaForm from '@/ui/admin/schema-form/SchemaForm.tsx';
+import SideMenu from '@/ui/admin/SideMenu.astro';
 import { settingsGroupNames } from '@/ui/admin/settings-labels';
-import { LINK_BUTTON } from '@/ui/admin/lib/classes';
 import { can } from '@/domain/identity/role';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import type { SettingsGroup } from '@/application/content/settings-schemas';
@@ -38,21 +39,32 @@ const labels = {
 ---
 
 <AdminLayout title={names[group]} locale={lang} storeName={store.general.storeName}>
-  <a href={ADMIN_PATHS.settings} class={LINK_BUTTON}>
-    {t(lang, 'admin.settings.back')}
-  </a>
-  <h1 class="text-2xl font-semibold">{names[group]}</h1>
-  {canEdit ? (
-    <SchemaForm
-      client:load
-      fields={fields}
-      values={values}
-      locale={lang}
-      saveUrl={`/api/admin/settings/${group}`}
-      media={media}
-      labels={labels}
-    />
-  ) : (
-    <p class="text-text/70 text-sm">{t(lang, 'errors.FORBIDDEN')}</p>
-  )}
+  <h1 class="text-2xl md:text-3xl">{t(lang, 'admin.settings.title')}</h1>
+  <div class="grid items-start gap-6 lg:grid-cols-[15rem_minmax(0,1fr)]">
+    <div class="lg:sticky lg:top-24">
+      <SideMenu
+        label={t(lang, 'admin.settings.title')}
+        items={Object.entries(names).map(([key, label]) => ({
+          href: `${ADMIN_PATHS.settings}/${key}`,
+          label,
+          current: key === group,
+        }))}
+      />
+    </div>
+    <AdminCard title={names[group]}>
+      {canEdit ? (
+        <SchemaForm
+          client:load
+          fields={fields}
+          values={values}
+          locale={lang}
+          saveUrl={`/api/admin/settings/${group}`}
+          media={media}
+          labels={labels}
+        />
+      ) : (
+        <p class="text-sm text-text/70">{t(lang, 'errors.FORBIDDEN')}</p>
+      )}
+    </AdminCard>
+  </div>
 </AdminLayout>

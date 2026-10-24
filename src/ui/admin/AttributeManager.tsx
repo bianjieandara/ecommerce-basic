@@ -2,7 +2,7 @@
 // removed; the server says so, and the editor shows the message.
 import { useState } from 'preact/hooks';
 import { postJson } from './lib/api-client';
-import { BUTTON_PRIMARY, ERROR_TEXT, LINK_BUTTON } from './lib/classes';
+import { BUTTON_PRIMARY, CARD, ERROR_TEXT, LINK_BUTTON } from './lib/classes';
 import AttributeEditor from './AttributeEditor';
 import { blankValue, type AttributeDraft, type AttributeItem } from './attribute-types';
 import type { AdminLabels } from './ProductFields';
@@ -96,49 +96,53 @@ export default function AttributeManager(props: AttributeManagerProps) {
   }
 
   return (
-    <div class="flex flex-col gap-6">
-      <div class="flex items-center justify-between gap-3">
-        <p class="text-text/70 text-sm">{labels.attributes.hint}</p>
-        <button type="button" class={BUTTON_PRIMARY} onClick={() => edit(null)}>
-          {labels.attributes.new}
-        </button>
+    <div class="grid items-start gap-6 lg:grid-cols-[24rem_minmax(0,1fr)]">
+      <div class="flex min-w-0 flex-col gap-4">
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-text/70 text-sm">{labels.attributes.hint}</p>
+          <button type="button" class={BUTTON_PRIMARY} onClick={() => edit(null)}>
+            {labels.attributes.new}
+          </button>
+        </div>
+        {message && (
+          <p role="alert" class={ERROR_TEXT}>
+            {message}
+          </p>
+        )}
+        {items.length === 0 && <p class="text-text/70 text-sm">{labels.attributes.empty}</p>}
+        <ul class={`${CARD} divide-text/10 flex flex-col divide-y overflow-hidden`}>
+          {items.map((item) => (
+            <li class={`flex items-center gap-1 pr-2 pl-2 ${draft?.id === item.id ? 'bg-surface' : ''}`}>
+              <button
+                type="button"
+                class="flex min-h-12 min-w-0 flex-1 items-center gap-2 text-left font-semibold"
+                aria-current={draft?.id === item.id ? 'true' : undefined}
+                onClick={() => edit(item)}
+              >
+                <span class="truncate">{item.name[locale] || item.name.es || item.name.en || item.code}</span>
+                <span class="text-text/70 text-xs font-normal">{item.values.length}</span>
+              </button>
+              <button type="button" class={LINK_BUTTON} onClick={() => remove(item)}>
+                {labels.common.delete}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
-      {message && (
-        <p role="alert" class={ERROR_TEXT}>
-          {message}
-        </p>
-      )}
-
-      {draft && (
-        <AttributeEditor
-          draft={draft}
-          setDraft={setDraft}
-          labels={labels}
-          busy={busy}
-          onSave={save}
-          onCancel={() => setDraft(null)}
-        />
-      )}
-
-      {items.length === 0 && <p class="text-text/70 text-sm">{labels.attributes.empty}</p>}
-      <ul class="rounded-brand bg-surface divide-text/10 divide-y">
-        {items.map((item) => (
-          <li class="flex flex-wrap items-center gap-2 px-4 py-3">
-            <span class="mr-auto">
-              <span class="font-semibold">
-                {item.name[locale] || item.name.es || item.name.en || item.code}
-              </span>
-              <span class="text-text/70 ml-2 text-xs">{item.values.length}</span>
-            </span>
-            <button type="button" class={LINK_BUTTON} onClick={() => edit(item)}>
-              {labels.common.edit}
-            </button>
-            <button type="button" class={LINK_BUTTON} onClick={() => remove(item)}>
-              {labels.common.delete}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div class="min-w-0 lg:sticky lg:top-24">
+        {draft ? (
+          <AttributeEditor
+            draft={draft}
+            setDraft={setDraft}
+            labels={labels}
+            busy={busy}
+            onSave={save}
+            onCancel={() => setDraft(null)}
+          />
+        ) : (
+          <p class={`${CARD} text-text/70 p-6 text-sm`}>{labels.attributes.hint}</p>
+        )}
+      </div>
     </div>
   );
 }

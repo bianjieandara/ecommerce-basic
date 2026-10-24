@@ -7,6 +7,7 @@ import { BUTTON, BUTTON_PRIMARY, ERROR_TEXT, FIELD, LABEL, PANEL } from './lib/c
 import type { AttributeOption, CategoryOption, MediaOption } from './catalog-options';
 import ImagePicker from './ImagePicker';
 import ProductFields, { type AdminLabels } from './ProductFields';
+import ProductPreview from './ProductPreview';
 import VariantMatrix from './VariantMatrix';
 import { formFromInput, inputFromForm, type MoneyFormat, type ProductForm } from './product-form';
 
@@ -22,6 +23,9 @@ export interface ProductEditorProps {
   currency: string;
   defaultLowStockThreshold: number;
   listHref: string;
+  /** Language of the admin and the texts of the live preview. */
+  locale: 'es' | 'en';
+  preview: { title: string; onSale: string; noName: string };
 }
 
 /**
@@ -64,46 +68,58 @@ export default function ProductEditor(props: ProductEditorProps) {
 
   return (
     <form
-      class="flex flex-col gap-6 pb-32"
+      class="grid items-start gap-6 pb-32 lg:grid-cols-[minmax(0,1fr)_19rem]"
       onSubmit={(event) => {
         event.preventDefault();
         void save();
       }}
     >
-      <ProductFields
-        form={form}
-        patch={patch}
-        labels={labels}
-        categories={props.categories}
-        currency={props.currency}
-      />
-      <ImagePicker
-        selected={form.imageIds}
-        media={props.media}
-        onChange={(imageIds) => patch({ imageIds })}
-        labels={labels}
-      />
-      <VariantMatrix
-        variants={form.variants}
-        setVariants={(variants) => patch({ variants })}
-        attributes={props.attributes}
-        images={props.media.filter((image) => form.imageIds.includes(image.id))}
-        currency={props.currency}
-        defaultThreshold={props.defaultLowStockThreshold}
-        labels={labels}
-      />
-      <section class={PANEL}>
-        <label class={LABEL}>
-          {labels.product.stockNote}
-          <input
-            class={FIELD}
-            value={form.stockNote}
-            placeholder={labels.product.stockNoteHint}
-            onInput={(event) => patch({ stockNote: event.currentTarget.value })}
-          />
-        </label>
-      </section>
-      <div class="rounded-brand border-text/15 bg-surface fixed inset-x-3 bottom-3 z-10 mx-auto flex max-w-3xl flex-wrap items-center gap-3 border p-3 shadow-sm">
+      <div class="flex min-w-0 flex-col gap-6">
+        <ProductFields
+          form={form}
+          patch={patch}
+          labels={labels}
+          categories={props.categories}
+          currency={props.currency}
+        />
+        <ImagePicker
+          selected={form.imageIds}
+          media={props.media}
+          onChange={(imageIds) => patch({ imageIds })}
+          labels={labels}
+        />
+        <VariantMatrix
+          variants={form.variants}
+          setVariants={(variants) => patch({ variants })}
+          attributes={props.attributes}
+          images={props.media.filter((image) => form.imageIds.includes(image.id))}
+          currency={props.currency}
+          defaultThreshold={props.defaultLowStockThreshold}
+          labels={labels}
+        />
+        <section class={PANEL}>
+          <label class={LABEL}>
+            {labels.product.stockNote}
+            <input
+              class={FIELD}
+              value={form.stockNote}
+              placeholder={labels.product.stockNoteHint}
+              onInput={(event) => patch({ stockNote: event.currentTarget.value })}
+            />
+          </label>
+        </section>
+      </div>
+      <div class="lg:sticky lg:top-24">
+        <ProductPreview
+          form={form}
+          media={props.media}
+          categories={props.categories}
+          currency={props.currency}
+          locale={props.locale}
+          texts={props.preview}
+        />
+      </div>
+      <div class="rounded-card border-text/15 bg-background fixed inset-x-3 bottom-3 z-10 mx-auto flex max-w-3xl flex-wrap items-center gap-3 border p-3 shadow-lg">
         {message && (
           <p role="alert" class={`${ERROR_TEXT} w-full`}>
             {message}

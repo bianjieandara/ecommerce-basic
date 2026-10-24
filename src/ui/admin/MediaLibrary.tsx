@@ -1,7 +1,7 @@
 // Media library: upload photos (resized in the browser first), browse the library, and delete what nothing uses.
 import { useState } from 'preact/hooks';
 import { getJson, postForm, postJson } from './lib/api-client';
-import { BUTTON, ERROR_TEXT, LINK_BUTTON, PANEL } from './lib/classes';
+import { BUTTON, CARD, ERROR_TEXT, PANEL } from './lib/classes';
 import { resizeImage } from './lib/image-processing';
 import type { AdminLabels } from './ProductFields';
 
@@ -45,6 +45,8 @@ export default function MediaLibrary(props: MediaLibraryProps) {
   const [assets, setAssets] = useState(props.assets);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [message, setMessage] = useState('');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selected = assets.find((asset) => asset.id === selectedId) ?? null;
 
   /**
    * Resizes and uploads every chosen file, one after another, so a slow connection shows steady progress.
@@ -81,8 +83,10 @@ export default function MediaLibrary(props: MediaLibraryProps) {
   async function remove(item: MediaItem) {
     if (!window.confirm(labels.media.confirmDelete)) return;
     const result = await postJson('/api/admin/media/delete', { id: item.id });
-    if (result.ok) setAssets((current) => current.filter((asset) => asset.id !== item.id));
-    else setMessage(errors[result.code] ?? errors.generic ?? '');
+    if (result.ok) {
+      setAssets((current) => current.filter((asset) => asset.id !== item.id));
+      setSelectedId(null);
+    } else setMessage(errors[result.code] ?? errors.generic ?? '');
   }
 
   /**
@@ -130,25 +134,50 @@ export default function MediaLibrary(props: MediaLibraryProps) {
       </section>
 
       {assets.length === 0 && <p class="text-text/70 text-sm">{labels.media.empty}</p>}
-      <ul class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {assets.map((item) => (
-          <li class="rounded-brand bg-surface flex flex-col gap-2 overflow-hidden p-2">
-            {item.src && (
-              <img
-                src={item.src}
-                alt={item.name}
-                loading="lazy"
-                class="aspect-square w-full rounded object-cover"
-              />
-            )}
-            <span class="truncate text-xs">{item.name}</span>
-            <button type="button" class={LINK_BUTTON} onClick={() => remove(item)}>
-              {labels.media.delete}
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button type="button" class={LINK_BUTTON} onClick={() => void refresh()}>
+      <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+          {assets.map((item) => (
+            <li>
+              <button
+                type="button"
+                class={`${CARD} hover:border-text/40 aria-[current=true]:border-text block w-full overflow-hidden p-2 text-left transition-colors`}
+                aria-current={item.id === selectedId ? 'true' : undefined}
+                onClick={() => setSelectedId(item.id)}
+              >
+                {item.src && (
+                  <img
+                    src={item.src}
+                    alt={item.name}
+                    loading="lazy"
+                    class="aspect-square w-full rounded-xl object-cover"
+                  />
+                )}
+                <span class="mt-2 block truncate text-xs">{item.name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <aside class={`${CARD} flex flex-col gap-4 p-5 lg:sticky lg:top-24`} aria-live="polite">
+          {selected ? (
+            <>
+              {selected.src && (
+                <img
+                  src={selected.src}
+                  alt={selected.name}
+                  class="rounded-card bg-surface aspect-square w-full object-cover"
+                />
+              )}
+              <p class="font-semibold break-all">{selected.name}</p>
+              <button type="button" class={BUTTON} onClick={() => remove(selected)}>
+                {labels.media.delete}
+              </button>
+            </>
+          ) : (
+            <p class="text-text/70 text-sm">{labels.media.hint}</p>
+          )}
+        </aside>
+      </div>
+      <button type="button" class={BUTTON} onClick={() => void refresh()}>
         {labels.media.refresh}
       </button>
     </div>

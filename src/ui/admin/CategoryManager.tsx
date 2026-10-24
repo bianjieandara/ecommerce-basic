@@ -2,7 +2,7 @@
 import { useState } from 'preact/hooks';
 import { postJson } from './lib/api-client';
 import { orderTree, swappedOrder } from './lib/category-order';
-import { ERROR_TEXT, LINK_BUTTON, BUTTON_PRIMARY } from './lib/classes';
+import { BUTTON_PRIMARY, CARD, ERROR_TEXT, LINK_BUTTON } from './lib/classes';
 import CategoryEditor from './CategoryEditor';
 import { EMPTY_TEXT, type CategoryDraft, type CategoryItem } from './category-types';
 import type { AdminLabels } from './ProductFields';
@@ -108,67 +108,77 @@ export default function CategoryManager(props: CategoryManagerProps) {
         .map(({ item, depth }) => ({ id: item.id, label: nameOf(item), depth }))
     : [];
   return (
-    <div class="flex flex-col gap-6">
-      <div class="flex items-center justify-between gap-3">
-        <p class="text-text/70 text-sm">{labels.categories.hint}</p>
-        <button type="button" class={BUTTON_PRIMARY} onClick={() => edit(null)}>
-          {labels.categories.new}
-        </button>
+    <div class="grid items-start gap-6 lg:grid-cols-[24rem_minmax(0,1fr)]">
+      <div class="flex min-w-0 flex-col gap-4">
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-text/70 text-sm">{labels.categories.hint}</p>
+          <button type="button" class={BUTTON_PRIMARY} onClick={() => edit(null)}>
+            {labels.categories.new}
+          </button>
+        </div>
+        {message && (
+          <p role="alert" class={ERROR_TEXT}>
+            {message}
+          </p>
+        )}
+        {rows.length === 0 && <p class="text-text/70 text-sm">{labels.categories.empty}</p>}
+        <ul class={`${CARD} divide-text/10 flex flex-col divide-y overflow-hidden`}>
+          {rows.map(({ item, depth }, index) => (
+            <li
+              class={`flex items-center gap-1 pr-2 ${draft?.id === item.id ? 'bg-surface' : ''}`}
+              style={{ paddingLeft: `${0.5 + depth * 1.25}rem` }}
+            >
+              <button
+                type="button"
+                class="flex min-h-12 min-w-0 flex-1 items-center gap-2 text-left font-semibold"
+                aria-current={draft?.id === item.id ? 'true' : undefined}
+                onClick={() => edit(item)}
+              >
+                <span class="truncate">{nameOf(item) || '—'}</span>
+                {!item.isActive && (
+                  <span class="text-text/70 text-xs font-normal">{labels.categories.inactive}</span>
+                )}
+              </button>
+              <button
+                type="button"
+                class={LINK_BUTTON}
+                disabled={index === 0}
+                aria-label={labels.common.moveUp}
+                onClick={() => move(item, -1)}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                class={LINK_BUTTON}
+                disabled={index === rows.length - 1}
+                aria-label={labels.common.moveDown}
+                onClick={() => move(item, 1)}
+              >
+                ↓
+              </button>
+              <button type="button" class={LINK_BUTTON} onClick={() => remove(item)}>
+                {labels.common.delete}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
-      {message && (
-        <p role="alert" class={ERROR_TEXT}>
-          {message}
-        </p>
-      )}
-
-      {draft && (
-        <CategoryEditor
-          draft={draft}
-          setDraft={setDraft}
-          parents={parents}
-          labels={labels}
-          busy={busy}
-          onSave={save}
-          onCancel={() => setDraft(null)}
-        />
-      )}
-
-      {rows.length === 0 && <p class="text-text/70 text-sm">{labels.categories.empty}</p>}
-      <ul class="rounded-brand bg-surface divide-text/10 flex flex-col divide-y">
-        {rows.map(({ item, depth }, index) => (
-          <li
-            class="flex flex-wrap items-center gap-2 px-4 py-2"
-            style={{ paddingLeft: `${1 + depth * 1.25}rem` }}
-          >
-            <span class="mr-auto font-semibold">{nameOf(item) || '—'}</span>
-            {!item.isActive && <span class="text-text/70 text-xs">{labels.categories.inactive}</span>}
-            <button
-              type="button"
-              class={LINK_BUTTON}
-              disabled={index === 0}
-              aria-label={labels.common.moveUp}
-              onClick={() => move(item, -1)}
-            >
-              ↑
-            </button>
-            <button
-              type="button"
-              class={LINK_BUTTON}
-              disabled={index === rows.length - 1}
-              aria-label={labels.common.moveDown}
-              onClick={() => move(item, 1)}
-            >
-              ↓
-            </button>
-            <button type="button" class={LINK_BUTTON} onClick={() => edit(item)}>
-              {labels.common.edit}
-            </button>
-            <button type="button" class={LINK_BUTTON} onClick={() => remove(item)}>
-              {labels.common.delete}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div class="min-w-0 lg:sticky lg:top-24">
+        {draft ? (
+          <CategoryEditor
+            draft={draft}
+            setDraft={setDraft}
+            parents={parents}
+            labels={labels}
+            busy={busy}
+            onSave={save}
+            onCancel={() => setDraft(null)}
+          />
+        ) : (
+          <p class={`${CARD} text-text/70 p-6 text-sm`}>{labels.categories.hint}</p>
+        )}
+      </div>
     </div>
   );
 }

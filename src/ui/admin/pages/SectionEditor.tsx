@@ -56,7 +56,7 @@ export default function SectionEditor(props: SectionEditorProps) {
   const name = widget ? pickText(widget.label, props.locale, 'es') : `${labels.unknown}: ${section.type}`;
 
   return (
-    <article class="rounded-brand bg-surface flex flex-col gap-3 p-3">
+    <article class="rounded-card border-text/10 bg-background flex flex-col gap-3 border p-3">
       <div class="flex flex-wrap items-center gap-2">
         <label class="flex min-h-11 items-center gap-2 text-sm font-semibold">
           <input

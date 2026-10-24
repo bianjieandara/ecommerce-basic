@@ -1,13 +1,15 @@
 ---
-// Admin order list: newest first, filtered in the URL by status, payment method, a date range and a search text. The filters are
+// Admin order list in two parts on a wide screen: the list on the left, the chosen order (as a document) on the right. A phone
+// shows only the list, and each order opens on its own page. Newest first, filtered in the URL by status, payment method, a date range and a search text. The filters are
 // read once here and reused by the paging, so a filtered list pages through the same orders. "New since your last visit" lists the
 // orders created after the previous visit to this list.
 import AdminLayout from '@/ui/layouts/AdminLayout.astro';
 import AdminPager from '@/ui/admin/AdminPager.astro';
-import DataTable from '@/ui/admin/DataTable.astro';
+import AdminCard from '@/ui/admin/AdminCard.astro';
 import ListToolbar from '@/ui/admin/ListToolbar.astro';
-import StatusBadge from '@/ui/admin/StatusBadge.astro';
-import { BUTTON, FIELD, LABEL, LINK_BUTTON } from '@/ui/admin/lib/classes';
+import OrderDocument from '@/ui/admin/orders/OrderDocument.astro';
+import OrderListItem from '@/ui/admin/orders/OrderListItem.astro';
+import { BUTTON, FIELD, LABEL } from '@/ui/admin/lib/classes';
 import { ORDER_STATUS_TONE } from '@/ui/admin/orders/OrderStatusForm.tsx';
 import type { AdminOrderFilter } from '@/application/ports/order-admin';
 import { PAYMENT_METHODS } from '@/application/ports/payments';
@@ -18,6 +20,7 @@ import { totalPagesFor } from '@/domain/shared/pagination';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { ADMIN_LIST_PAGE_SIZE } from '@/http/admin-lists';
 import { positiveInteger } from '@/http/list-query';
+import { loadAdminOrderView } from '@/http/admin-order-view';
 import { dayRangeBounds, filterDay } from '@/http/store-days';
 import { pickNamespace, t } from '@/ui/i18n';
 
@@ -83,6 +86,18 @@ const result = await app.adminOps.reads.orders.list(filter, page, ADMIN_LIST_PAG
 const totalPages = totalPagesFor(result.total, ADMIN_LIST_PAGE_SIZE);
 const pagingParams = new URLSearchParams(params);
 pagingParams.delete('page');
+pagingParams.delete('order');
+// The order in the side pane: the one named in the URL when it is on this page, otherwise the first of the page.
+const wanted = Number(params.get('order'));
+const selectedNumber =
+  result.items.find((row) => row.number === wanted)?.number ?? result.items[0]?.number ?? 0;
+const selected = selectedNumber ? await loadAdminOrderView(app, selectedNumber) : null;
+const paneHref = (number: number) => {
+  const next = new URLSearchParams(pagingParams);
+  if (page > 1) next.set('page', String(page));
+  next.set('order', String(number));
+  return `${ADMIN_PATHS.orders}?${next}`;
+};
 ---
 
 <AdminLayout title={labels.title} locale={lang} storeName={general.storeName}>
@@ -142,53 +157,60 @@ pagingParams.delete('page');
     )
   )}
 
-  <DataTable>
-    <thead>
-      <tr>
-        <th scope="col">{labels.number}</th>
-        <th scope="col">{labels.date}</th>
-        <th scope="col">{labels.customer}</th>
-        <th scope="col">{labels.total}</th>
-        <th scope="col">{labels.payment}</th>
-        <th scope="col">{labels.status}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {result.items.map((row) => (
-        <tr>
-          <td data-label={labels.number}>
-            <a href={`${ADMIN_PATHS.orders}/${row.number}`} class={LINK_BUTTON}>
-              {row.number}
-            </a>
-          </td>
-          <td data-label={labels.date}>
-            {formatDateTime(row.createdAt, lang, general.country, general.timezone)}
-          </td>
-          <td data-label={labels.customer}>
-            <span class="flex min-w-0 flex-col">
-              <span class="font-semibold">{row.customerName}</span>
-              <span class="text-text/70 break-all">{row.customerEmail}</span>
-            </span>
-          </td>
-          <td data-label={labels.total}>
-            {formatMoney(money(row.totalMinor, row.currency), lang, general.country)}
-          </td>
-          <td data-label={labels.payment}>{labels.methods[row.paymentMethod] ?? row.paymentMethod}</td>
-          <td data-label={labels.status}>
-            <StatusBadge label={labels.states[row.status]} tone={ORDER_STATUS_TONE[row.status]} />
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </DataTable>
-
-  {result.items.length === 0 && <p class="text-text/70 text-sm">{labels.empty}</p>}
-
-  <AdminPager
-    locale={lang}
-    path={ADMIN_PATHS.orders}
-    params={pagingParams}
-    page={page}
-    totalPages={totalPages}
-  />
+  <div class="grid items-start gap-6 lg:grid-cols-[23rem_minmax(0,1fr)]">
+    <div class="flex min-w-0 flex-col gap-4 lg:sticky lg:top-24">
+      {result.items.length === 0 ? (
+        <p class="text-sm text-text/70">{labels.empty}</p>
+      ) : (
+        <AdminCard title={labels.title} class="lg:max-h-[calc(100dvh-8rem)] lg:overflow-auto">
+          <ul class="-mx-2 flex flex-col" data-order-list>
+            {result.items.map((row) => (
+              <OrderListItem
+                number={row.number}
+                customer={row.customerName}
+                date={formatDateTime(row.createdAt, lang, general.country, general.timezone)}
+                total={formatMoney(money(row.totalMinor, row.currency), lang, general.country)}
+                statusLabel={labels.states[row.status]}
+                tone={ORDER_STATUS_TONE[row.status]}
+                href={`${ADMIN_PATHS.orders}/${row.number}`}
+                paneHref={paneHref(row.number)}
+                selected={row.number === selectedNumber}
+              />
+            ))}
+          </ul>
+        </AdminCard>
+      )}
+      <AdminPager
+        locale={lang}
+        path={ADMIN_PATHS.orders}
+        params={pagingParams}
+        page={page}
+        totalPages={totalPages}
+      />
+    </div>
+    <div class="hidden min-w-0 lg:block">
+      {selected && (
+        <OrderDocument
+          view={selected}
+          lang={lang}
+          country={general.country}
+          timezone={general.timezone}
+          storeName={general.storeName}
+        />
+      )}
+    </div>
+  </div>
 </AdminLayout>
+
+<script>
+  // On a wide screen an order opens in the side pane (the list page with ?order=); narrower screens follow the link to the order's
+  // own page. Without JavaScript every link is the order's page.
+  const wide = window.matchMedia('(min-width: 1024px)');
+  document.querySelector('[data-order-list]')?.addEventListener('click', (event: Event) => {
+    const click = event as MouseEvent;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[data-pane-href]');
+    if (!link || !wide.matches || click.metaKey || click.ctrlKey || click.shiftKey) return;
+    event.preventDefault();
+    window.location.assign(link.dataset.paneHref ?? link.href);
+  });
+</script>

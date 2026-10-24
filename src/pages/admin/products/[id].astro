@@ -36,5 +36,11 @@ const saved = Astro.url.searchParams.get('saved') === '1';
     currency={editor.currency}
     defaultLowStockThreshold={editor.defaultLowStockThreshold}
     listHref={ADMIN_PATHS.products}
+    locale={lang}
+    preview={{
+      title: t(lang, 'admin.product.previewTitle'),
+      onSale: t(lang, 'product.onSale'),
+      noName: t(lang, 'admin.product.previewNoName'),
+    }}
   />
 </AdminLayout>

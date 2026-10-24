@@ -61,7 +61,7 @@ export default function NewPageForm(props: NewPageFormProps) {
 
   return (
     <form
-      class="rounded-brand bg-surface flex flex-col gap-4 p-4"
+      class="rounded-card border-text/10 bg-background flex flex-col gap-4 border p-4"
       onSubmit={(event) => {
         event.preventDefault();
         void create();

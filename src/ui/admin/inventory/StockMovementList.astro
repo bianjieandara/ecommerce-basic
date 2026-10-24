@@ -1,0 +1,44 @@
+---
+// The latest stock changes as a short timeline: the change in units, the product and option, why it happened and when. Shown
+// beside the inventory table; the full ledger has its own page.
+import type { StockMovement } from '@/application/ports/inventory';
+import type { StockReason } from '@/domain/inventory/stock';
+import { formatDateTime } from '@/domain/shared/format';
+import type { Locale } from '@/domain/shared/locale';
+
+interface Props {
+  movements: StockMovement[];
+  reasons: Record<StockReason, string>;
+  empty: string;
+  locale: Locale;
+  country: string;
+  timezone: string;
+}
+
+const { movements, reasons, empty, locale, country, timezone } = Astro.props;
+---
+
+{movements.length === 0 ? (
+  <p class="text-sm text-text/70">{empty}</p>
+) : (
+  <ol class="flex flex-col gap-4 border-l-2 border-text/10 pl-4">
+    {movements.map((movement) => (
+      <li class="relative flex flex-col gap-0.5 text-sm">
+        <span
+          class="absolute top-1.5 -left-[1.4rem] size-2.5 rounded-full border-2 border-text bg-background"
+          aria-hidden="true"
+        />
+        <span class="wrap-break-word">
+          <b class={`tabular-nums ${movement.delta < 0 ? 'text-accent' : ''}`}>
+            {movement.delta > 0 ? `+${movement.delta}` : movement.delta}
+          </b>{' '}
+          {movement.productName}
+          {movement.variantLabel && <span class="text-text/70"> · {movement.variantLabel}</span>}
+        </span>
+        <span class="text-xs text-text/60">
+          {reasons[movement.reason]} · {formatDateTime(movement.createdAt, locale, country, timezone)}
+        </span>
+      </li>
+    ))}
+  </ol>
+)}

@@ -1,0 +1,40 @@
+---
+// One order in the list of the order screen: number, customer, date, total and status. The link goes to the order's own page; on
+// a wide screen the list script (see the order list page) opens it in the side pane instead, using `data-pane-href`.
+import StatusBadge from '@/ui/admin/StatusBadge.astro';
+import type { BADGE_TONE } from '@/ui/admin/lib/classes';
+
+interface Props {
+  number: number;
+  customer: string;
+  date: string;
+  total: string;
+  statusLabel: string;
+  tone: keyof typeof BADGE_TONE;
+  href: string;
+  paneHref: string;
+  selected: boolean;
+}
+
+const { number, customer, date, total, statusLabel, tone, href, paneHref, selected } = Astro.props;
+---
+
+<li>
+  <a
+    href={href}
+    data-pane-href={paneHref}
+    aria-current={selected ? 'true' : undefined}
+    class="flex min-h-16 items-center justify-between gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-surface aria-[current=true]:bg-surface"
+  >
+    <span class="flex min-w-0 flex-col">
+      <span class="truncate">
+        <b class="tabular-nums">#{number}</b> {customer}
+      </span>
+      <span class="text-xs text-text/60">{date}</span>
+    </span>
+    <span class="flex shrink-0 flex-col items-end gap-1">
+      <span class="text-sm font-semibold tabular-nums">{total}</span>
+      <StatusBadge label={statusLabel} tone={tone} />
+    </span>
+  </a>
+</li>

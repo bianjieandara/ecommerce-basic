@@ -17,14 +17,14 @@ const { action, search, labels, clearHref } = Astro.props;
 <form
   method="get"
   action={action}
-  class="rounded-brand bg-surface flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap sm:items-end"
+  class="grid grid-cols-2 gap-3 rounded-card bg-surface p-4 sm:flex sm:flex-wrap sm:items-end"
 >
-  <label class={`${LABEL} sm:min-w-64 sm:flex-1`}>
+  <label class={`${LABEL} col-span-2 sm:min-w-64 sm:flex-1`}>
     {labels.search}
     <input type="search" name="q" value={search} class={FIELD} />
   </label>
   <slot />
-  <div class="flex gap-2">
+  <div class="col-span-2 flex gap-2">
     <button type="submit" class={BUTTON_PRIMARY}>
       {labels.apply}
     </button>
