@@ -10,7 +10,10 @@ sidebar:
 ![The orders list](../../../../assets/screens/en/admin-orders.png)
 
 Search by **order number, name, email or phone**, or filter by **status**, **payment method** and a **date range**. The newest
-orders are on top. Click the number to open an order.
+orders are on top.
+
+On a wide screen the list stays on the left and the order you choose opens **on the right**, without leaving the list; the first order
+of the page is shown when you arrive. On a phone you see only the list, and each order opens on its own page.
 
 On a phone the list becomes cards, so you can process orders from your pocket.
 
@@ -20,7 +23,9 @@ On a phone the list becomes cards, so you can process orders from your pocket.
 
 ![An order](../../../../assets/screens/en/admin-order-detail.png)
 
-The order page has everything in one place:
+The order looks like a document, like a receipt: the store, the number, the date and the status at the top; then the customer, the
+items with the totals, and the payment and delivery details. The actions sit to one side (below, on narrow screens), and the timeline,
+origin and messages at the bottom. Together it has:
 
 - **Customer:** name, email, phone, plus **Reply on WhatsApp** (opens a chat with the customer) and **Copy customer link** (the
   private order page the customer sees).

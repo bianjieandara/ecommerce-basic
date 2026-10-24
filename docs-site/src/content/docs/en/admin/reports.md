@@ -11,7 +11,7 @@ sidebar:
 
 ## Choosing a report
 
-The tabs across the top are the reports:
+The list on the left (a row you can swipe, on a phone) is the reports:
 
 | Report                | Answers                                                              |
 | --------------------- | -------------------------------------------------------------------- |
@@ -31,7 +31,8 @@ The tabs across the top are the reports:
 
 1. **Set the range.** Set **From** and **To**, or press **Last 7 days**, **Last 30 days** or **Last 90 days**.
 2. **Group if you need to.** For sales you can group the chart by day, week or month. Each number shows how it compares with the period before it.
-3. **Download the CSV.** **Download CSV** exports the report table.
+3. **Compare.** The **Compare** button (next to **Summary**) shows each indicator beside the one for the period before it, and the change, in a table.
+4. **Download the CSV.** **Download CSV** exports the report table.
 
 ## Weekly summary
 

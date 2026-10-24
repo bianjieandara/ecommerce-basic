@@ -16,6 +16,8 @@ La pantalla de inventario es la forma más rápida de ver y cambiar el stock de 
 - Filtra por **nombre, SKU o código de barras**, por **categoría** o por **nivel de stock** (en stock, stock bajo, agotado, sin
   control de stock), y ordena por nombre, stock o valor.
 - Cada fila muestra el stock, el nivel **Bajo desde** (cuando la tienda te avisa) y un estado: *En stock*, *Stock bajo* o *Agotado*.
+- A la derecha de la tabla (debajo, en el celular) verás los **ocho últimos cambios de stock** como una línea de tiempo: cuántas
+  unidades, qué producto, el motivo y cuándo. **Ver todo** abre el historial completo.
 - **SKU o código de barras** te lleva directo a una variante. En el celular, **Escanear código** usa la cámara si el navegador lo
   permite; si no, escribe el código.
 

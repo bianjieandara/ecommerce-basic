@@ -11,7 +11,7 @@ sidebar:
 
 ## Elegir un reporte
 
-Las pestañas de arriba son los reportes:
+La lista de la izquierda (una fila que se desliza, en el celular) son los reportes:
 
 | Reporte                  | Responde a                                                              |
 | ------------------------ | ----------------------------------------------------------------------- |
@@ -31,7 +31,8 @@ Las pestañas de arriba son los reportes:
 
 1. **Define el rango.** Escribe **Desde** y **Hasta**, o pulsa **Últimos 7 días**, **Últimos 30 días** o **Últimos 90 días**.
 2. **Agrupa si hace falta.** En ventas puedes **agrupar por** día, semana o mes. Cada cifra muestra cómo se compara con el periodo anterior («vs periodo anterior»).
-3. **Descarga el CSV.** **Descargar CSV** exporta la tabla del reporte. Cada reporte lleva al pie notas que explican cómo se cuenta (por ejemplo, que los importes cuentan los pedidos el día en que se pagaron).
+3. **Compara.** El botón **Comparar** (junto a **Resumen**) muestra cada indicador junto al del periodo anterior y el cambio, en una tabla.
+4. **Descarga el CSV.** **Descargar CSV** exporta la tabla del reporte. Cada reporte lleva al pie notas que explican cómo se cuenta (por ejemplo, que los importes cuentan los pedidos el día en que se pagaron).
 
 ## Resumen semanal
 

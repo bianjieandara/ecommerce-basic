@@ -103,6 +103,7 @@ const SHOTS = [
   { name: 'admin-dashboard', path: '/admin', device: 'desktop' },
   { name: 'admin-dashboard-phone', path: '/admin', device: 'phone' },
   { name: 'admin-products', path: '/admin/products', device: 'desktop' },
+  { name: 'admin-products-rows', path: '/admin/products?view=rows', device: 'desktop' },
   { name: 'admin-product-edit', path: `/admin/products/${demo.product}`, device: 'desktop' },
   {
     name: 'admin-product-variants',

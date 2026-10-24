@@ -7,6 +7,9 @@ sidebar:
 
 La configuración la cambian los **propietarios**. Cada grupo se guarda por separado y el cambio se ve en la tienda de inmediato.
 
+Los grupos están en una lista a la izquierda (una fila que se desliza, en el celular) y el formulario del grupo abierto, a la derecha.
+Al entrar se abre el primero, **General**.
+
 ![Los grupos de configuración](../../../assets/screens/es/admin-settings.png)
 
 | Grupo              | Qué controla                                                                                                                       |

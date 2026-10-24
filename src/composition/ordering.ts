@@ -14,6 +14,7 @@ import { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
 import { GetOrderStatus } from '@/application/ordering/get-order-status';
 import { OrderLinks } from '@/application/ordering/order-links';
+import { RefundOrder } from '@/application/ordering/refund-order';
 import { PlaceOrder } from '@/application/ordering/place-order';
 import { GetInvoiceHtml } from '@/application/invoicing/get-invoice-html';
 import { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
@@ -55,6 +56,7 @@ export interface OrderingServices {
   invoicePdf: GetInvoicePdf;
   invoiceHtml: GetInvoiceHtml;
   voidInvoice: VoidInvoice;
+  refundOrder: RefundOrder;
 }
 
 /** Dependencies of the ordering wiring. */
@@ -172,5 +174,15 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     invoicePdf: new GetInvoicePdf({ ...pdfDeps, orderStatus, invoices, media }),
     invoiceHtml: new GetInvoiceHtml({ orderStatus, invoices, settings }),
     voidInvoice: new VoidInvoice({ invoices, orders, clock, ids, media }),
+    refundOrder: new RefundOrder({
+      orders,
+      gateways,
+      events: paymentEvents,
+      confirmPayment,
+      clock,
+      siteUrl,
+      onError: (event, error) =>
+        logEvent(event, { error: error instanceof Error ? error.message : 'unknown' }),
+    }),
   };
 }

@@ -16,7 +16,7 @@ Necesitas Node y Google Chrome en la máquina. Desde la raíz del repositorio:
 ```sh
 npm run build                      # la tienda tal como se publicará
 npm run docs:store                 # arranca una tienda demo en http://localhost:4400 con su propia base de datos
-npm run docs:data                  # la llena con productos, imágenes, pedidos, mensajes y testimonios de ejemplo
+npm run docs:data                  # la llena con productos, imágenes, pedidos y testimonios de ejemplo
 npm run docs:screens               # toma todas las capturas en docs-site/src/assets/screens/es/
 DOCS_LANG=en npm run docs:screens  # las mismas capturas con la interfaz en inglés (carpeta en/)
 ```

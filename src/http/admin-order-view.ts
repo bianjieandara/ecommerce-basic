@@ -4,6 +4,7 @@
 import type { Container } from '@/composition/create-container';
 import { canTransition, isPaidOrLater, MANUAL_ORDER_TARGETS } from '@/domain/ordering/order-status';
 import { PATHS } from '@/domain/shared/paths';
+import { REFUNDABLE_METHODS } from '@/application/ports/payments';
 
 /**
  * Loads the admin view of an order.
@@ -39,6 +40,17 @@ export async function loadAdminOrderView(app: Container, orderNumber: number) {
     pdfHref:
       accessKey && invoice
         ? `/api/orders/${order.number}/invoice.pdf?key=${encodeURIComponent(accessKey)}`
+        : null,
+    // A refund through the provider is offered while the order can still become refunded and its provider supports it. After the
+    // request the order stays paid until the provider confirms, so the screen says it is waiting instead of offering the button again.
+    refund:
+      order.paymentReference &&
+      canTransition(order.status, 'refunded') &&
+      (REFUNDABLE_METHODS as readonly string[]).includes(order.paymentMethod)
+        ? {
+            provider: order.paymentMethod as (typeof REFUNDABLE_METHODS)[number],
+            requested: events.some((event) => event.type === 'refund_requested'),
+          }
         : null,
     // The states the owner may still set from here.
     targets: MANUAL_ORDER_TARGETS.filter((to) => canTransition(order.status, to)),

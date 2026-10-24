@@ -9,7 +9,7 @@ import type { NotificationService } from '../notifications/notification-service'
 import type { SettingsRepository } from '../ports/content';
 import type { JobQueue } from '../ports/jobs';
 import type { OrderRepository } from '../ports/ordering';
-import type { PaymentConfirmation, PaymentEventLog } from '../ports/payments';
+import { refundRequestEventId, type PaymentConfirmation, type PaymentEventLog } from '../ports/payments';
 import type { Clock, LogEvent } from '../ports/platform';
 import type { ReportPurchase } from '../marketing/report-purchase';
 import { notifyOrderCustomer } from './customer-notice';
@@ -162,6 +162,19 @@ export class ConfirmPayment {
         return;
       }
       case 'refunded': {
+        // A refund in another currency cannot be matched to the order's total. It counts as the full refund only when this store
+        // asked for it (RefundOrder records that before it calls the provider); any other one is left for the owner to settle.
+        if (
+          confirmation.foreignCurrencyRefund &&
+          !(await this.deps.events.exists(confirmation.provider, refundRequestEventId(order.id)))
+        ) {
+          this.deps.log('refund.foreign_currency_not_requested', {
+            orderNumber: order.number,
+            provider: confirmation.provider,
+            eventId: confirmation.eventId,
+          });
+          return;
+        }
         if (canTransition(order.status, 'refunded')) {
           const refunded = await this.deps.orders.transition(order.id, order.status, 'refunded', {
             type: 'refunded',

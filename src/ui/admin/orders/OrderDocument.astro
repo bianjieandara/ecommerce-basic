@@ -6,6 +6,7 @@ import CopyButton from '@/ui/admin/CopyButton.tsx';
 import StatusBadge from '@/ui/admin/StatusBadge.astro';
 import OrderInvoicePanel from './OrderInvoicePanel.astro';
 import OrderMessages from './OrderMessages.astro';
+import OrderRefundPanel from './OrderRefundPanel.tsx';
 import OrderStatusForm, { ORDER_STATUS_TONE } from './OrderStatusForm.tsx';
 import { BUTTON, DETAIL_LIST, HEADING, PANEL } from '@/ui/admin/lib/classes';
 import type { AdminOrderView } from '@/http/admin-order-view';
@@ -22,10 +23,13 @@ interface Props {
   country: string;
   timezone: string;
   storeName: string;
+  /** Whether the signed-in admin may send money back (owners only). */
+  canRefund?: boolean;
 }
 
-const { view, lang, country, timezone, storeName } = Astro.props;
-const { order, timeline, messages, invoice, canIssue, customerLink, pdfHref, targets } = view;
+const { view, lang, country, timezone, storeName, canRefund = false } = Astro.props;
+const { order, timeline, messages, invoice, canIssue, customerLink, pdfHref, targets, refund } = view;
+const providerName = { dlocalgo: 'dLocal Go', paypal: 'PayPal' };
 const labels = pickNamespace(lang, 'admin').orders;
 const invoiceLabels = pickNamespace(lang, 'admin').invoices;
 const errorTexts = pickNamespace(lang, 'errors');
@@ -161,6 +165,30 @@ const facts: [string, string][] = [
             labels={labels}
             errors={errorTexts}
           />
+        </section>
+      )}
+      {refund && (refund.requested || canRefund) && (
+        <section class={PANEL} aria-label={labels.refundTitle}>
+          <h2 class={HEADING}>{labels.refundTitle}</h2>
+          {refund.requested ? (
+            <>
+              <p class="text-sm">
+                {labels.refundPending.replaceAll('{provider}', providerName[refund.provider])}
+              </p>
+              <p class="text-sm text-text/70">
+                {labels.refundRejected.replaceAll('{provider}', providerName[refund.provider])}
+              </p>
+            </>
+          ) : (
+            <OrderRefundPanel
+              client:load
+              orderNumber={order.number}
+              amount={price(order.totalMinor)}
+              provider={providerName[refund.provider]}
+              labels={labels}
+              errors={errorTexts}
+            />
+          )}
         </section>
       )}
       {(whatsapp || customerLink) && (

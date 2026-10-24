@@ -16,7 +16,7 @@ You need Node and Google Chrome on the machine. From the repository root:
 ```sh
 npm run build                      # the store as it will be deployed
 npm run docs:store                 # starts a demo store on http://localhost:4400 with its own empty database
-npm run docs:data                  # fills it with sample products, pictures, orders, messages and testimonials
+npm run docs:data                  # fills it with sample products, pictures, orders and testimonials
 npm run docs:screens               # takes every screenshot in Spanish into docs-site/src/assets/screens/es/
 DOCS_LANG=en npm run docs:screens  # the same screenshots with the interface in English (folder en/)
 ```

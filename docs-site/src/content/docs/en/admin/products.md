@@ -9,11 +9,22 @@ sidebar:
 
 ![The product list](../../../../assets/screens/en/admin-products.png)
 
-Find products with the search box or the **Status**, **Category**, **On sale** and **Out of stock** filters. Each row shows the
-status, price, total stock, the number of variants and when it was last changed. Two quick actions sit on each row:
+Find products with the search box or the **Status**, **Category**, **On sale** and **Out of stock** filters. At the top right you
+choose how to see them:
 
-- **Unpublish / Publish:** hide a product from the shop without deleting it.
-- **Duplicate:** start a new product from an existing one (handy for similar items).
+- **Grid:** one card per product with its picture, name, price, status and stock. It is the view for recognising a product at a
+  glance. A product without a picture shows its initial.
+- **Rows:** one row per product with price, stock and the number of variants, and two quick actions: **Unpublish / Publish** (hide a
+  product from the shop without deleting it) and **Duplicate** (start a new product from an existing one, handy for similar items).
+
+The view is kept in the address (`?view=rows` for rows; the grid is the default), so you can bookmark or share it.
+
+![The product list as rows](../../../../assets/screens/en/admin-products-rows.png)
+
+### Changing several products at once
+
+Tick the box of each product, in either view. A bar appears at the bottom with **"N selected"**, **Unpublish** and **Publish**: the
+change applies to everything ticked in one request (up to 100). Products that no longer exist are ignored.
 
 Press **New product** to add one.
 
@@ -33,6 +44,9 @@ Press **New product** to add one.
 **Text** has a tab for each language. Write the name, short description and a longer description in Markdown (use `**bold**`,
 lists and links). The **slug** is the web address of the product in that language; leave it empty and it is made from the name.
 **SEO title** and **SEO description** are what Google shows; if you leave them empty the store writes sensible ones.
+
+**Preview:** on the right (below, on a phone) the store draws the product's card from what you type: picture, name, price, sale
+badge and category. It changes as you type, before you save.
 
 **Images:** add pictures from the media library, drag them with the arrows to reorder them. The first one is the product's main
 picture and appears in listings and when a link is shared.

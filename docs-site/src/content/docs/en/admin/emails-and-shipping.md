@@ -8,7 +8,7 @@ sidebar:
 ## Emails
 
 **Emails** lists every message the store sends, grouped by who receives it: **customers** (order received, payment received,
-being prepared, shipped, delivered, cancelled, invoice issued, contact reply…) and **the store** (new order, new contact message,
+being prepared, shipped, delivered, cancelled, invoice issued…) and **the store** (new order,
 low stock…). Each shows whether it uses the **default copy** or **your copy**, and whether it is **sending** or turned off.
 
 ![The email list](../../../../assets/screens/en/admin-emails.png)

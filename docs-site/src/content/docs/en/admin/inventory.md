@@ -16,6 +16,8 @@ The inventory screen is the fastest way to see and change stock for every varian
 - Filter by **name, SKU or barcode**, by **category**, or by **stock level** (all, in stock, low, out of stock), and sort by name
   or stock.
 - Each row shows the stock, the **Low at** level (when the store warns you) and a status: *In stock*, *Low* or *Out*.
+- Beside the table (below it, on a phone) you see the **eight latest stock changes** as a timeline: how many units, which product,
+  the reason and when. **See all** opens the full history.
 - **Find by SKU or barcode** jumps straight to a variant. On a phone, **Scan barcode** uses the camera where the browser supports
   it; otherwise type the code.
 

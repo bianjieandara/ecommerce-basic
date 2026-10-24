@@ -18,6 +18,7 @@ import { formatDateTime, formatMoney } from '@/domain/shared/format';
 import { money } from '@/domain/shared/money';
 import { totalPagesFor } from '@/domain/shared/pagination';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
+import { can } from '@/domain/identity/role';
 import { ADMIN_LIST_PAGE_SIZE } from '@/http/admin-lists';
 import { positiveInteger } from '@/http/list-query';
 import { loadAdminOrderView } from '@/http/admin-order-view';
@@ -196,6 +197,7 @@ const paneHref = (number: number) => {
           country={general.country}
           timezone={general.timezone}
           storeName={general.storeName}
+          canRefund={can(admin.role, 'orders.refund')}
         />
       )}
     </div>

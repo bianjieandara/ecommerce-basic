@@ -3,7 +3,13 @@
 // dLocal Go for the payment, and only that answer can mark an order paid.
 import { absoluteUrl } from '@/application/documents/urls';
 import type { OrderSummary } from '@/application/dto/order-dto';
-import type { PaymentConfirmation, PaymentGateway, PaymentInitiation } from '@/application/ports/payments';
+import type {
+  PaymentConfirmation,
+  PaymentGateway,
+  PaymentInitiation,
+  RefundInput,
+  RefundResult,
+} from '@/application/ports/payments';
 import { constantTimeEqual } from '@/domain/shared/constant-time';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import { DomainError } from '@/domain/shared/errors';
@@ -146,6 +152,34 @@ export class DLocalGoGateway implements PaymentGateway {
   }
 
   /**
+   * Asks dLocal Go to refund the whole payment. The refund finishes later: dLocal Go answers PENDING and then calls the
+   * notification URL, which is how the order becomes refunded (see confirmationFor). If it is already done, it is applied now.
+   * dLocal Go has no idempotency key, so the caller guards against asking twice.
+   * @param input The order, the payment id stored with it and the public site URL.
+   * @returns The refund id, and the confirmation when dLocal Go has already finished it.
+   * @throws DomainError REFUND_REFUSED when dLocal Go answers a 4xx (too old, already refunded, not paid), PAYMENT_PROVIDER_ERROR otherwise.
+   */
+  async refund({ providerReference, origin }: RefundInput): Promise<RefundResult> {
+    const response = await this.api<DLocalGoRefund & { code?: number; message?: string }>('/v1/refunds', {
+      method: 'POST',
+      body: {
+        payment_id: providerReference,
+        notification_url: absoluteUrl(origin, '/api/webhooks/dlocalgo'),
+      },
+    });
+    if (!response.ok || !response.data.id) {
+      const reason = `dLocal Go refund error ${response.status}${response.data.code ? ` (${response.data.code})` : ''}: ${response.data.message ?? ''}`;
+      throw new DomainError(
+        response.status >= 400 && response.status < 500 ? 'REFUND_REFUSED' : 'PAYMENT_PROVIDER_ERROR',
+        reason,
+      );
+    }
+    // The money is moving. Reading the outcome back is a convenience (usually still PENDING): if it fails, the notification will do it.
+    const confirmation = await this.confirmationFor({ refund_id: response.data.id }).catch(() => null);
+    return { providerRefundId: response.data.id, confirmation };
+  }
+
+  /**
    * Turns a verified notification into a payment confirmation by asking dLocal Go for the object it names.
    * @param notification Parsed notification body.
    * @returns The confirmation, or null for a pending payment, an unfinished or partial refund, or an unknown body.
@@ -163,11 +197,17 @@ export class DLocalGoGateway implements PaymentGateway {
     }
     if (refund.status !== 'SUCCESS') return null;
     const payment = await this.capture(refund.payment_id);
-    const currency = refund.currency as CurrencyCode;
+    if (!payment) return null;
+    const eventId = `${refund.id}:SUCCESS`;
+    // dLocal Go reports a refund in the buyer's currency (a $12 USD payment is refunded as COP 41,150.72), so a payment in another
+    // currency cannot be compared with it. ConfirmPayment then accepts it only if this store asked for the refund.
+    if (refund.currency !== payment.currency) {
+      return { ...payment, eventId, outcome: 'refunded', foreignCurrencyRefund: true };
+    }
     // Only a full refund moves the order to refunded. A partial one leaves the order paid, for the store to settle by hand.
-    if (!payment || providerAmountMinor(refund.amount, currency, 'dLocal Go') !== payment.amountMinor)
-      return null;
-    return { ...payment, eventId: `${refund.id}:SUCCESS`, outcome: 'refunded' };
+    const currency = refund.currency as CurrencyCode;
+    if (providerAmountMinor(refund.amount, currency, 'dLocal Go') !== payment.amountMinor) return null;
+    return { ...payment, eventId, outcome: 'refunded' };
   }
 
   /**

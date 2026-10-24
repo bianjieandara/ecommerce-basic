@@ -843,13 +843,16 @@ export const en = {
       changing: 'Saving…',
       changed: 'Status changed.',
       refundTitle: 'Refund',
-      refundIntro: 'Sends the whole payment of {amount} back to the customer through {provider}. This cannot be undone.',
+      refundIntro:
+        'Sends the whole payment of {amount} back to the customer through {provider}. This cannot be undone.',
       refundButton: 'Refund {amount}',
       refundConfirm: 'Yes, refund {amount}',
       refundKeep: 'Keep the order',
       refundRunning: 'Refunding…',
-      refundPending: 'Refund requested from {provider}. The order changes to refunded when {provider} confirms it.',
-      refundRejected: 'If {provider} rejects the refund, refund it in its dashboard and set the order to refunded here.',
+      refundPending:
+        'Refund requested from {provider}. The order changes to refunded when {provider} confirms it.',
+      refundRejected:
+        'If {provider} rejects the refund, refund it in its dashboard and set the order to refunded here.',
       invoiceTitle: 'Invoice',
       noInvoice: 'No invoice yet.',
       viewInvoice: 'View invoice',

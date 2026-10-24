@@ -7,6 +7,9 @@ sidebar:
 
 Settings are changed by **owners**. Each group saves on its own, and the change is live in the shop straight away.
 
+The groups are a list on the left (a row you can swipe, on a phone) and the open group's form is on the right. The first group,
+**General**, opens when you arrive.
+
 ![The settings groups](../../../../assets/screens/en/admin-settings.png)
 
 | Group            | What it controls                                                                                                                         |

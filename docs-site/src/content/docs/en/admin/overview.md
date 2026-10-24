@@ -26,22 +26,34 @@ The first screen shows how the shop is doing right now.
 
 ![The dashboard](../../../../assets/screens/en/admin-dashboard.png)
 
-- **Today, last 7 days, last 30 days:** orders placed, paid orders, revenue, tax and the average order.
-- **Orders to process:** paid orders that still need preparing or shipping. Click **Open orders**.
-- **Out of stock** and **Low stock:** products that need restocking.
-- **Failed messages** and **Failed jobs:** emails or background tasks that did not go through. They should be **0**; see
-  [Messages and notifications](/en/admin/messages-and-notifications/).
-- A chart of revenue for the last 14 days.
+The screen has two columns. On the left:
 
-On a phone the same cards stack in one column.
+- A chart of revenue for the **last 14 days**.
+- **Recent orders:** the six newest, with customer, date, total and status. Click the number to open an order, or **See all orders**.
+- **Top products** of the last 30 days.
+
+On the right, which stays in view while you scroll the left:
+
+- **Today:** orders placed, paid orders, revenue, tax and the average order.
+- **Alerts:** orders to process, out of stock, low stock, failed messages and failed jobs. Each row leads to the list behind its
+  number. They should be **0**, except the orders to process; see
+  [Messages and notifications](/en/admin/messages-and-notifications/).
+- **Other periods:** revenue and paid orders for the last 7 and 30 days.
+
+On a phone the two columns stack into one.
 
 ![The dashboard on a phone](../../../../assets/screens/en/admin-dashboard-phone.png)
 
-## The menu
+## The menu and the search
 
-The bar at the top has one entry per area: **Products, Categories, Attributes, Media, Inventory, Orders, Invoices,
-Message log, Failed jobs, Settings, Pages, Emails, Shipping, Testimonials, Users, WhatsApp** and **Reports**. This guide follows
-the same order.
+The bar at the top has the store name, a **search box**, the **Menu** button and **Sign out**.
+
+- **Menu** opens every page of the admin in five sections: **Catalog** (Products, Categories, Attributes, Media, Inventory),
+  **Sales** (Orders, Invoices, Shipping, Reports), **Content** (Pages, Testimonials, Emails), **Messaging** (WhatsApp, Message log,
+  Failed jobs) and **Store** (Settings, Users). This guide follows nearly the same order.
+- The **search box** ("Go to a page…") filters those pages as you type; **Enter** opens the first one. On a laptop, **Ctrl K**
+  (or **⌘ K**) puts the cursor in the search box from any page, and **Esc** closes the menu.
+- Above each page title a small line shows the section and the page ("Sales / Orders"), so you always know where you are.
 
 ## Roles: who can do what
 

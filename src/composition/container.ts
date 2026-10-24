@@ -34,6 +34,7 @@ import type { GetInvoiceHtml } from '@/application/invoicing/get-invoice-html';
 import type { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
 import type { IssueInvoice } from '@/application/invoicing/issue-invoice';
 import type { VoidInvoice } from '@/application/invoicing/void-invoice';
+import type { RefundOrder } from '@/application/ordering/refund-order';
 import type { MediaStorage } from '@/application/ports/media';
 import type { PageRepository, SettingsRepository, TestimonialRepository } from '@/application/ports/content';
 import type { LegalInvoiceIssuer, PdfRenderer } from '@/application/ports/invoicing';
@@ -90,6 +91,8 @@ export interface Container {
   /** Customer invoice page: the same document as the PDF, as HTML. */
   invoiceHtml: GetInvoiceHtml;
   voidInvoice: VoidInvoice;
+  /** Sends a paid order's payment back through its provider (owners only). */
+  refundOrder: RefundOrder;
   /** Google reviews: the job refreshes them, pages read them from KV. */
   reviews: ReviewsService;
   /** Admin accounts and sessions. */

@@ -16,7 +16,19 @@ export class D1PaymentEventLog implements PaymentEventLog {
     return result.meta.changes > 0;
   }
 
+  async exists(provider: string, eventId: string): Promise<boolean> {
+    const row = await statement(
+      this.db,
+      'SELECT 1 AS found FROM payment_events WHERE provider = ? AND event_id = ?',
+      [provider, eventId],
+    ).first();
+    return row !== null;
+  }
+
   async forget(provider: string, eventId: string): Promise<void> {
-    await statement(this.db, 'DELETE FROM payment_events WHERE provider = ? AND event_id = ?', [provider, eventId]).run();
+    await statement(this.db, 'DELETE FROM payment_events WHERE provider = ? AND event_id = ?', [
+      provider,
+      eventId,
+    ]).run();
   }
 }

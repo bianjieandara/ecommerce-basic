@@ -40,6 +40,16 @@ export interface PayPalOrderResponse {
   message?: string;
 }
 
+/** The parts of a PayPal refund response this adapter reads. */
+export interface PayPalRefundResponse {
+  id?: string;
+  status?: string;
+  amount?: { value: string; currency_code: string };
+  name?: string;
+  message?: string;
+  details?: { issue?: string; description?: string }[];
+}
+
 /** A webhook event as PayPal sends it. */
 export interface PayPalEvent {
   id: string;

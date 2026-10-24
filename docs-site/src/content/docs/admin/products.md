@@ -9,12 +9,23 @@ sidebar:
 
 ![La lista de productos](../../../assets/screens/es/admin-products.png)
 
-Encuentra productos con el buscador o con los filtros **Estado**, **Categoría**, **En oferta** y **Agotados**. Cada fila muestra el
-estado, el precio, el stock total, el número de variantes y cuándo se cambió por última vez. En cada fila hay dos acciones
-rápidas:
+Encuentra productos con el buscador o con los filtros **Estado**, **Categoría**, **En oferta** y **Agotados**. Arriba a la derecha
+eliges cómo verlos:
 
-- **Despublicar / Publicar:** oculta un producto de la tienda sin borrarlo.
-- **Duplicar:** empieza un producto nuevo a partir de uno existente (útil para artículos parecidos).
+- **Cuadrícula:** una tarjeta por producto, con su imagen, nombre, precio, estado y stock. Es la vista para reconocer un producto de
+  un vistazo. Un producto sin imagen muestra su inicial.
+- **Filas:** una fila por producto, con precio, stock y número de variantes, y dos acciones rápidas: **Despublicar / Publicar**
+  (oculta un producto de la tienda sin borrarlo) y **Duplicar** (empieza un producto nuevo a partir de uno existente).
+
+La vista queda en la dirección (`?view=rows` para las filas; la cuadrícula es la vista por defecto), así que puedes guardarla o compartirla.
+
+![La lista de productos en filas](../../../assets/screens/es/admin-products-rows.png)
+
+### Cambiar varios productos a la vez
+
+Marca la casilla de cada producto, en cualquiera de las dos vistas. Abajo aparece una barra con **«N seleccionados»**, **Despublicar**
+y **Publicar**: el cambio se aplica a todos los marcados con una sola petición (hasta 100). Los productos que ya no existen se
+ignoran.
 
 Pulsa **Nuevo producto** para crear uno.
 
@@ -35,6 +46,9 @@ Pulsa **Nuevo producto** para crear uno.
 usar `**negrita**`, listas y enlaces). El **slug** es la dirección web del producto en ese idioma; si lo dejas vacío se genera
 desde el nombre. **Título SEO** y **Descripción SEO** son lo que muestra Google; si los dejas vacíos la tienda escribe unos
 razonables.
+
+**Vista previa:** a la derecha (debajo, en el celular) la tienda dibuja la tarjeta del producto con lo que escribes: imagen,
+nombre, precio, etiqueta de oferta y categoría. Cambia mientras escribes, sin guardar.
 
 **Imágenes:** agrégalas desde la biblioteca y reordénalas con las flechas. La primera es la imagen principal del producto y la que
 aparece en los listados y al compartir un enlace.

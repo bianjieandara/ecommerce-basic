@@ -42,6 +42,21 @@ export interface PaymentConfirmation {
   outcome: 'succeeded' | 'failed' | 'expired' | 'refunded';
   amountMinor: number;
   currency: string;
+  /**
+   * Set on a refund whose amount the provider reports in another currency than the payment (dLocal Go refunds in the buyer's
+   * currency). The two cannot be compared, so the refund counts as a full one only when this store asked for it.
+   */
+  foreignCurrencyRefund?: boolean;
+}
+
+/**
+ * The payment-event record that says the store asked its provider to refund this order. RefundOrder writes it before the call;
+ * ConfirmPayment reads it to accept a refund reported in another currency.
+ * @param orderId Order id.
+ * @returns The event id.
+ */
+export function refundRequestEventId(orderId: string): string {
+  return `refund-request:${orderId}`;
 }
 
 /** What a gateway needs to refund an order. The whole payment is returned: partial refunds are settled by hand. */
@@ -95,4 +110,6 @@ export interface PaymentEventLog {
   recordIfNew(provider: string, eventId: string, nowIso: string): Promise<boolean>;
   /** Removes a record, so a claim made before a call that definitely failed can be made again. */
   forget(provider: string, eventId: string): Promise<void>;
+  /** Whether a record exists. */
+  exists(provider: string, eventId: string): Promise<boolean>;
 }

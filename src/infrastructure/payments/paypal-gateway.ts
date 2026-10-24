@@ -2,7 +2,13 @@
 // The PAYMENT.CAPTURE.* webhooks cover payments that finish without the customer coming back.
 import { absoluteUrl } from '@/application/documents/urls';
 import type { CacheStore } from '@/application/ports/platform';
-import type { PaymentConfirmation, PaymentGateway, PaymentInitiation } from '@/application/ports/payments';
+import type {
+  PaymentConfirmation,
+  PaymentGateway,
+  PaymentInitiation,
+  RefundInput,
+  RefundResult,
+} from '@/application/ports/payments';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import { DomainError } from '@/domain/shared/errors';
 import { majorTextOf } from '@/domain/shared/money';
@@ -17,12 +23,15 @@ import {
   type PayPalEvent,
   type PayPalInitiateInput,
   type PayPalOrderResponse,
+  type PayPalRefundResponse,
 } from './paypal-support';
 export type { PayPalConfig, PayPalEvent } from './paypal-support';
 
 /** PayPal checkout: approval on PayPal, capture on return, and webhook confirmation. */
 export class PayPalGateway implements PaymentGateway {
   readonly method = 'paypal';
+  /** The refund request carries the order's id as PayPal-Request-Id, so PayPal answers a repeat with the first result. */
+  readonly refundsAreIdempotent = true;
 
   /**
    * @param config Credentials and environment.
@@ -110,6 +119,58 @@ export class PayPalGateway implements PaymentGateway {
       outcome: capture.status === 'COMPLETED' ? 'succeeded' : 'failed',
       amountMinor: providerAmountMinor(capture.amount.value, currency, 'PayPal'),
       currency,
+    };
+  }
+
+  /**
+   * Refunds the whole capture of an order. The capture is looked up from the PayPal order, because the store keeps the order id.
+   * PayPal normally completes a refund at once; a PENDING one is left for the owner to confirm in PayPal.
+   * @param input The order, the PayPal order id stored with it and the site URL (unused: PayPal answers synchronously).
+   * @returns The refund id, and the confirmation when the refund completed.
+   * @throws DomainError REFUND_REFUSED when PayPal answers a 4xx, PAYMENT_PROVIDER_ERROR otherwise.
+   */
+  async refund({ order, providerReference }: RefundInput): Promise<RefundResult> {
+    const found = await this.api<PayPalOrderResponse>(
+      `/v2/checkout/orders/${encodeURIComponent(providerReference)}`,
+      {
+        method: 'GET',
+      },
+    );
+    const capture = found.data.purchase_units?.[0]?.payments?.captures?.find(
+      (item) => item.status === 'COMPLETED',
+    );
+    if (!found.ok || !capture) {
+      throw new DomainError(
+        found.ok || (found.status >= 400 && found.status < 500) ? 'REFUND_REFUSED' : 'PAYMENT_PROVIDER_ERROR',
+        `PayPal has no completed capture to refund (${found.status})`,
+      );
+    }
+    const response = await this.api<PayPalRefundResponse>(
+      `/v2/payments/captures/${encodeURIComponent(capture.id)}/refund`,
+      { method: 'POST', requestId: `refund:${order.id}`, body: {} },
+    );
+    if (!response.ok || !response.data.id) {
+      const issue = response.data.details?.[0]?.issue ?? response.data.name ?? response.data.message ?? '';
+      throw new DomainError(
+        response.status >= 400 && response.status < 500 ? 'REFUND_REFUSED' : 'PAYMENT_PROVIDER_ERROR',
+        `PayPal refund error ${response.status}: ${issue}`,
+      );
+    }
+    if (response.data.status !== 'COMPLETED')
+      return { providerRefundId: response.data.id, confirmation: null };
+    const currency = (response.data.amount?.currency_code ?? order.currency) as CurrencyCode;
+    return {
+      providerRefundId: response.data.id,
+      confirmation: {
+        provider: 'paypal',
+        eventId: `refund:${response.data.id}`,
+        providerReference,
+        outcome: 'refunded',
+        amountMinor: response.data.amount
+          ? providerAmountMinor(response.data.amount.value, currency, 'PayPal')
+          : order.totalMinor,
+        currency,
+      },
     };
   }
 

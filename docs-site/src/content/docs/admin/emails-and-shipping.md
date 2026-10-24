@@ -8,8 +8,8 @@ sidebar:
 ## Correos
 
 **Correos** lista cada mensaje que envía la tienda, agrupado por quién lo recibe: **clientes** (pedido recibido, pago recibido,
-pedido en preparación, enviado, entregado, cancelado, factura emitida, respuesta del formulario de contacto…), el **equipo de la
-tienda** (pedido nuevo, mensaje de contacto nuevo, stock bajo…) y los **administradores** (restablecer contraseña, invitaciones).
+pedido en preparación, enviado, entregado, cancelado, factura emitida…), el **equipo de la
+tienda** (pedido nuevo, stock bajo…) y los **administradores** (restablecer contraseña, invitaciones).
 Cada uno indica si usa el **texto por defecto** o uno **personalizado**, y si **se envía** o está **desactivado**.
 
 ![La lista de correos](../../../assets/screens/es/admin-emails.png)

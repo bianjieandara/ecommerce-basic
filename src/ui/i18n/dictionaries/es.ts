@@ -849,13 +849,16 @@ export const es: Dictionary = {
       changing: 'Guardando…',
       changed: 'Estado cambiado.',
       refundTitle: 'Reembolso',
-      refundIntro: 'Devuelve al cliente el pago completo de {amount} a través de {provider}. No se puede deshacer.',
+      refundIntro:
+        'Devuelve al cliente el pago completo de {amount} a través de {provider}. No se puede deshacer.',
       refundButton: 'Reembolsar {amount}',
       refundConfirm: 'Sí, reembolsar {amount}',
       refundKeep: 'Conservar el pedido',
       refundRunning: 'Reembolsando…',
-      refundPending: 'Reembolso solicitado a {provider}. El pedido pasa a reembolsado cuando {provider} lo confirme.',
-      refundRejected: 'Si {provider} rechaza el reembolso, hazlo en su panel y marca el pedido como reembolsado aquí.',
+      refundPending:
+        'Reembolso solicitado a {provider}. El pedido pasa a reembolsado cuando {provider} lo confirme.',
+      refundRejected:
+        'Si {provider} rechaza el reembolso, hazlo en su panel y marca el pedido como reembolsado aquí.',
       invoiceTitle: 'Factura',
       noInvoice: 'Aún no hay factura.',
       viewInvoice: 'Ver factura',

@@ -10,7 +10,10 @@ sidebar:
 ![La lista de pedidos](../../../assets/screens/es/admin-orders.png)
 
 Busca por **número, nombre, correo o teléfono**, o filtra por **estado**, **método de pago** y un **rango de fechas**. Los pedidos
-más nuevos aparecen arriba. Pulsa el número para abrir un pedido.
+más nuevos aparecen arriba.
+
+En una pantalla ancha la lista queda a la izquierda y el pedido que eliges se abre **a la derecha**, sin salir de la lista; el primero
+de la página se muestra al entrar. En el celular solo ves la lista y cada pedido se abre en su propia página.
 
 En el celular la lista se convierte en tarjetas, así que puedes gestionar pedidos desde el bolsillo.
 
@@ -20,7 +23,9 @@ En el celular la lista se convierte en tarjetas, así que puedes gestionar pedid
 
 ![Un pedido](../../../assets/screens/es/admin-order-detail.png)
 
-La página del pedido reúne todo en un solo lugar:
+El pedido se ve como un documento, como un recibo: arriba la tienda, el número, la fecha y el estado; después el cliente, los productos
+con los totales y los datos de pago y envío. A un lado (debajo, en pantallas estrechas) están las acciones, y al pie el historial, el
+origen y los mensajes. En total reúne:
 
 - **Cliente:** nombre, correo y teléfono, más **Responder por WhatsApp** (abre un chat con el cliente) y **Copiar enlace del
   cliente** (la página privada del pedido que ve el cliente).

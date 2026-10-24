@@ -27,22 +27,35 @@ La primera pantalla muestra cómo va la tienda ahora mismo.
 
 ![El panel](../../../assets/screens/es/admin-dashboard.png)
 
-- **Hoy, Últimos 7 días, Últimos 30 días:** pedidos recibidos, pedidos pagados, ventas, impuestos y pedido promedio.
-- **Pedidos por preparar:** pedidos pagados que aún hay que preparar o enviar. Pulsa **Pedidos abiertos**.
-- **Agotados** y **Stock bajo:** productos que hay que reponer.
-- **Mensajes fallidos** y **Trabajos fallidos:** correos o tareas que no salieron. Deberían estar en **0**; mira
-  [Mensajes y notificaciones](/admin/messages-and-notifications/).
-- Un gráfico con las ventas de los últimos 14 días y los productos más vendidos.
+La pantalla tiene dos columnas. A la izquierda:
 
-En el celular las mismas tarjetas se apilan en una columna.
+- Un gráfico con las ventas de los **últimos 14 días**.
+- **Pedidos recientes:** los seis más nuevos, con cliente, fecha, total y estado. Pulsa el número para abrir un pedido, o **Ver
+  todos los pedidos**.
+- **Productos más vendidos** de los últimos 30 días.
+
+A la derecha, que se queda a la vista mientras recorres la izquierda:
+
+- **Hoy:** pedidos recibidos, pedidos pagados, ventas, impuestos y pedido promedio.
+- **Alertas:** pedidos por preparar, agotados, stock bajo, mensajes fallidos y trabajos fallidos. Cada fila lleva a la lista que
+  explica su número. Deberían estar en **0**, salvo los pedidos por preparar; mira
+  [Mensajes y notificaciones](/admin/messages-and-notifications/).
+- **Otros periodos:** ventas y pedidos pagados de los últimos 7 y 30 días.
+
+En el celular las dos columnas se apilan en una.
 
 ![El panel en un celular](../../../assets/screens/es/admin-dashboard-phone.png)
 
-## El menú
+## El menú y el buscador
 
-La barra superior tiene una entrada por área: **Productos, Categorías, Atributos, Multimedia, Inventario, Pedidos, Facturas,
-Registro de mensajes, Trabajos fallidos, Configuración, Páginas, Correos, Envíos, Testimonios, Usuarios, WhatsApp** y
-**Reportes**. Esta guía sigue el mismo orden.
+La barra de arriba tiene el nombre de la tienda, un **buscador**, el botón **Menú** y **Cerrar sesión**.
+
+- **Menú** abre todas las páginas del panel en cinco secciones: **Catálogo** (Productos, Categorías, Atributos, Multimedia,
+  Inventario), **Ventas** (Pedidos, Facturas, Envíos, Reportes), **Contenido** (Páginas, Testimonios, Correos), **Mensajería**
+  (WhatsApp, Registro de mensajes, Trabajos fallidos) y **Tienda** (Configuración, Usuarios). Esta guía sigue casi el mismo orden.
+- El **buscador** («Ir a una página…») filtra esas páginas mientras escribes; **Enter** abre la primera. En un portátil, **Ctrl K**
+  (o **⌘ K**) lleva el cursor al buscador desde cualquier página, y **Esc** cierra el menú.
+- Sobre el título de cada página hay una línea con la sección y la página («Ventas / Pedidos») para saber dónde estás.
 
 ## Roles: quién puede hacer qué
 
