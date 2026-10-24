@@ -17,6 +17,7 @@ const TESTS = [
   ['smoke', 'pages, API, checkout paths, feeds, reports'],
   ['flows', 'cart, checkout, search, forms in Chrome'],
   ['orders', 'order lifecycle, stock, invoices, reports, accounts'],
+  ['reports', 'report figures against independent SQL, change vs previous period'],
 ];
 const wanted = process.argv.slice(2);
 const todo = TESTS.filter(([name]) => wanted.length === 0 || wanted.includes(name));

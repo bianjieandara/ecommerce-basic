@@ -22,7 +22,7 @@ Tick a stage only after its "Done when" criteria in [IMPLEMENTATION_PLAN.md](./I
 - [x] Stage 17 — Admin content: page builder, settings, email templates, users
 - [ ] Stage 18 — WhatsApp Cloud API adapter and templates
 - [ ] Stage 19 — Tracking, consent and Meta marketing
-- [ ] Stage 20 — Reports
+- [x] Stage 20 — Reports (figures checked against independent SQL, change vs previous period, CSV with BOM and semicolon variant, 360px, weekly summary schedule: `npm run test:reports`)
 - [x] Stage 21 — Caching and performance (HIT seen on ecommerce.relion-app.com; Lighthouse targets met locally and on the live demo; browsers get max-age=0 since the deploy and the zone's Browser Cache TTL set to respect headers)
 - [x] Stage 22 — SEO and i18n polish
 - [x] Stage 23 — Security hardening and observability (securityheaders.com grade A+ on the public demo store, /en/)

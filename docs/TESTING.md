@@ -36,6 +36,7 @@ npm run test:admin-filters    # the filters and searches of the admin lists
 npm run test:admin-actions    # every admin create, edit, delete, setting and email
 npm run test:flows            # cart, checkout, search and forms in Chrome
 npm run test:orders           # order lifecycle, stock, invoices, reports, accounts
+npm run test:reports          # report figures against independent SQL, weekly summary
 npm run test:keyboard         # keyboard, dialogs and focus rings in Chrome
 npm run test:all              # all of the above, one after the other (about 25 minutes)
 ```
@@ -100,6 +101,14 @@ buyers for the last unit), walks every status an owner can set and the ones that
 each step, two identical changes at the same moment, the expiry job, invoices (numbers without gaps, the void rule), CSV exports for
 formula injection, every report with eight ranges, and the whole admin account flow: invite, accept with the emailed link, sign in,
 deactivate, promote, delete, and the last-owner protections. It paces itself around the form rate limit.
+
+**`npm run test:reports`** ([scripts/test/reports.mjs](../scripts/test/reports.mjs)) recomputes what the reports show with its own SQL
+and compares: orders, units, revenue, tax, shipping and refunds of the sales report (in total, by day, by week and by month), paid
+orders and revenue per payment method, shipping per method, issued invoices, tax per rate, units per product and the top customer. It
+checks the change against the previous period on two real days, that no report page scrolls sideways at 360px, and the weekly summary:
+nothing is sent outside the configured weekday and hour or when it is off, one e-mail goes out at that hour, and a second tick in the
+same hour sends nothing. It changes the reports setting through the API and puts it back. It creates no orders: run `test:orders`
+first for a fuller database.
 
 **`npm run test:keyboard`** ([scripts/test/keyboard.mjs](../scripts/test/keyboard.mjs)) presses real keys in Chrome: the skip link is
 the first Tab stop, every Tab stop of six pages shows a focus ring, the search overlay and the cart drawer open from the keyboard,

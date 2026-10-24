@@ -740,3 +740,9 @@ Ten test files now live in `scripts/test/` (`npm run test:all`). They drove thes
 - **dLocal Go reports refunds in the buyer's currency** (USD payment, COP refund), so amounts cannot be compared. `PaymentConfirmation.foreignCurrencyRefund` marks that case and `ConfirmPayment` accepts it only when the store's own claim exists; a dashboard refund in another currency is logged (`refund.foreign_currency_not_requested`) and left for the owner. Found on the sandbox: without this the order stayed `paid` for ever.
 - **Local sandbox needs a manual webhook.** The notification URL is `PUBLIC_SITE_URL`, not the local store; deliver it with `npm run test:webhooks`. A refund rejected later by the provider needs manual recovery.
 - **Checked on both sandboxes:** PayPal refund through the real button (capture refund, immediate); dLocal Go REF-2585 and REF-2586 completed by signed notifications; a repeat notification changed nothing; two simultaneous clicks reached the provider once.
+
+## 2026-10-23 — Stage 20 closed with a report-figures test
+
+- **`scripts/test/reports.mjs`.** The existing tests only proved that report pages and CSVs answer. This one recomputes the figures with separate SQL (the sales report in total, by day, week and month; payments and shipping per method; invoices; tax per rate; products; the top customer), the change against the previous period, the 360px layout and the weekly-summary schedule, and passed 31/31 on the demo database.
+- **Weekly summary: once per store-local day.** The tick that matches the configured weekday and hour enqueues the job; its notification key names the day, so a second tick (or a re-run the same day) sends nothing. The test clears earlier `weekly_report_store` log rows first to be repeatable.
+- **Not checked here:** opening a CSV in Excel or Sheets themselves. The file carries a UTF-8 BOM, and a semicolon/decimal-comma variant exists for Spanish Excel; both are tested.
