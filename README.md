@@ -112,6 +112,28 @@ Per-client behavior that differs from the template lives in `clients/<slug>/exte
 Secrets (`.secrets/`, `.dev.vars`) and generated files (`wrangler.jsonc`, `worker-configuration.d.ts`, `.astro/`) are gitignored
 and never committed. [docs/NEW_CLIENT.md](./docs/NEW_CLIENT.md) has the full checklist.
 
+## The demo store
+
+The public demo at <https://ecommerce.relion-app.com/en/> runs in demo mode, so anyone can try the admin panel.
+
+|          |                                                |
+| -------- | ---------------------------------------------- |
+| Admin    | <https://ecommerce.relion-app.com/admin/login> |
+| Email    | `demo@ecommerce.relion-app.com`                |
+| Password | `demo-tienda-2026`                             |
+
+These credentials are public by design (the login page shows them), so never reuse them for anything else.
+
+What demo mode does:
+
+- One shared login. It cannot manage users or passwords or issue refunds (`DEMO_LOCKED`); everything else is open.
+- A nightly reset restores the store from `clients/demo/snapshot/snapshot.json`, so whatever visitors change is undone.
+- E-mails are kept in an outbox instead of being sent, and payments stay in sandbox.
+
+The settings live in `vars` of `clients/demo/client.jsonc` (`DEMO_MODE`, `DEMO_LOGIN_EMAIL`, `DEMO_LOGIN_PASSWORD`). `npm run deploy:client -- demo`
+refuses to run in demo mode without a login of at least 12 characters, and no client other than `demo` may turn demo mode on.
+To change the login, edit those two values and deploy again.
+
 ## Documentation
 
 | Document                                                     | Read it for                                                        |
@@ -122,7 +144,7 @@ and never committed. [docs/NEW_CLIENT.md](./docs/NEW_CLIENT.md) has the full che
 | [docs/JOBS.md](./docs/JOBS.md)                               | Background jobs, retries and the dead-letter queue.                |
 | [docs/SECURITY.md](./docs/SECURITY.md)                       | Threats, protections and the checklist for new endpoints.          |
 | [docs/WHATSAPP.md](./docs/WHATSAPP.md)                       | Meta Cloud API setup and template approval.                        |
-| [docs/ANALYTICS.md](./docs/ANALYTICS.md)                     | Event shape, consent rules and Meta conversion events.             |
+| [docs/ANALYTICS.md](./docs/ANALYTICS.md)                     | Event shape, consent rules, Meta and GA4 conversion events.        |
 | [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md) | The full plan, stage by stage.                                     |
 | [docs/DECISIONS.md](./docs/DECISIONS.md)                     | Decision log.                                                      |
 | [docs/PROGRESS.md](./docs/PROGRESS.md)                       | Stage status.                                                      |

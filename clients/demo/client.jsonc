@@ -26,8 +26,8 @@
   // DEMO_LOGIN_EMAIL and DEMO_LOGIN_PASSWORD are public by design (the login page shows them): choose them before publishing.
   "vars": {
     "DEMO_MODE": "on",
-    "DEMO_LOGIN_EMAIL": "",
-    "DEMO_LOGIN_PASSWORD": "",
+    "DEMO_LOGIN_EMAIL": "demo@ecommerce.relion-app.com",
+    "DEMO_LOGIN_PASSWORD": "demo-tienda-2026",
     "DEMO_GUIDE_URL": "https://docs.relion-app.com/clients/try-the-demo/",
     "DEMO_PAYPAL_BUYER_EMAIL": "",
     "DEMO_PAYPAL_BUYER_PASSWORD": "",
