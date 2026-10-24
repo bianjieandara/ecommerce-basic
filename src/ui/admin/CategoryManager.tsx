@@ -110,12 +110,9 @@ export default function CategoryManager(props: CategoryManagerProps) {
   return (
     <div class="grid items-start gap-6 lg:grid-cols-[24rem_minmax(0,1fr)]">
       <div class="flex min-w-0 flex-col gap-4">
-        <div class="flex items-center justify-between gap-3">
-          <p class="text-text/70 text-sm">{labels.categories.hint}</p>
-          <button type="button" class={BUTTON_PRIMARY} onClick={() => edit(null)}>
-            {labels.categories.new}
-          </button>
-        </div>
+        <button type="button" class={`${BUTTON_PRIMARY} w-full`} onClick={() => edit(null)}>
+          {labels.categories.new}
+        </button>
         {message && (
           <p role="alert" class={ERROR_TEXT}>
             {message}
@@ -176,7 +173,7 @@ export default function CategoryManager(props: CategoryManagerProps) {
             onCancel={() => setDraft(null)}
           />
         ) : (
-          <p class={`${CARD} text-text/70 p-6 text-sm`}>{labels.categories.hint}</p>
+          <p class={`${CARD} text-text/70 p-6 text-sm`}>{labels.categories.selectHint}</p>
         )}
       </div>
     </div>

@@ -1187,6 +1187,7 @@ export const es: Dictionary = {
     },
     categories: {
       title: 'Categorías',
+      selectHint: 'Elige una categoría para editarla, o crea una nueva.',
       hint: 'Organiza el árbol y el orden. Cada idioma necesita un nombre.',
       new: 'Nueva categoría',
       edit: 'Editar categoría',
@@ -1203,6 +1204,7 @@ export const es: Dictionary = {
     },
     attributes: {
       title: 'Atributos',
+      selectHint: 'Elige un atributo para editarlo, o crea uno nuevo.',
       hint: 'Atributos como Talla o Color. Las variantes se construyen con sus valores.',
       new: 'Nuevo atributo',
       edit: 'Editar atributo',
@@ -1223,6 +1225,7 @@ export const es: Dictionary = {
     },
     media: {
       title: 'Multimedia',
+      selectHint: 'Elige una imagen para verla en grande.',
       upload: 'Subir imágenes',
       hint: 'JPEG, PNG o WebP de hasta 10 MB. Las imágenes se redimensionan en tu navegador antes de subirlas.',
       choose: 'Elegir imágenes',

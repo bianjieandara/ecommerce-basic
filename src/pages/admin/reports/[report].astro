@@ -57,7 +57,7 @@ const period = `${formatDate(`${result.range.from}T12:00:00Z`, lang, result.coun
 >
   <h1 class="text-2xl md:text-3xl">{t(lang, 'admin.reports.title')}</h1>
   <div class="grid items-start gap-6 lg:grid-cols-[13rem_minmax(0,1fr)]">
-    <div class="lg:sticky lg:top-24">
+    <div class="min-w-0 lg:sticky lg:top-24">
       <SideMenu
         label={t(lang, 'admin.reports.title')}
         items={REPORT_KINDS.map((item) => ({

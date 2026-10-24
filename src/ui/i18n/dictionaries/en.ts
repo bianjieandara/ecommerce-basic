@@ -1181,6 +1181,7 @@ export const en = {
     },
     categories: {
       title: 'Categories',
+      selectHint: 'Pick a category to edit it, or create a new one.',
       hint: 'Arrange the tree and the order. Each language needs a name.',
       new: 'New category',
       edit: 'Edit category',
@@ -1197,6 +1198,7 @@ export const en = {
     },
     attributes: {
       title: 'Attributes',
+      selectHint: 'Pick an attribute to edit it, or create a new one.',
       hint: 'Attributes such as Size or Color. Variants are built from their values.',
       new: 'New attribute',
       edit: 'Edit attribute',
@@ -1217,6 +1219,7 @@ export const en = {
     },
     media: {
       title: 'Media',
+      selectHint: 'Pick an image to see it larger.',
       upload: 'Upload images',
       hint: 'JPEG, PNG or WebP up to 10 MB. Images are resized in your browser before upload.',
       choose: 'Choose images',

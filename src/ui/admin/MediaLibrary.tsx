@@ -173,7 +173,7 @@ export default function MediaLibrary(props: MediaLibraryProps) {
               </button>
             </>
           ) : (
-            <p class="text-text/70 text-sm">{labels.media.hint}</p>
+            <p class="text-text/70 text-sm">{labels.media.selectHint}</p>
           )}
         </aside>
       </div>
