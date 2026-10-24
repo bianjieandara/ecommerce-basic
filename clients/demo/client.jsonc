@@ -37,7 +37,7 @@
     "PAYPAL_ENV": "sandbox",
     "DLOCALGO_ENV": "sandbox",
     "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
-    "PUBLIC_MEDIA_BASE_URL": "",
+    "PUBLIC_MEDIA_BASE_URL": "https://media.ecommerce.relion-app.com",
     "WHATSAPP_PHONE_NUMBER_ID": "",
     "WHATSAPP_WABA_ID": "",
     "META_GRAPH_VERSION": "",

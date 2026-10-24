@@ -74,7 +74,11 @@ the values they produce.
       zone, action Block: `(http.host eq "media.shop.example.com" and not starts_with(http.request.uri.path, "/media/"))`.
       Check it before going on: a picture URL must answer 200 and `https://media.shop.example.com/invoices/x.pdf` must answer
       403 (the rule answers before R2 looks for the file, so a made-up name is enough to test it).
-   3. **Point the store at it.** Set `vars.PUBLIC_MEDIA_BASE_URL` to `https://media.shop.example.com` in `client.jsonc` and
+   3. **Let browsers keep the pictures.** The host answers without a `Cache-Control`, so a browser would re-check every picture
+      on each visit. Add a Cache Rule on the zone: `(http.host eq "media.shop.example.com")`, browser TTL "Override origin" for
+      one year. File names hold the asset id and the width, so a picture never changes under its name. Check that a picture now
+      answers `Cache-Control: max-age=31536000`.
+   4. **Point the store at it.** Set `vars.PUBLIC_MEDIA_BASE_URL` to `https://media.shop.example.com` in `client.jsonc` and
       deploy. Pictures, their `srcset`, the structured data, the share image and the product feed then use that host, and
       pages ask the browser to open the connection early (`preconnect`). The `/media/...` route keeps working for old links and
       for the admin.
