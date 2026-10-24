@@ -1,0 +1,25 @@
+---
+// Checkout notice in demo mode: the test card for dLocal Go and the PayPal sandbox buyer, so a prospect can finish an order.
+import type { Locale } from '@/domain/shared/locale';
+import { t } from '@/ui/i18n';
+
+interface Props {
+  locale: Locale;
+  paypalEmail: string;
+  paypalPassword: string;
+}
+
+const { locale, paypalEmail, paypalPassword } = Astro.props;
+---
+
+<aside class="mb-6 rounded-card bg-surface p-4 text-sm" aria-labelledby="demo-payment">
+  <h2 id="demo-payment" class="font-semibold">
+    {t(locale, 'demo.checkoutTitle')}
+  </h2>
+  <p class="mt-1">{t(locale, 'demo.checkoutCard')}</p>
+  <p class="mt-1">
+    {paypalEmail
+      ? t(locale, 'demo.checkoutPaypal', { email: paypalEmail, password: paypalPassword })
+      : t(locale, 'demo.checkoutNoPaypal')}
+  </p>
+</aside>

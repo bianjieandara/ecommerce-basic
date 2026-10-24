@@ -10,6 +10,7 @@ import { ORDER_STATUS_TONE } from '@/ui/admin/orders/OrderStatusForm.tsx';
 import LineChart from '@/ui/components/charts/LineChart.astro';
 import { formatDateTime, formatMoney, formatNumber } from '@/domain/shared/format';
 import { money } from '@/domain/shared/money';
+import { can } from '@/domain/identity/role';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { loadStoreContext } from '@/http/store-context';
 import { t } from '@/ui/i18n';
@@ -110,6 +111,17 @@ const readinessRows = snapshot.readiness.map((status) => ({
   tone: status.done ? undefined : ('alert' as const),
 }));
 const showReadiness = snapshot.readiness.some((status) => !status.done);
+// The demo's guided tasks, in the order the guide gives them. Only the public demo shows them.
+const demo = app.demo;
+const tryTasks = [
+  { label: t(lang, 'demo.tryOrders'), href: ADMIN_PATHS.orders },
+  { label: t(lang, 'demo.tryInvoice'), href: ADMIN_PATHS.invoices },
+  { label: t(lang, 'demo.tryTheme'), href: `${ADMIN_PATHS.settings}/theme` },
+  { label: t(lang, 'demo.tryProduct'), href: `${ADMIN_PATHS.products}/new` },
+  { label: t(lang, 'demo.tryStock'), href: ADMIN_PATHS.inventory },
+  { label: t(lang, 'demo.tryReport'), href: ADMIN_PATHS.reports },
+];
+const canReset = can(admin.role, 'settings.manage');
 const chartTitle = t(lang, 'admin.dashboard.chart');
 const chartPoints = snapshot.chart.map((day) => ({ label: day.day, value: day.revenueMinor }));
 ---
@@ -126,6 +138,30 @@ const chartPoints = snapshot.chart.map((day) => ({ label: day.day, value: day.re
         <AdminCard title={t(lang, 'admin.dashboard.readinessTitle')}>
           <p class="px-5 pt-3 text-sm text-text/70">{t(lang, 'admin.dashboard.readinessIntro')}</p>
           <AdminStatList rows={readinessRows} />
+        </AdminCard>
+      )}
+      {demo.enabled && (
+        <AdminCard title={t(lang, 'demo.tryTitle')}>
+          <p class="px-5 pt-3 text-sm text-text/70">{t(lang, 'demo.tryIntro')}</p>
+          <ol class="flex list-decimal flex-col gap-2 px-10 py-3 text-sm">
+            {tryTasks.map((task) => (
+              <li>
+                <a href={task.href} class="underline underline-offset-4">
+                  {task.label}
+                </a>
+              </li>
+            ))}
+          </ol>
+          {canReset && (
+            <form method="post" action="/api/admin/demo/reset" class="px-5 pb-4">
+              <button
+                type="submit"
+                class="min-h-11 rounded-full border border-text/20 px-5 font-medium hover:border-text"
+              >
+                {t(lang, 'demo.tryReset')}
+              </button>
+            </form>
+          )}
         </AdminCard>
       )}
       <AdminCard title={chartTitle}>

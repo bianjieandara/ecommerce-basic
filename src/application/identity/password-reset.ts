@@ -1,5 +1,6 @@
 // Password reset: a single-use token, valid for 30 minutes, is emailed to the admin. Only its SHA-256 is stored. A request
 // never reveals whether the email has an account.
+import { assertNotDemoAccount } from '@/domain/demo/demo-account';
 import { DomainError } from '@/domain/shared/errors';
 import { ADMIN_PATHS } from '@/domain/shared/paths';
 import { absoluteUrl } from '../documents/urls';
@@ -49,6 +50,8 @@ export class RequestPasswordReset {
     }
     const user = await this.deps.users.findByEmail(input.email.toLowerCase());
     if (!user || !user.isActive) return;
+    // The demo login is public: a reset would hand its password to whoever asks for it.
+    assertNotDemoAccount(user);
 
     const token = this.deps.ids.newSecret(32);
     const now = this.deps.clock.now();

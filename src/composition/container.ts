@@ -52,12 +52,15 @@ import type { WhatsAppServices } from './whatsapp';
 import type { BuildReport } from '@/application/reports/build-report';
 import type { InventoryServices } from './inventory';
 import type { AdminOperations } from './admin-operations';
+import type { DemoServices } from './demo';
 import type { MediaLibrary } from '@/application/media/media-library';
 
 /** Everything the application can use for one request or one job run. */
 export interface Container {
+  /** Demo mode: the nightly reset and the public demo details. Off outside the demo store. */
+  demo: DemoServices;
   /** Public configuration that pages read. */
-  config: { siteUrl: string; turnstileSiteKey: string };
+  config: { siteUrl: string; turnstileSiteKey: string; mediaBaseUrl: string };
   settings: SettingsRepository;
   pages: PageRepository;
   testimonials: TestimonialRepository;

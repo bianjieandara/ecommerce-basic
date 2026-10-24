@@ -16,7 +16,8 @@ export type JobType =
   | 'reviews.refresh'
   | 'reports.weekly_summary'
   | 'analytics.daily_rollup'
-  | 'maintenance.purge';
+  | 'maintenance.purge'
+  | 'demo.reset';
 
 /** What a job needs to run. `idempotencyKey` makes a retried job safe to run again. */
 export interface JobEnvelope {

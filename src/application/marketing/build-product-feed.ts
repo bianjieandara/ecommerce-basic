@@ -37,6 +37,8 @@ export interface ProductFeedInput {
   locale: Locale;
   /** Public origin without a trailing slash, for example "https://shop.example.com". */
   siteUrl: string;
+  /** Address images are served from when they have their own host (from `normalizeMediaBase`); empty for this site's /media route. */
+  mediaBaseUrl?: string;
   settings: ProductFeedSettings;
   /** Who reads the feed; decides the spelling of the availability. Defaults to Meta. */
   target?: FeedTarget;
@@ -107,7 +109,12 @@ function itemXml(item: FeedItemDto, input: ProductFeedInput): string | null {
     element('title', `${item.name}${label}`.slice(0, MAX_TITLE_LENGTH)),
     element('description', (item.description || item.name).slice(0, MAX_DESCRIPTION_LENGTH)),
     element('link', absoluteUrl(input.siteUrl, PATHS.product(input.locale, item.slug))),
-    element('g:image_link', absoluteUrl(input.siteUrl, PATHS.media(item.imageKey))),
+    element(
+      'g:image_link',
+      input.mediaBaseUrl
+        ? PATHS.media(item.imageKey, input.mediaBaseUrl)
+        : absoluteUrl(input.siteUrl, PATHS.media(item.imageKey)),
+    ),
     `      <g:availability>${availabilityText(item.inStock, input.target ?? 'meta')}</g:availability>`,
     '      <g:condition>new</g:condition>',
     `      <g:price>${priceText(regularMinor, currency)}</g:price>`,

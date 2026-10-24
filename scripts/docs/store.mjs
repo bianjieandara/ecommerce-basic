@@ -3,9 +3,10 @@
 // migrations and the sample seed.
 //
 // Usage: npm run build && npm run docs:store      (leave it running, then run `npm run docs:data` and `npm run docs:screens`)
+//        node scripts/docs/store.mjs --demo         the same, with a test demo login (for `npm run test:demo`)
 import { execSync, spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { DEMO_GRAPH_VARS, DEMO_WEBHOOK_VARS, STATE } from './shared.mjs';
+import { DEMO_GRAPH_VARS, DEMO_TEST_VARS, DEMO_WEBHOOK_VARS, STATE } from './shared.mjs';
 
 const CONFIG = 'dist/server/wrangler.json';
 const PORT = process.env.DOCS_PORT ?? '4400';
@@ -24,10 +25,11 @@ if (firstRun) {
 
 // Fixed test secrets for the WhatsApp webhook, so the signed-webhook tests need no Meta account (see shared.mjs).
 // The Graph API address too: the demo store talks to the local fake of the tests, never to Meta.
-const vars = Object.entries({ ...DEMO_WEBHOOK_VARS, ...DEMO_GRAPH_VARS }).flatMap(([name, value]) => [
-  '--var',
-  `${name}:${value}`,
-]);
+// .dev.vars sets EMAIL_TRANSPORT=console for local work and overrides the build's value; the flag's --var wins over it.
+const demo = process.argv.includes('--demo') ? { ...DEMO_TEST_VARS, EMAIL_TRANSPORT: 'outbox' } : {};
+const vars = Object.entries({ ...DEMO_WEBHOOK_VARS, ...DEMO_GRAPH_VARS, ...demo }).flatMap(
+  ([name, value]) => ['--var', `${name}:${value}`],
+);
 const server = spawn(
   'npx',
   [

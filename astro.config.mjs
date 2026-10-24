@@ -25,12 +25,20 @@ export default defineConfig({
   build: { inlineStylesheets: 'auto' },
   security: {
     checkOrigin: true,
-    // Scripts run only when they are the page's own bundles or inline scripts Astro hashed at build time, or come from the two
-    // Cloudflare hosts the store uses (Turnstile, Web Analytics). A script injected through stored text has no hash, so it cannot
-    // run. Inline styles stay allowed: components set style attributes, and style injection is not a script risk.
+    // Scripts run only when they are the page's own bundles or inline scripts Astro hashed at build time, or come from the hosts
+    // the store uses: Cloudflare (Turnstile, Web Analytics), and Google (gtag.js) and Meta (fbevents.js), which load only after
+    // the visitor grants marketing. A script injected through stored text has no hash, so it cannot run. Without the last two
+    // hosts the browser would block GA4 and the Pixel. Inline styles stay allowed: components set style attributes, and style
+    // injection is not a script risk.
     csp: {
       scriptDirective: {
-        resources: ["'self'", 'https://challenges.cloudflare.com', 'https://static.cloudflareinsights.com'],
+        resources: [
+          "'self'",
+          'https://challenges.cloudflare.com',
+          'https://static.cloudflareinsights.com',
+          'https://www.googletagmanager.com',
+          'https://connect.facebook.net',
+        ],
       },
       styleDirective: { resources: ["'self'", "'unsafe-inline'"] },
     },

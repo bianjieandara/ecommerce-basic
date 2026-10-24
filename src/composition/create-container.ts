@@ -17,6 +17,7 @@ import { D1OrderRepository } from '@/infrastructure/d1/order-repository';
 import { D1PageRepository } from '@/infrastructure/d1/page-repository';
 import { D1TestimonialRepository } from '@/infrastructure/d1/testimonial-repository';
 import { TranslateText } from '@/application/ai/translate-text';
+import { normalizeMediaBase } from '@/domain/media/media-base';
 import { createWhatsApp } from './whatsapp';
 import { BuildReport } from '@/application/reports/build-report';
 import { DailyRollup } from '@/application/reports/jobs/daily-rollup';
@@ -30,6 +31,7 @@ import { D1PaymentEventLog } from '@/infrastructure/d1/payment-event-log';
 import { D1ShippingMethodRepository } from '@/infrastructure/d1/shipping-repository';
 import { D1SettingsRepository } from '@/infrastructure/d1/settings-repository';
 import { R2MediaStorage } from '@/infrastructure/r2/r2-media-storage';
+import { createDemo } from './demo';
 import { readSecret } from '@/infrastructure/cloudflare/env';
 import { GooglePlacesReviews } from '@/infrastructure/google/places-reviews-provider';
 import { CloudflareJobQueue } from '@/infrastructure/queues/cloudflare-job-queue';
@@ -72,6 +74,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   const hasher = new WebCryptoHasher();
   const cache = new KvCacheStore(env.CACHE);
   const media = new R2MediaStorage(env.MEDIA);
+  const pageCache = new KvPageCacheVersion(env.CACHE);
   // Settings are read once per request. In production requests also share the rows for 30 s, so a settings change reaches every
   // isolate within that time; in development every request reads them fresh, so edits to the local database show at once.
   const settings = new D1SettingsRepository(env.DB, { sharedTtlMs: import.meta.env.DEV ? 0 : 30_000 });
@@ -79,6 +82,8 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   const notificationLog = new D1NotificationLogRepository(env.DB);
   const emailTemplateRepository = new D1EmailTemplateRepository(env.DB);
   const orders = new D1OrderRepository(env.DB);
+  // Demo mode (the public demo only): the nightly reset and the details its pages show. See composition/demo.ts.
+  const demo = createDemo({ env, media, cache, pageCache, clock, orders, notificationLog, hasher });
   const invoices = new D1InvoiceRepository(env.DB);
   const paymentEvents = new D1PaymentEventLog(env.DB);
   const jobQueue = new CloudflareJobQueue(
@@ -203,6 +208,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     dailyRollup: new DailyRollup({ settings, maintenance: reportMaintenance, clock }),
     purgeOldRecords: new PurgeOldRecords({ maintenance: reportMaintenance, clock }),
     weeklySummary: new WeeklySummary({ settings, queries: reportQueries, notifications, clock, siteUrl }),
+    resetDemo: demo.resetDemo,
   });
 
   const background: BackgroundTasks = {
@@ -237,7 +243,12 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
   });
   return {
     adminOps,
-    config: { siteUrl, turnstileSiteKey: env.TURNSTILE_SITE_KEY },
+    demo,
+    config: {
+      siteUrl,
+      turnstileSiteKey: env.TURNSTILE_SITE_KEY,
+      mediaBaseUrl: normalizeMediaBase(env.PUBLIC_MEDIA_BASE_URL),
+    },
     settings,
     pages: new D1PageRepository(env.DB),
     testimonials: new D1TestimonialRepository(env.DB),
@@ -248,7 +259,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     failedJobs,
     jobQueue,
     jobs: new JobDispatcher({ failedJobs, handlers, log: logEvent }),
-    scheduler: new JobScheduler({ jobs: jobQueue, cache, clock, settings }),
+    scheduler: new JobScheduler({ jobs: jobQueue, cache, clock, settings, demoEnabled: demo.enabled }),
     reports,
     notifications,
     emailTemplates,
@@ -269,7 +280,7 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
       hasher,
       passwords,
       cache,
-      pageCache: new KvPageCacheVersion(env.CACHE),
+      pageCache,
       analytics,
       botVerifier,
       rateLimiter,

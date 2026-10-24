@@ -60,5 +60,11 @@
     "WHATSAPP_PHONE_NUMBER_ID": "",
     "WHATSAPP_WABA_ID": "",
     "META_GRAPH_VERSION": "",
+    "DEMO_MODE": "off",
+    "DEMO_LOGIN_EMAIL": "",
+    "DEMO_LOGIN_PASSWORD": "",
+    "DEMO_GUIDE_URL": "",
+    "DEMO_PAYPAL_BUYER_EMAIL": "",
+    "DEMO_PAYPAL_BUYER_PASSWORD": "",
   },
 }

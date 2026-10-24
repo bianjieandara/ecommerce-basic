@@ -1,6 +1,7 @@
 // Owner-only user management: role changes, deactivation, reactivation and removal of admin accounts. The store always keeps
 // one active owner, and nobody changes or ends their own account, so the last way in cannot be locked away by mistake.
 import { can, type Role } from '@/domain/identity/role';
+import { assertNotDemoAccount } from '@/domain/demo/demo-account';
 import { DomainError } from '@/domain/shared/errors';
 import type { AdminUser, AdminUserRepository, SessionRepository } from '../ports/identity';
 import type { Clock } from '../ports/platform';
@@ -27,6 +28,7 @@ export class ManageUsers {
    * @throws DomainError FORBIDDEN for non-owners, CONFLICT for one's own account, NOT_FOUND, INVALID_STATE for the last owner.
    */
   async changeRole(actor: AdminUser, id: string, role: Role): Promise<AdminUser> {
+    assertNotDemoAccount(actor);
     this.requireOwner(actor);
     if (id === actor.id) throw new DomainError('CONFLICT', 'You cannot change your own role');
     const target = await this.findTarget(id);
@@ -45,6 +47,7 @@ export class ManageUsers {
    * @throws DomainError FORBIDDEN for non-owners, CONFLICT when deactivating one's own account, NOT_FOUND, INVALID_STATE for the last owner.
    */
   async setActive(actor: AdminUser, id: string, isActive: boolean): Promise<AdminUser> {
+    assertNotDemoAccount(actor);
     this.requireOwner(actor);
     if (!isActive && id === actor.id)
       throw new DomainError('CONFLICT', 'You cannot deactivate your own account');
@@ -66,6 +69,7 @@ export class ManageUsers {
    * @throws DomainError FORBIDDEN for non-owners, CONFLICT for one's own account, NOT_FOUND, INVALID_STATE for the last owner.
    */
   async remove(actor: AdminUser, id: string): Promise<void> {
+    assertNotDemoAccount(actor);
     this.requireOwner(actor);
     if (id === actor.id) throw new DomainError('CONFLICT', 'You cannot delete your own account');
     const target = await this.findTarget(id);

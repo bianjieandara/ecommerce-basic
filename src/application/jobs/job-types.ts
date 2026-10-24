@@ -70,6 +70,9 @@ export const backInStockPayload = z.object({
   restockedAt: z.iso.datetime(),
 });
 
+/** The nightly demo reset takes no input: it restores whatever snapshot is published. */
+export const demoResetPayload = z.looseObject({});
+
 /** Job types with a real schema in this stage. */
 export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
   'orders.expire_stale': expireStaleOrdersPayload,
@@ -82,6 +85,7 @@ export const JOB_PAYLOAD_SCHEMAS: Partial<Record<JobType, z.ZodType>> = {
   'invoice.legal_issue': invoiceJobPayload,
   'inventory.low_stock_alert': lowStockAlertPayload,
   'inventory.back_in_stock': backInStockPayload,
+  'demo.reset': demoResetPayload,
 };
 
 /** Job types whose handlers are added in later stages. Dispatching one logs and acknowledges it. */

@@ -5,19 +5,23 @@ import { cardSelect, type CardRow } from './catalog-cards';
 import { queryAll } from './d1-client';
 
 /**
- * Slug of a category in every language that has one, for the language switch.
+ * Slug of a category in every language that has one, for the language switch. The category is named by the slug the visitor
+ * used, so this read does not wait for the category lookup.
  * @param db D1 binding.
- * @param categoryId Category id.
- * @returns Slug per language (a language without a translation is missing).
+ * @param locale Language of the slug.
+ * @param slug Category slug in that language.
+ * @returns Slug per language (a language without a translation is missing; an unknown slug gives none).
  */
 export async function loadCategoryAlternates(
   db: D1Database,
-  categoryId: string,
+  locale: Locale,
+  slug: string,
 ): Promise<Partial<Record<Locale, string>>> {
   const rows = await queryAll<{ locale: Locale; slug: string }>(
     db,
-    'SELECT locale, slug FROM category_translations WHERE category_id = ?',
-    [categoryId],
+    `SELECT locale, slug FROM category_translations
+      WHERE category_id = (SELECT category_id FROM category_translations WHERE locale = ? AND slug = ?)`,
+    [locale, slug],
   );
   return Object.fromEntries(rows.map((row) => [row.locale, row.slug]));
 }

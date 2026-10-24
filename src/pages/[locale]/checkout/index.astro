@@ -2,6 +2,7 @@
 // Checkout page. The cart lives in the browser, so the form island asks the server to price it and places the order.
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import CheckoutForm from '@/ui/store/CheckoutForm.tsx';
+import DemoPaymentHint from '@/ui/store/DemoPaymentHint.astro';
 import TurnstileScript from '@/ui/components/TurnstileScript.astro';
 import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
@@ -93,6 +94,13 @@ const labels = {
   contact={contact}
 >
   <h1 class="mb-8 text-2xl md:text-3xl">{title}</h1>
+  {app.demo.enabled && (
+    <DemoPaymentHint
+      locale={lang}
+      paypalEmail={app.demo.paypalBuyerEmail}
+      paypalPassword={app.demo.paypalBuyerPassword}
+    />
+  )}
   <CheckoutForm
     client:only="preact"
     locale={lang}

@@ -15,7 +15,8 @@ export type ErrorCode =
   | 'RATE_LIMITED'
   | 'BOT_CHECK_FAILED'
   | 'CONFLICT'
-  | 'INVALID_STATE';
+  | 'INVALID_STATE'
+  | 'DEMO_LOCKED';
 
 /** A business-rule or input error. Never retried automatically. */
 export class DomainError extends Error {

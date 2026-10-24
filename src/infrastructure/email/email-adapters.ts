@@ -1,4 +1,5 @@
 // Email adapters: Cloudflare Email Service in production, a console logger when the binding is missing (local dev).
+import { outboxKey } from '@/application/notifications/outbox';
 import type { MediaStorage } from '@/application/ports/media';
 import type { EmailAttachment, EmailSender } from '@/application/ports/platform';
 
@@ -67,11 +68,6 @@ export class ConsoleEmailSender implements EmailSender {
   }
 }
 
-/** Where the outbox keeps one message, by its id. The demo reset deletes these keys (see demo-reset.ts). */
-export function outboxKey(id: string): string {
-  return `outbox/${id}.json`;
-}
-
 /**
  * Demo sender: keeps each message in object storage instead of sending it, so a prospect can read what the store wrote, and no
  * real address receives anything. Attachments are recorded by name and size; their bytes are kept with the invoice itself.
@@ -105,7 +101,11 @@ export class OutboxEmailSender implements EmailSender {
         bytes: file.content.byteLength,
       })),
     };
-    await this.storage.put(outboxKey(id), new TextEncoder().encode(JSON.stringify(record)).buffer, 'application/json');
+    await this.storage.put(
+      outboxKey(id),
+      new TextEncoder().encode(JSON.stringify(record)).buffer,
+      'application/json',
+    );
     return { messageId: id };
   }
 }

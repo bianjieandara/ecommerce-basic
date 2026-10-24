@@ -1,0 +1,25 @@
+---
+// Storefront notice in demo mode: nothing is charged and no e-mail leaves the store. Shown above the header on every page; the
+// text is the same for every visitor, so the page cache can keep it.
+import type { Locale } from '@/domain/shared/locale';
+import { t } from '@/ui/i18n';
+
+interface Props {
+  locale: Locale;
+  guideUrl: string;
+}
+
+const { locale, guideUrl } = Astro.props;
+---
+
+<p class="bg-surface px-5 py-2 text-center text-xs text-text/80">
+  {t(locale, 'demo.strip')}
+  {guideUrl && (
+    <a
+      href={guideUrl}
+      class="ml-2 inline-flex min-h-11 items-center font-semibold underline underline-offset-4"
+    >
+      {t(locale, 'demo.guide')}
+    </a>
+  )}
+</p>

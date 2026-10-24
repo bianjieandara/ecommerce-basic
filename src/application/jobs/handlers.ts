@@ -7,6 +7,7 @@ import type { ReviewsService } from '../content/reviews-service';
 import type { InventoryAlerts } from '../inventory/inventory-alerts';
 import type { ExpireStaleOrders } from '../ordering/expire-orders';
 import type { SendNotificationEmail } from '../notifications/send-notification-email';
+import type { ResetDemo } from '../demo/reset-demo';
 import type { DailyRollup } from '../reports/jobs/daily-rollup';
 import type { PurgeOldRecords } from '../reports/jobs/purge';
 import type { WeeklySummary } from '../reports/jobs/weekly-summary';
@@ -15,6 +16,7 @@ import type { Clock } from '../ports/platform';
 import type { JobHandler } from './dispatcher';
 import {
   backInStockPayload,
+  demoResetPayload,
   expireStaleOrdersPayload,
   invoiceIssuePayload,
   invoiceJobPayload,
@@ -42,6 +44,7 @@ export interface JobHandlerDeps {
   dailyRollup: DailyRollup;
   purgeOldRecords: PurgeOldRecords;
   weeklySummary: WeeklySummary;
+  resetDemo: ResetDemo;
 }
 
 /**
@@ -64,6 +67,13 @@ export function buildJobHandlers(deps: JobHandlerDeps): Partial<Record<JobType, 
     'reports.weekly_summary': async (payload) => {
       weeklySummaryPayload.parse(payload);
       await deps.weeklySummary.execute();
+    },
+    'demo.reset': async (payload) => {
+      demoResetPayload.parse(payload);
+      const outcome = await deps.resetDemo.execute(null);
+      // A partly failed restore is logged and not retried here: the next night restores everything again.
+      if (outcome.failedBatches)
+        console.error('demo.reset_partial', { failedBatches: outcome.failedBatches });
     },
     'notify.email': async (payload) => {
       await deps.sendNotificationEmail.execute(notifyEmailPayload.parse(payload));

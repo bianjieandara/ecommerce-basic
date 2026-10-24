@@ -28,6 +28,17 @@ export const DEMO_GRAPH_VARS = {
 /** Test token the Turnstile test keys accept. */
 export const TURNSTILE_TEST_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
 
+/**
+ * Shared demo login and PayPal buyer of a local demo store started with `--demo` (scripts/docs/store.mjs). Test values only: they
+ * open nothing outside this machine, and the demo store never sends mail.
+ */
+export const DEMO_TEST_VARS = {
+  DEMO_LOGIN_EMAIL: 'try@demo-store.test',
+  DEMO_LOGIN_PASSWORD: 'demo-login-test-2026',
+  DEMO_PAYPAL_BUYER_EMAIL: 'buyer@demo-store.test',
+  DEMO_PAYPAL_BUYER_PASSWORD: 'buyer-test-2026',
+};
+
 if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(BASE)) {
   throw new Error(`Refusing to use ${BASE}: the documentation scripts only talk to a store on this machine.`);
 }

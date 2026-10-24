@@ -92,7 +92,8 @@ function mediaKeys(assets) {
 }
 
 const ids = adminIds();
-if (ids.size === 0) throw new Error(`No admin user in ${STATE}. Run the demo build (npm run demo:build) first.`);
+if (ids.size === 0)
+  throw new Error(`No admin user in ${STATE}. Run the demo build (npm run demo:build) first.`);
 
 const tables = Object.fromEntries(
   SNAPSHOT_TABLES.map((table) => [table, rewriteAdmins(readTable(table), ids)]),
@@ -105,4 +106,6 @@ const snapshot = { version, takenAt: new Date().toISOString(), ...body };
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, `${JSON.stringify(snapshot, null, 1)}\n`);
 const rows = SNAPSHOT_TABLES.reduce((sum, table) => sum + tables[table].length, 0);
-console.log(`snapshot ${version}: ${rows} rows in ${SNAPSHOT_TABLES.length} tables, ${snapshot.media.length} images -> ${OUT}`);
+console.log(
+  `snapshot ${version}: ${rows} rows in ${SNAPSHOT_TABLES.length} tables, ${snapshot.media.length} images -> ${OUT}`,
+);

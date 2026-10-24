@@ -252,8 +252,8 @@ export class D1CatalogQueryService implements CatalogQueryService {
     return this.hidesOutOfStock() ? cards.filter((card) => card.inStock) : cards;
   }
 
-  getCategoryAlternates(categoryId: string): Promise<Partial<Record<Locale, string>>> {
-    return loadCategoryAlternates(this.db, categoryId);
+  getCategoryAlternates(locale: Locale, slug: string): Promise<Partial<Record<Locale, string>>> {
+    return loadCategoryAlternates(this.db, locale, slug);
   }
 
   listForFeed(locale: Locale): Promise<FeedItemDto[]> {

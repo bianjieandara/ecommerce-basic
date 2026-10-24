@@ -34,7 +34,7 @@ export interface CatalogQueryService {
   /** Cards of active products that share a category with a product, best matches first. Never includes the product itself. */
   listRelatedProducts(locale: Locale, productId: string, limit: number): Promise<ProductCardDto[]>;
   /** Slug of a category in every language that has one, for the language switch on category pages. */
-  getCategoryAlternates(categoryId: string): Promise<Partial<Record<Locale, string>>>;
+  getCategoryAlternates(locale: Locale, slug: string): Promise<Partial<Record<Locale, string>>>;
   listForFeed(locale: Locale): Promise<FeedItemDto[]>;
   /** Slugs and last change of every active product and category, for the sitemap. */
   listSitemapCatalog(): Promise<SitemapCatalogDto>;

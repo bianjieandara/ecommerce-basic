@@ -2,7 +2,7 @@
 // Usage: node scripts/deploy-client.mjs <slug> [--dry-run]   (--dry-run prints each command and runs nothing)
 import { closeSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { assertRealTurnstileKey, readClient, cloudflareEnv } from './lib/clients.mjs';
+import { assertDemoConfig, assertRealTurnstileKey, readClient, cloudflareEnv } from './lib/clients.mjs';
 import { createIfMissing, runStep } from './lib/run.mjs';
 import { buildWranglerConfig, writeWranglerConfig } from './use-client.mjs';
 
@@ -16,6 +16,7 @@ export function deployClient(slug, { dryRun }) {
   const client = readClient(slug);
   // Checked before any step, in dry-run too, so a store never goes live with a bot check that anything passes.
   assertRealTurnstileKey(client);
+  assertDemoConfig(client);
   let env = process.env;
   try {
     env = cloudflareEnv(slug, client.accountId);

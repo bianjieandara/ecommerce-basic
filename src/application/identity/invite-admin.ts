@@ -1,5 +1,6 @@
 // InviteAdmin: adds an admin account and emails an invitation link. The invitee sets their own password through that link,
 // so the owner never handles a password. Only owners may invite.
+import { assertNotDemoAccount } from '@/domain/demo/demo-account';
 import { can, type Role } from '@/domain/identity/role';
 import { DomainError } from '@/domain/shared/errors';
 import type { Locale } from '@/domain/shared/locale';
@@ -47,6 +48,7 @@ export class InviteAdmin {
     actor: AdminUser,
     input: { email: string; name: string; role: Role; locale: Locale },
   ): Promise<AdminUser> {
+    assertNotDemoAccount(actor);
     if (!can(actor.role, 'users.manage')) {
       throw new DomainError('FORBIDDEN', 'Only owners can invite admins');
     }

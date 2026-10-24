@@ -1,6 +1,7 @@
 // Submitting WhatsApp templates to Meta and syncing their review status back. Submit creates one template per language that
 // Meta does not know yet, under the same name; sync reads the statuses. Both run from the admin screen, one language at a time,
 // and record each language's outcome instead of stopping at the first failure.
+import { assertNotDemoAccount } from '@/domain/demo/demo-account';
 import { DomainError } from '@/domain/shared/errors';
 import { SUPPORTED_LOCALES, type Locale } from '@/domain/shared/locale';
 import type { SettingsRepository } from '../../ports/content';
@@ -58,6 +59,7 @@ export class WhatsAppMetaSync {
    * @throws DomainError FORBIDDEN, or INVALID_STATE when Meta is not connected.
    */
   async submit(actor: AdminUser, key: WhatsAppKey): Promise<SubmitResult> {
+    assertNotDemoAccount(actor);
     assertWhatsAppAdmin(actor);
     this.requireConnected();
     const config = await this.loadConfig(key);

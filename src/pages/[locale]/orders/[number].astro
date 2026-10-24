@@ -1,7 +1,7 @@
 ---
 // Order status page. The link from the confirmation carries the access key. Without a matching key nothing is shown.
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
-import { formatMoney } from '@/domain/shared/format';
+import { formatDateTime, formatMoney } from '@/domain/shared/format';
 import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 import { money } from '@/domain/shared/money';
@@ -34,6 +34,8 @@ const title = found
   ? t(lang, 'order.number', { number: String(found.order.number) })
   : t(lang, 'order.viewOrder');
 const price = (amountMinor: number) => formatMoney(money(amountMinor, view.currency), lang, view.country);
+// Demo mode only: the e-mails the store wrote for this order (kept in the outbox, opened with the same key as this page).
+const orderEmails = app.demo.enabled && found ? await app.demo.orderEmails.list(number, key) : null;
 // Orders stored before a gateway change may carry a method with no label any more; such a line is left out.
 const checkoutMethods = pickNamespace(lang, 'checkout').methods;
 
@@ -148,6 +150,35 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
         )}
       </section>
 
+      {orderEmails && (
+        <section class="flex flex-col gap-2 text-sm" aria-labelledby="order-emails">
+          <h2 id="order-emails" class="text-lg font-semibold">
+            {t(lang, 'demo.emailsTitle')}
+          </h2>
+          {orderEmails.length === 0 ? (
+            <p class="text-text/70">{t(lang, 'demo.emailsEmpty')}</p>
+          ) : (
+            <ul class="flex flex-col gap-2">
+              {orderEmails.map((email) => (
+                <li class="flex flex-wrap items-center justify-between gap-2 rounded-card bg-surface px-4 py-2">
+                  <span>
+                    {email.subject} ·{' '}
+                    {formatDateTime(email.sentAt, lang, view.country, store.general.timezone)}
+                  </span>
+                  <a
+                    href={`/api/orders/${found.order.number}/emails/${encodeURIComponent(email.id)}?key=${encodeURIComponent(key)}`}
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex min-h-11 items-center font-semibold underline underline-offset-4"
+                  >
+                    {t(lang, 'demo.emailsOpen')}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
       <section class="flex flex-col gap-2 text-sm" aria-labelledby="order-history">
         <h2 id="order-history" class="text-lg font-semibold">
           {t(lang, 'order.history')}

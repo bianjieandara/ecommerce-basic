@@ -2,6 +2,7 @@
 // the rules are strict: owners only, one request per order, and a failure the provider reported leaves nothing behind. The order
 // becomes refunded through ConfirmPayment, the path the provider's own notification takes, so a refund is applied once however it
 // is reported.
+import { assertNotDemoAccount } from '@/domain/demo/demo-account';
 import { can } from '@/domain/identity/role';
 import { canTransition } from '@/domain/ordering/order-status';
 import { DomainError } from '@/domain/shared/errors';
@@ -51,6 +52,7 @@ export class RefundOrder {
    * was already requested), REFUND_REFUSED (the provider said no), PAYMENT_PROVIDER_ERROR (it is not known whether it worked).
    */
   async execute(actor: AdminUser, orderNumber: number): Promise<RefundOutcome> {
+    assertNotDemoAccount(actor);
     if (!can(actor.role, 'orders.refund')) throw new DomainError('FORBIDDEN', 'Only owners can refund');
     const order = await this.deps.orders.findByNumber(orderNumber);
     if (!order) throw new DomainError('NOT_FOUND', 'Order not found');

@@ -7,6 +7,7 @@ import type { CurrencyCode } from '@/domain/shared/currency';
 import type { JsonLd } from '@/ui/lib/structured-data';
 import SeoHead from './SeoHead.astro';
 import { t } from '@/ui/i18n';
+import { mediaOrigin } from '@/ui/lib/media-url';
 // The Latin subset of each preset, as hashed asset URLs. Preloading the one the store uses stops the text from changing
 // width when the web font replaces the fallback (that shift was most of the shop page's layout shift).
 import interFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
@@ -99,6 +100,8 @@ const browserColor = /--brand-primary:\s*(#[0-9a-fA-F]{6})/.exec(themeCss)?.[1] 
     />
     <meta name="theme-color" content={browserColor} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* Pictures come from their own host: open that connection while the page is still being read. */}
+    {mediaOrigin() && <link rel="preconnect" href={mediaOrigin()} />}
     {fontPreset && (
       <link rel="preload" as="font" type="font/woff2" href={FONT_FILES[fontPreset]} crossorigin />
     )}

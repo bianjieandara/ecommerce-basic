@@ -33,6 +33,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
     locale: requested,
     target: target as FeedTarget,
     siteUrl: app.config.siteUrl,
+    mediaBaseUrl: app.config.mediaBaseUrl,
     settings: {
       brand: marketing.feedBrand || general.storeName,
       storeName: general.storeName,

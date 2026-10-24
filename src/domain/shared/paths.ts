@@ -31,7 +31,8 @@ export const PATHS = {
   order: (locale: Locale, number: number) => `/${locale}/orders/${number}`,
   orderInvoice: (locale: Locale, number: number) => `/${locale}/orders/${number}/invoice`,
   contact: (locale: Locale) => `/${locale}/contact`,
-  media: (key: string) => `/media/${key}`,
+  /** Where an image is served: the Worker's /media route, or `base` (from `normalizeMediaBase`) when images have their own host. */
+  media: (key: string, base = '') => (base === '' ? `/media/${key}` : `${base}/${key}`),
 } as const;
 
 /**

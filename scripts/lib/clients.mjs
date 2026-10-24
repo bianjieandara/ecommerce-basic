@@ -179,3 +179,25 @@ export function assertRealTurnstileKey(client) {
         '`wrangler secret put TURNSTILE_SECRET_KEY` (a demo may set "allowTestTurnstile": true).',
     );
 }
+
+/**
+ * Keeps demo mode to the public demo. Demo mode shares one login and keeps the e-mails it did not send, so it is only safe on
+ * the demo client, with sandbox payments, and with a real login chosen. Any other client with demo mode is refused.
+ * @param {any} client Parsed client configuration.
+ * @throws {Error} When demo mode is set on a client that is not the demo, or the demo is not configured safely.
+ */
+export function assertDemoConfig(client) {
+  const vars = client.vars ?? {};
+  if (vars.DEMO_MODE !== 'on') return;
+  const problems = [];
+  if (client.slug !== 'demo') problems.push('only the demo client may set DEMO_MODE to "on"');
+  if (vars.EMAIL_TRANSPORT !== 'outbox')
+    problems.push('EMAIL_TRANSPORT must be "outbox" so no demo e-mail is sent');
+  if (vars.PAYPAL_ENV !== 'sandbox') problems.push('PAYPAL_ENV must be "sandbox"');
+  if (vars.DLOCALGO_ENV !== 'sandbox') problems.push('DLOCALGO_ENV must be "sandbox"');
+  if (!vars.DEMO_LOGIN_EMAIL) problems.push('DEMO_LOGIN_EMAIL must be set (the public login address)');
+  if (String(vars.DEMO_LOGIN_PASSWORD ?? '').length < 12)
+    problems.push('DEMO_LOGIN_PASSWORD must be set and at least 12 characters');
+  if (problems.length > 0)
+    throw new Error(`clients/${client.slug}/client.jsonc has demo mode on but ${problems.join('; ')}.`);
+}

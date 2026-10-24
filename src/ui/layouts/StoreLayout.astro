@@ -3,6 +3,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Header from '../store/Header.astro';
 import Footer from '../store/Footer.astro';
+import DemoStrip from '../store/DemoStrip.astro';
 import MobileTabBar from '../store/MobileTabBar.astro';
 import WhatsAppFloat from '../store/WhatsAppFloat.astro';
 import Toaster from '../components/Toaster';
@@ -63,6 +64,8 @@ const {
   currency = 'USD',
   country = 'CO',
 } = Astro.props;
+// Demo mode (the public demo only) adds a notice above the header. The flag is set once per Worker, not per visitor.
+const demo = Astro.locals.app.demo;
 
 // The marketing group is not in the page's store context. The settings table is read once per request, and the pages
 // have already read it, so this costs no extra query. Nothing here depends on the visitor's cookies: the page cache keys
@@ -103,6 +106,7 @@ const consentLabels = {
   ga4MeasurementId={marketing.ga4MeasurementId}
   currency={currency}
 >
+  {demo.enabled && <DemoStrip locale={locale} guideUrl={demo.guideUrl} />}
   <Header
     storeName={storeName}
     locale={locale}

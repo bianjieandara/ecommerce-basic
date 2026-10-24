@@ -15,9 +15,32 @@ if (Astro.locals.admin) return Astro.redirect(next);
 const store = await loadStoreContext(app);
 const lang = store.general.defaultLocale;
 const errors = { ...pickNamespace(lang, 'errors'), UNAUTHORIZED: t(lang, 'admin.login.invalid') };
+const demo = app.demo;
 ---
 
 <AuthLayout title={t(lang, 'admin.login.title')} locale={lang} storeName={store.general.storeName}>
+  {demo.enabled && demo.loginEmail && (
+    <section
+      class="mb-6 flex flex-col gap-2 rounded-card bg-surface p-4 text-sm"
+      aria-labelledby="demo-login"
+    >
+      <h2 id="demo-login" class="font-semibold">
+        {t(lang, 'demo.loginTitle')}
+      </h2>
+      <p class="text-text/70">{t(lang, 'demo.loginHint')}</p>
+      <p class="font-mono break-all">{demo.loginEmail}</p>
+      <p class="font-mono break-all">{demo.loginPassword}</p>
+      <button
+        type="button"
+        data-demo-fill
+        data-email={demo.loginEmail}
+        data-password={demo.loginPassword}
+        class="min-h-11 rounded-full border border-text/20 px-5 font-medium hover:border-text"
+      >
+        {t(lang, 'demo.loginFill')}
+      </button>
+    </section>
+  )}
   <AuthForm
     client:load
     mode="login"
@@ -35,3 +58,13 @@ const errors = { ...pickNamespace(lang, 'errors'), UNAUTHORIZED: t(lang, 'admin.
   />
 </AuthLayout>
 <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script is:inline>
+  // Fills the sign-in form with the shared demo login. Nothing is submitted: the visitor still presses the button of the form.
+  document.querySelector('[data-demo-fill]')?.addEventListener('click', (event) => {
+    const button = event.currentTarget;
+    const email = document.querySelector('form input[name=email]');
+    const password = document.querySelector('form input[name=password]');
+    if (email) email.value = button.dataset.email ?? '';
+    if (password) password.value = button.dataset.password ?? '';
+  });
+</script>

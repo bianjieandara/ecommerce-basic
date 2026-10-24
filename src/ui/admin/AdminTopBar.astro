@@ -14,6 +14,8 @@ interface Props {
 }
 
 const { locale, storeName } = Astro.props;
+// Demo mode (the public demo only) labels the admin and links to the guide.
+const demo = Astro.locals.app.demo;
 const current = findAdminNav(Astro.url.pathname);
 const groups = ADMIN_NAV_GROUPS.map((group) => ({
   title: t(locale, group.label),
@@ -33,6 +35,16 @@ const groups = ADMIN_NAV_GROUPS.map((group) => ({
     >
       {storeName}
     </a>
+    {demo.enabled && (
+      <span class="inline-flex min-h-11 items-center rounded-full bg-primary px-3 text-xs font-medium text-on-primary">
+        {t(locale, 'demo.pill')}
+      </span>
+    )}
+    {demo.enabled && demo.guideUrl && (
+      <a href={demo.guideUrl} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">
+        {t(locale, 'demo.adminGuide')}
+      </a>
+    )}
     <div
       class="group relative order-last w-full md:order-none md:mx-auto md:w-full md:max-w-md"
       data-admin-search

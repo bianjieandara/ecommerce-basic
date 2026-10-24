@@ -22,7 +22,16 @@
   "customDomains": ["ecommerce.relion-app.com"],
   // The public demo uses Cloudflare's test Turnstile key on purpose (see docs/DECISIONS.md). Real stores must not set this.
   "allowTestTurnstile": true,
+  // Demo mode: a shared login, the nightly reset from demo/snapshot.json, and e-mails kept in the outbox instead of sent.
+  // DEMO_LOGIN_EMAIL and DEMO_LOGIN_PASSWORD are public by design (the login page shows them): choose them before publishing.
   "vars": {
+    "DEMO_MODE": "on",
+    "DEMO_LOGIN_EMAIL": "",
+    "DEMO_LOGIN_PASSWORD": "",
+    "DEMO_GUIDE_URL": "https://docs.relion-app.com/clients/try-the-demo/",
+    "DEMO_PAYPAL_BUYER_EMAIL": "",
+    "DEMO_PAYPAL_BUYER_PASSWORD": "",
+    "EMAIL_TRANSPORT": "outbox",
     "PUBLIC_SITE_URL": "https://ecommerce.relion-app.com",
     "EMAIL_FROM": "Store <orders@ecommerce.relion-app.com>",
     "PAYPAL_ENV": "sandbox",

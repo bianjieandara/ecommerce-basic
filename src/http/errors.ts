@@ -17,6 +17,7 @@ const STATUS_BY_CODE: Record<ErrorCode, number> = {
   PAYMENT_METHOD_UNAVAILABLE: 422,
   PAYMENT_PROVIDER_ERROR: 502,
   REFUND_REFUSED: 422,
+  DEMO_LOCKED: 403,
 };
 
 /** Refusals worth a log line: who is being turned away, and provider failures. Validation and not-found stay quiet. */

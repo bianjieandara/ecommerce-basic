@@ -10,6 +10,7 @@ import { recordPageView } from '@/http/analytics';
 import { errorResponse } from '@/http/errors';
 import { withPageCache } from '@/http/page-cache';
 import { withSecurityHeaders } from '@/http/security-headers';
+import { configureMediaBase } from '@/ui/lib/media-url';
 import { getEnv, getExecutionContext, readSecret } from '@/infrastructure/cloudflare/env';
 
 /** Admin pages anyone may open. */
@@ -78,6 +79,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const executionContext = getExecutionContext(context.locals);
   const app = createContainer(getEnv(), executionContext);
   context.locals.app = app;
+  // Components build image URLs through ui/lib/media-url, which needs the store's media host (empty: the /media route).
+  configureMediaBase(app.config.mediaBaseUrl);
   context.locals.admin = null;
 
   const render = async () => (await handle(context, next)) as Response;
