@@ -1,7 +1,8 @@
 // ReportPurchase: queues the purchase events of a paid order, one job per platform: the Meta Conversions API and GA4's Measurement
 // Protocol. It runs after the payment is committed and never throws: a failure is logged and the payment stays confirmed. Each
 // platform has its own try, so a failure on one never stops the other. Nothing is sent for an order whose buyer did not grant
-// marketing consent at checkout.
+// marketing consent at checkout. With consent, the Meta event carries the buyer's email and phone; the sink hashes them (SHA-256)
+// before they leave the store, and never logs them.
 import type { Order } from '../dto/order-dto';
 import type { ConversionEvent, Ga4Purchase } from '../ports/analytics';
 import type { SettingsRepository } from '../ports/content';
@@ -67,8 +68,10 @@ export class ReportPurchase {
         userAgent: null,
         fbp: null,
         fbc: null,
-        email: null,
-        phone: null,
+        // Consent was checked in execute(). Raw values travel in the job, because the sink needs the store's default country code
+        // to normalize the phone before it hashes; they sit in the failed-jobs table only if the send fails.
+        email: order.customer.email,
+        phone: order.customer.phone,
       };
       await this.deps.jobs.enqueue('marketing.meta_capi', event, {
         idempotencyKey: `capi:purchase:${order.id}`,

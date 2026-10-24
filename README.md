@@ -18,12 +18,17 @@ Live demo: <https://ecommerce.relion-app.com/en/>
 - Products, categories, attributes and media; inventory with a stock ledger.
 - Orders, invoices, refunds, shipping, testimonials, reports, dashboard and background-job monitor.
 - Page builder, settings, email templates, users and roles.
+- A "Get your store ready" checklist on the dashboard until the store name, logo, a product, a shipping method, a way to pay and
+  the legal pages are done. A new store starts with pickup, a standard shipping method switched off, and cash on delivery.
 
 **Platform**
 
 - Hexagonal architecture with the layer rules enforced by ESLint ([docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)).
 - Slow or external work (emails, PDFs, invoices, alerts) runs as a queued job with retries and a dead-letter queue.
 - Security headers (A+ on securityheaders.com), rate limits and Turnstile on public endpoints ([docs/SECURITY.md](./docs/SECURITY.md)).
+- Webhooks (dLocal Go, PayPal, WhatsApp) are signature-checked, rate limited and size-capped before anything else runs.
+- Demo mode for a public showcase: a shared login, a nightly reset, outbox e-mails and sandbox payments
+  ([The demo store](#the-demo-store)). It is off for every client except `demo`.
 
 ### Status
 
@@ -83,21 +88,27 @@ public/             3         static assets
 
 ## Scripts
 
-| Script                                        | What it does                                                                                                                         |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `npm run dev`                                 | Local dev server (writes `wrangler.jsonc` for the active client first).                                                              |
-| `npm run build`                               | Production build into `dist/` (same client step).                                                                                    |
-| `npm run preview`                             | Serves the build locally.                                                                                                            |
-| `npm run check`                               | `astro check`, ESLint and Prettier check. Run before every commit.                                                                   |
-| `npm run format` / `npm run lint`             | Prettier write, ESLint.                                                                                                              |
-| `npm run cf-typegen`                          | Regenerates `worker-configuration.d.ts` (generated, do not edit).                                                                    |
-| `npm run db:migrate:local`                    | Applies `db/migrations/` to the local D1 database.                                                                                   |
-| `npm run db:seed:local`                       | Loads `db/seed/dev.sql` into the local database.                                                                                     |
-| `npm run client:new -- <slug>`                | Provisions a client's resources and writes `clients/<slug>/client.jsonc`. Add `--account-id <id>` for a client with its own account. |
-| `npm run client:secrets -- <slug>`            | Uploads `.secrets/<slug>.json` to the client's Worker.                                                                               |
-| `npm run deploy:client -- <slug> [--dry-run]` | Builds, creates missing queues, applies remote D1 migrations and deploys one client.                                                 |
-| `npm run deploy:all [-- --dry-run]`           | Deploys every client in `clients/` in turn and prints a summary. Exits 1 if any failed.                                              |
-| `npm run docs:dev` / `npm run docs:build`     | Runs or builds the user guide in `docs-site/` (port 4500).                                                                           |
+| Script                                        | What it does                                                                                                                            |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                                 | Local dev server (writes `wrangler.jsonc` for the active client first).                                                                 |
+| `npm run build`                               | Production build into `dist/` (same client step).                                                                                       |
+| `npm run preview`                             | Serves the build locally.                                                                                                               |
+| `npm run check`                               | `astro check`, ESLint and Prettier check. Run before every commit.                                                                      |
+| `npm run format` / `npm run lint`             | Prettier write, ESLint.                                                                                                                 |
+| `npm run cf-typegen`                          | Regenerates `worker-configuration.d.ts` (generated, do not edit).                                                                       |
+| `npm run db:migrate:local`                    | Applies `db/migrations/` to the local D1 database.                                                                                      |
+| `npm run db:seed:local`                       | Loads `db/seed/dev.sql` into the local database.                                                                                        |
+| `npm run client:new -- <slug>`                | Provisions a client's resources and writes `clients/<slug>/client.jsonc`. Add `--account-id <id>` for a client with its own account.    |
+| `npm run client:secrets -- <slug>`            | Uploads `.secrets/<slug>.json` to the client's Worker.                                                                                  |
+| `npm run deploy:client -- <slug> [--dry-run]` | Builds, creates missing queues, applies remote D1 migrations and deploys one client.                                                    |
+| `npm run deploy:all [-- --dry-run]`           | Deploys every client in `clients/` in turn and prints a summary. Exits 1 if any failed.                                                 |
+| `npm run docs:dev` / `npm run docs:build`     | Runs or builds the user guide in `docs-site/` (port 4500).                                                                              |
+| `node scripts/docs/store.mjs [--demo]`        | Runs the production build as a local store on port 4400 with its own database (`.wrangler/docs-state`). `--demo` adds test demo values. |
+| `npm run docs:data`                           | Fills that local store with the sample content: pictures, the home page, the theme, orders and testimonials.                            |
+| `npm run demo:snapshot`                       | Freezes the local store into `clients/demo/snapshot/snapshot.json` (tables listed in `scripts/demo/snapshot.mjs`).                      |
+| `npm run demo:publish [-- --local]`           | Copies the snapshot and its images to the demo bucket (`--local` writes into the local store instead).                                  |
+| `npm run test:all`                            | Every test file against the local store on port 4400, about 25 minutes. Some tests change the store, so restock or reseed first.        |
+| `npm run test:demo`                           | Demo mode against a store started with `--demo`: notices, locks, outbox, reset and the deploy guard (34 checks).                        |
 
 ## Adding and updating clients
 
@@ -133,6 +144,39 @@ What demo mode does:
 The settings live in `vars` of `clients/demo/client.jsonc` (`DEMO_MODE`, `DEMO_LOGIN_EMAIL`, `DEMO_LOGIN_PASSWORD`). `npm run deploy:client -- demo`
 refuses to run in demo mode without a login of at least 12 characters, and no client other than `demo` may turn demo mode on.
 To change the login, edit those two values and deploy again.
+
+**What a visitor sees.** A notice above the storefront header says nothing is charged. Checkout shows the dLocal Go test card and,
+when `DEMO_PAYPAL_BUYER_*` is set, a PayPal sandbox buyer. The order page lists the e-mails that order produced, and each one
+opens with the order's access key. The admin shows a "Demo" pill, a guide link and a "Try this" card with six guided tasks.
+
+**What the nightly reset does.** After 03:00 in the store's time zone, once a day, the job `demo.reset` (see
+`src/application/demo/reset-demo.ts`) does four things: it deletes visitors' images and the e-mails in the outbox, empties the
+snapshot tables and the logs, writes the snapshot back with its times moved forward (so the dashboard always shows recent
+orders), and rewrites the shared account with a fresh password hash. Owner accounts and their sessions are never touched. An owner
+can run the same reset from the dashboard at any time.
+
+**The demo content is a snapshot, not live data.** `clients/demo/snapshot/snapshot.json` holds the sample catalog, pictures, home
+page, theme, orders and testimonials. It is produced from a clean local demo store and published to the demo's R2 bucket:
+
+```sh
+rm -rf .wrangler/demo-build                                   # start from an empty database
+DOCS_STATE=.wrangler/demo-build node scripts/docs/store.mjs --demo &   # migrations and dev seed, port 4400
+DOCS_STATE=.wrangler/demo-build npm run docs:data              # the sample content (through the admin API)
+DOCS_STATE=.wrangler/demo-build npm run demo:snapshot          # writes clients/demo/snapshot/snapshot.json
+DOCS_STATE=.wrangler/demo-build npm run demo:publish           # copies the images and the snapshot to the demo bucket
+```
+
+Commit the new `snapshot.json` after it changes, and check the file holds no test data first (real addresses, leftover test
+orders). The reset uses whatever snapshot is published, so the snapshot must be republished after content changes.
+
+**Things to know before relying on the live demo.** The live Worker runs the code it was last deployed with. A new deployment
+is needed before the reset, the locks and the outbox run there; publishing the snapshot alone does not change the live site.
+The outbox is a demo-only sender (`EMAIL_TRANSPORT=outbox`); on a local store `.dev.vars` sets `EMAIL_TRANSPORT=console`, which
+overrides the build, so `scripts/docs/store.mjs --demo` passes `outbox` explicitly.
+
+**Running a demo locally.** `npm run build`, then `node scripts/docs/store.mjs --demo` (leave it running), then
+`npm run test:demo` in another terminal. The test publishes a snapshot into the local bucket and checks the notices, the locks,
+the outbox, the reset and the deploy guard.
 
 ## Documentation
 

@@ -104,7 +104,7 @@ const version = createHash('sha256').update(JSON.stringify(body)).digest('hex').
 const snapshot = { version, takenAt: new Date().toISOString(), ...body };
 
 mkdirSync(dirname(OUT), { recursive: true });
-writeFileSync(OUT, `${JSON.stringify(snapshot, null, 1)}\n`);
+writeFileSync(OUT, `${JSON.stringify(snapshot, null, 2)}\n`);
 const rows = SNAPSHOT_TABLES.reduce((sum, table) => sum + tables[table].length, 0);
 console.log(
   `snapshot ${version}: ${rows} rows in ${SNAPSHOT_TABLES.length} tables, ${snapshot.media.length} images -> ${OUT}`,

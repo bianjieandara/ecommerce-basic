@@ -36,6 +36,9 @@ that exist are reused. If R2 is not enabled, the script says so; enable R2 and c
 - `vars.EMAIL_FROM`: a sender on the client's Email Service sending domain.
 - `vars.PAYPAL_ENV` and `vars.DLOCALGO_ENV`: `sandbox` or `live`.
 - `vars.TURNSTILE_SITE_KEY`: the site key of the client's Turnstile widget.
+- `vars.PUBLIC_MEDIA_BASE_URL`: leave empty to serve pictures through the Worker (`/media/...`), or set the address of the
+  bucket's custom domain, for example `https://media.shop.example.com`, after step 3.8. An unusable value (no `https`, a
+  query string, credentials) is ignored and pictures keep coming from the Worker.
 - `vars.WHATSAPP_PHONE_NUMBER_ID`, `vars.WHATSAPP_WABA_ID`, `vars.META_GRAPH_VERSION`: only when the client uses WhatsApp or Meta.
 - `customDomains`: the hostnames that serve the store, for example `["shop.example.com"]`.
 - `cron`: keep one expression per client (default every 15 minutes).
@@ -60,6 +63,22 @@ the values they produce.
    Settings > Marketing. For purchases from the server (bank transfer, cash on delivery, WhatsApp), create a Measurement
    Protocol API secret (data stream > Measurement Protocol API secrets) and put it in `GA4_API_SECRET`. See
    [ANALYTICS.md](./ANALYTICS.md#google-analytics-4).
+8. **Pictures from their own host (optional, recommended once the store has traffic).** Without it every picture is a Worker
+   request (the first one in each location also reads R2). With it the browser fetches pictures straight from Cloudflare's
+   cache and the Worker never sees them. Do these in order; the second one is not optional:
+   1. **Custom domain on the bucket.** Dashboard > R2 > the client's bucket > Settings > Custom Domains > Add, for example
+      `media.shop.example.com`. The zone must be in the same Cloudflare account; the DNS record and certificate are created for
+      you. Do not turn on the `r2.dev` address: it is rate limited and not cached.
+   2. **Restrict that host to `/media/`.** The bucket also holds `invoices/<id>.pdf` (customer names, addresses and totals) and,
+      on a demo store, the e-mail outbox. A custom domain serves every key in the bucket, so add a WAF custom rule on the
+      zone, action Block: `(http.host eq "media.shop.example.com" and not starts_with(http.request.uri.path, "/media/"))`.
+      Check it before going on: a picture URL must answer 200 and `https://media.shop.example.com/invoices/x.pdf` must answer
+      403 (the rule answers before R2 looks for the file, so a made-up name is enough to test it).
+   3. **Point the store at it.** Set `vars.PUBLIC_MEDIA_BASE_URL` to `https://media.shop.example.com` in `client.jsonc` and
+      deploy. Pictures, their `srcset`, the structured data, the share image and the product feed then use that host, and
+      pages ask the browser to open the connection early (`preconnect`). The `/media/...` route keeps working for old links and
+      for the admin.
+      Going back is the same edit with an empty value.
 
 ## 4. Secrets file
 

@@ -75,7 +75,10 @@ Notes:
 - The consent banner appears when `marketing.consentBannerMode` is `always`, or when `auto` and a marketing tool is
   enabled. Necessary cookies never need consent.
 - Hashed personal data (SHA-256 of the normalized email and phone) is sent to Meta only with consent, and only in
-  Conversions API events.
+  Conversions API events. The purchase event carries the buyer's email and phone when the buyer granted `marketing` at
+  checkout. The job that carries it holds them unhashed (the sink hashes just before sending, with the store's default
+  country code for the phone), so if the send fails they sit in the failed-jobs table, which only owners can read, until
+  the job is resolved and purged (90 days). The other events carry no personal data.
 
 ## Google Analytics 4
 
