@@ -39,12 +39,12 @@ API Integration shows the Sandbox API Key and Sandbox Secret Key. The sandbox AP
 
 **What to see for each outcome**
 
-| Outcome        | Order                                                                                            | Customer                        |
-| -------------- | ------------------------------------------------------------------------------------------------ | ------------------------------- |
-| Approved       | `paid`, stock confirmed, invoice and emails                                                      | Order page says paid            |
-| Rejected cards | Stays `pending_payment`; no invoice                                                              | Can retry on the dLocal Go page |
-| Abandoned      | Stale-order job expires it later and releases the stock                                          | Nothing                         |
-| Refunded       | Refund in the dLocal Go dashboard; the webhook moves the order to `refunded` and sends the email | Refund email                    |
+| Outcome        | Order                                                                                                                                   | Customer                        |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Approved       | `paid`, stock confirmed, invoice and emails                                                                                             | Order page says paid            |
+| Rejected cards | Stays `pending_payment`; no invoice                                                                                                     | Can retry on the dLocal Go page |
+| Abandoned      | Stale-order job expires it later and releases the stock                                                                                 | Nothing                         |
+| Refunded       | Owner clicks Refund in the admin (or refunds in the dLocal Go dashboard); the webhook moves the order to `refunded` and sends the email | Refund email                    |
 
 **Webhook.** dLocal Go posts only `{"payment_id": "..."}` to the notification URL, signed in the `Authorization` header as
 `V2-HMAC-SHA256, Signature: <hex>`, where the hex is HMAC-SHA256 of the API key followed by the raw body, keyed with the secret key
@@ -87,6 +87,20 @@ refund. This was run end to end against the dLocal Go sandbox:
    cancelled order" went out (printed by the console transport). Run the same command again: no second email, because the alert is
    keyed on the provider event.
 
+### Refund from the admin
+
+An owner opens a paid order and presses **Refund** (two clicks: ask, then confirm). Run on the dLocal Go sandbox:
+
+1. Pay a card order as above, then refund it from `/admin/orders/<number>`. dLocal Go answers `PENDING` with a refund id (`REF-...`),
+   the timeline shows "Refund requested", and the order stays `paid`.
+2. dLocal Go calls the notification URL when the refund finishes. On a local store that URL is `PUBLIC_SITE_URL`, another host, so
+   deliver it yourself: `npm run test:webhooks -- dlocalgo REF-<id>`. The order becomes `refunded`, one refund email goes out.
+3. dLocal Go reports the refund in the buyer's currency (a $12 USD payment comes back as COP). That cannot be compared with the
+   order total, so the store accepts it as the full refund only because it recorded its own request first. A refund made in the
+   dLocal Go dashboard in a different currency than the payment is left for the owner to settle by hand.
+4. A second click, or two at once, is refused with a conflict before dLocal Go is called (it has no idempotency key).
+5. Without `orders.refund` (editors) the endpoint answers 403; a bank-transfer order or an unpaid order, 409.
+
 ## PayPal
 
 Secrets: `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_WEBHOOK_ID`; `PAYPAL_ENV` is `sandbox` or `live`. The store uses Orders
@@ -104,12 +118,13 @@ is `https://api-m.sandbox.paypal.com`. Keep a buyer's password in `.dev.vars` (a
 2. Checkout with PayPal. On PayPal, sign in as the sandbox buyer and approve.
 3. You return to the order page; the store captures the payment. The order becomes `paid`, an invoice is issued.
 4. In the sandbox site you can see the transaction by signing in with any sandbox account.
-5. Refund in PayPal (sign in to the sandbox business account > the transaction > Refund), not in the store: the store never calls
-   PayPal's refund API. PayPal refunds are asynchronous, and the store does not handle PayPal refund webhooks, so afterwards move the
-   order to `refunded` in the admin; that records it and sends the customer's refund email.
+5. Refund from the admin as an owner: open the paid order, press **Refund**, confirm. The store calls PayPal's refund API on the
+   capture (with a `PayPal-Request-Id`, so a repeat is harmless), PayPal answers COMPLETED at once, and the order becomes `refunded`
+   with the customer's refund email. A refund made in PayPal's dashboard is not seen by the store (it ignores refund webhooks), so
+   there you move the order to `refunded` by hand.
 
 **Webhooks.** The store handles `PAYMENT.CAPTURE.COMPLETED` (paid) and `PAYMENT.CAPTURE.DENIED` (failed), for payments that finish
-when the customer does not come back. Other events, refunds included, are acknowledged and ignored. It verifies each event by posting it to PayPal's `verify-webhook-signature`
+when the customer does not come back. Other events, refunds included, are acknowledged and ignored (the admin refund does not need them: PayPal answers it at once). It verifies each event by posting it to PayPal's `verify-webhook-signature`
 ([docs](https://developer.paypal.com/api/rest/webhooks/rest/)).
 
 - **The dashboard simulator cannot pass that check, by design.** PayPal states that postback verification "is not supported for

@@ -64,9 +64,9 @@ Found while testing and left as they are, because each is a documented choice wi
 
 None of these can be closed by a change in this repository. Each says why, and what closes it.
 
-1. **Refunds are recorded, not made.** The admin never calls a provider's refund API. dLocal Go refund notifications move the order to
-   `refunded` by themselves; PayPal refund events are ignored, so those are marked by hand. A refund call or a PayPal refund handler
-   moves money and cannot be checked without live refunds, so it was left as designed and documented in TESTING_INTEGRATIONS.md.
+1. **Refunds made in a provider's dashboard.** The admin now refunds in full through dLocal Go and PayPal (owners only), checked
+   on both sandboxes. A refund made in PayPal's dashboard is still not seen by the store (refund events are ignored), so those orders
+   are marked refunded by hand. Partial refunds are also made in the dashboard.
 2. **Development-only `npm audit` finding** (regular-expression denial of service in `braces`, through the ESLint Astro plugin). npm has
    no patched `braces` (3.0.3 is the latest); pinning the older plugin cleared nothing. It never runs in the Worker, and
    `npm audit --omit=dev` is clean. Closed by an upstream release.

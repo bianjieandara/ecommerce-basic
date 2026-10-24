@@ -105,6 +105,7 @@ try {
     [`/api/admin/jobs/${nobody}/discard`, {}],
     ['/api/admin/whatsapp/order_shipped/submit', {}],
     ['/api/admin/whatsapp/order_shipped/sync', {}],
+    ['/api/admin/orders/1/refund', {}],
   ];
   for (const [path, body] of ownerOnly) {
     const response = await post(path, body, editor);

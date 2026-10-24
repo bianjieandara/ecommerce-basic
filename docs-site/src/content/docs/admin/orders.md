@@ -67,6 +67,11 @@ Si un pago online no se confirma dentro del tiempo de reserva (45 minutos por de
 
 ## Reembolsos
 
-Un reembolso de tarjeta se hace en el panel del proveedor (dLocal Go o PayPal). Cuando el proveedor confirma un reembolso total,
-la tienda marca el pedido como **Reembolsado** por sí sola. Con los demás métodos, pon **Reembolsado** después de devolver el
-dinero.
+En un pedido **Pagado** con tarjeta (dLocal Go o PayPal), el propietario ve el botón **Reembolsar** con el importe y el proveedor.
+Pide confirmación una vez, devuelve el pago completo al cliente y deja el pedido como **Reembolsado**. PayPal responde al instante;
+dLocal Go tarda un poco y avisa a la tienda, así que el pedido pasa a **Reembolsado** cuando llega el aviso. En la línea de tiempo
+queda quién lo pidió. Solo se reembolsa el pago completo, y solo una vez por pedido. Si el proveedor lo rechaza (por ejemplo, un
+pago demasiado antiguo), el botón vuelve a estar disponible y el motivo aparece en pantalla.
+
+Los editores no ven el botón. Con los demás métodos (transferencia, efectivo), pon **Reembolsado** después de devolver el dinero.
+Un reembolso parcial se hace en el panel del proveedor y el pedido sigue **Pagado**.

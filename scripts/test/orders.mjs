@@ -319,6 +319,26 @@ async function main() {
   check('refund a paid order', good(await status(refundNumber, 'refunded')));
   check('a refunded order cannot be shipped', refused(await status(refundNumber, 'shipped')));
 
+  // Refunds through a provider. These checks never reach one: a real refund can be made once per sandbox payment, so that part was
+  // verified by hand (see DECISIONS.md) and is not repeatable here.
+  const noProvider = numberOf(await place());
+  await status(noProvider, 'paid');
+  const viaProvider = (n) => admin(`/api/admin/orders/${n}/refund`, {});
+  check(
+    'a bank transfer order cannot be refunded through a provider',
+    refused(await viaProvider(noProvider), 'INVALID_STATE'),
+  );
+  check('and it stays paid', orderRow(noProvider).status === 'paid');
+  check(
+    'a pending order cannot be refunded',
+    refused(await viaProvider(numberOf(await place())), 'INVALID_STATE'),
+  );
+  check('an order that does not exist is a clean 404', (await viaProvider(99999999)).status === 404);
+  check(
+    'a refund request never marks an order refunded by itself',
+    one(`SELECT COUNT(*) AS n FROM orders WHERE customer_email = '${EMAIL}' AND status = 'refunded'`).n === 1,
+  );
+
   // Two clicks on the same change at once: one wins, the other is told the order moved meanwhile. (Paid then cancelled is a legal pair,
   // so the race uses the same target twice.)
   const raceNumber = numberOf(await place({ items: [{ variantId: VARIANT, quantity: 3 }] }));
@@ -358,7 +378,7 @@ async function main() {
   const staleBefore = stock(VARIANT);
   sql(`UPDATE orders SET expires_at = '2020-01-01T00:00:00.000Z' WHERE number = ${staleNumber}`);
   await fetch(`${BASE}/cdn-cgi/handler/scheduled?cron=*+*+*+*+*`).catch(() => null);
-  await settle();
+  await until(() => orderRow(staleNumber).status === 'cancelled');
   check(
     'an order past its hold time is cancelled by the scheduled job',
     orderRow(staleNumber).status === 'cancelled',

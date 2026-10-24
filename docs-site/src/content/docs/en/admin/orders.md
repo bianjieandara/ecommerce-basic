@@ -67,5 +67,11 @@ released.
 
 ## Refunds
 
-Refunding a card payment is done in the payment provider's dashboard (dLocal Go or PayPal). When the provider confirms a full
-refund, the store marks the order **Refunded** by itself. For other methods, set **Refunded** after you return the money.
+On a **Paid** order paid by card (dLocal Go or PayPal), the owner sees a **Refund** button with the amount and the provider. It asks
+for confirmation once, sends the whole payment back to the customer and leaves the order **Refunded**. PayPal answers at once;
+dLocal Go takes a moment and notifies the store, so the order becomes **Refunded** when that notice arrives. The timeline records who
+asked. Only the full payment is refunded, and only once per order. If the provider refuses (a payment that is too old, say), the
+button is available again and the reason is shown.
+
+Editors do not see the button. For other methods (bank transfer, cash), set **Refunded** after you return the money. A partial
+refund is made in the provider's dashboard and the order stays **Paid**.
