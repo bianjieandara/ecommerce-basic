@@ -110,7 +110,7 @@ export default function WhatsAppTemplateCard({ entry, labels }: WhatsAppTemplate
         {(['es', 'en'] as const).map((locale) => {
           const reason = remote[locale]?.reason;
           return reason ? (
-            <p key={locale} class="text-text/70 text-xs break-words">
+            <p key={locale} class="text-text/70 text-xs wrap-break-word">
               {labels.card.languages[locale]} · {labels.card.reason}: {reason}
             </p>
           ) : null;

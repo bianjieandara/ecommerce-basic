@@ -138,13 +138,13 @@ const facts: [string, string][] = [
           {facts.map(([name, value]) => (
             <div class="flex flex-col">
               <dt class="eyebrow">{name}</dt>
-              <dd class="break-words">{value}</dd>
+              <dd class="wrap-break-word">{value}</dd>
             </div>
           ))}
           {billing.map(([name, value]) => (
             <div class="flex flex-col">
               <dt class="eyebrow">{name}</dt>
-              <dd class="break-words">{value}</dd>
+              <dd class="wrap-break-word">{value}</dd>
             </div>
           ))}
         </dl>

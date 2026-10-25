@@ -17,7 +17,7 @@ const lang = format.lang;
   {kpis.map((kpi) => (
     <li class="rounded-card border border-text/10 bg-background flex min-w-0 flex-col gap-1 p-4">
       <span class="text-text/70 text-sm">{t(lang, `admin.reports.${kpi.label}`)}</span>
-      <strong class="text-xl font-semibold break-words">{formatCell(kpi.value, format)}</strong>
+      <strong class="text-xl font-semibold wrap-break-word">{formatCell(kpi.value, format)}</strong>
       {kpi.previous !== null && (
         <span class="text-text/70 text-xs">
           {kpi.changeBp === null ? t(lang, 'admin.reports.changeNone') : formatChange(kpi.changeBp, format)}

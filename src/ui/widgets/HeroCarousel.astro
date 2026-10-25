@@ -36,7 +36,7 @@ const slides = config.slides ?? [];
         const image = slide.image ? data.media?.[slide.image] : undefined;
         return (
           <div
-            class={`relative flex min-h-[28rem] flex-col justify-end overflow-hidden rounded-card md:min-h-[36rem] ${image ? 'bg-text text-white' : 'bg-surface text-text'}`}
+            class={`relative flex min-h-112 flex-col justify-end overflow-hidden rounded-card md:min-h-144 ${image ? 'bg-text text-white' : 'bg-surface text-text'}`}
           >
             {image && (
               <>

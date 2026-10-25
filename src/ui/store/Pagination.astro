@@ -41,12 +41,12 @@ const pages = Array.from({ length: totalPages }, (_, index) => index + 1).filter
       <a
         href={hrefFor(page - 1)}
         rel="prev"
-        class="min-h-11 rounded-brand border border-text/20 px-4 leading-[2.75rem]"
+        class="min-h-11 rounded-brand border border-text/20 px-4 leading-11"
       >
         {t(locale, 'pagination.previous')}
       </a>
     ) : (
-      <span class="min-h-11 px-4 leading-[2.75rem] text-text/70">{t(locale, 'pagination.previous')}</span>
+      <span class="min-h-11 px-4 leading-11 text-text/70">{t(locale, 'pagination.previous')}</span>
     )}
     <ol class="flex items-center gap-1 text-sm">
       {pages.map((number, index) => (
@@ -76,12 +76,12 @@ const pages = Array.from({ length: totalPages }, (_, index) => index + 1).filter
       <a
         href={hrefFor(page + 1)}
         rel="next"
-        class="min-h-11 rounded-brand border border-text/20 px-4 leading-[2.75rem]"
+        class="min-h-11 rounded-brand border border-text/20 px-4 leading-11"
       >
         {t(locale, 'pagination.next')}
       </a>
     ) : (
-      <span class="min-h-11 px-4 leading-[2.75rem] text-text/70">{t(locale, 'pagination.next')}</span>
+      <span class="min-h-11 px-4 leading-11 text-text/70">{t(locale, 'pagination.next')}</span>
     )}
   </nav>
 )}

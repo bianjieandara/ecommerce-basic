@@ -66,7 +66,7 @@ export default function UserRow(props: UserRowProps) {
   return (
     <tr>
       <td data-label={labels.columns.name}>
-        <span class="font-semibold break-words">{user.name}</span>
+        <span class="font-semibold wrap-break-word">{user.name}</span>
         {isSelf && <span class="text-text/70 ms-2 text-xs">({labels.you})</span>}
       </td>
       <td data-label={labels.columns.email} class="break-all">

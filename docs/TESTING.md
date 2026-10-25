@@ -234,7 +234,7 @@ Do these on the client's real domain, with the client's accounts, before the ann
 [TESTING_INTEGRATIONS.md](./TESTING_INTEGRATIONS.md).
 
 1. Deploy (see [NEW_CLIENT.md](./NEW_CLIENT.md)). Open the store on the custom domain and check `x-page-cache` reaches `HIT` on
-   a second visit.
+   a second visit. After 5 minutes the next visit answers `STALE` at once (the old copy) and the one after is `HIT` again.
 2. Set the live secrets with `npm run client:secrets` and switch `DLOCALGO_ENV` and `PAYPAL_ENV` to `live` only at this point.
 3. One real card payment of the smallest amount, then a refund made in the provider's dashboard (the store records it; it never
    calls a refund API). One real PayPal payment, then the same.
