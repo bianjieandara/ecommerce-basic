@@ -70,7 +70,17 @@ const localDay = (iso) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).for
  * @param read Function from HTML to an array of row keys.
  * @returns The rows in the order shown, plus the status of the first page.
  */
-async function readAll(path, query, read) {
+/**
+ * Reads every page of an admin list.
+ * @param {string} path List path.
+ * @param {URLSearchParams} query Filters.
+ * @param {(html: string) => string[]} read Turns one page into its rows.
+ * @param {{ repeats?: boolean }} [options] `repeats` is true for lists whose rows can legitimately repeat (stock movements: the same sale
+ *   many times). Their walk stops at a short page only; for unique rows it also stops when a page adds nothing new, which guards
+ *   against a server that ignores the page number.
+ * @returns {Promise<{ rows: string[], status: number }>} Every row read, and the status of the first page.
+ */
+async function readAll(path, query, read, { repeats = false } = {}) {
   const rows = [];
   let status = 0;
   for (let page = 1; page <= 40; page += 1) {
@@ -85,7 +95,7 @@ async function readAll(path, query, read) {
     const got = read(await response.text());
     const fresh = got.filter((row) => !rows.includes(row));
     rows.push(...got);
-    if (got.length < PAGE || fresh.length === 0) break;
+    if (got.length < PAGE || (!repeats && fresh.length === 0)) break;
   }
   return { rows, status };
 }
@@ -402,7 +412,9 @@ const readMovements = (html) =>
 /** Compares one movement filter by the multiset of rows. */
 async function movementsCase(label, f) {
   const query = new URLSearchParams(Object.fromEntries(Object.entries(f).filter(([, v]) => v)));
-  const { rows, status } = await readAll('/admin/inventory/movements', query, readMovements);
+  const { rows, status } = await readAll('/admin/inventory/movements', query, readMovements, {
+    repeats: true,
+  });
   const want = movements
     .filter((m) => !f.reason || m.reason === f.reason)
     .filter((m) => !f.from || Date.parse(m.created) >= dayStart(f.from))

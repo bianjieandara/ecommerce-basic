@@ -11,7 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { sql, STATE } from '../docs/shared.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const OUT = join(ROOT, 'clients', 'demo', 'snapshot', 'snapshot.json');
+// DEMO_SNAPSHOT_FILE lets a test write elsewhere, so a test run never overwrites the committed snapshot.
+const OUT = process.env.DEMO_SNAPSHOT_FILE ?? join(ROOT, 'clients', 'demo', 'snapshot', 'snapshot.json');
 
 /** Id the demo account gets in the snapshot. The Worker reads it from the file, so the value lives in one place. */
 const DEMO_ACCOUNT_ID = 'demo-account';

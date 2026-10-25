@@ -5,7 +5,7 @@
 // Usage: node scripts/demo/publish.mjs [--dry-run]            publish to the live demo (needs `wrangler login`)
 //        node scripts/demo/publish.mjs --local                put the snapshot into the local build's bucket (tests)
 // Run `npm run demo:snapshot` first.
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -14,7 +14,8 @@ import { runStep } from '../lib/run.mjs';
 import { STATE } from '../docs/shared.mjs';
 
 const CLIENT = 'demo';
-const SNAPSHOT = join(ROOT, 'clients', CLIENT, 'snapshot', 'snapshot.json');
+// DEMO_SNAPSHOT_FILE lets a test publish a snapshot of its own, so the committed one is never replaced by test data.
+const SNAPSHOT = process.env.DEMO_SNAPSHOT_FILE ?? join(ROOT, 'clients', CLIENT, 'snapshot', 'snapshot.json');
 const CONTENT_TYPES = { webp: 'image/webp', jpg: 'image/jpeg', png: 'image/png' };
 
 /**
@@ -69,15 +70,34 @@ export function publish({ dryRun = false, local = false }) {
 }
 
 /**
- * Copies every image of the snapshot from the local build to the demo bucket.
- * @param {{ snapshot: { media: string[] }, bucket: string, env: NodeJS.ProcessEnv, dryRun: boolean }} options Snapshot and target.
+ * Refuses an image that was not read from the local build. A failed `wrangler r2 object get` still leaves an empty file behind, and
+ * uploading that file would replace the image in the live bucket with an empty object, so a failed or empty read stops the publish.
+ * @param {{ ok: boolean }} read Result of the `get` step.
+ * @param {string} file Where the image was written.
+ * @param {string} key R2 key of the image.
+ * @throws {Error} When the read failed or wrote nothing.
  */
-function copyImages({ snapshot, bucket, env, dryRun }) {
+export function assertImageRead(read, file, key) {
+  const size = existsSync(file) ? statSync(file).size : 0;
+  if (!read.ok || size === 0)
+    throw new Error(
+      `Could not read ${key} from the local build (${STATE}). Nothing was uploaded. Point DOCS_STATE at the local store the snapshot was ` +
+        'taken from (it must hold every image of the snapshot) and run it again.',
+    );
+}
+
+/**
+ * Copies every image of the snapshot from the local build to the demo bucket. All images are read and checked first and only then
+ * uploaded, so a missing image stops the publish before the bucket changes at all.
+ * @param {{ snapshot: { media: string[] }, bucket: string, env: NodeJS.ProcessEnv, dryRun: boolean }} options Snapshot and target.
+ * @param {typeof runStep} run Runs one command; tests pass a stand-in.
+ */
+export function copyImages({ snapshot, bucket, env, dryRun }, run = runStep) {
   const scratch = mkdtempSync(join(tmpdir(), 'demo-publish-'));
+  const files = new Map(snapshot.media.map((key) => [key, join(scratch, key.replaceAll('/', '_'))]));
   try {
-    for (const key of snapshot.media) {
-      const file = join(scratch, key.replaceAll('/', '_'));
-      runStep({
+    for (const [key, file] of files) {
+      const read = run({
         command: 'npx',
         args: [
           'wrangler',
@@ -94,7 +114,10 @@ function copyImages({ snapshot, bucket, env, dryRun }) {
         env,
         dryRun,
       });
-      runStep({
+      if (!dryRun) assertImageRead(read, file, key);
+    }
+    for (const [key, file] of files) {
+      run({
         command: 'npx',
         args: [
           'wrangler',

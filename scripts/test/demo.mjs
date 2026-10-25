@@ -92,6 +92,7 @@ async function until(check, timeoutMs) {
 // The owner's session comes from the local owner account that docs:data creates.
 const owner = JSON.parse(readFileSync('.wrangler/docs-admin.json', 'utf8'));
 const ownerCookie = await signIn(owner.email, owner.password);
+const SNAPSHOT_FILE = '.wrangler/test-demo-snapshot.json';
 let snapshotFile = null;
 let visitorOrder = null;
 
@@ -103,9 +104,11 @@ let visitorOrder = null;
 
 // 1. Publish a fresh snapshot of the sample store into the local bucket, then reset the store to it.
 {
-  execSync('node scripts/demo/snapshot.mjs', { stdio: 'pipe' });
-  execSync('node scripts/demo/publish.mjs --local', { stdio: 'pipe' });
-  const fresh = JSON.parse(readFileSync('clients/demo/snapshot/snapshot.json', 'utf8'));
+  // The test snapshots its own local store (full of test data) into a scratch file; the committed snapshot is never touched.
+  const env = { ...process.env, DEMO_SNAPSHOT_FILE: SNAPSHOT_FILE };
+  execSync('node scripts/demo/snapshot.mjs', { stdio: 'pipe', env });
+  execSync('node scripts/demo/publish.mjs --local', { stdio: 'pipe', env });
+  const fresh = JSON.parse(readFileSync(SNAPSHOT_FILE, 'utf8'));
   snapshotFile = fresh;
   record('the snapshot names the demo account', fresh.accountId === 'demo-account');
   const reset = await call('/api/admin/demo/reset', undefined, ownerCookie);
