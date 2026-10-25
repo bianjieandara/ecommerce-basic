@@ -1,0 +1,29 @@
+---
+// Plans as side-by-side cards (name, big price, a few labelled lines) instead of a wide table, which cramped six columns into one
+// row. Used by ChangePlans for the monthly and yearly plans.
+interface Props {
+  /** One card per plan. `lines` are label and value pairs; `sub` is the small line under the price. */
+  plans: { name: string; price: string; sub?: string; lines: { label: string; value: string }[] }[];
+}
+const { plans } = Astro.props;
+---
+
+<div class="guide-plans not-content">
+  {
+    plans.map((plan) => (
+      <div class="guide-plan">
+        <strong class="guide-plan-name">{plan.name}</strong>
+        <span class="guide-plan-price">{plan.price}</span>
+        {plan.sub && <span class="guide-plan-sub">{plan.sub}</span>}
+        <dl class="guide-plan-lines">
+          {plan.lines.map((line) => (
+            <div>
+              <dt>{line.label}</dt>
+              <dd>{line.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    ))
+  }
+</div>

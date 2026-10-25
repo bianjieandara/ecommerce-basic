@@ -59,7 +59,7 @@
   --guide-dot-top: 0.8em;
 
   /* Layout: reading column, table and tile minimums, and the guided-step cards (the mobile media query below narrows them). */
-  --guide-content-width: 46rem;
+  --guide-content-width: 54rem;
   --guide-pad-page-x: var(--guide-space-4xl);
   --guide-pad-page-y: var(--guide-space-3xl);
   --guide-pad-sidebar-x: var(--guide-space-xl);
@@ -71,7 +71,9 @@
   --guide-step-inset: var(--guide-space-lg);
   --guide-step-min-height: 3.5rem;
   --guide-touch-min: 2.75rem;
-  --guide-feature-min: 15rem;
+  --guide-feature-min: 14rem;
+  --guide-feature-min-wide: 20rem;
+  --guide-plan-min: 13rem;
   --guide-phone-stage-width: 15rem;
   --guide-phone-bezel: 0.5rem;
   --guide-phone-radius: 2.25rem;

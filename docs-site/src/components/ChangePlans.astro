@@ -1,7 +1,9 @@
 ---
-// One price table of the "changes we make for you" service (per change, credit packs, or monthly and yearly plans). It renders the
-// table for every region and the CSS shows the visitor's one, so the page stays static. Numbers come from data/change-plans.ts.
+// One price block of the "changes we make for you" service: a table for per-change prices and credit packs, cards for the monthly
+// and yearly plans. It renders the block for every region and the CSS shows the visitor's one, so the page stays static. Numbers
+// come from data/change-plans.ts.
 import PriceTable from './PriceTable.astro';
+import PlanCards from './PlanCards.astro';
 import { REGIONS } from '../data/regions.mjs';
 import {
   CHANGE_SIZES,
@@ -21,6 +23,18 @@ interface Props {
 }
 const { lang, part } = Astro.props;
 const copy = COPY[lang];
+
+/** Rows of a plan table as cards: the name is the first cell, `price` and `sub` say which cells hold the price lines, the rest are listed. */
+function cardsFor(table: { head: string[]; rows: string[][] }, price: number, sub?: number) {
+  return table.rows.map((cells) => ({
+    name: cells[0],
+    price: cells[price],
+    sub: sub === undefined ? table.head[price] : cells[sub],
+    lines: cells
+      .map((value, i) => ({ label: table.head[i], value, i }))
+      .filter(({ i }) => i !== 0 && i !== price && i !== sub),
+  }));
+}
 
 /** Head and rows of the requested table for one region. */
 function tableFor(region: (typeof REGIONS)[number]) {
@@ -76,9 +90,14 @@ function tableFor(region: (typeof REGIONS)[number]) {
 ---
 
 {
-  REGIONS.map((region) => (
-    <div data-region-only={region}>
-      <PriceTable {...tableFor(region)} />
-    </div>
-  ))
+  REGIONS.map((region) => {
+    const table = tableFor(region);
+    return (
+      <div data-region-only={region}>
+        {part === 'plans' && <PlanCards plans={cardsFor(table, 3)} />}
+        {part === 'yearly' && <PlanCards plans={cardsFor(table, 4, 5)} />}
+        {(part === 'single' || part === 'packs') && <PriceTable {...table} />}
+      </div>
+    );
+  })
 }

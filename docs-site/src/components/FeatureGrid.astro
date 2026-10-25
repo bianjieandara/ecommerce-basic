@@ -10,9 +10,11 @@ interface Props {
   layout?: 'card' | 'row';
 }
 const { items, layout = 'row' } = Astro.props;
+// Counts that do not fill rows of three go in two wide columns, so the grid never ends with a lone block beside empty space.
+const wide = items.length % 3 !== 0;
 ---
 
-<div class="guide-features not-content">
+<div class:list={['guide-features', 'not-content', { 'is-wide': wide }]}>
   {
     items.map((item) => (
       <div class:list={['guide-feature', { 'is-row': layout === 'row' }]}>

@@ -53,6 +53,14 @@
   gap: var(--guide-space-lg);
 }
 
+.guide-features.is-wide {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--guide-feature-min-wide)), 1fr));
+}
+
+.guide-features.is-wide > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
 .guide-feature {
   display: flex;
   flex-direction: column;
@@ -249,4 +257,64 @@
     max-width: 100%;
     margin-inline: auto;
   }
+}
+
+/* Plan cards: one per plan, the price large and the details as label and value lines. As many columns as fit. */
+.guide-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--guide-plan-min)), 1fr));
+  gap: var(--guide-space-lg);
+}
+
+.guide-plan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-xs);
+  padding: var(--guide-space-xl);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-lg);
+  background: var(--guide-card);
+}
+
+.guide-plan-name {
+  font-size: var(--guide-text-md);
+  color: var(--sl-color-white);
+}
+
+.guide-plan-price {
+  font-size: var(--guide-text-h2);
+  font-weight: var(--guide-weight-bold);
+  line-height: var(--guide-leading-tight);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--sl-color-white);
+}
+
+.guide-plan-sub {
+  font-size: var(--guide-text-sm);
+  color: var(--guide-muted);
+}
+
+.guide-plan-lines {
+  display: flex;
+  flex-direction: column;
+  margin: var(--guide-space-md) 0 0;
+}
+
+.guide-plan-lines > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--guide-space-md);
+  padding-block: var(--guide-space-sm);
+  border-top: var(--guide-border-width) solid var(--sl-color-hairline);
+  font-size: var(--guide-text-sm);
+}
+
+.guide-plan-lines dt {
+  color: var(--guide-muted);
+}
+
+.guide-plan-lines dd {
+  margin: 0;
+  text-align: end;
+  font-weight: var(--guide-weight-semibold);
 }

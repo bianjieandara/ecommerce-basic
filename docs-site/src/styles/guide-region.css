@@ -13,6 +13,11 @@
   display: revert;
 }
 
+.region-picker > * {
+  /* Starlight puts a top margin on every sibling after the first, which would push the 2nd and 3rd button down. */
+  margin: 0;
+}
+
 .region-picker {
   display: flex;
   flex-wrap: wrap;
@@ -63,4 +68,17 @@
 
 .guide-table-scroll {
   overflow-x: auto;
+}
+
+/* Starlight makes tables `display: block`, which leaves the header row narrower than the card around it. */
+.guide-table-scroll table {
+  display: table;
+}
+
+/* Price tables are short numbers and labels: tighter cells that keep each value on one line, so "USD 270" never splits. */
+.guide-table-scroll :is(th, td),
+.guide-table-scroll :is(th, td):first-child,
+.guide-table-scroll :is(th, td):last-child {
+  padding: var(--guide-space-lg) var(--guide-space-xl);
+  white-space: nowrap;
 }
