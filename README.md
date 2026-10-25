@@ -171,6 +171,20 @@ DOCS_STATE=.wrangler/demo-build npm run demo:publish           # copies the imag
 Commit the new `snapshot.json` after it changes, and check the file holds no test data first (real addresses, leftover test
 orders). The reset uses whatever snapshot is published, so the snapshot must be republished after content changes.
 
+**Publishing.** `npm run demo:publish` reads every image of the snapshot from the local store in `DOCS_STATE`, which must be the
+store the snapshot was taken from, and uploads them to the bucket before the snapshot. It reads and checks all of them first and
+stops, uploading nothing, if one is missing or empty: an earlier version uploaded the empty file a failed read leaves behind and
+replaced images in the live bucket with empty objects. When only settings or text changed and the images are already in the bucket,
+publish the file alone:
+
+```sh
+npm run demo:publish -- --snapshot-only    # checks over HTTP that every image is live and not empty, then uploads only the snapshot
+```
+
+`demo:snapshot` also refuses to write a snapshot whose marketing settings do not keep the cookie banner always on (see above), so
+take it from a store that `docs:data` has filled. Never point `demo:snapshot` or the tests at the committed file: a snapshot
+made by a test is test data (`test:demo` writes to a private path for that reason).
+
 **Things to know before relying on the live demo.** The live Worker runs the code it was last deployed with. A new deployment
 is needed before the reset, the locks and the outbox run there; publishing the snapshot alone does not change the live site.
 The outbox is a demo-only sender (`EMAIL_TRANSPORT=outbox`); on a local store `.dev.vars` sets `EMAIL_TRANSPORT=console`, which

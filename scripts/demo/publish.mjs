@@ -3,6 +3,8 @@
 // so this needs no admin login. It refuses any client that is not a demo (client.jsonc must set vars.DEMO_MODE to "on").
 //
 // Usage: node scripts/demo/publish.mjs [--dry-run]            publish to the live demo (needs `wrangler login`)
+//        node scripts/demo/publish.mjs --snapshot-only        publish only the snapshot file, after checking over HTTP that every image
+//                                                             of it is already in the live bucket (when only settings or text changed)
 //        node scripts/demo/publish.mjs --local                put the snapshot into the local build's bucket (tests)
 // Run `npm run demo:snapshot` first.
 import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
@@ -32,9 +34,10 @@ export function contentTypeOf(key) {
 
 /**
  * Publishes the snapshot and, for the live demo, its images.
- * @param {{ dryRun?: boolean, local?: boolean }} options `local` writes into the local build's persisted bucket instead of R2.
+ * @param {{ dryRun?: boolean, local?: boolean, skipImages?: boolean }} options `local` writes into the local build's persisted bucket
+ *   instead of R2; `skipImages` leaves the images alone (the caller has checked they are in the bucket).
  */
-export function publish({ dryRun = false, local = false }) {
+export function publish({ dryRun = false, local = false, skipImages = false }) {
   const client = readClient(CLIENT);
   if (client.vars?.DEMO_MODE !== 'on')
     throw new Error(
@@ -45,7 +48,7 @@ export function publish({ dryRun = false, local = false }) {
   const env = cloudflareEnv(CLIENT, client.accountId);
   const target = local ? ['--local', '--persist-to', STATE] : ['--remote'];
 
-  if (!local) copyImages({ snapshot, bucket, env, dryRun });
+  if (!local && !skipImages) copyImages({ snapshot, bucket, env, dryRun });
   // The snapshot goes last: the store only restores a version whose images are already in place.
   runStep({
     command: 'npx',
@@ -140,6 +143,44 @@ export function copyImages({ snapshot, bucket, env, dryRun }, run = runStep) {
   }
 }
 
+/**
+ * Checks over HTTP that every image of the snapshot is in the live bucket and not empty. The snapshot is only safe to publish by itself
+ * when its images are already there: the store restores a version whose images are in place, and a missing one would show as a broken picture.
+ * @param {{ media: string[] }} snapshot The snapshot about to be published.
+ * @param {string} baseUrl Public address of the media bucket (PUBLIC_MEDIA_BASE_URL of the demo).
+ * @param {typeof fetch} fetcher Fetch implementation; tests pass a stand-in.
+ * @throws {Error} Listing the first images that are missing, empty or unreachable.
+ */
+export async function assertImagesLive(snapshot, baseUrl, fetcher = fetch) {
+  if (!baseUrl)
+    throw new Error(
+      `clients/${CLIENT}/client.jsonc must set vars.PUBLIC_MEDIA_BASE_URL to check the live images.`,
+    );
+  const problems = [];
+  for (const key of snapshot.media) {
+    try {
+      const response = await fetcher(`${baseUrl.replace(/\/$/, '')}/${key}`, { method: 'HEAD' });
+      const length = Number(response.headers.get('content-length') ?? '0');
+      if (response.status !== 200) problems.push(`${key} (HTTP ${response.status})`);
+      else if (length === 0) problems.push(`${key} (empty)`);
+    } catch {
+      problems.push(`${key} (unreachable)`);
+    }
+  }
+  if (problems.length > 0)
+    throw new Error(
+      `${problems.length} of ${snapshot.media.length} images are not in the live bucket, so the snapshot cannot be published alone: ` +
+        `${problems.slice(0, 5).join(', ')}. Publish with the images instead (see the README).`,
+    );
+}
+
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  publish({ dryRun: process.argv.includes('--dry-run'), local: process.argv.includes('--local') });
+  const snapshotOnly = process.argv.includes('--snapshot-only');
+  const local = process.argv.includes('--local');
+  if (snapshotOnly && !local) {
+    const snapshot = JSON.parse(readFileSync(SNAPSHOT, 'utf8'));
+    await assertImagesLive(snapshot, readClient(CLIENT).vars?.PUBLIC_MEDIA_BASE_URL);
+    console.log(`all ${snapshot.media.length} images of the snapshot are in the live bucket`);
+  }
+  publish({ dryRun: process.argv.includes('--dry-run'), local, skipImages: snapshotOnly });
 }

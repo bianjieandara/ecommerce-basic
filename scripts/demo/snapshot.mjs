@@ -9,6 +9,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sql, STATE } from '../docs/shared.mjs';
+import { assertBannerAlways } from './banner-rule.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // DEMO_SNAPSHOT_FILE lets a test write elsewhere, so a test run never overwrites the committed snapshot.
@@ -99,6 +100,8 @@ if (ids.size === 0)
 const tables = Object.fromEntries(
   SNAPSHOT_TABLES.map((table) => [table, rewriteAdmins(readTable(table), ids)]),
 );
+// Only the committed snapshot must keep the banner; a test writes its own scratch file from a store with default settings.
+if (!process.env.DEMO_SNAPSHOT_FILE) assertBannerAlways(tables.settings);
 const body = { accountId: DEMO_ACCOUNT_ID, tables, media: mediaKeys(tables.media_assets) };
 // The version changes whenever the content does, so the store knows it has a new snapshot to restore.
 const version = createHash('sha256').update(JSON.stringify(body)).digest('hex').slice(0, 16);
