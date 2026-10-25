@@ -1,0 +1,68 @@
+---
+// One price table of the "changes we make for you" service (per change, credit packs, or monthly and yearly plans). It renders the
+// table for every region and the CSS shows the visitor's one, so the page stays static. Numbers come from data/change-plans.ts.
+import PriceTable from './PriceTable.astro';
+import { REGIONS } from '../data/regions.mjs';
+import {
+  CHANGE_SIZES,
+  PLAN_RESPONSE_DAYS,
+  PRICES,
+  YEARLY_MONTHS,
+  formatMoney,
+  packSavingPercent,
+  type Lang,
+} from '../data/change-plans';
+import { COPY } from '../data/change-plans-copy';
+
+interface Props {
+  lang: Lang;
+  part: 'single' | 'packs' | 'plans';
+}
+const { lang, part } = Astro.props;
+const copy = COPY[lang];
+
+/** Head and rows of the requested table for one region. */
+function tableFor(region: (typeof REGIONS)[number]) {
+  const prices = PRICES[region];
+  const money = (amount: number, decimals = 0) => formatMoney(amount, region, lang, decimals);
+  if (part === 'single') {
+    return {
+      head: copy.single.head,
+      rows: CHANGE_SIZES.map(({ id, credits }) => [
+        copy.single.sizes[id],
+        copy.single.credits(credits),
+        money(prices.credit * credits),
+      ]),
+    };
+  }
+  if (part === 'packs') {
+    return {
+      head: copy.packs.head,
+      rows: prices.packs.map((pack) => [
+        copy.packs.pack(pack.credits),
+        money(pack.price),
+        money(pack.price / pack.credits, 2),
+        copy.packs.saving(packSavingPercent(prices, pack)),
+      ]),
+    };
+  }
+  return {
+    head: copy.plans.head,
+    rows: prices.plans.map((plan) => [
+      copy.plans.names[plan.id],
+      String(plan.creditsPerMonth),
+      copy.plans.response(PLAN_RESPONSE_DAYS[plan.id]),
+      money(plan.monthly),
+      money(plan.monthly * YEARLY_MONTHS),
+    ]),
+  };
+}
+---
+
+{
+  REGIONS.map((region) => (
+    <div data-region-only={region}>
+      <PriceTable {...tableFor(region)} />
+    </div>
+  ))
+}

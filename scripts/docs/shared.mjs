@@ -25,6 +25,18 @@ export const DEMO_GRAPH_VARS = {
   META_APP_ID: 'local-test-app-id',
 };
 
+/**
+ * What a local store started with `--tracking` (scripts/docs/store.mjs) needs to send purchases: a made-up GA4 API secret and a
+ * made-up Conversions API token, with the Graph version they require, and the address of the fake GA4 (scripts/test/fake-ga4.mjs).
+ * The Graph address is DEMO_GRAPH_VARS. Not credentials; only for scripts/test/tracking.mjs.
+ */
+export const DEMO_TRACKING_VARS = {
+  GA4_API_SECRET: 'local-test-ga4-secret',
+  GA4_MP_BASE_URL: `http://localhost:${process.env.DOCS_GA4_PORT ?? 5830}`,
+  META_CAPI_TOKEN: 'local-test-capi-token',
+  META_GRAPH_VERSION: 'v21.0',
+};
+
 /** Test token the Turnstile test keys accept. */
 export const TURNSTILE_TEST_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX';
 

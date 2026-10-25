@@ -1,0 +1,48 @@
+---
+// The country switch of a guide page: three buttons that set which region's prices and tax details the page shows. The head script
+// (data/regions.mjs) has already chosen one from the saved choice or the time zone; this only lets the visitor change it.
+import { REGIONS, REGION_STORAGE_KEY } from '../data/regions.mjs';
+import { COPY } from '../data/change-plans-copy';
+import type { Lang } from '../data/change-plans';
+
+interface Props {
+  lang: Lang;
+}
+const copy = COPY[Astro.props.lang];
+---
+
+<div class="region-picker" role="group" aria-label={copy.pickerLabel} data-storage-key={REGION_STORAGE_KEY}>
+  <span class="region-picker-label">{copy.pickerLabel}</span>
+  {
+    REGIONS.map((region) => (
+      <button type="button" class="region-picker-button" data-region-choice={region} aria-pressed="false">
+        {copy.regions[region]}
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  // Marks the active button, and on a click stores the choice and switches the page's region without a reload.
+  const picker = document.querySelector<HTMLElement>('.region-picker');
+  const buttons = picker?.querySelectorAll<HTMLButtonElement>('[data-region-choice]') ?? [];
+  const storageKey = picker?.dataset.storageKey ?? '';
+
+  function markActive() {
+    const active = document.documentElement.dataset.region;
+    buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.regionChoice === active)));
+  }
+
+  buttons.forEach((button) =>
+    button.addEventListener('click', () => {
+      document.documentElement.dataset.region = button.dataset.regionChoice;
+      try {
+        localStorage.setItem(storageKey, button.dataset.regionChoice ?? '');
+      } catch {
+        // Storage can be blocked; the choice then lasts only for this page.
+      }
+      markActive();
+    }),
+  );
+  markActive();
+</script>

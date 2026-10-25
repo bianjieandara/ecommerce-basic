@@ -59,9 +59,11 @@ export async function openBrowser({ port = 9400, width, height, scale = 1, mobil
   await new Promise((resolve) => (socket.onopen = resolve));
   let nextId = 0;
   const pending = new Map();
+  const listeners = [];
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
     if (message.id && pending.has(message.id)) pending.get(message.id)(message);
+    else if (message.method) for (const listener of listeners) listener(message);
   };
   const cdp = (method, params = {}) =>
     new Promise((resolve) => {
@@ -91,6 +93,10 @@ export async function openBrowser({ port = 9400, width, height, scale = 1, mobil
     cdp,
     evaluate,
     centre,
+    /** Calls a function with every protocol event (for example `Network.requestWillBeSent`), from now on. */
+    onEvent(listener) {
+      listeners.push(listener);
+    },
     /** Opens a URL and waits for the page to settle. */
     async goto(url, settleMs = 1200) {
       await cdp('Page.navigate', { url });

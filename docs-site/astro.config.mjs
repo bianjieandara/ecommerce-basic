@@ -4,6 +4,7 @@
 // are in docs-site/src/assets/screens/<lang>/ and are taken by scripts/docs/screenshots.mjs.
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { regionBootstrapScript } from './src/data/regions.mjs';
 
 export default defineConfig({
   site: 'https://docs.relion-app.com',
@@ -18,8 +19,11 @@ export default defineConfig({
         './src/styles/guide-shots.css',
         './src/styles/guide-home.css',
         './src/styles/guide-motion.css',
+        './src/styles/guide-region.css',
       ],
       head: [
+        // Picks the visitor's country (saved choice, then time zone) before the first paint, so pages never flash the wrong prices.
+        { tag: 'script', content: regionBootstrapScript() },
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true } },
         {

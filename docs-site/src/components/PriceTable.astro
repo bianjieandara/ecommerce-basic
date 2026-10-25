@@ -1,0 +1,20 @@
+---
+// A plain table (header row plus rows of text) inside a scroll wrapper, so wide price tables scroll sideways on a phone instead of
+// squeezing. Used by ChangePlans for every price table.
+interface Props {
+  head: string[];
+  rows: string[][];
+}
+const { head, rows } = Astro.props;
+---
+
+<div class="guide-table-scroll">
+  <table>
+    <thead>
+      <tr>{head.map((label) => <th>{label}</th>)}</tr>
+    </thead>
+    <tbody>
+      {rows.map((cells) => <tr>{cells.map((cell) => <td>{cell}</td>)}</tr>)}
+    </tbody>
+  </table>
+</div>

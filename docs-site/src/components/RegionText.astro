@@ -1,0 +1,14 @@
+---
+// Inline text that changes with the visitor's region, for a word or a phrase inside a sentence or a table cell. A region without
+// its own text falls back to `intl`, the default, so a page only spells out the countries that differ.
+import { REGIONS } from '../data/regions.mjs';
+
+interface Props {
+  intl: string;
+  mx?: string;
+  ec?: string;
+}
+const props = Astro.props;
+---
+
+{REGIONS.map((region) => <span data-region-only={region}>{props[region] ?? props.intl}</span>)}

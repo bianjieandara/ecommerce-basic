@@ -1,88 +1,176 @@
 ---
 title: Qué recibes
-description: Las funciones de la tienda, qué es opcional y qué se está terminando.
+description: Qué incluye tu tienda, qué administras tú, qué es opcional y en qué estado está cada parte.
 sidebar:
   order: 1
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import ChangePlans from '../../../components/ChangePlans.astro';
+import RegionPicker from '../../../components/RegionPicker.astro';
+import RegionText from '../../../components/RegionText.astro';
 
-Un cliente recibe **su propia tienda**: con su dirección, base de datos, panel, imágenes, correos y estadísticas. Se construye con
-la misma plantilla que la de cualquier otro cliente, así que las mejoras llegan a todos, pero los datos y la configuración de
-nadie se comparten.
+Recibes una **tienda en internet propia**, lista para vender. Tiene su dirección web, su panel para administrarla, tus productos, tus fotos, tus pedidos y tus clientes. Para usarla no necesitas saber programar.
 
-## La tienda
+Todas las tiendas se construyen con la misma base, así que las mejoras llegan a todos. Pero tus datos son solo tuyos: no se mezclan con los de otras tiendas.
 
-<CardGrid>
-  <Card title="Catálogo" icon="open-book">
-    Con categorías, variantes (talla, color…), precios de oferta, filtros, búsqueda con sugerencias y productos relacionados.
-  </Card>
-  <Card title="Carrito y pago" icon="approve-check">
-    En una sola página, con opciones de entrega, datos de factura opcionales y **cinco métodos de pago**: tarjeta (dLocal Go),
-    PayPal, WhatsApp, transferencia bancaria y pago contra entrega.
-  </Card>
-  <Card title="Página del pedido y correos" icon="email">
-    Para que los clientes sigan su compra, con facturas en PDF.
-  </Card>
-  <Card title="Español e inglés" icon="translate">
-    En todas partes, con direcciones web distintas para cada idioma.
-  </Card>
-  <Card title="Primero el celular" icon="mobile-android">
-    Pensada para pantallas de 360 px, con botones grandes y movimiento reducido para quien lo prefiere.
-  </Card>
-  <Card title="Lista para buscadores" icon="magnifier">
-    Títulos, descripciones, mapa del sitio, datos estructurados de producto y vistas previas al compartir.
-  </Card>
-  <Card title="Rápida" icon="rocket">
-    Las páginas se guardan en caché en el borde y las imágenes se sirven en el tamaño justo. En una prueba con tamaño de
-    celular, las páginas obtienen 96–99 en rendimiento, 100 en buenas prácticas y SEO, y 96–100 en accesibilidad en Lighthouse
-    de Google.
-  </Card>
-</CardGrid>
+Elige tu país para ver los precios y los datos de impuestos que te corresponden:
 
-## El panel
+<RegionPicker lang="es" />
 
-Productos y variantes, categorías y atributos, una biblioteca de imágenes, **inventario con el historial completo de cada cambio
-de stock**, pedidos con historial, facturas, un **editor de páginas** para el inicio y las páginas de
-contenido, el texto de los correos, métodos de envío, testimonios, usuarios con dos roles, reportes y configuración para todo.
-Mira la [guía del panel](/admin/overview/).
+## Lo que ven tus clientes
 
-## Cómo funciona por dentro
+**Un catálogo ordenado.** Productos por categorías, con sus versiones (talla, color…), precios de oferta, filtros y un buscador que sugiere productos mientras la persona escribe. Al ver un producto, también aparecen otros parecidos.
 
-<CardGrid>
-  <Card title="Correos automáticos" icon="comment">
-    En cada paso del pedido y, opcionalmente, **mensajes de WhatsApp** (plantillas aprobadas por Meta).
-  </Card>
-  <Card title="Protección del stock" icon="database">
-    El stock se reserva mientras un pago con tarjeta está pendiente, se libera cuando vence y nunca se sobrevende.
-  </Card>
-  <Card title="Tareas en segundo plano con reintentos" icon="clock">
-    Si falla un correo o un PDF, la tienda lo intenta de nuevo y, si sigue fallando, lo deja a la vista de un propietario.
-  </Card>
-  <Card title="Seguridad básica incluida" icon="padlock">
-    Protección anti-bots en los formularios, límites de intentos, notificaciones de pago firmadas, enlaces privados de pedido y
-    cabeceras de protección del navegador. Mira [Operar la tienda](/clients/operations/).
-  </Card>
-</CardGrid>
+**Compra en una sola página.** El cliente elige cómo recibe su pedido, puede agregar datos para factura y paga como prefiera. Tiene **cinco formas de pago**:
 
-## Módulos opcionales
+- Tarjeta, a través del procesador dLocal Go.
+- PayPal.
+- WhatsApp: el pedido se termina por chat.
+- Transferencia bancaria<RegionText intl="." mx=", con tu CLABE." ec=", a tu cuenta bancaria." />
+- Pago al recibir el pedido.
 
-| Módulo                                               | Necesitas                                                                                          |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Mensajes de WhatsApp**                             | Una cuenta de Meta Business y un número de WhatsApp Business. Meta cobra por mensaje de plantilla. |
-| **Pixel de Meta y catálogo de productos**            | Una cuenta de Meta. El seguimiento espera el consentimiento del visitante.                         |
-| **Reseñas de Google en el inicio**                   | Un lugar de Google Business.                                                                       |
-| **Facturación electrónica para la autoridad fiscal** | Un proveedor certificado, configurado por cliente.                                                 |
-| **Ayuda de IA para traducir textos**                 | Nada extra; usa la IA de Cloudflare y solo actúa cuando se usa.                                    |
+**Seguimiento del pedido.** Cada cliente recibe un enlace privado para ver el estado de su compra, y puede descargar su factura en PDF.
 
-## ¿Qué tan completa está?
+**Español e inglés.** Toda la tienda está en los dos idiomas, y cada uno tiene su propia dirección web.
+
+**Hecha para el celular.** La mayoría de las compras se hacen desde el teléfono, así que la tienda se diseñó primero para pantallas pequeñas: botones grandes y fáciles de tocar, y sin animaciones para quien las tiene desactivadas.
+
+**Lista para Google.** Cada página tiene su título y su descripción, para que Google y otros buscadores puedan encontrar tus productos. Cuando alguien comparte un enlace, aparece con foto y título.
+
+**Rápida.** Las páginas se guardan para abrirse más rápido, y las fotos se ajustan al tamaño de la pantalla. En una prueba de Google Lighthouse (una herramienta gratuita que mide la velocidad y la calidad de una página), hecha como si fuera desde un celular, la tienda obtuvo entre 96 y 99 en rendimiento, 100 en buenas prácticas y SEO, y entre 96 y 100 en accesibilidad.
+
+## Lo que administras tú
+
+Todo se maneja desde el panel, sin programar:
+
+- **Productos:** versiones, categorías, características y una biblioteca de fotos.
+- **Inventario:** existencias, con un registro de cada cambio.
+- **Pedidos:** el estado y el historial de cada uno. Desde ahí puedes responder al cliente por WhatsApp y, en pagos con tarjeta o PayPal, devolver el dinero.
+- **Facturas:** verlas, enviarlas de nuevo, descargarlas en PDF o generarlas otra vez.
+- **Páginas:** un editor visual para la página de inicio y las páginas de contenido.
+- **Correos, envíos, testimonios y reportes:** el texto de los correos, los métodos de envío, las opiniones de clientes y los reportes de ventas.
+- **Configuración:** colores, tipografías y el resto de la tienda.
+- **Usuarios:** hay dos roles. El **Propietario** puede hacerlo todo, incluidas la configuración y las cuentas de usuario. El **Editor** trabaja en el día a día, y no ve la configuración, las cuentas de usuario ni el botón de reembolso.
+
+Mira la [guía del panel](/admin/overview/) para ver cada pantalla.
+
+## Lo que pasa sin que tengas que pedirlo
+
+- **Avisos automáticos.** Tu cliente recibe un correo en cada paso de su pedido. Si lo activas, también recibe **mensajes de WhatsApp**, con textos que Meta ya aprobó.
+- **Inventario apartado.** Cuando alguien paga con tarjeta, el producto queda reservado mientras se confirma el pago. Si el pago no se completa a tiempo, vuelve a estar disponible. Nunca se venden más unidades de las que tienes.
+- **Reintentos.** Si falla el envío de un correo o la creación de una factura, la tienda lo intenta de nuevo. Si sigue fallando, lo deja marcado para que un propietario lo revise.
+- **Seguridad básica.** Protección contra robots en los formularios, límite de intentos repetidos al entrar, verificación de los avisos de pago para que nadie los falsifique, enlaces privados y protecciones del navegador. Más detalles en [Operar la tienda](/clients/operations/).
+
+## Extras opcionales, con costo aparte
+
+Son opcionales y se cobran aparte de la tienda. Solo se activan si los necesitas, y cada uno requiere una cuenta propia en otro servicio.
+
+| Extra                                                               | Qué necesitas                                                                                                        |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Mensajes de WhatsApp**                                            | Una cuenta de Meta Business y un número de WhatsApp Business. Meta cobra por cada mensaje de plantilla que se envía. |
+| **Anuncios de Meta** (Facebook e Instagram) y catálogo de productos | Una cuenta de Meta. El seguimiento solo funciona si el visitante acepta las cookies.                                 |
+| **Reseñas de Google en la página de inicio**                        | Una ficha de tu negocio en Google.                                                                                   |
+| **Facturación electrónica oficial**                                 | <RegionText intl="Un proveedor de facturación electrónica autorizado por la autoridad fiscal de tu país." mx="Un proveedor de facturación (PAC) autorizado por el SAT, para emitir CFDI." ec="Un proveedor de facturación electrónica autorizado por el SRI." /> |
+| **Ayuda de IA para traducir textos**                                | Nada extra. Solo se usa cuando tú lo pides.                                                                          |
+
+## Antes de decidir
+
+### ¿Cuánto cuesta?
+
+Hay tres tipos de costo:
+
+- **La plataforma:** unos 5 USD al mes por cuenta de Cloudflare, donde corre la tienda. Si la tienda va en la cuenta de la agencia, un solo plan cubre muchas tiendas. Una tienda pequeña normalmente se queda dentro del uso incluido.
+- **El dominio:** el precio anual de tu registrador.
+- **Los cobros de cada proveedor:** dLocal Go y PayPal cobran comisiones por cada venta, y Meta cobra por cada mensaje de WhatsApp que se envía, según su categoría y su país. La tienda no añade ninguna comisión propia. El correo no tiene ese costo.
+
+Aparte, si prefieres que otra persona haga los cambios de tu tienda, eso es opcional y tiene precios fijos: mira [Cambios hechos por nosotros](#cambios-hechos-por-nosotros).
+
+Esta guía no incluye el precio de construir y lanzar tu tienda. Tu contacto te lo cotizará.
+
+### ¿Cuánto tarda y qué tienes que aportar?
+
+El tiempo depende de qué tan rápido entregues lo que se te pide y de las aprobaciones (las plantillas de WhatsApp suelen aprobarse en minutos o en un día). Esta guía no fija un plazo total; tu contacto te lo confirma.
+
+Tú aportas:
+
+- Un nombre de dominio, o un subdominio de tu sitio actual.
+- Los datos de tu negocio para las facturas: razón social, <RegionText intl="identificación fiscal" mx="RFC y régimen fiscal" ec="RUC" />, dirección y tasa de impuesto.
+- Tus productos, con precios, existencias y fotos cuadradas de al menos 1000 px.
+- Cuentas de **dLocal Go** (tarjeta) y de **PayPal Business**. Empiezan en modo de prueba.
+- Una dirección de correo para los envíos, en un dominio tuyo, para que Gmail y Outlook confíen en los correos de pedidos.
+- Los textos legales (privacidad, términos, envíos y devoluciones). La tienda trae plantillas, pero alguien debe revisarlas para tu país y tu negocio.
+- Solo si los quieres: cuentas de Meta Business y de WhatsApp Business, y un Pixel de Meta.
+
+La mayor parte del tiempo la pasas tú llenando la tienda: productos, páginas, envíos y textos de los correos.
+
+### ¿De quién son mis clientes y mis datos? ¿Qué pasa si me quiero ir?
+
+- Tu tienda tiene su propia base de datos, sus imágenes, su cola de tareas y su analítica, separadas de las demás tiendas. Tus pedidos, clientes, productos y fotos viven en tu tienda.
+- Si la tienda corre en tu propia cuenta de Cloudflare, conservas la propiedad total. Si corre en la cuenta de la agencia, los datos viven en esa cuenta.
+- Como cada tienda es independiente, se puede mover a otra cuenta.
+- Esta guía no dice exactamente qué pasa si terminas el servicio: plazos, entrega de datos o costo de la salida. Pídelo por escrito antes de firmar.
+
+### ¿Puedo cambiar cosas yo mismo?
+
+Sí, la mayoría desde el panel, sin código: nombre, logo, colores y tipografía; la página de inicio y las páginas de contenido; los textos de los correos; los envíos y sus precios; los métodos de pago y los datos bancarios; los impuestos y la facturación; y quién puede entrar al panel.
+
+Algunas cosas sí requieren un desarrollador: una sección o un estilo que solo tú vas a tener, o conectar otro proveedor de pagos o de facturación. Las secciones a medida todavía no se cargan en la tienda, así que pide a tu desarrollador que confirme su estado antes de prometerte una.
+
+Si sabes que puedes hacerlo pero prefieres que otra persona lo haga, también puedes pedir que la agencia o tu desarrollador cambien la tienda por ti. Los precios están en [Cambios hechos por nosotros](#cambios-hechos-por-nosotros).
+
+## Cambios hechos por nosotros
+
+Casi todo lo puedes cambiar tú desde el panel, pero mucha gente prefiere que lo haga otra persona: el texto de una página, un producto nuevo, el número de WhatsApp, la cuenta bancaria. Es una opción, no una obligación. Los precios cambian según tu país (usa el selector de arriba) y no incluyen impuestos: se agrega el IVA cuando aplica.
+
+### Qué cuenta como un cambio
+
+Todo se mide en **créditos**. Un crédito es un cambio pequeño.
+
+| Tamaño                  | Créditos | Ejemplos                                                                                                                                                         |
+| ----------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pequeño**             | 1        | Cambiar un texto, el número de WhatsApp o la cuenta bancaria; cambiar el precio o las existencias de hasta 5 productos; mostrar u ocultar un producto; cambiar una foto. |
+| **Mediano**             | 2        | Dar de alta hasta 3 productos con sus fotos; preparar una promoción o un banner; ajustar envíos y sus precios; editar una página completa o los textos de los correos. |
+| **Grande**              | 5        | Crear una página nueva; cargar un catálogo de hasta 50 productos; reorganizar la página de inicio.                                                              |
+| **Más grande que eso**  | Cotización | Se te dice el precio antes de empezar.                                                                                                                         |
+
+### Pagar por cada cambio
+
+Sin compromiso: pides, haces el pago y lo hacemos.
+
+<ChangePlans lang="es" part="single" />
+
+### Paquetes de créditos
+
+Pagas una sola vez y usas los créditos cuando quieras durante 12 meses. Mientras más grande el paquete, más barato sale cada crédito. Sirve si haces cambios de vez en cuando.
+
+<ChangePlans lang="es" part="packs" />
+
+### Plan mensual o anual
+
+Cada mes recibes un número de créditos y una respuesta más rápida. Los créditos de un mes no pasan al siguiente. En el plan anual pagas 10 meses y usas 12.
+
+<ChangePlans lang="es" part="plans" />
+
+### Cuál te conviene
+
+- **Un cambio de vez en cuando:** paga por cambio.
+- **Varios cambios al año, sin fecha fija:** un paquete de créditos.
+- **Cambios cada semana** (promociones, productos nuevos, precios): un plan mensual, y el anual si ya sabes que vas a seguir.
+
+### Cómo se pide y cómo se paga
+
+- Escribes por WhatsApp o por correo lo que quieres cambiar y, si aplica, mandas las fotos o los textos. Te confirmamos cuántos créditos cuesta antes de empezar.
+- Pagas por <RegionText intl="PayPal o tarjeta." mx="transferencia SPEI o tarjeta." ec="transferencia o depósito bancario." /> Los planes se cobran al inicio de cada periodo.
+- Sin plan, los cambios se hacen en unos 3 días hábiles. Con plan, en el tiempo de respuesta que indica la tabla.
+
+### Qué no incluye
+
+El dominio, la plataforma donde corre la tienda y las comisiones de los proveedores de pago se pagan aparte (ver [¿Cuánto cuesta?](#cuánto-cuesta)). Tampoco incluye manejar tus anuncios, y el trabajo que requiere programar algo a medida se cotiza por separado.
+
+## Qué tan terminada está
 
 :::note
-Las funciones de compra, pago, pedidos, facturación, stock, catálogo, contenido y reportes que describe esta guía están
-construidas y probadas, incluidos pagos reales con tarjeta y PayPal en los entornos de prueba de los proveedores. Algunas piezas
-opcionales aún se están terminando (por ejemplo, parte del marketing y las herramientas de despliegue para varios clientes). El
-archivo `docs/PROGRESS.md` del repositorio lista el estado de cada etapa, y tu contacto te dirá exactamente qué incluye tu
-lanzamiento.
+Las funciones de compra, pago, pedidos, facturas, inventario, catálogo, contenido y reportes que describe esta página ya están hechas y probadas. Las pruebas de pago con tarjeta y PayPal se hicieron en los entornos de prueba de cada proveedor, así que no se cobró dinero real. Algunas partes opcionales todavía se están terminando, por ejemplo algunas herramientas de marketing. Tu contacto te dirá exactamente qué incluye tu lanzamiento.
 :::
 
-Antes de decidir, puedes recorrer la [tienda de demostración](/clients/try-the-demo/): es una tienda real, con productos de ejemplo, que se reinicia cada noche.
+Antes de decidir, prueba la [tienda de demostración](/clients/try-the-demo/). Es una tienda real, con productos de ejemplo, y se reinicia cada noche a las 03:00.

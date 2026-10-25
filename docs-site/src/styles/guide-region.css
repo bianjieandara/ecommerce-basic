@@ -1,0 +1,65 @@
+/* Country-specific content: the picker buttons, the rule that shows only the visitor's region (set on <html data-region> by the head
+   script from data/regions.mjs), and the sideways scroll of wide price tables. Tokens: guide.css. */
+
+/* Every region's version is in the HTML; only the active one is shown. Without JavaScript no region is set, so the default shows. */
+[data-region-only] {
+  display: none;
+}
+
+:root:not([data-region]) [data-region-only='intl'],
+:root[data-region='intl'] [data-region-only='intl'],
+:root[data-region='mx'] [data-region-only='mx'],
+:root[data-region='ec'] [data-region-only='ec'] {
+  display: revert;
+}
+
+.region-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--guide-space-sm);
+}
+
+.region-picker-label {
+  margin-inline-end: var(--guide-space-sm);
+  font-size: var(--guide-text-xs);
+  font-weight: var(--guide-weight-semibold);
+  letter-spacing: var(--guide-tracking-wide);
+  text-transform: uppercase;
+  color: var(--guide-muted);
+}
+
+.region-picker-button {
+  min-height: var(--guide-touch-min);
+  padding: var(--guide-space-sm) var(--guide-space-xl);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-pill);
+  background: var(--guide-card);
+  color: var(--sl-color-text);
+  font: inherit;
+  font-size: var(--guide-text-sm);
+  cursor: pointer;
+}
+
+.region-picker-button[aria-pressed='true'] {
+  border-color: var(--guide-primary);
+  background: var(--guide-primary);
+  color: var(--guide-on-primary);
+  font-weight: var(--guide-weight-semibold);
+}
+
+.region-picker-button:focus-visible {
+  outline: var(--guide-focus-width) solid var(--guide-accent);
+  outline-offset: var(--guide-focus-offset);
+}
+
+/* Dark theme: the primary colour is near-black, so the active button uses the accent-high text colour on the tinted surface. */
+:root[data-theme='dark'] .region-picker-button[aria-pressed='true'] {
+  border-color: var(--sl-color-accent-high);
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+}
+
+.guide-table-scroll {
+  overflow-x: auto;
+}

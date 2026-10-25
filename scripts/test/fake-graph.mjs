@@ -142,6 +142,14 @@ export async function startFakeGraph(port = GRAPH_PORT) {
         },
       ];
     }
+    // Conversions API: POST /{pixelId}/events. Meta refuses a body without a data list, and an event without a name, a time and a source.
+    if (method === 'POST' && /^\/\d{5,20}\/events$/.test(route)) {
+      const data = body?.data;
+      if (!Array.isArray(data) || data.length === 0) return fail(400, 100, 'The data parameter is required');
+      const bad = data.find((e) => !e.event_name || !e.event_time || !e.action_source);
+      if (bad) return fail(400, 100, 'Each event needs event_name, event_time and action_source');
+      return [200, { events_received: data.length, messages: [], fbtrace_id: 'fake' }];
+    }
     return fail(404, 100, `The fake Graph API has no route for ${method} ${route}`);
   }
 

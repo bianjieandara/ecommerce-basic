@@ -28,6 +28,7 @@
     "test:webhooks": "node scripts/test/webhooks.mjs",
     "test:access": "node scripts/test/access.mjs",
     "test:consent": "node scripts/test/consent.mjs",
+    "test:tracking": "node scripts/test/tracking.mjs",
     "test:filters": "node scripts/test/filters.mjs",
     "test:admin-filters": "node scripts/test/admin-filters.mjs",
     "test:crawl": "node scripts/test/crawl.mjs",

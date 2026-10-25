@@ -4,48 +4,10 @@
 //
 // Usage: node scripts/docs/demo-data.mjs
 // Environment: DOCS_BASE (store URL), DOCS_STATE (wrangler persist folder, default .wrangler/docs-state), see shared.mjs.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { randomBytes } from 'node:crypto';
 import { addCategoryPictures, addProductPictures } from './pictures.mjs';
 import { addHomePage, applyDemoTheme } from './home-content.mjs';
+import { ownerCookie } from './owner-session.mjs';
 import { post, sql, TURNSTILE_TEST_TOKEN } from './shared.mjs';
-
-const ACCOUNT_FILE = '.wrangler/docs-admin.json';
-
-/**
- * Signs in as the demo owner, creating the account the first time.
- * @returns The session cookie header value.
- */
-async function ownerCookie() {
-  mkdirSync('.wrangler', { recursive: true });
-  const account = existsSync(ACCOUNT_FILE)
-    ? JSON.parse(readFileSync(ACCOUNT_FILE, 'utf8'))
-    : { email: 'maria@demo-store.test', password: randomBytes(15).toString('base64url') };
-  writeFileSync(ACCOUNT_FILE, JSON.stringify(account));
-  const vars = Object.fromEntries(
-    readFileSync('.dev.vars', 'utf8')
-      .split(/\r?\n/)
-      .filter((line) => line.includes('='))
-      .map((line) => [line.slice(0, line.indexOf('=')).trim(), line.slice(line.indexOf('=') + 1).trim()]),
-  );
-  let response = await post('/api/admin/login', { ...account, turnstileToken: TURNSTILE_TEST_TOKEN });
-  if (response.status !== 200) {
-    response = await post('/api/admin/setup', {
-      setupToken: vars.SETUP_TOKEN,
-      name: 'Maria Rojas',
-      email: account.email,
-      password: account.password,
-      locale: 'en',
-    });
-  }
-  if (response.status !== 200) throw new Error(`Could not sign in: ${JSON.stringify(response.json)}`);
-  const cookie = response.headers
-    .getSetCookie()
-    .map((line) => line.split(';')[0])
-    .join('; ');
-  writeFileSync('.wrangler/docs-cookie.txt', cookie);
-  return cookie;
-}
 
 /** Shoppers who place the demo orders. */
 const SHOPPERS = [
@@ -173,4 +135,4 @@ console.log('pictures added');
 await addOrders(cookie);
 console.log('orders added');
 await addTestimonials(cookie);
-console.log('testimonials added. Demo owner login is in', ACCOUNT_FILE);
+console.log('testimonials added. Demo owner login is in .wrangler/docs-admin.json');
