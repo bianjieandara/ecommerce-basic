@@ -20,6 +20,7 @@ export default defineConfig({
         './src/styles/guide-home.css',
         './src/styles/guide-motion.css',
         './src/styles/guide-region.css',
+        './src/styles/guide-blocks.css',
       ],
       head: [
         // Picks the visitor's country (saved choice, then time zone) before the first paint, so pages never flash the wrong prices.

@@ -1,0 +1,12 @@
+---
+// The text of a page block: a plain string, or a per-region object drawn through RegionText so country-specific wording keeps working.
+import RegionText from './RegionText.astro';
+import type { BlockText } from '../data/guide-blocks';
+
+interface Props {
+  text: BlockText;
+}
+const { text } = Astro.props;
+---
+
+{typeof text === 'string' ? text : <RegionText {...text} />}

@@ -9,8 +9,65 @@ import ChangePlans from '../../../../components/ChangePlans.astro';
 import RegionPicker from '../../../../components/RegionPicker.astro';
 import Precio from '../../../../components/Precio.astro';
 import RegionText from '../../../../components/RegionText.astro';
+import FlowSteps from '../../../../components/FlowSteps.astro';
+import FeatureGrid from '../../../../components/FeatureGrid.astro';
+import PhoneShowcase from '../../../../components/PhoneShowcase.astro';
+
+export const screens = [
+  {
+    label: "Catalogue",
+    shot: "shop-catalog-phone",
+    alt: "The demo store catalogue on a phone",
+    left: [
+      {"icon": "grid", "title": "A tidy catalogue", "text": "Products sorted into categories, with their versions (size, colour…), sale prices and filters."},
+    ],
+    right: [
+      {"icon": "layers", "title": "Similar products", "text": "When someone views a product, similar products appear too."},
+    ],
+  },
+  {
+    label: "Search",
+    shot: "shop-search-phone",
+    alt: "The store search on a phone",
+    left: [
+      {"icon": "search", "title": "A search box that suggests", "text": "It shows products as the person types."},
+    ],
+    right: [
+      {"icon": "bolt", "title": "Fast", "text": "Pages are saved so they open faster, and pictures are sized to fit the screen."},
+    ],
+  },
+  {
+    label: "Checkout",
+    shot: "shop-checkout-phone",
+    alt: "The checkout page on a phone",
+    left: [
+      {"icon": "cart", "title": "Checkout on one page", "text": "The customer chooses how to receive the order and can add invoice details."},
+    ],
+    right: [
+      {"icon": "card", "title": "Five payment methods", "text": {"intl": "Card (dLocal Go), PayPal, WhatsApp (the order is completed by chat), bank transfer and cash on delivery.", "mx": "Card (dLocal Go), PayPal, WhatsApp (the order is completed by chat), transfer to your CLABE account number and cash on delivery.", "ec": "Card (dLocal Go), PayPal, WhatsApp (the order is completed by chat), transfer to your bank account and cash on delivery."}},
+    ],
+  },
+  {
+    label: "My order",
+    shot: "shop-order-phone",
+    alt: "Order tracking on a phone",
+    left: [
+      {"icon": "pin", "title": "Order tracking", "text": "Each customer gets a private link to follow their purchase."},
+    ],
+    right: [
+      {"icon": "doc", "title": "Invoice as a PDF", "text": "They can download it whenever they need it."},
+    ],
+  },
+];
 
 You get an **online store of your own**, ready to sell. It has its own web address, an admin panel to run it, your products, your pictures, your orders and your customers. You do not need to know how to code to use it.
+
+<FlowSteps steps={[
+  {"icon": "box", "title": "You load your products", "text": "From the admin panel, no coding."},
+  {"icon": "cart", "title": "Your customer buys", "text": "From their phone or computer."},
+  {"icon": "bell", "title": "The store notifies and invoices", "text": "Without you asking."},
+  {"icon": "chart", "title": "You see the results", "text": "Orders, stock and reports."},
+]} />
 
 Choose your country to see the prices and tax details that apply to you:
 
@@ -18,47 +75,50 @@ Choose your country to see the prices and tax details that apply to you:
 
 ## What your customers see
 
-**A tidy catalogue.** Products sorted into categories, with their versions (size, colour…), sale prices, filters, and a search box that suggests products as the person types. When someone views a product, similar products appear too.
+Tap a screen to see the store on a phone. It is a real store, the demo one.
 
-**Checkout on one page.** The customer chooses how to receive the order, can add invoice details, and pays the way they prefer. There are **five payment methods**:
+<PhoneShowcase lang="en" screens={screens} />
 
-- Card, through the dLocal Go payment processor.
-- PayPal.
-- WhatsApp: the order is completed by chat.
-- Bank transfer<RegionText intl="." mx=", to your CLABE account number." ec=", to your bank account." />
-- Cash when the order is delivered.
-
-**Order tracking.** Each customer gets a private link to follow their purchase, and can download their invoice as a PDF.
-
-**English and Spanish.** The whole store is in both languages, and each has its own web address.
-
-**Made for phones.** Most purchases happen on a phone, so the store was designed for small screens first: large buttons that are easy to tap, and no animations for people who have them turned off.
-
-**Ready for Google.** Every page has its own title and description, so Google and other search engines can find your products. When someone shares a link, it appears with a picture and a title.
-
-**Fast.** Pages are saved so they open faster, and pictures are sized to fit the screen. In a Google Lighthouse test (a free tool that measures how fast and how well a page is built), run as if from a phone, the store scored between 96 and 99 for performance, 100 for best practices and SEO, and between 96 and 100 for accessibility.
+<FeatureGrid layout="card" items={[
+  {"icon": "globe", "title": "English and Spanish", "text": "The whole store is in both languages, and each has its own web address."},
+  {"icon": "phone", "title": "Made for phones", "text": "Most purchases happen on a phone, so the store was designed for small screens first: large buttons that are easy to tap, and no animations for people who have them turned off."},
+  {"icon": "search", "title": "Ready for Google", "text": "Every page has its own title and description, so Google and other search engines can find your products. When someone shares a link, it appears with a picture and a title."},
+  {"icon": "bolt", "title": "Fast", "text": "In a Google Lighthouse test (a free tool that measures how fast and how well a page is built), run as if from a phone, the store scored between 96 and 99 for performance, 100 for best practices and SEO, and between 96 and 100 for accessibility."},
+]} />
 
 ## What you manage yourself
 
 Everything is handled from the panel, without coding:
 
-- **Products:** versions, categories, features and a picture library.
-- **Inventory:** stock levels, with a record of every change.
-- **Orders:** the status and history of each one. From there you can reply to the customer on WhatsApp and, for card or PayPal payments, refund the money.
-- **Invoices:** view them, send them again, download them as PDFs, or generate them again.
-- **Pages:** a visual editor for the home page and the content pages.
-- **Emails, shipping, testimonials and reports:** the wording of the emails, shipping methods, customer reviews, and sales reports.
-- **Settings:** colours, fonts and the rest of the store.
-- **Users:** there are two roles. The **Owner** can do everything, including settings and user accounts. The **Editor** handles day-to-day work, and does not see settings, user accounts or the refund button.
+<FeatureGrid items={[
+  {"icon": "box", "title": "Products", "text": "Versions, categories, features and a picture library."},
+  {"icon": "layers", "title": "Inventory", "text": "Stock levels, with a record of every change."},
+  {"icon": "receipt", "title": "Orders", "text": "The status and history of each one. From there you can reply to the customer on WhatsApp and, for card or PayPal payments, refund the money."},
+  {"icon": "doc", "title": "Invoices", "text": "View them, send them again, download them as PDFs, or generate them again."},
+  {"icon": "pencil", "title": "Pages", "text": "A visual editor for the home page and the content pages."},
+  {"icon": "mail", "title": "Emails, shipping, testimonials and reports", "text": "The wording of the emails, shipping methods, customer reviews, and sales reports."},
+  {"icon": "cog", "title": "Settings", "text": "Colours, fonts and the rest of the store."},
+]} />
+
+Who can sign in to the panel: there are two roles.
+
+<FeatureGrid items={[
+  {"icon": "key", "title": "Owner", "text": "Can do everything, including settings and user accounts."},
+  {"icon": "user", "title": "Editor", "text": "Handles day-to-day work, and does not see settings, user accounts or the refund button."},
+]} />
 
 See the [admin guide](/en/admin/overview/) for every screen.
 
 ## What happens without you having to ask
 
-- **Automatic notices.** Your customer gets an email at each step of their order. If you turn it on, they also get **WhatsApp messages**, using wording Meta has already approved. It is an extra with its own cost.
-- **Held stock.** When someone pays by card, the product is reserved while the payment is confirmed. If the payment is not completed in time, the product becomes available again. You never sell more units than you have.
-- **Retries.** If sending an email or creating an invoice fails, the store tries again. If it keeps failing, it flags the task for an owner to review.
-- **Basic security.** Protection against robots on forms, a limit on repeated login attempts, checks on payment notifications so nobody can fake them, private links, and browser protections. More detail in [Running the store](/en/clients/operations/).
+<FeatureGrid items={[
+  {"icon": "bell", "title": "Automatic notices", "text": "Your customer gets an email at each step of their order. If you turn it on, they also get WhatsApp messages, using wording Meta has already approved. It is an extra with its own cost."},
+  {"icon": "layers", "title": "Held stock", "text": "When someone pays by card, the product is reserved while the payment is confirmed. If the payment is not completed in time, the product becomes available again. You never sell more units than you have."},
+  {"icon": "refresh", "title": "Retries", "text": "If sending an email or creating an invoice fails, the store tries again. If it keeps failing, it flags the task for an owner to review."},
+  {"icon": "shield", "title": "Basic security", "text": "Protection against robots on forms, a limit on repeated login attempts, checks on payment notifications so nobody can fake them, private links, and browser protections."},
+]} />
+
+More detail on security in [Running the store](/en/clients/operations/).
 
 ## Optional extras, charged separately
 
@@ -80,9 +140,11 @@ They are optional and charged separately from the store. They are switched on on
 
 There are three kinds of cost:
 
-- **The platform:** about 5 USD a month per Cloudflare account, where the store runs. You can choose the monthly or yearly maintenance plan.
-- **Your domain:** the yearly price from your domain registrar.
-- **Fees from each provider:** dLocal Go and PayPal charge fees on each sale, and Meta charges for each WhatsApp message sent, depending on its category and country. The store adds no fee of its own. Email has no such cost.
+<FeatureGrid layout="card" items={[
+  {"icon": "cloud", "title": "The platform", "text": "About 5 USD a month per Cloudflare account, where the store runs. You can choose the monthly or yearly maintenance plan."},
+  {"icon": "globe", "title": "Your domain", "text": "The yearly price from your domain registrar."},
+  {"icon": "card", "title": "Fees from each provider", "text": "dLocal Go and PayPal charge fees on each sale, and Meta charges for each WhatsApp message sent, depending on its category and country. The store adds no fee of its own. Email has no such cost."},
+]} />
 
 Separately, if you would rather have someone else make the changes to your store, that is optional and has fixed prices: see [Changes we make for you](#changes-we-make-for-you).
 
@@ -94,13 +156,15 @@ The timeline depends on how quickly you deliver what is asked for and on approva
 
 You provide:
 
-- A domain name, or a subdomain of your current website.
-- Your business details for invoices: legal name, <RegionText intl="tax ID" mx="RFC and tax regime" ec="RUC number" />, address and tax rate.
-- Your products, with prices, stock levels and square photos at least 1000 px.
-- **dLocal Go** (card) and **PayPal Business** accounts. They start in test mode.
-- A sending email address on a domain you own, so Gmail and Outlook trust order emails.
-- Legal texts (privacy, terms, shipping and returns). The store includes templates, but someone should review them for your country and business.
-- Only if you want them: Meta Business and WhatsApp Business accounts, and a Meta Pixel.
+<FeatureGrid items={[
+  {"icon": "globe", "title": "A domain", "text": "Or a subdomain of your current website."},
+  {"icon": "doc", "title": "Your business details", "text": {"intl": "Legal name, tax ID, address and tax rate, for invoices.", "mx": "Legal name, RFC and tax regime, address and tax rate, for invoices.", "ec": "Legal name, RUC number, address and tax rate, for invoices."}},
+  {"icon": "box", "title": "Your products", "text": "With prices, stock levels and square photos at least 1000 px."},
+  {"icon": "card", "title": "Payment accounts", "text": "dLocal Go (card) and PayPal Business. They start in test mode."},
+  {"icon": "mail", "title": "An email for sending", "text": "On a domain you own, so Gmail and Outlook trust order emails."},
+  {"icon": "shield", "title": "Legal texts", "text": "Privacy, terms, shipping and returns. The store includes templates, but someone should review them for your country and business."},
+  {"icon": "chat", "title": "Only if you want them", "text": "Meta Business and WhatsApp Business accounts, and a Meta Pixel."},
+]} />
 
 Most of the time is spent by you filling the store: products, pages, shipping and email wording.
 
@@ -178,16 +242,24 @@ A **store check-up** is a full pass we do ourselves: we review texts, prices, st
 
 ### Which one suits you
 
-- **A change now and then:** pay per change.
-- **Several changes a year, with no fixed date:** a credit pack.
-- **Changes every week** (promotions, new products, prices): a monthly plan.
-- **You know you will keep going and have busy seasons:** a yearly plan, which costs less and lets you use the credits when you need them.
+<FeatureGrid layout="card" items={[
+  {"icon": "coin", "title": "A change now and then", "text": "Pay per change."},
+  {"icon": "layers", "title": "Several changes a year, with no fixed date", "text": "A credit pack."},
+  {"icon": "refresh", "title": "Changes every week (promotions, new products, prices)", "text": "A monthly plan."},
+  {"icon": "star", "title": "You know you will keep going and have busy seasons", "text": "A yearly plan, which costs less and lets you use the credits when you need them."},
+]} />
 
 ### How to ask and how to pay
 
-- You write by WhatsApp or email what you want changed and, if needed, send the pictures or the text. We confirm how many credits it costs before we start.
-- You pay by <RegionText intl="PayPal or card." mx="SPEI bank transfer or card." ec="bank transfer or deposit." /> Monthly plans are charged at the start of each month, and yearly plans once at the start of the year.
-- Without a plan, changes are done in about 7 business days. With a plan, within the response time in the table.
+<FlowSteps steps={[
+  {"icon": "chat", "title": "You write what you want", "text": "By WhatsApp or email."},
+  {"icon": "coin", "title": "We tell you the credits", "text": "Before we start."},
+  {"icon": "check", "title": "You give the go-ahead", "text": "Then we begin."},
+  {"icon": "pencil", "title": "We do it", "text": "Without a plan, in about 7 business days."},
+  {"icon": "wallet", "title": "You pay", "text": {"intl": "By PayPal or card.", "mx": "By SPEI bank transfer or card.", "ec": "By bank transfer or deposit."}},
+]} />
+
+If needed, you send the pictures or the text when you write. If what you ask for turns out bigger than it looked, we tell you before going on. With a plan, the response time is the one in the table. Monthly plans are charged at the start of each month, and yearly plans once at the start of the year.
 
 ### What is not included
 

@@ -1,0 +1,252 @@
+/* Page blocks for long guide pages: icon boxes, feature grids, step flows and the phone showcase (components FlowSteps, FeatureGrid,
+   PhoneShowcase, GuideIcon). They sit in a `.not-content` wrapper so Starlight's text styles do not leak in. Tokens: guide.css. */
+
+.guide-icon-box {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--guide-icon-lg);
+  height: var(--guide-icon-lg);
+  border-radius: var(--guide-radius-md);
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+}
+
+.guide-icon-box.is-accent {
+  background: var(--sl-color-purple-low);
+  color: var(--sl-color-purple-high);
+}
+
+.guide-icon {
+  width: var(--guide-icon-sm);
+  height: var(--guide-icon-sm);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--guide-icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.guide-block-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-xs);
+  min-width: 0;
+}
+
+.guide-block-title {
+  font-size: var(--guide-text-md);
+  line-height: var(--guide-leading-snug);
+  color: var(--sl-color-white);
+}
+
+.guide-block-text {
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+/* Feature grid: as many columns as fit, each block a hairline card. */
+.guide-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--guide-feature-min)), 1fr));
+  gap: var(--guide-space-lg);
+}
+
+.guide-feature {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-md);
+  padding: var(--guide-space-xl);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-lg);
+  background: var(--guide-card);
+}
+
+.guide-feature.is-row {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+/* Flow: steps in a row, joined by a dashed line from each icon to the next. The container query (34rem; queries cannot read
+   tokens) stacks them with the line running down the icons, so it adapts to the column and not to the screen. */
+.guide-flow {
+  container-type: inline-size;
+}
+
+.guide-flow ol {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--guide-space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-flow li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--guide-space-sm);
+  min-width: 0;
+  margin: 0;
+}
+
+.guide-flow li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--guide-icon-lg) / 2);
+  inset-inline-start: calc(var(--guide-icon-lg) + var(--guide-space-sm));
+  width: calc(100% - var(--guide-icon-lg) - var(--guide-space-sm) * 2 + var(--guide-space-lg));
+  border-top: var(--guide-line-bold) dashed var(--sl-color-hairline);
+}
+
+@container (max-width: 34rem) {
+  .guide-flow ol {
+    grid-auto-flow: row;
+    gap: var(--guide-space-2xl);
+  }
+
+  .guide-flow li {
+    display: grid;
+    grid-template-columns: var(--guide-icon-lg) minmax(0, 1fr);
+    column-gap: var(--guide-space-md);
+    align-items: start;
+  }
+
+  .guide-flow li:not(:last-child)::after {
+    top: calc(var(--guide-icon-lg) + var(--guide-space-xs));
+    inset-inline-start: calc(var(--guide-icon-lg) / 2 - var(--guide-line-bold) / 2);
+    width: 0;
+    height: calc(100% - var(--guide-icon-lg) + var(--guide-space-2xl) - var(--guide-space-sm));
+    border-top: 0;
+    border-inline-start: var(--guide-line-bold) dashed var(--sl-color-hairline);
+  }
+}
+
+/* Phone showcase: the screen buttons, then notes | phone | notes. The notes reach the phone with a short dashed line. In a column under
+   44rem the phone sits beside the stacked notes, and under 34rem it comes first with the notes below. */
+.guide-phone {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-2xl);
+}
+
+.guide-phone-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--guide-space-sm);
+}
+
+.guide-phone-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--guide-phone-stage-width) minmax(0, 1fr);
+  gap: var(--guide-space-2xl);
+  align-items: center;
+}
+
+.guide-phone-stage[hidden] {
+  display: none;
+}
+
+.guide-phone-device {
+  overflow: hidden;
+  border: var(--guide-phone-bezel) solid var(--guide-primary);
+  border-radius: var(--guide-phone-radius);
+  box-shadow: var(--guide-shadow-lift);
+  background: var(--guide-primary);
+}
+
+.sl-markdown-content .guide-phone-device img[width] {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: calc(var(--guide-phone-radius) - var(--guide-phone-bezel));
+}
+
+.guide-phone-notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-lg);
+}
+
+.guide-phone-note {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--guide-space-md);
+  padding: var(--guide-space-lg);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-lg);
+  background: var(--guide-card);
+}
+
+.guide-phone-note::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: var(--guide-connector);
+  border-top: var(--guide-line-bold) dashed var(--guide-accent);
+}
+
+.is-left .guide-phone-note::after {
+  inset-inline-start: 100%;
+}
+
+.is-right .guide-phone-note::after {
+  inset-inline-end: 100%;
+}
+
+@container (max-width: 44rem) {
+  .guide-phone-stage {
+    grid-template-columns: var(--guide-phone-stage-width) minmax(0, 1fr);
+    gap: var(--guide-space-lg) var(--guide-space-2xl);
+  }
+
+  .guide-phone-device {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .guide-phone-notes.is-left {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .guide-phone-notes.is-right {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+  }
+
+  .guide-phone-note::after {
+    display: none;
+  }
+}
+
+@container (max-width: 34rem) {
+  .guide-phone-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .guide-phone-device,
+  .guide-phone-notes.is-left,
+  .guide-phone-notes.is-right {
+    grid-column: 1;
+    grid-row: auto;
+    align-self: stretch;
+  }
+
+  .guide-phone-device {
+    order: -1;
+    width: var(--guide-phone-stage-width);
+    max-width: 100%;
+    margin-inline: auto;
+  }
+}

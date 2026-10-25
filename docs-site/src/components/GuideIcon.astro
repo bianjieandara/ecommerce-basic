@@ -1,0 +1,15 @@
+---
+// One icon from data/guide-blocks.ts in its tinted square. The three page blocks use it so their icons look the same.
+import { ICONS, type IconName } from '../data/guide-blocks';
+
+interface Props {
+  name: IconName;
+  /** Red tint instead of the neutral one, for steps and callouts. */
+  accent?: boolean;
+}
+const { name, accent = false } = Astro.props;
+---
+
+<span class:list={['guide-icon-box', { 'is-accent': accent }]}>
+  <svg class="guide-icon" viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[name]} />
+</span>

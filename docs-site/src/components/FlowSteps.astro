@@ -1,0 +1,25 @@
+---
+// A row of steps joined by a dashed line, which turns into a vertical list on a narrow column. The page's own list of what
+// happens, in order, drawn instead of written as bullets. The wrapper is a div because the guide styles top-level <ol> as cards.
+import GuideIcon from './GuideIcon.astro';
+import BlockBody from './BlockBody.astro';
+import type { BlockItem } from '../data/guide-blocks';
+
+interface Props {
+  steps: BlockItem[];
+}
+const { steps } = Astro.props;
+---
+
+<div class="guide-flow not-content">
+  <ol>
+    {
+      steps.map((step) => (
+        <li>
+          <GuideIcon name={step.icon} accent />
+          <BlockBody item={step} />
+        </li>
+      ))
+    }
+  </ol>
+</div>

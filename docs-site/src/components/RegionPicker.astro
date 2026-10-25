@@ -15,7 +15,7 @@ const copy = COPY[Astro.props.lang];
   <span class="region-picker-label">{copy.pickerLabel}</span>
   {
     REGIONS.map((region) => (
-      <button type="button" class="region-picker-button" data-region-choice={region} aria-pressed="false">
+      <button type="button" class="guide-pill-button" data-region-choice={region} aria-pressed="false">
         {copy.regions[region]}
       </button>
     ))

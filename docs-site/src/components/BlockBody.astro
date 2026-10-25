@@ -1,0 +1,15 @@
+---
+// The bold title and the text under it, shared by every page block so they read the same.
+import BlockText from './BlockText.astro';
+import type { BlockItem } from '../data/guide-blocks';
+
+interface Props {
+  item: Pick<BlockItem, 'title' | 'text'>;
+}
+const { item } = Astro.props;
+---
+
+<div class="guide-block-body">
+  <strong class="guide-block-title">{item.title}</strong>
+  <span class="guide-block-text"><BlockText text={item.text} /></span>
+</div>

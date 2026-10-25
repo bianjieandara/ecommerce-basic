@@ -1,0 +1,76 @@
+---
+// A phone with a real screenshot of the demo store, a button per screen, and notes on both sides. Without JavaScript every screen
+// is shown one after another; the script then shows one at a time. Screenshots come from assets/screens/<lang>/<shot>.png.
+import { Image } from 'astro:assets';
+import GuideIcon from './GuideIcon.astro';
+import BlockBody from './BlockBody.astro';
+import type { BlockItem } from '../data/guide-blocks';
+
+interface Screen {
+  /** Button label. */
+  label: string;
+  /** Screenshot file name without folder or extension, for example `shop-catalog-phone`. */
+  shot: string;
+  alt: string;
+  left: BlockItem[];
+  right: BlockItem[];
+}
+interface Props {
+  lang: 'es' | 'en';
+  screens: Screen[];
+}
+const { lang, screens } = Astro.props;
+
+const shots = import.meta.glob<{ default: ImageMetadata }>('../assets/screens/*/*.png', { eager: true });
+const shotFor = (name: string) => shots[`../assets/screens/${lang}/${name}.png`].default;
+---
+
+<div class="guide-phone not-content" data-phone-showcase>
+  <div class="guide-phone-tabs">
+    {
+      screens.map((screen, index) => (
+        <button type="button" class="guide-pill-button" data-phone-tab={index} aria-pressed={index === 0 ? 'true' : 'false'}>
+          {screen.label}
+        </button>
+      ))
+    }
+  </div>
+  {
+    screens.map((screen, index) => (
+      <div class="guide-phone-stage" data-phone-panel={index}>
+        {(['left', 'right'] as const).map((side) => (
+          <>
+            {side === 'right' && (
+              <div class="guide-phone-device">
+                <Image src={shotFor(screen.shot)} alt={screen.alt} loading={index === 0 ? 'eager' : 'lazy'} />
+              </div>
+            )}
+            <div class={`guide-phone-notes is-${side}`}>
+              {screen[side].map((item) => (
+                <div class="guide-phone-note">
+                  <GuideIcon name={item.icon} accent />
+                  <BlockBody item={item} />
+                </div>
+              ))}
+            </div>
+          </>
+        ))}
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  // Shows the screen of the pressed button and hides the others. Nothing is hidden until this runs, so a page without scripts
+  // still shows every screen.
+  document.querySelectorAll<HTMLElement>('[data-phone-showcase]').forEach((root) => {
+    const tabs = root.querySelectorAll<HTMLButtonElement>('[data-phone-tab]');
+    const panels = root.querySelectorAll<HTMLElement>('[data-phone-panel]');
+    function show(index: number) {
+      tabs.forEach((tab, i) => tab.setAttribute('aria-pressed', String(i === index)));
+      panels.forEach((panel, i) => (panel.hidden = i !== index));
+    }
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => show(i)));
+    show(0);
+  });
+</script>

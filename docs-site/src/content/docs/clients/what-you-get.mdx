@@ -9,8 +9,65 @@ import ChangePlans from '../../../components/ChangePlans.astro';
 import RegionPicker from '../../../components/RegionPicker.astro';
 import Precio from '../../../components/Precio.astro';
 import RegionText from '../../../components/RegionText.astro';
+import FlowSteps from '../../../components/FlowSteps.astro';
+import FeatureGrid from '../../../components/FeatureGrid.astro';
+import PhoneShowcase from '../../../components/PhoneShowcase.astro';
+
+export const screens = [
+  {
+    label: "Catálogo",
+    shot: "shop-catalog-phone",
+    alt: "El catálogo de la tienda de demostración en un celular",
+    left: [
+      {"icon": "grid", "title": "Un catálogo ordenado", "text": "Productos por categorías, con sus versiones (talla, color…), precios de oferta y filtros."},
+    ],
+    right: [
+      {"icon": "layers", "title": "Productos parecidos", "text": "Al ver un producto, también aparecen otros parecidos."},
+    ],
+  },
+  {
+    label: "Buscar",
+    shot: "shop-search-phone",
+    alt: "El buscador de la tienda en un celular",
+    left: [
+      {"icon": "search", "title": "Un buscador que sugiere", "text": "Muestra productos mientras la persona escribe."},
+    ],
+    right: [
+      {"icon": "bolt", "title": "Rápida", "text": "Las páginas se guardan para abrirse más rápido y las fotos se ajustan al tamaño de la pantalla."},
+    ],
+  },
+  {
+    label: "Pagar",
+    shot: "shop-checkout-phone",
+    alt: "La página de pago en un celular",
+    left: [
+      {"icon": "cart", "title": "Compra en una sola página", "text": "El cliente elige cómo recibe su pedido y puede agregar datos para factura."},
+    ],
+    right: [
+      {"icon": "card", "title": "Cinco formas de pago", "text": {"intl": "Tarjeta (dLocal Go), PayPal, WhatsApp (el pedido se termina por chat), transferencia bancaria y pago al recibir el pedido.", "mx": "Tarjeta (dLocal Go), PayPal, WhatsApp (el pedido se termina por chat), transferencia a tu CLABE y pago al recibir el pedido.", "ec": "Tarjeta (dLocal Go), PayPal, WhatsApp (el pedido se termina por chat), transferencia a tu cuenta bancaria y pago al recibir el pedido."}},
+    ],
+  },
+  {
+    label: "Mi pedido",
+    shot: "shop-order-phone",
+    alt: "El seguimiento de un pedido en un celular",
+    left: [
+      {"icon": "pin", "title": "Seguimiento del pedido", "text": "Cada cliente recibe un enlace privado para ver el estado de su compra."},
+    ],
+    right: [
+      {"icon": "doc", "title": "Factura en PDF", "text": "Puede descargarla cuando la necesite."},
+    ],
+  },
+];
 
 Recibes una **tienda en internet propia**, lista para vender. Tiene su dirección web, su panel para administrarla, tus productos, tus fotos, tus pedidos y tus clientes. Para usarla no necesitas saber programar.
+
+<FlowSteps steps={[
+  {"icon": "box", "title": "Tú cargas tus productos", "text": "Desde el panel, sin programar."},
+  {"icon": "cart", "title": "Tu cliente compra", "text": "Desde su celular o su computadora."},
+  {"icon": "bell", "title": "La tienda avisa y factura", "text": "Sin que tú lo pidas."},
+  {"icon": "chart", "title": "Tú ves los resultados", "text": "Pedidos, existencias y reportes."},
+]} />
 
 Elige tu país para ver los precios y los datos de impuestos que te corresponden:
 
@@ -18,47 +75,50 @@ Elige tu país para ver los precios y los datos de impuestos que te corresponden
 
 ## Lo que ven tus clientes
 
-**Un catálogo ordenado.** Productos por categorías, con sus versiones (talla, color…), precios de oferta, filtros y un buscador que sugiere productos mientras la persona escribe. Al ver un producto, también aparecen otros parecidos.
+Toca una pantalla para ver cómo se ve la tienda en un celular. Es una tienda real, la de demostración.
 
-**Compra en una sola página.** El cliente elige cómo recibe su pedido, puede agregar datos para factura y paga como prefiera. Tiene **cinco formas de pago**:
+<PhoneShowcase lang="es" screens={screens} />
 
-- Tarjeta, a través del procesador dLocal Go.
-- PayPal.
-- WhatsApp: el pedido se termina por chat.
-- Transferencia bancaria<RegionText intl="." mx=", con tu CLABE." ec=", a tu cuenta bancaria." />
-- Pago al recibir el pedido.
-
-**Seguimiento del pedido.** Cada cliente recibe un enlace privado para ver el estado de su compra, y puede descargar su factura en PDF.
-
-**Español e inglés.** Toda la tienda está en los dos idiomas, y cada uno tiene su propia dirección web.
-
-**Hecha para el celular.** La mayoría de las compras se hacen desde el teléfono, así que la tienda se diseñó primero para pantallas pequeñas: botones grandes y fáciles de tocar, y sin animaciones para quien las tiene desactivadas.
-
-**Lista para Google.** Cada página tiene su título y su descripción, para que Google y otros buscadores puedan encontrar tus productos. Cuando alguien comparte un enlace, aparece con foto y título.
-
-**Rápida.** Las páginas se guardan para abrirse más rápido, y las fotos se ajustan al tamaño de la pantalla. En una prueba de Google Lighthouse (una herramienta gratuita que mide la velocidad y la calidad de una página), hecha como si fuera desde un celular, la tienda obtuvo entre 96 y 99 en rendimiento, 100 en buenas prácticas y SEO, y entre 96 y 100 en accesibilidad.
+<FeatureGrid layout="card" items={[
+  {"icon": "globe", "title": "Español e inglés", "text": "Toda la tienda está en los dos idiomas, y cada uno tiene su propia dirección web."},
+  {"icon": "phone", "title": "Hecha para el celular", "text": "La mayoría de las compras se hacen desde el teléfono, así que se diseñó primero para pantallas pequeñas: botones grandes y fáciles de tocar, y sin animaciones para quien las tiene desactivadas."},
+  {"icon": "search", "title": "Lista para Google", "text": "Cada página tiene su título y su descripción, para que Google y otros buscadores encuentren tus productos. Cuando alguien comparte un enlace, aparece con foto y título."},
+  {"icon": "bolt", "title": "Rápida", "text": "En una prueba de Google Lighthouse (una herramienta gratuita que mide la velocidad y la calidad de una página), hecha como si fuera desde un celular, la tienda obtuvo entre 96 y 99 en rendimiento, 100 en buenas prácticas y SEO, y entre 96 y 100 en accesibilidad."},
+]} />
 
 ## Lo que administras tú
 
 Todo se maneja desde el panel, sin programar:
 
-- **Productos:** versiones, categorías, características y una biblioteca de fotos.
-- **Inventario:** existencias, con un registro de cada cambio.
-- **Pedidos:** el estado y el historial de cada uno. Desde ahí puedes responder al cliente por WhatsApp y, en pagos con tarjeta o PayPal, devolver el dinero.
-- **Facturas:** verlas, enviarlas de nuevo, descargarlas en PDF o generarlas otra vez.
-- **Páginas:** un editor visual para la página de inicio y las páginas de contenido.
-- **Correos, envíos, testimonios y reportes:** el texto de los correos, los métodos de envío, las opiniones de clientes y los reportes de ventas.
-- **Configuración:** colores, tipografías y el resto de la tienda.
-- **Usuarios:** hay dos roles. El **Propietario** puede hacerlo todo, incluidas la configuración y las cuentas de usuario. El **Editor** trabaja en el día a día, y no ve la configuración, las cuentas de usuario ni el botón de reembolso.
+<FeatureGrid items={[
+  {"icon": "box", "title": "Productos", "text": "Versiones, categorías, características y una biblioteca de fotos."},
+  {"icon": "layers", "title": "Inventario", "text": "Existencias, con un registro de cada cambio."},
+  {"icon": "receipt", "title": "Pedidos", "text": "El estado y el historial de cada uno. Desde ahí puedes responder al cliente por WhatsApp y, en pagos con tarjeta o PayPal, devolver el dinero."},
+  {"icon": "doc", "title": "Facturas", "text": "Verlas, enviarlas de nuevo, descargarlas en PDF o generarlas otra vez."},
+  {"icon": "pencil", "title": "Páginas", "text": "Un editor visual para la página de inicio y las páginas de contenido."},
+  {"icon": "mail", "title": "Correos, envíos, testimonios y reportes", "text": "El texto de los correos, los métodos de envío, las opiniones de clientes y los reportes de ventas."},
+  {"icon": "cog", "title": "Configuración", "text": "Colores, tipografías y el resto de la tienda."},
+]} />
+
+Quién puede entrar al panel: hay dos roles.
+
+<FeatureGrid items={[
+  {"icon": "key", "title": "Propietario", "text": "Puede hacerlo todo, incluidas la configuración y las cuentas de usuario."},
+  {"icon": "user", "title": "Editor", "text": "Trabaja en el día a día. No ve la configuración, las cuentas de usuario ni el botón de reembolso."},
+]} />
 
 Mira la [guía del panel](/admin/overview/) para ver cada pantalla.
 
 ## Lo que pasa sin que tengas que pedirlo
 
-- **Avisos automáticos.** Tu cliente recibe un correo en cada paso de su pedido. Si lo activas, también recibe **mensajes de WhatsApp**, con textos que Meta ya aprobó. Es un extra con costo aparte.
-- **Inventario apartado.** Cuando alguien paga con tarjeta, el producto queda reservado mientras se confirma el pago. Si el pago no se completa a tiempo, vuelve a estar disponible. Nunca se venden más unidades de las que tienes.
-- **Reintentos.** Si falla el envío de un correo o la creación de una factura, la tienda lo intenta de nuevo. Si sigue fallando, lo deja marcado para que un propietario lo revise.
-- **Seguridad básica.** Protección contra robots en los formularios, límite de intentos repetidos al entrar, verificación de los avisos de pago para que nadie los falsifique, enlaces privados y protecciones del navegador. Más detalles en [Operar la tienda](/clients/operations/).
+<FeatureGrid items={[
+  {"icon": "bell", "title": "Avisos automáticos", "text": "Tu cliente recibe un correo en cada paso de su pedido. Si lo activas, también recibe mensajes de WhatsApp, con textos que Meta ya aprobó. Es un extra con costo aparte."},
+  {"icon": "layers", "title": "Inventario apartado", "text": "Cuando alguien paga con tarjeta, el producto queda reservado mientras se confirma el pago. Si el pago no se completa a tiempo, vuelve a estar disponible. Nunca se venden más unidades de las que tienes."},
+  {"icon": "refresh", "title": "Reintentos", "text": "Si falla el envío de un correo o la creación de una factura, la tienda lo intenta de nuevo. Si sigue fallando, lo deja marcado para que un propietario lo revise."},
+  {"icon": "shield", "title": "Seguridad básica", "text": "Protección contra robots en los formularios, límite de intentos repetidos al entrar, verificación de los avisos de pago para que nadie los falsifique, enlaces privados y protecciones del navegador."},
+]} />
+
+Más detalles de seguridad en [Operar la tienda](/clients/operations/).
 
 ## Extras opcionales, con costo aparte
 
@@ -80,9 +140,11 @@ Son opcionales y se cobran aparte de la tienda. Solo se activan si los necesitas
 
 Hay tres tipos de costo:
 
-- **La plataforma:** unos 5 USD al mes por cuenta de Cloudflare, donde corre la tienda. Puedes elegir el plan mensual o anual de mantenimiento.
-- **El dominio:** el precio anual de tu registrador.
-- **Los cobros de cada proveedor:** dLocal Go y PayPal cobran comisiones por cada venta, y Meta cobra por cada mensaje de WhatsApp que se envía, según su categoría y su país. La tienda no añade ninguna comisión propia. El correo no tiene ese costo.
+<FeatureGrid layout="card" items={[
+  {"icon": "cloud", "title": "La plataforma", "text": "Unos 5 USD al mes por cuenta de Cloudflare, donde corre la tienda. Puedes elegir el plan mensual o anual de mantenimiento."},
+  {"icon": "globe", "title": "El dominio", "text": "El precio anual de tu registrador."},
+  {"icon": "card", "title": "Los cobros de cada proveedor", "text": "dLocal Go y PayPal cobran comisiones por cada venta, y Meta cobra por cada mensaje de WhatsApp que se envía, según su categoría y su país. La tienda no añade ninguna comisión propia. El correo no tiene ese costo."},
+]} />
 
 Aparte, si prefieres que otra persona haga los cambios de tu tienda, eso es opcional y tiene precios fijos: mira [Cambios hechos por nosotros](#cambios-hechos-por-nosotros).
 
@@ -94,13 +156,15 @@ El tiempo depende de qué tan rápido entregues lo que se te pide y de las aprob
 
 Tú aportas:
 
-- Un nombre de dominio, o un subdominio de tu sitio actual.
-- Los datos de tu negocio para las facturas: razón social, <RegionText intl="identificación fiscal" mx="RFC y régimen fiscal" ec="RUC" />, dirección y tasa de impuesto.
-- Tus productos, con precios, existencias y fotos cuadradas de al menos 1000 px.
-- Cuentas de **dLocal Go** (tarjeta) y de **PayPal Business**. Empiezan en modo de prueba.
-- Una dirección de correo para los envíos, en un dominio tuyo, para que Gmail y Outlook confíen en los correos de pedidos.
-- Los textos legales (privacidad, términos, envíos y devoluciones). La tienda trae plantillas, pero alguien debe revisarlas para tu país y tu negocio.
-- Solo si los quieres: cuentas de Meta Business y de WhatsApp Business, y un Pixel de Meta.
+<FeatureGrid items={[
+  {"icon": "globe", "title": "Un dominio", "text": "O un subdominio de tu sitio actual."},
+  {"icon": "doc", "title": "Los datos de tu negocio", "text": {"intl": "Razón social, identificación fiscal, dirección y tasa de impuesto, para las facturas.", "mx": "Razón social, RFC y régimen fiscal, dirección y tasa de impuesto, para las facturas.", "ec": "Razón social, RUC, dirección y tasa de impuesto, para las facturas."}},
+  {"icon": "box", "title": "Tus productos", "text": "Con precios, existencias y fotos cuadradas de al menos 1000 px."},
+  {"icon": "card", "title": "Cuentas de pago", "text": "dLocal Go (tarjeta) y PayPal Business. Empiezan en modo de prueba."},
+  {"icon": "mail", "title": "Un correo para los envíos", "text": "En un dominio tuyo, para que Gmail y Outlook confíen en los correos de pedidos."},
+  {"icon": "shield", "title": "Los textos legales", "text": "Privacidad, términos, envíos y devoluciones. La tienda trae plantillas, pero alguien debe revisarlas para tu país y tu negocio."},
+  {"icon": "chat", "title": "Solo si los quieres", "text": "Cuentas de Meta Business y de WhatsApp Business, y un Pixel de Meta."},
+]} />
 
 La mayor parte del tiempo la pasas tú llenando la tienda: productos, páginas, envíos y textos de los correos.
 
@@ -178,16 +242,24 @@ Una **revisión de la tienda** es una vuelta completa que te hacemos nosotros: r
 
 ### Cuál te conviene
 
-- **Un cambio de vez en cuando:** paga por cambio.
-- **Varios cambios al año, sin fecha fija:** un paquete de créditos.
-- **Cambios cada semana** (promociones, productos nuevos, precios): un plan mensual.
-- **Ya sabes que vas a seguir y tienes temporadas fuertes:** un plan anual, que sale más barato y deja usar los créditos cuando los necesites.
+<FeatureGrid layout="card" items={[
+  {"icon": "coin", "title": "Un cambio de vez en cuando", "text": "Paga por cambio."},
+  {"icon": "layers", "title": "Varios cambios al año, sin fecha fija", "text": "Un paquete de créditos."},
+  {"icon": "refresh", "title": "Cambios cada semana (promociones, productos nuevos, precios)", "text": "Un plan mensual."},
+  {"icon": "star", "title": "Ya sabes que vas a seguir y tienes temporadas fuertes", "text": "Un plan anual, que sale más barato y deja usar los créditos cuando los necesites."},
+]} />
 
 ### Cómo se pide y cómo se paga
 
-- Escribes por WhatsApp o por correo lo que quieres cambiar y, si aplica, mandas las fotos o los textos. Te confirmamos cuántos créditos cuesta antes de empezar.
-- Pagas por <RegionText intl="PayPal o tarjeta." mx="transferencia SPEI o tarjeta." ec="transferencia o depósito bancario." /> Los planes mensuales se cobran al inicio de cada mes, y los anuales, una sola vez al inicio del año.
-- Sin plan, los cambios se hacen en unos 7 días hábiles. Con plan, en el tiempo de respuesta que indica la tabla.
+<FlowSteps steps={[
+  {"icon": "chat", "title": "Escribes lo que quieres", "text": "Por WhatsApp o por correo."},
+  {"icon": "coin", "title": "Te decimos los créditos", "text": "Antes de empezar."},
+  {"icon": "check", "title": "Das tu visto bueno", "text": "Y entonces empezamos."},
+  {"icon": "pencil", "title": "Lo hacemos", "text": "Sin plan, en unos 7 días hábiles."},
+  {"icon": "wallet", "title": "Pagas", "text": {"intl": "Por PayPal o tarjeta.", "mx": "Por transferencia SPEI o tarjeta.", "ec": "Por transferencia o depósito bancario."}},
+]} />
+
+Si hacen falta, mandas las fotos o los textos al escribir. Si lo que pides resulta más grande de lo que parecía, te avisamos antes de seguir. Con plan, el tiempo de respuesta es el que indica la tabla. Los planes mensuales se cobran al inicio de cada mes, y los anuales, una sola vez al inicio del año.
 
 ### Qué no incluye
 

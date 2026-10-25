@@ -29,7 +29,8 @@
   color: var(--guide-muted);
 }
 
-.region-picker-button {
+/* Pill buttons: the country picker, and the screen buttons of the phone showcase. */
+.guide-pill-button {
   min-height: var(--guide-touch-min);
   padding: var(--guide-space-sm) var(--guide-space-xl);
   border: var(--guide-border-width) solid var(--sl-color-hairline);
@@ -41,20 +42,20 @@
   cursor: pointer;
 }
 
-.region-picker-button[aria-pressed='true'] {
+.guide-pill-button[aria-pressed='true'] {
   border-color: var(--guide-primary);
   background: var(--guide-primary);
   color: var(--guide-on-primary);
   font-weight: var(--guide-weight-semibold);
 }
 
-.region-picker-button:focus-visible {
+.guide-pill-button:focus-visible {
   outline: var(--guide-focus-width) solid var(--guide-accent);
   outline-offset: var(--guide-focus-offset);
 }
 
 /* Dark theme: the primary colour is near-black, so the active button uses the accent-high text colour on the tinted surface. */
-:root[data-theme='dark'] .region-picker-button[aria-pressed='true'] {
+:root[data-theme='dark'] .guide-pill-button[aria-pressed='true'] {
   border-color: var(--sl-color-accent-high);
   background: var(--sl-color-accent-low);
   color: var(--sl-color-accent-high);

@@ -73,8 +73,9 @@ header.header {
     background-color: var(--sl-color-accent-low);
   }
 
-  /* Feature cards and the previous/next links lift a little and pick up a red-tinted border and a soft shadow. */
+  /* Feature cards (Starlight's and the guide's own) and the previous/next links lift a little and pick up a red-tinted border and a soft shadow. */
   .sl-markdown-content .card,
+  .guide-feature,
   .pagination-links a {
     transition:
       transform var(--guide-duration-slow) var(--guide-ease-out),
@@ -83,6 +84,7 @@ header.header {
   }
 
   .sl-markdown-content .card:hover,
+  .guide-feature:hover,
   .pagination-links a:hover {
     transform: translateY(var(--guide-lift));
     border-color: var(--guide-border-hover);

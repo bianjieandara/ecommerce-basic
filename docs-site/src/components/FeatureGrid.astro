@@ -1,0 +1,24 @@
+---
+// A grid of icon, title and text blocks: the way a page lists what something includes instead of a long bullet list.
+import GuideIcon from './GuideIcon.astro';
+import BlockBody from './BlockBody.astro';
+import type { BlockItem } from '../data/guide-blocks';
+
+interface Props {
+  items: BlockItem[];
+  /** `card` stacks the icon above the text; `row` puts it beside the text, which is denser. */
+  layout?: 'card' | 'row';
+}
+const { items, layout = 'row' } = Astro.props;
+---
+
+<div class="guide-features not-content">
+  {
+    items.map((item) => (
+      <div class:list={['guide-feature', { 'is-row': layout === 'row' }]}>
+        <GuideIcon name={item.icon} />
+        <BlockBody item={item} />
+      </div>
+    ))
+  }
+</div>

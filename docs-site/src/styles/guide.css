@@ -71,6 +71,13 @@
   --guide-step-inset: var(--guide-space-lg);
   --guide-step-min-height: 3.5rem;
   --guide-touch-min: 2.75rem;
+  --guide-feature-min: 15rem;
+  --guide-phone-stage-width: 15rem;
+  --guide-phone-bezel: 0.5rem;
+  --guide-phone-radius: 2.25rem;
+  --guide-connector: 1.5rem;
+  --guide-line-bold: 2px;
+  --guide-icon-stroke: 1.8;
 
   /* Motion (guide-motion.css) and the shadow and hover border that go with it. */
   --guide-duration: 0.15s;
