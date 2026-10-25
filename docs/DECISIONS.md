@@ -902,3 +902,10 @@ Measured on a copy of the demo database grown to 5,000 products (SQLite, so quer
 - **Why.** The guide belongs on the brand's own domain. `e-baq.com` is in another Cloudflare account (`ebaq.solutions@gmail.com`) than `relion-app.com`, and a Worker custom domain only attaches inside the zone's own account, so the Worker `ecommerce-guide` is now deployed from that account (`wrangler login` with it, then `npm run deploy` in `docs-site/`).
 - **What changed.** `docs-site/wrangler.jsonc` routes `docs.e-baq.com` and `astro.config.mjs` uses it as `site`. The old custom domain was removed from the old account's Worker; that Worker (`ecommerce-guide`) was then deleted from the old account.
 - **Open step.** `DEMO_GUIDE_URL` in `clients/demo/client.jsonc` points to the new address, but the live demo store keeps the old link until it is redeployed, so its "guide" link is dead until then. `worker-configuration.d.ts` is generated and follows on the next `cf-typegen`.
+
+## 2026-10-25 — GitHub Actions deploys the demo store
+
+- **Workflow.** `.github/workflows/deploy-demo.yml` runs on a push to `main` (not for `docs/`, `docs-site/` or Markdown only changes) and on demand. It runs `npm ci`, generates the Worker config, `npm run check`, then `npm run deploy:client -- demo`, the same command as a manual deploy, so the build, queue creation, remote migrations and the lock behave the same.
+- **Secrets.** The repository needs two Actions secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (the account of `relion-app.com`). The demo has no `accountId` in `client.jsonc`, so `cloudflareEnv` passes them through. The Worker's own secrets (Turnstile, PayPal, dLocal Go) stay in Cloudflare and are not touched by a deploy.
+- **One deploy at a time.** `concurrency` queues a newer push instead of cancelling a deploy that may be between migrations and the Worker.
+- **Not covered.** The guide (`docs-site/`) keeps its own manual deploy, because it lives in another Cloudflare account. Other clients are not deployed from CI.
