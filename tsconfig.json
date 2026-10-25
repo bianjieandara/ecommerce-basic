@@ -6,11 +6,10 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "noUncheckedIndexedAccess": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@client": ["clients/_default/extensions"],
-      "@client/*": ["clients/_default/extensions/*"]
+      "@/*": ["./src/*"],
+      "@client": ["./clients/_default/extensions"],
+      "@client/*": ["./clients/_default/extensions/*"]
     }
   }
 }
