@@ -7,7 +7,7 @@ import starlight from '@astrojs/starlight';
 import { regionBootstrapScript } from './src/data/regions.mjs';
 
 export default defineConfig({
-  site: 'https://docs.relion-app.com',
+  site: 'https://docs.e-baq.com',
   integrations: [
     starlight({
       title: { es: 'Guía de la tienda', en: 'Store guide' },

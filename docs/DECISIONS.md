@@ -884,3 +884,9 @@ Measured on a copy of the demo database grown to 5,000 products (SQLite, so quer
 - **The phone shows the real demo store.** `PhoneShowcase` reads the existing `assets/screens/<lang>/shop-*-phone.png` captures, so the screenshots script keeps them current. Without JavaScript every screen is shown one after another; the script only hides the others.
 - **The step-card rule is why `FlowSteps` is a div.** The guide turns every top-level `<ol>` into numbered cards, so the flow's list lives inside a wrapper. The blocks sit in `.not-content` so Starlight's text styles stay out. The sticky reading path of option 1 is not rebuilt: Starlight's "On this page" column already is one.
 - **One pill button.** The region picker's button class became `guide-pill-button` and the phone's screen buttons use it too.
+
+## 2026-10-25 — The guide moves from docs.relion-app.com to docs.e-baq.com
+
+- **Why.** The guide belongs on the brand's own domain. `e-baq.com` is in another Cloudflare account (`ebaq.solutions@gmail.com`) than `relion-app.com`, and a Worker custom domain only attaches inside the zone's own account, so the Worker `ecommerce-guide` is now deployed from that account (`wrangler login` with it, then `npm run deploy` in `docs-site/`).
+- **What changed.** `docs-site/wrangler.jsonc` routes `docs.e-baq.com` and `astro.config.mjs` uses it as `site`. The old custom domain was removed from the old account's Worker; that Worker is still there, unused.
+- **Open step.** `DEMO_GUIDE_URL` in `clients/demo/client.jsonc` points to the new address, but the live demo store keeps the old link until it is redeployed, so its "guide" link is dead until then. `worker-configuration.d.ts` is generated and follows on the next `cf-typegen`.
