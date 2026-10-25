@@ -11,8 +11,6 @@ import RegionText from '../../../../components/RegionText.astro';
 
 You get an **online store of your own**, ready to sell. It has its own web address, an admin panel to run it, your products, your pictures, your orders and your customers. You do not need to know how to code to use it.
 
-Every store is built on the same foundation, so improvements reach everyone. But your data is yours alone: it is never mixed with other stores' data.
-
 Choose your country to see the prices and tax details that apply to you:
 
 <RegionPicker lang="en" />
@@ -56,7 +54,7 @@ See the [admin guide](/en/admin/overview/) for every screen.
 
 ## What happens without you having to ask
 
-- **Automatic notices.** Your customer gets an email at each step of their order. If you turn it on, they also get **WhatsApp messages**, using wording Meta has already approved.
+- **Automatic notices.** Your customer gets an email at each step of their order. If you turn it on, they also get **WhatsApp messages**, using wording Meta has already approved. It is an extra with its own cost.
 - **Held stock.** When someone pays by card, the product is reserved while the payment is confirmed. If the payment is not completed in time, the product becomes available again. You never sell more units than you have.
 - **Retries.** If sending an email or creating an invoice fails, the store tries again. If it keeps failing, it flags the task for an owner to review.
 - **Basic security.** Protection against robots on forms, a limit on repeated login attempts, checks on payment notifications so nobody can fake them, private links, and browser protections. More detail in [Running the store](/en/clients/operations/).
@@ -79,7 +77,7 @@ They are optional and charged separately from the store. They are switched on on
 
 There are three kinds of cost:
 
-- **The platform:** about 5 USD a month per Cloudflare account, where the store runs. If the store runs on the agency's account, one plan covers many stores. A small store usually stays within the included usage.
+- **The platform:** about 5 USD a month per Cloudflare account, where the store runs. You can choose the monthly or yearly maintenance plan.
 - **Your domain:** the yearly price from your domain registrar.
 - **Fees from each provider:** dLocal Go and PayPal charge fees on each sale, and Meta charges for each WhatsApp message sent, depending on its category and country. The store adds no fee of its own. Email has no such cost.
 
@@ -120,7 +118,7 @@ If you can do it yourself but would rather have someone else do it, you can also
 
 ## Changes we make for you
 
-You can change almost everything yourself from the panel, but many people prefer to have someone else do it: the text of a page, a new product, the WhatsApp number, the bank account. It is an option, not a requirement. Prices depend on your country (use the selector above) and do not include tax: VAT is added where it applies.
+You can change almost everything yourself from the panel, but many people prefer to have someone else do it: the text of a page, a new product, the WhatsApp number, the bank account. It is an option, not a requirement. Prices depend on your country (use the selector above) and **already include VAT**: what you see is what you pay, and you get an invoice.
 
 ### What counts as a change
 
@@ -132,6 +130,22 @@ Everything is measured in **credits**. One credit is one small change.
 | **Medium**          | 2       | Add up to 3 products with their pictures; set up a promotion or a banner; adjust shipping and its prices; edit a whole page or the wording of the emails.                 |
 | **Large**           | 5       | Create a new page; load a catalogue of up to 50 products; rearrange the home page.                                                                                        |
 | **Bigger than that** | Quote  | You are told the price before we start.                                                                                                                                   |
+
+### How credits and plans work
+
+A **credit** is the unit work is measured in. Each change you ask for costs 1, 2 or 5 credits depending on its size (see the table above). There are three ways to get credits, and you can combine them:
+
+- **Pay per change.** There are no saved credits: you pay the price of the change and we do it.
+- **Pack.** You buy a number of credits at once. They are used up as you ask for changes and last 12 months from the purchase. Each credit costs less than paying per change.
+- **Monthly or yearly plan.** You receive credits on a regular basis and a faster response. On the monthly plan, each month's credits are used that month and do not carry over. On the yearly plan, the credits for all 12 months are one pool: you use them whenever you like while the plan is active.
+
+**How they are used up.** Before we start, we tell you how many credits what you asked for costs, and we wait for your go-ahead. If a request has several changes, they add up. If something turns out to be bigger than it looked, we tell you before going on; credits are never taken without you knowing.
+
+**What happens when they run out.** You can buy a pack, pay for a single change, or move up a plan. While you have a plan, your requests keep the response time of your plan even if you pay for one change separately.
+
+**An example.** You are in Mexico and have the Grow plan (10 credits a month). This month you ask to change the WhatsApp number (1 credit), add 3 products with pictures (2 credits) and set up a promotion banner (2 credits). You used 5 of your 10 credits. The other 5 are lost when the month ends. With the Yearly Grow plan, those 5 credits would still be there for a busier season.
+
+**When they start and end.** Credits and plans start the day your payment is confirmed. The monthly plan renews every month as long as you pay for it, and you can cancel it at any time for the following month. The yearly plan lasts 12 months.
 
 ### Pay per change
 
@@ -145,23 +159,32 @@ You pay once and use the credits whenever you like within 12 months. The bigger 
 
 <ChangePlans lang="en" part="packs" />
 
-### Monthly or yearly plan
+### Monthly plan
 
-Each month you get a number of credits and a faster response. Credits from one month do not carry over to the next. On the yearly plan you pay for 10 months and use 12.
+Each month you get a number of credits and a faster response. Credits from one month do not carry over to the next. If you prefer to pay month by month, this is the most flexible option.
 
 <ChangePlans lang="en" part="plans" />
+
+### Yearly plans
+
+You pay once and get 12 months of service, with **2 months free**. The year's credits are one pool: you use them when you need them, and they do not run out at the end of each month. This suits you best if your store has busy seasons, such as Christmas or Mother's Day.
+
+<ChangePlans lang="en" part="yearly" />
+
+A **store check-up** is a full pass we do ourselves: we review texts, prices, stock and links, test that buying works from start to finish, and send you a short summary of what we found. It does not use credits.
 
 ### Which one suits you
 
 - **A change now and then:** pay per change.
 - **Several changes a year, with no fixed date:** a credit pack.
-- **Changes every week** (promotions, new products, prices): a monthly plan, and the yearly one once you know you will keep going.
+- **Changes every week** (promotions, new products, prices): a monthly plan.
+- **You know you will keep going and have busy seasons:** a yearly plan, which costs less and lets you use the credits when you need them.
 
 ### How to ask and how to pay
 
 - You write by WhatsApp or email what you want changed and, if needed, send the pictures or the text. We confirm how many credits it costs before we start.
-- You pay by <RegionText intl="PayPal or card." mx="SPEI bank transfer or card." ec="bank transfer or deposit." /> Plans are charged at the start of each period.
-- Without a plan, changes are done in about 3 business days. With a plan, within the response time in the table.
+- You pay by <RegionText intl="PayPal or card." mx="SPEI bank transfer or card." ec="bank transfer or deposit." /> Monthly plans are charged at the start of each month, and yearly plans once at the start of the year.
+- Without a plan, changes are done in about 5 business days. With a plan, within the response time in the table.
 
 ### What is not included
 

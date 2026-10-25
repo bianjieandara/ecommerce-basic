@@ -29,7 +29,8 @@ npm run docs:data             # in another terminal: products, pictures, home pa
 npm run test:smoke            # about 2 minutes, 180+ checks
 npm run test:webhooks -- whatsapp-verify
 npm run test:access           # anonymous access to every admin route; an editor against owner-only screens
-npm run test:consent          # the Pixel stays off until the visitor accepts (needs Chrome)
+npm run test:consent          # the Pixel and GA4 stay off until the visitor accepts (needs Chrome)
+npm run test:tracking         # purchases to GA4 and Meta, and the events in Chrome (own store, see below)
 npm run test:crawl            # every link, image, script and tag on about 300 pages
 npm run test:filters          # every storefront filter, sort, page and count against the database
 npm run test:admin-filters    # the filters and searches of the admin lists
@@ -48,6 +49,33 @@ Re-run `npm run build` and restart it after code changes. Stop it with Ctrl+C; i
 processes whose command line mentions `docs-state`.
 
 ## What the local kit covers
+
+**`npm run test:tracking`** ([scripts/test/tracking.mjs](../scripts/test/tracking.mjs) and
+[tracking-browser.mjs](../scripts/test/tracking-browser.mjs)) checks what GA4 and Meta receive, with no Google or Meta account. It needs
+its own store, started with `--tracking`, so that a store on port 4400 is left alone. Replace the ports if they are taken:
+
+```bash
+npx astro build --outDir .wrangler/track-dist
+DOCS_DIST=.wrangler/track-dist DOCS_PORT=4420 DOCS_STATE=.wrangler/track-state DOCS_GRAPH_PORT=5820 DOCS_GA4_PORT=5830 \
+  DOCS_INSPECTOR_PORT=9420 node scripts/docs/store.mjs --tracking          # leave it running
+DOCS_BASE=http://localhost:4420 DOCS_STATE=.wrangler/track-state DOCS_GRAPH_PORT=5820 DOCS_GA4_PORT=5830 npm run test:tracking
+```
+
+- **Server.** The test starts two fakes: GA4's Measurement Protocol (`fake-ga4.mjs`, which lists what a real request would get wrong)
+  and the Graph API with its Conversions API route (`fake-graph.mjs`). It places four orders with different cookies (consent and GA
+  cookies; none; consent without GA; refused with GA cookies), pays them as the owner, and checks that GA4 gets exactly one
+  purchase, Meta exactly one for each consenting order, with the e-mail and phone only as hashes, and that the other orders leave no
+  trace. It also checks which GA identity the order stored.
+- **Browser.** Chrome refuses every request to Google and Meta, so nothing leaves the machine; each attempt is still counted. A visitor
+  who accepts walks home, product, add to cart, checkout, an unpaid order page and a paid one: GA4 and the Pixel must get
+  `page_view`, `view_item`, `add_to_cart`, `begin_checkout` and one `purchase` (not again on a reload) with the right facts. A visitor
+  who refuses must give them nothing and trigger no request. The script policy of the build must refuse nothing the app loads, and
+  must still refuse a script from an unlisted host.
+- **Not covered.** Google and Meta accepting and attributing the events (that is the table below), and payments confirmed by a
+  webhook: the test pays as the owner, which takes the same `ConfirmPayment` step the webhooks do.
+
+`test:tracking` is not part of `test:all`: it needs its own store and fakes. `test:consent` also needs a store; point it at this one
+with `DOCS_BASE`, `DOCS_STATE` and `DOCS_COOKIE` (the owner session file).
 
 **`npm run test:smoke`** ([scripts/test/smoke.mjs](../scripts/test/smoke.mjs)) checks, on the demo store only:
 
@@ -175,7 +203,7 @@ machine.
 | PayPal                          | Webhook refusal of unsigned calls                                | A sandbox buyer approval, a capture, a refund                 |
 | Email                           | Templates render in both languages, console transport            | Domain onboarding, a test send, spam-folder check             |
 | WhatsApp                        | Verification handshake, signature, forward-only status updates   | Meta accounts, template approval, a real message and document |
-| Pixel and Conversions API       | Request body shape, hashing against Meta's published examples    | Events Manager: Test Events, deduplication, match quality     |
+| Pixel, GA4, Conversions API     | Bodies, hashing, consent gating, events in Chrome, fake GA4/Meta | Test Events, GA4 DebugView, deduplication, match quality      |
 | Product feed                    | Required fields and formats on every item                        | The feed accepted in Commerce Manager (and Merchant Center)   |
 | Reports                         | Numbers match the database, CSV opens in Excel                   | A glance at the real numbers after the first week             |
 | Funnel report, Analytics Engine | Not possible locally: local sessions write no data to Cloudflare | Check after deploy that events arrive                         |
@@ -191,8 +219,9 @@ The plan's criteria mix what the code does with what an account allows. This tab
 | 18    | Invoice PDF arrives as a document                            | The invoice and its PDF exist and download            | An approved document template                    |
 | 18    | Delivery and read statuses update the log                    | `whatsapp-status` (forward-only, signature)           | Meta's own delivery callbacks                    |
 | 18    | Disabled or unapproved templates are skipped and logged      | Notification log shows "skipped" with the reason      | Nothing                                          |
-| 19    | Without consent no Meta request is made                      | `npm run test:consent` (real browser)                 | Nothing                                          |
-| 19    | With consent the Pixel fires; browser and server deduplicate | Body shape and hashing match Meta's examples          | A Pixel, a CAPI token, Test Events               |
+| 19    | Without consent no Meta or Google request is made            | `npm run test:consent` (real browser)                 | Nothing                                          |
+| 19    | With consent the Pixel fires; browser and server deduplicate | `npm run test:tracking`: events in Chrome, shared id  | A Pixel, a CAPI token, Test Events               |
+| 19    | GA4 counts each purchase once, browser and server            | `npm run test:tracking`: one purchase to a fake GA4   | A GA4 property, an API secret, DebugView         |
 | 19    | Analytics Engine receives events                             | Not possible locally                                  | A deployed Worker, then the SQL API              |
 | 19    | The feed validates in Commerce Manager                       | Required fields and formats on every item             | A catalog in Commerce Manager                    |
 | 20    | Every report renders on a phone with correct numbers         | Smoke test (sales) and the procedure for the others   | Nothing                                          |

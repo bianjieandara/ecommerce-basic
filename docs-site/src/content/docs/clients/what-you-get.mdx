@@ -11,8 +11,6 @@ import RegionText from '../../../components/RegionText.astro';
 
 Recibes una **tienda en internet propia**, lista para vender. Tiene su dirección web, su panel para administrarla, tus productos, tus fotos, tus pedidos y tus clientes. Para usarla no necesitas saber programar.
 
-Todas las tiendas se construyen con la misma base, así que las mejoras llegan a todos. Pero tus datos son solo tuyos: no se mezclan con los de otras tiendas.
-
 Elige tu país para ver los precios y los datos de impuestos que te corresponden:
 
 <RegionPicker lang="es" />
@@ -56,7 +54,7 @@ Mira la [guía del panel](/admin/overview/) para ver cada pantalla.
 
 ## Lo que pasa sin que tengas que pedirlo
 
-- **Avisos automáticos.** Tu cliente recibe un correo en cada paso de su pedido. Si lo activas, también recibe **mensajes de WhatsApp**, con textos que Meta ya aprobó.
+- **Avisos automáticos.** Tu cliente recibe un correo en cada paso de su pedido. Si lo activas, también recibe **mensajes de WhatsApp**, con textos que Meta ya aprobó. Es un extra con costo aparte.
 - **Inventario apartado.** Cuando alguien paga con tarjeta, el producto queda reservado mientras se confirma el pago. Si el pago no se completa a tiempo, vuelve a estar disponible. Nunca se venden más unidades de las que tienes.
 - **Reintentos.** Si falla el envío de un correo o la creación de una factura, la tienda lo intenta de nuevo. Si sigue fallando, lo deja marcado para que un propietario lo revise.
 - **Seguridad básica.** Protección contra robots en los formularios, límite de intentos repetidos al entrar, verificación de los avisos de pago para que nadie los falsifique, enlaces privados y protecciones del navegador. Más detalles en [Operar la tienda](/clients/operations/).
@@ -79,7 +77,7 @@ Son opcionales y se cobran aparte de la tienda. Solo se activan si los necesitas
 
 Hay tres tipos de costo:
 
-- **La plataforma:** unos 5 USD al mes por cuenta de Cloudflare, donde corre la tienda. Si la tienda va en la cuenta de la agencia, un solo plan cubre muchas tiendas. Una tienda pequeña normalmente se queda dentro del uso incluido.
+- **La plataforma:** unos 5 USD al mes por cuenta de Cloudflare, donde corre la tienda. Puedes elegir el plan mensual o anual de mantenimiento.
 - **El dominio:** el precio anual de tu registrador.
 - **Los cobros de cada proveedor:** dLocal Go y PayPal cobran comisiones por cada venta, y Meta cobra por cada mensaje de WhatsApp que se envía, según su categoría y su país. La tienda no añade ninguna comisión propia. El correo no tiene ese costo.
 
@@ -120,7 +118,7 @@ Si sabes que puedes hacerlo pero prefieres que otra persona lo haga, también pu
 
 ## Cambios hechos por nosotros
 
-Casi todo lo puedes cambiar tú desde el panel, pero mucha gente prefiere que lo haga otra persona: el texto de una página, un producto nuevo, el número de WhatsApp, la cuenta bancaria. Es una opción, no una obligación. Los precios cambian según tu país (usa el selector de arriba) y no incluyen impuestos: se agrega el IVA cuando aplica.
+Casi todo lo puedes cambiar tú desde el panel, pero mucha gente prefiere que lo haga otra persona: el texto de una página, un producto nuevo, el número de WhatsApp, la cuenta bancaria. Es una opción, no una obligación. Los precios cambian según tu país (usa el selector de arriba) y **ya incluyen el IVA**: lo que ves es lo que pagas, y te damos factura.
 
 ### Qué cuenta como un cambio
 
@@ -132,6 +130,22 @@ Todo se mide en **créditos**. Un crédito es un cambio pequeño.
 | **Mediano**             | 2        | Dar de alta hasta 3 productos con sus fotos; preparar una promoción o un banner; ajustar envíos y sus precios; editar una página completa o los textos de los correos. |
 | **Grande**              | 5        | Crear una página nueva; cargar un catálogo de hasta 50 productos; reorganizar la página de inicio.                                                              |
 | **Más grande que eso**  | Cotización | Se te dice el precio antes de empezar.                                                                                                                         |
+
+### Cómo funcionan los créditos y los planes
+
+Un **crédito** es la unidad con la que se mide el trabajo. Cada cambio que pides cuesta 1, 2 o 5 créditos según su tamaño (mira la tabla de arriba). Hay tres formas de conseguir créditos, y puedes combinarlas:
+
+- **Pagar por cambio.** No hay créditos guardados: pagas el precio del cambio y lo hacemos.
+- **Paquete.** Compras un número de créditos de una vez. Se van descontando conforme pides cambios y duran 12 meses desde la compra. Cada crédito sale más barato que pagando por cambio.
+- **Plan mensual o anual.** Recibes créditos de forma periódica y una respuesta más rápida. En el plan mensual, los créditos de cada mes se usan ese mes y no pasan al siguiente. En el anual, los créditos de los 12 meses son un solo bolsillo: los usas cuando quieras mientras el plan esté vigente.
+
+**Cómo se descuentan.** Antes de empezar te decimos cuántos créditos cuesta lo que pediste y esperamos tu visto bueno. Si un pedido tiene varios cambios, se suman. Si lo que pides resulta ser más grande de lo que parecía, te avisamos antes de seguir; nunca se descuentan créditos de más sin que lo sepas.
+
+**Qué pasa si se acaban.** Puedes comprar un paquete, pagar el cambio suelto o subir de plan. Mientras tengas un plan, tus pedidos conservan la rapidez de respuesta de tu plan aunque pagues un cambio aparte.
+
+**Un ejemplo.** Eres de México y tienes el plan Crece (10 créditos al mes). Este mes pides cambiar el número de WhatsApp (1 crédito), dar de alta 3 productos con fotos (2 créditos) y preparar un banner de promoción (2 créditos). Usaste 5 de tus 10 créditos. Los otros 5 se pierden al terminar el mes. Si hubieras tenido el plan Anual Crece, esos 5 créditos seguirían disponibles para una temporada con más trabajo.
+
+**Cuándo empieza y cuándo termina.** Los créditos y los planes empiezan el día que se confirma tu pago. El plan mensual se renueva cada mes mientras lo pagues, y puedes cancelarlo cuando quieras para el mes siguiente. El plan anual dura 12 meses.
 
 ### Pagar por cada cambio
 
@@ -145,23 +159,32 @@ Pagas una sola vez y usas los créditos cuando quieras durante 12 meses. Mientra
 
 <ChangePlans lang="es" part="packs" />
 
-### Plan mensual o anual
+### Plan mensual
 
-Cada mes recibes un número de créditos y una respuesta más rápida. Los créditos de un mes no pasan al siguiente. En el plan anual pagas 10 meses y usas 12.
+Cada mes recibes un número de créditos y una respuesta más rápida. Los créditos de un mes no pasan al siguiente. Si prefieres pagar mes a mes, es la opción más flexible.
 
 <ChangePlans lang="es" part="plans" />
+
+### Planes anuales
+
+Pagas una sola vez y tienes 12 meses de servicio, con **2 meses gratis**. Los créditos del año son un solo bolsillo: los usas cuando los necesites, sin que se pierdan al terminar cada mes. Es lo que más conviene si tu tienda tiene temporadas, como Navidad o el Día de la Madre.
+
+<ChangePlans lang="es" part="yearly" />
+
+Una **revisión de la tienda** es una vuelta completa que te hacemos nosotros: revisamos textos, precios, existencias y enlaces, probamos que la compra funcione de principio a fin y te mandamos un resumen corto con lo que encontramos. No gasta créditos.
 
 ### Cuál te conviene
 
 - **Un cambio de vez en cuando:** paga por cambio.
 - **Varios cambios al año, sin fecha fija:** un paquete de créditos.
-- **Cambios cada semana** (promociones, productos nuevos, precios): un plan mensual, y el anual si ya sabes que vas a seguir.
+- **Cambios cada semana** (promociones, productos nuevos, precios): un plan mensual.
+- **Ya sabes que vas a seguir y tienes temporadas fuertes:** un plan anual, que sale más barato y deja usar los créditos cuando los necesites.
 
 ### Cómo se pide y cómo se paga
 
 - Escribes por WhatsApp o por correo lo que quieres cambiar y, si aplica, mandas las fotos o los textos. Te confirmamos cuántos créditos cuesta antes de empezar.
-- Pagas por <RegionText intl="PayPal o tarjeta." mx="transferencia SPEI o tarjeta." ec="transferencia o depósito bancario." /> Los planes se cobran al inicio de cada periodo.
-- Sin plan, los cambios se hacen en unos 3 días hábiles. Con plan, en el tiempo de respuesta que indica la tabla.
+- Pagas por <RegionText intl="PayPal o tarjeta." mx="transferencia SPEI o tarjeta." ec="transferencia o depósito bancario." /> Los planes mensuales se cobran al inicio de cada mes, y los anuales, una sola vez al inicio del año.
+- Sin plan, los cambios se hacen en unos 5 días hábiles. Con plan, en el tiempo de respuesta que indica la tabla.
 
 ### Qué no incluye
 

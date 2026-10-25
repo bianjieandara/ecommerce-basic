@@ -7,6 +7,7 @@ import {
   CHANGE_SIZES,
   PLAN_RESPONSE_DAYS,
   PRICES,
+  YEARLY_CHECKUPS,
   YEARLY_MONTHS,
   formatMoney,
   packSavingPercent,
@@ -16,7 +17,7 @@ import { COPY } from '../data/change-plans-copy';
 
 interface Props {
   lang: Lang;
-  part: 'single' | 'packs' | 'plans';
+  part: 'single' | 'packs' | 'plans' | 'yearly';
 }
 const { lang, part } = Astro.props;
 const copy = COPY[lang];
@@ -46,15 +47,30 @@ function tableFor(region: (typeof REGIONS)[number]) {
       ]),
     };
   }
+  if (part === 'plans') {
+    return {
+      head: copy.plans.head,
+      rows: prices.plans.map((plan) => [
+        copy.plans.names[plan.id],
+        String(plan.creditsPerMonth),
+        copy.plans.response(PLAN_RESPONSE_DAYS[plan.id]),
+        money(plan.monthly),
+      ]),
+    };
+  }
   return {
-    head: copy.plans.head,
-    rows: prices.plans.map((plan) => [
-      copy.plans.names[plan.id],
-      String(plan.creditsPerMonth),
-      copy.plans.response(PLAN_RESPONSE_DAYS[plan.id]),
-      money(plan.monthly),
-      money(plan.monthly * YEARLY_MONTHS),
-    ]),
+    head: copy.yearly.head,
+    rows: prices.plans.map((plan) => {
+      const yearly = plan.monthly * YEARLY_MONTHS;
+      return [
+        copy.yearly.names[plan.id],
+        String(plan.creditsPerMonth * 12),
+        copy.plans.response(PLAN_RESPONSE_DAYS[plan.id]),
+        copy.yearly.checkups(YEARLY_CHECKUPS[plan.id]),
+        money(yearly),
+        copy.yearly.perMonth(money(yearly / 12, 2)),
+      ];
+    }),
   };
 }
 ---

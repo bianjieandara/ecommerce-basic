@@ -12,6 +12,12 @@ interface Copy {
     names: Record<'basic' | 'grow' | 'pro', string>;
     response: (days: number) => string;
   };
+  yearly: {
+    head: string[];
+    names: Record<'basic' | 'grow' | 'pro', string>;
+    checkups: (n: number) => string;
+    perMonth: (price: string) => string;
+  };
 }
 
 /** Wording per language. */
@@ -30,9 +36,15 @@ export const COPY: Record<Lang, Copy> = {
       saving: (percent) => `${percent} %`,
     },
     plans: {
-      head: ['Plan', 'Créditos al mes', 'Respuesta', 'Mensual', 'Anual (2 meses gratis)'],
+      head: ['Plan', 'Créditos al mes', 'Respuesta', 'Mensual'],
       names: { basic: 'Básico', grow: 'Crece', pro: 'Pro' },
       response: (days) => (days === 0 ? 'El mismo día hábil' : days === 1 ? '1 día hábil' : `${days} días hábiles`),
+    },
+    yearly: {
+      head: ['Plan anual', 'Créditos del año', 'Respuesta', 'Revisiones de la tienda', 'Precio anual', 'Equivale a'],
+      names: { basic: 'Anual Básico', grow: 'Anual Crece', pro: 'Anual Pro' },
+      checkups: (n) => (n === 0 ? 'No incluye' : `${n} al año`),
+      perMonth: (price) => `${price} al mes`,
     },
   },
   en: {
@@ -49,9 +61,15 @@ export const COPY: Record<Lang, Copy> = {
       saving: (percent) => `${percent}%`,
     },
     plans: {
-      head: ['Plan', 'Credits per month', 'Response', 'Monthly', 'Yearly (2 months free)'],
+      head: ['Plan', 'Credits per month', 'Response', 'Monthly'],
       names: { basic: 'Basic', grow: 'Grow', pro: 'Pro' },
       response: (days) => (days === 0 ? 'Same business day' : days === 1 ? '1 business day' : `${days} business days`),
+    },
+    yearly: {
+      head: ['Yearly plan', 'Credits for the year', 'Response', 'Store check-ups', 'Yearly price', 'Works out at'],
+      names: { basic: 'Yearly Basic', grow: 'Yearly Grow', pro: 'Yearly Pro' },
+      checkups: (n) => (n === 0 ? 'Not included' : `${n} a year`),
+      perMonth: (price) => `${price} a month`,
     },
   },
 };

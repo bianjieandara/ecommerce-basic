@@ -1,5 +1,5 @@
 {
-  "version": "a41c8e83d377e78b",
+  "version": "e30152eea360b6ae",
   "takenAt": "2026-10-25T00:00:59.598Z",
   "accountId": "demo-account",
   "tables": {
@@ -43,6 +43,11 @@
         "group_key": "theme",
         "value_json": "{\"colorPrimary\":\"#111111\",\"colorOnPrimary\":\"#ffffff\",\"colorAccent\":\"#cf3426\",\"colorBackground\":\"#ffffff\",\"colorSurface\":\"#f4f4f2\",\"colorText\":\"#111111\",\"fontPreset\":\"volt\",\"radius\":\"md\"}",
         "updated_at": "2026-10-24T23:59:43.813Z"
+      },
+      {
+        "group_key": "marketing",
+        "value_json": "{\"metaPixelId\":\"\",\"metaCapiEnabled\":false,\"metaTestEventCode\":\"\",\"ga4MeasurementId\":\"\",\"feedEnabled\":true,\"feedBrand\":\"\",\"feedColorAttribute\":\"color\",\"feedSizeAttribute\":\"size\",\"consentBannerMode\":\"always\"}",
+        "updated_at": "2026-10-25T00:16:22.010Z"
       }
     ],
     "shipping_methods": [

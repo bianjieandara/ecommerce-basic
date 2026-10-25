@@ -1,5 +1,5 @@
 // Prices for the "changes we make for you" service, per region, and the helpers that turn them into table rows.
-// Edit the numbers here only: the guide pages and the tables read from this file. Prices are before tax.
+// Edit the numbers here only: the guide pages and the tables read from this file. Prices are final: they already include VAT (IVA).
 import type { REGIONS } from './regions.mjs';
 
 /** One of the regions in regions.mjs. */
@@ -40,25 +40,31 @@ interface RegionPrices {
 /** Months paid for a year of any plan: the yearly price is this many monthly prices, which is two months free. */
 export const YEARLY_MONTHS = 10;
 
+/** Store check-ups included in a yearly plan, per year: a look at texts, prices, stock, links and the buying flow, with a short report. */
+export const YEARLY_CHECKUPS = { basic: 0, grow: 4, pro: 12 } as const;
+
 /** Response time of each plan, in business days; 0 means the same business day. Shared by all regions. */
-export const PLAN_RESPONSE_DAYS = { basic: 2, grow: 1, pro: 0 } as const;
+export const PLAN_RESPONSE_DAYS = { basic: 3, grow: 2, pro: 1 } as const;
+
+/** Prices in US dollars, for the default region and for Ecuador, which uses dollars and pays the same. */
+const USD_PRICES: RegionPrices = {
+  currency: 'USD',
+  credit: 9,
+  packs: [
+    { credits: 5, price: 40 },
+    { credits: 10, price: 72 },
+    { credits: 20, price: 126 },
+  ],
+  plans: [
+    { id: 'basic', creditsPerMonth: 4, monthly: 27 },
+    { id: 'grow', creditsPerMonth: 10, monthly: 63 },
+    { id: 'pro', creditsPerMonth: 25, monthly: 145 },
+  ],
+};
 
 /** Pack and plan credit counts are the same everywhere; only the price changes, so the shape of each offer stays comparable. */
 export const PRICES: Record<Region, RegionPrices> = {
-  intl: {
-    currency: 'USD',
-    credit: 9,
-    packs: [
-      { credits: 5, price: 40 },
-      { credits: 10, price: 72 },
-      { credits: 20, price: 126 },
-    ],
-    plans: [
-      { id: 'basic', creditsPerMonth: 4, monthly: 27 },
-      { id: 'grow', creditsPerMonth: 10, monthly: 63 },
-      { id: 'pro', creditsPerMonth: 25, monthly: 145 },
-    ],
-  },
+  intl: USD_PRICES,
   mx: {
     currency: 'MXN',
     credit: 149,
@@ -73,21 +79,7 @@ export const PRICES: Record<Region, RegionPrices> = {
       { id: 'pro', creditsPerMonth: 25, monthly: 2390 },
     ],
   },
-  // Ecuador uses US dollars, but local prices are lower than the international ones.
-  ec: {
-    currency: 'USD',
-    credit: 5,
-    packs: [
-      { credits: 5, price: 22 },
-      { credits: 10, price: 40 },
-      { credits: 20, price: 70 },
-    ],
-    plans: [
-      { id: 'basic', creditsPerMonth: 4, monthly: 15 },
-      { id: 'grow', creditsPerMonth: 10, monthly: 35 },
-      { id: 'pro', creditsPerMonth: 25, monthly: 80 },
-    ],
-  },
+  ec: USD_PRICES,
 };
 
 /** Number format used to write amounts: Mexican readers expect "1,190", Ecuadorian ones "1.190", and everyone else a US-style one. */
