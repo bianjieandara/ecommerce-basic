@@ -140,6 +140,8 @@ What demo mode does:
 - One shared login. It cannot manage users or passwords or issue refunds (`DEMO_LOCKED`); everything else is open.
 - A nightly reset restores the store from `clients/demo/snapshot/snapshot.json`, so whatever visitors change is undone.
 - E-mails are kept in an outbox instead of being sent, and payments stay in sandbox.
+- The cookie banner is always shown (`consentBannerMode: always`), although the demo has no Pixel or GA4, so visitors can see the consent
+  choice the template offers. It sets only the consent cookie and sends nothing to anyone.
 
 The settings live in `vars` of `clients/demo/client.jsonc` (`DEMO_MODE`, `DEMO_LOGIN_EMAIL`, `DEMO_LOGIN_PASSWORD`). `npm run deploy:client -- demo`
 refuses to run in demo mode without a login of at least 12 characters, and no client other than `demo` may turn demo mode on.

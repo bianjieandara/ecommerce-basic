@@ -1,0 +1,41 @@
+---
+// Precio de la tienda en Ecuador, tomado de e-baq.com/precios.json al construir la guía. Si el sitio no responde, usa la copia
+// guardada en src/data/precios-respaldo.json para que el build no falle. Solo muestra precios con IVA incluido.
+import respaldo from '../data/precios-respaldo.json';
+
+interface Props {
+  id: string;
+  lang: 'es' | 'en';
+}
+const { id, lang } = Astro.props;
+
+const PRECIOS_URL = 'https://e-baq.com/precios.json';
+
+interface PrecioPublicado {
+  monto: number;
+  moneda: string;
+  iva_incluido: boolean;
+}
+
+let precios: Record<string, Record<string, PrecioPublicado>> = respaldo;
+try {
+  const respuesta = await fetch(PRECIOS_URL, { signal: AbortSignal.timeout(5000) });
+  if (respuesta.ok) {
+    precios = await respuesta.json();
+  } else {
+    console.warn(`precios.json respondió ${respuesta.status}; se usa la copia del repositorio`);
+  }
+} catch (error) {
+  console.warn('No se pudo leer precios.json; se usa la copia del repositorio', error);
+}
+
+const precio = precios[id]?.EC;
+// Los precios de Ecuador están en dólares.
+const monto = precio ? `$${precio.monto}` : '';
+const texto =
+  lang === 'en'
+    ? `Your online store starts at ${monto} IVA included.`
+    : `Tu tienda en línea desde ${monto} IVA incluido.`;
+---
+
+{precio?.iva_incluido && <p data-region-only="ec">{texto}</p>}

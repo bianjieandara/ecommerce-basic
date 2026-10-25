@@ -165,3 +165,18 @@ export async function applyDemoTheme(cookie) {
   );
   if (response.status !== 200) throw new Error(`Could not save the theme: ${JSON.stringify(response.json)}`);
 }
+
+/**
+ * Keeps the cookie banner on for every visitor of the demo. The demo has no Pixel and no GA4, so in the default mode ("auto") no banner
+ * would show; with "always" a visitor can see the consent choice the template offers. Every other marketing setting stays at its default.
+ * @param cookie Admin session.
+ */
+export async function applyDemoCookieBanner(cookie) {
+  const response = await post(
+    '/api/admin/settings/marketing',
+    { values: { consentBannerMode: 'always' } },
+    cookie,
+  );
+  if (response.status !== 200)
+    throw new Error(`Could not save the cookie banner mode: ${JSON.stringify(response.json)}`);
+}

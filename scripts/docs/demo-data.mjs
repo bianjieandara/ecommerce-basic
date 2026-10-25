@@ -5,7 +5,7 @@
 // Usage: node scripts/docs/demo-data.mjs
 // Environment: DOCS_BASE (store URL), DOCS_STATE (wrangler persist folder, default .wrangler/docs-state), see shared.mjs.
 import { addCategoryPictures, addProductPictures } from './pictures.mjs';
-import { addHomePage, applyDemoTheme } from './home-content.mjs';
+import { addHomePage, applyDemoCookieBanner, applyDemoTheme } from './home-content.mjs';
 import { ownerCookie } from './owner-session.mjs';
 import { post, sql, TURNSTILE_TEST_TOKEN } from './shared.mjs';
 
@@ -130,6 +130,7 @@ console.log('signed in as the demo owner');
 await addProductPictures(cookie);
 await addCategoryPictures(cookie);
 await applyDemoTheme(cookie);
+await applyDemoCookieBanner(cookie);
 await addHomePage(cookie);
 console.log('pictures added');
 await addOrders(cookie);
