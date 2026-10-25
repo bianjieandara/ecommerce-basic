@@ -1,4 +1,5 @@
 # Copy to .dev.vars for local development (gitignored). Production secrets go through scripts/client-secrets.mjs.
+# `npm run cf-typegen` reads THIS file, not .dev.vars, so worker-configuration.d.ts is the same on every machine: add every new secret here.
 # EMAIL_TRANSPORT=console logs emails to the terminal instead of sending them through Email Service.
 EMAIL_TRANSPORT=console
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
@@ -8,10 +9,19 @@ DLOCALGO_SECRET_KEY=
 PAYPAL_CLIENT_ID=
 PAYPAL_CLIENT_SECRET=
 PAYPAL_WEBHOOK_ID=
+# A PayPal sandbox buyer for manual checkout tests (docs/TESTING_INTEGRATIONS.md). The code does not read these two.
+PAYPAL_SANDBOX_BUYER_EMAIL=
+PAYPAL_SANDBOX_BUYER_PASSWORD=
 GOOGLE_PLACES_API_KEY=
 SETUP_TOKEN=change-me-long-random
+# WhatsApp Cloud API and Meta. The ids and the version are plain vars in production (clients/<slug>/client.jsonc);
+# META_GRAPH_BASE_URL points the Graph client at a test double in local runs and stays empty otherwise.
 WHATSAPP_TOKEN=
 WHATSAPP_VERIFY_TOKEN=
+WHATSAPP_PHONE_NUMBER_ID=
+WHATSAPP_WABA_ID=
 META_APP_SECRET=
 META_CAPI_TOKEN=
+META_GRAPH_VERSION=
+META_GRAPH_BASE_URL=
 GA4_API_SECRET=

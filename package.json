@@ -13,7 +13,7 @@
     "check": "astro check && eslint . && prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "cf-typegen": "wrangler types",
+    "cf-typegen": "wrangler types --env-file .dev.vars.example",
     "predev": "node scripts/use-client.mjs",
     "prebuild": "node scripts/use-client.mjs",
     "precf-typegen": "node scripts/use-client.mjs",

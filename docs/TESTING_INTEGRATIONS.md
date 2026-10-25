@@ -10,7 +10,7 @@ Contents: [dLocal Go](#dlocal-go-cards-and-local-methods) Â· [PayPal](#paypal) Â
 
 ## dLocal Go (cards and local methods)
 
-Secrets: `DLOCALGO_API_KEY`, `DLOCALGO_SECRET_KEY` (and `DLOCALGO_SMART_FIELDS_KEY`). `DLOCALGO_ENV` is `sandbox` or `live`; the
+Secrets: `DLOCALGO_API_KEY`, `DLOCALGO_SECRET_KEY`. `DLOCALGO_ENV` is `sandbox` or `live`; the
 sandbox and live keys are different. Sandbox keys: sign up at <https://dashboard-sbx.dlocalgo.com/signup>, then Integrations >
 API Integration shows the Sandbox API Key and Sandbox Secret Key. The sandbox API is `https://api-sbx.dlocalgo.com`
 ([docs](https://docs.dlocalgo.com/)).

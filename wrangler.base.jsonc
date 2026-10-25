@@ -56,7 +56,6 @@
     "PAYPAL_ENV": "sandbox",
     "DLOCALGO_ENV": "sandbox",
     "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
-    "JOBS_MODE": "queue",
     "WHATSAPP_PHONE_NUMBER_ID": "",
     "WHATSAPP_WABA_ID": "",
     "META_GRAPH_VERSION": "",

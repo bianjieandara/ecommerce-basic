@@ -909,3 +909,9 @@ Measured on a copy of the demo database grown to 5,000 products (SQLite, so quer
 - **Secrets.** The repository needs two Actions secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (the account of `relion-app.com`). The demo has no `accountId` in `client.jsonc`, so `cloudflareEnv` passes them through. The Worker's own secrets (Turnstile, PayPal, dLocal Go) stay in Cloudflare and are not touched by a deploy.
 - **One deploy at a time.** `concurrency` queues a newer push instead of cancelling a deploy that may be between migrations and the Worker.
 - **Not covered.** The guide (`docs-site/`) keeps its own manual deploy, because it lives in another Cloudflare account. Other clients are not deployed from CI.
+
+## 2026-10-25 — Environment variables: one list for the types, no dead names
+
+- **Types come from `.dev.vars.example`.** `cf-typegen` now runs `wrangler types --env-file .dev.vars.example`. Before, `worker-configuration.d.ts` listed whatever the developer's own `.dev.vars` held (it had `ADMIN_EMAIL`, `ADMIN_PASSWORD` and no `GA4_API_SECRET`), so it changed on every machine. A new secret goes in the example file; secrets are read with `readSecret`, so a missing type never breaks a build.
+- **The example is complete.** It gained `GA4_API_SECRET`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_WABA_ID`, `META_GRAPH_VERSION`, `META_GRAPH_BASE_URL` and the two `PAYPAL_SANDBOX_BUYER_*` names (documented for manual tests; no code reads them).
+- **Removed.** `JOBS_MODE` (set in `wrangler.base.jsonc`, read nowhere; the inline mode was never built, see Stage 5), `DLOCALGO_SMART_FIELDS_KEY` (no reader; dropped from `docs/TESTING_INTEGRATIONS.md`), and `ADMIN_EMAIL` / `ADMIN_PASSWORD` (local leftovers).
