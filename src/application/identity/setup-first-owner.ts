@@ -71,12 +71,16 @@ export class SetupFirstOwner {
         message: error instanceof Error ? error.message : String(error),
       });
     }
+    // Only a checkout that still has the schema defaults is replaced: a store that was configured before setup keeps its methods.
     try {
-      await this.deps.settings.save(
-        'checkout',
-        checkoutSettings.parse({ enabledMethods: [...STARTER_PAYMENT_METHODS] }),
-        now,
-      );
+      const defaults = JSON.stringify(checkoutSettings.parse({}));
+      if (JSON.stringify(await this.deps.settings.get('checkout')) === defaults) {
+        await this.deps.settings.save(
+          'checkout',
+          checkoutSettings.parse({ enabledMethods: [...STARTER_PAYMENT_METHODS] }),
+          now,
+        );
+      }
     } catch (error) {
       console.error('setup.starter_checkout_failed', {
         message: error instanceof Error ? error.message : String(error),
