@@ -44,7 +44,7 @@ export const YEARLY_MONTHS = 10;
 export const YEARLY_CHECKUPS = { basic: 0, grow: 4, pro: 12 } as const;
 
 /** Response time of each plan, in business days; 0 means the same business day. Shared by all regions. */
-export const PLAN_RESPONSE_DAYS = { basic: 3, grow: 2, pro: 1 } as const;
+export const PLAN_RESPONSE_DAYS = { basic: 5, grow: 3, pro: 2 } as const;
 
 /** Prices in US dollars, for the default region and for Ecuador, which uses dollars and pays the same. */
 const USD_PRICES: RegionPrices = {
