@@ -1,18 +1,22 @@
-/* Design tokens and base look of the user guide: Inter, the demo store's text colour and a brand-colour header. This is the only file
+/* Design tokens and base look of the user guide: Space Grotesk, eBaq's graphite and its amber accent. This is the only file
    with raw values; guide-content.css and guide-home.css use var(--guide-*) only. Change --guide-primary to re-skin the guide. */
 :root {
   /* Brand and neutral colours. */
-  --guide-primary: #111111;
-  --guide-accent: #d62828;
+  --guide-primary: #080806;
+  /* eBaq's amber. Bright enough for focus rings and dark surfaces, too pale to read on white. */
+  --guide-accent: #ffc107;
+  /* The same amber darkened until it reads as text or a link on the page background.
+     Anything carrying meaning (links, bullets, callout edges) uses this one; the dark theme sends it back to the brand amber. */
+  --guide-accent-contrast: #7a5200;
   --guide-on-primary: #ffffff;
   --guide-on-primary-muted: #e6e6e6;
   --guide-on-primary-subtle: rgb(255 255 255 / 0.45);
   --guide-on-primary-soft: rgb(255 255 255 / 0.16);
   --guide-shade: rgb(0 0 0 / 0.2);
-  --guide-shadow-color: rgb(17 17 17 / 0.14);
+  --guide-shadow-color: rgb(8 8 6 / 0.16);
 
   /* Type: families, the size scale, line heights, weights and tracking. */
-  --guide-font-display: 'Inter', system-ui, sans-serif;
+  --guide-font-display: 'Space Grotesk', system-ui, sans-serif;
   --guide-text-xs: 0.8125rem;
   --guide-text-sm: 0.9375rem;
   --guide-text-md: 1rem;
@@ -110,10 +114,10 @@
   --guide-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --guide-lift: -0.125rem;
   --guide-shadow-lift: 0 var(--guide-space-xs) var(--guide-space-xl) var(--guide-shadow-color);
-  --guide-border-hover: color-mix(in srgb, var(--guide-accent) 45%, var(--sl-color-hairline));
+  --guide-border-hover: color-mix(in srgb, var(--guide-accent-contrast) 45%, var(--sl-color-hairline));
 
   /* Starlight's own tokens, fed from ours. */
-  --sl-font: 'Inter', system-ui, sans-serif;
+  --sl-font: 'Space Grotesk', system-ui, sans-serif;
   --sl-color-bg-nav: var(--guide-primary);
   --sl-content-width: var(--guide-content-width);
   --sl-content-pad-x: var(--guide-pad-page-x);
@@ -138,27 +142,29 @@
 }
 
 :root[data-theme='light'] {
-  --sl-color-purple: var(--guide-accent);
-  --sl-color-purple-low: #fbe9e8;
-  --sl-color-purple-high: #8f1a1a;
+  --sl-color-purple: var(--guide-accent-contrast);
+  --sl-color-purple-low: #fff6dd;
+  --sl-color-purple-high: #5c3d00;
   --sl-color-accent: var(--guide-primary);
-  --sl-color-accent-low: #f5f5f5;
-  --sl-color-accent-high: #111111;
+  --sl-color-accent-low: #f5f5f3;
+  --sl-color-accent-high: #080806;
   --sl-color-bg: #ffffff;
-  --sl-color-bg-sidebar: #f5f5f5;
-  --sl-color-text: #111111;
-  --sl-color-white: #111111;
-  --sl-color-hairline: #dcdcdc;
+  --sl-color-bg-sidebar: #f7f6f3;
+  --sl-color-text: #080806;
+  --sl-color-white: #080806;
+  --sl-color-hairline: #e0ded4;
   --guide-card: #ffffff;
-  --guide-muted: #4a4a4a;
+  --guide-muted: #4a4a44;
 }
 
 :root[data-theme='dark'] {
-  --sl-color-purple: #ef6b6b;
-  --sl-color-purple-low: #3a1a1a;
-  --sl-color-purple-high: #f7b4b4;
-  --sl-color-accent: #f5f5f5;
-  --sl-color-accent-low: #26272b;
+  /* On graphite the brand amber is the readable one, so the contrast token goes back to it. */
+  --guide-accent-contrast: var(--guide-accent);
+  --sl-color-purple: var(--guide-accent);
+  --sl-color-purple-low: #2a2110;
+  --sl-color-purple-high: #ffe082;
+  --sl-color-accent: #f5f5f0;
+  --sl-color-accent-low: #1d1d16;
   --sl-color-accent-high: #ffffff;
   --guide-card: var(--sl-color-gray-6);
   --guide-muted: var(--sl-color-gray-2);

@@ -199,7 +199,7 @@
   position: absolute;
   top: 50%;
   width: var(--guide-connector);
-  border-top: var(--guide-line-bold) dashed var(--guide-accent);
+  border-top: var(--guide-line-bold) dashed var(--guide-accent-contrast);
 }
 
 .is-left .guide-phone-note::after {
@@ -362,7 +362,7 @@
 }
 
 .guide-tour-block.is-active {
-  border-inline-start-color: var(--guide-accent);
+  border-inline-start-color: var(--guide-accent-contrast);
 }
 
 .guide-tour-inline {
@@ -424,7 +424,7 @@
 
 .guide-tour-box {
   position: absolute;
-  border: var(--guide-line-bold) solid var(--guide-accent);
+  border: var(--guide-line-bold) solid var(--guide-accent-contrast);
   border-radius: var(--guide-radius-sm);
   box-shadow: 0 0 0 100vmax var(--guide-tour-shade);
   transition: all var(--guide-duration-slow) var(--guide-ease-out);

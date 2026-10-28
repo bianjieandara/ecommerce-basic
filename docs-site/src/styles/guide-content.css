@@ -72,7 +72,7 @@
   width: var(--guide-dot-size);
   height: var(--guide-dot-size);
   border-radius: var(--guide-radius-pill);
-  background: var(--guide-accent);
+  background: var(--guide-accent-contrast);
 }
 
 .sl-markdown-content > ul > li > strong:first-child {
@@ -168,7 +168,7 @@
 
 .sl-markdown-content .starlight-aside--note {
   --sl-color-asides-text-accent: var(--sl-color-purple-high);
-  border-color: var(--guide-accent);
+  border-color: var(--guide-accent-contrast);
   background-color: var(--sl-color-accent-low);
   color: var(--sl-color-text);
 }

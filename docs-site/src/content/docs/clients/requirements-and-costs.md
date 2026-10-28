@@ -18,6 +18,17 @@ sidebar:
 | *(Opcional)* **WhatsApp**        | Una cuenta de Meta Business y un número de teléfono que no se use en la app normal de WhatsApp. |
 | *(Opcional)* **Anuncios de Meta**| Un Pixel de Meta y, para el seguimiento desde el servidor, un token de la API de Conversiones.  |
 
+## Cómo se paga y qué garantía tienes
+
+El precio se te da por escrito antes de empezar, y no cambia después.
+
+| | |
+| --- | --- |
+| **En tres pagos** | Una parte para empezar, otra cuando apruebas el diseño y la última cuando la tienda ya está publicada y funcionando. |
+| **30 días de garantía** | Desde que la publicamos. Cualquier problema lo arreglamos sin costo. |
+| **Devolución** | Si no te gusta cómo quedó, te devolvemos tu dinero. |
+| **Es tuya** | El código te lo entregamos cuando lo pidas y el dominio queda a tu nombre. Si decides irte, te ayudamos a mudarla sin costo. |
+
 ## Dónde funciona la tienda
 
 En **Cloudflare**. Puede ser en la cuenta de Cloudflare de la agencia (lo más sencillo: va incluido en el servicio) o en **tu propia**

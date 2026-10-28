@@ -20,8 +20,10 @@
   width: var(--guide-icon-lg);
   height: var(--guide-icon-lg);
   border-radius: var(--guide-radius-pill);
-  background: var(--guide-primary);
-  color: var(--guide-on-primary);
+  /* Amber on graphite, the way the eBaq site marks anything that carries the brand.
+     The numbers repeat down the whole page, so this is where the accent earns its place. */
+  background: var(--guide-accent);
+  color: var(--guide-primary);
   font-family: var(--guide-font-display);
   font-weight: var(--guide-weight-bold);
   font-size: var(--guide-text-lg);
