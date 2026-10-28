@@ -1,5 +1,8 @@
 {
+  "catalogo": {
+    "EC": { "monto": 599, "moneda": "USD", "iva_incluido": true }
+  },
   "tienda-online": {
-    "EC": { "monto": 450, "moneda": "USD", "iva_incluido": true }
+    "EC": { "monto": 799, "moneda": "USD", "iva_incluido": true }
   }
 }
