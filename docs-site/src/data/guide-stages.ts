@@ -23,9 +23,7 @@ export const STAGES: Stage[] = [
       ['benefits', 'shop-home-phone'],
       ['benefits/own-website', 'shop-home-desktop'],
       ['benefits/selling-online', 'shop-product-desktop'],
-      // 'admin-reports' is a known-broken capture (the screenshot script ran without the dev server up); 'admin-dashboard' is
-      // the next-best fit for a numbers page and is already used once more, by 'admin/reports' in the "Día a día" stage.
-      ['benefits/mexico-data', 'admin-dashboard'],
+      ['benefits/mexico-data', 'admin-reports'],
     ],
   },
   {
