@@ -1,6 +1,7 @@
 // Deploys one client: root wrangler.jsonc, build, queues (created only when missing), remote D1 migrations, then the Worker.
 // Usage: node scripts/deploy-client.mjs <slug> [--dry-run]   (--dry-run prints each command and runs nothing)
-import { closeSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
+import { closeSync, mkdirSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertDemoConfig, assertRealTurnstileKey, readClient, cloudflareEnv } from './lib/clients.mjs';
 import { createIfMissing, runStep } from './lib/run.mjs';
@@ -84,6 +85,9 @@ const LOCK_PATH = fileURLToPath(new URL('../.wrangler/deploy.lock', import.meta.
  */
 function takeLock() {
   try {
+    // .wrangler/ is gitignored, so on a fresh checkout (a CI runner, a new clone) it does not exist yet and the exclusive
+    // open would fail with ENOENT before any deploy step ran.
+    mkdirSync(dirname(LOCK_PATH), { recursive: true });
     const fd = openSync(LOCK_PATH, 'wx');
     writeSync(fd, JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
     closeSync(fd);

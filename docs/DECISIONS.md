@@ -950,3 +950,9 @@ Measured on a copy of the demo database grown to 5,000 products (SQLite, so quer
 - **Also.** `--guide-icon-lg` 2.5 → 2.75rem, `--guide-icon-sm` 1.35 → 1.5rem, card padding `xl` → `2xl`, and the block title moved to `--guide-text-base` with tight tracking.
 - **Alt text.** 26 screenshot alt texts across 12 pages repeated the heading directly above them, so anyone copying a page or hearing it read got the phrase twice. They now describe the screen. `es/admin-notification-log.png` and `es/admin-reports.png` are still broken captures (Chrome's "site can't be reached" page: the capture script ran without the store's dev server up) and need `npm run docs:screens` with the store running.
 - **Checked.** `npm run build`: 64 pages. Looked at `/benefits/own-website/` at 1280 px in both colour schemes.
+
+## 2026-10-28 — The demo deploy could never run on a clean checkout
+
+- **What happened.** `gh workflow run deploy-demo.yml` failed at the Deploy step with `ENOENT … .wrangler/deploy.lock`. `takeLock()` opens that path with the exclusive `wx` flag, which throws ENOENT when the **parent directory** is missing, and `.wrangler/` is gitignored, so a fresh runner (or a new clone) has never had it. Locally the folder is left over from earlier wrangler runs, which is why this only showed up in CI.
+- **Fix.** `takeLock()` creates `.wrangler/` with `mkdirSync(…, { recursive: true })` before the exclusive open. The lock itself is unchanged: `wx` is still what makes two deploys mutually exclusive.
+- **Why it had not been seen.** The workflow skips pushes that only touch `docs/`, `docs-site/` or Markdown, and those are the only pushes since it was added, so it had not actually run end to end.
