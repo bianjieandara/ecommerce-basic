@@ -24,7 +24,7 @@ the first **owner** account. That page stops working as soon as an owner exists.
 
 The first screen shows how the shop is doing right now.
 
-![The dashboard](../../../../assets/screens/en/admin-dashboard.png)
+![The last 14 days' sales, the recent orders and the alerts](../../../../assets/screens/en/admin-dashboard.png)
 
 The screen has two columns. On the left:
 

@@ -11,7 +11,7 @@ sidebar:
 being prepared, shipped, delivered, cancelled, invoice issued…) and **the store** (new order,
 low stock…). Each shows whether it uses the **default copy** or **your copy**, and whether it is **sending** or turned off.
 
-![The email list](../../../../assets/screens/en/admin-emails.png)
+![The store's emails grouped by who receives them, with their status](../../../../assets/screens/en/admin-emails.png)
 
 Open one to change it:
 
@@ -32,7 +32,7 @@ Owners can also switch off the store's own alert emails; customer emails stay on
 
 **Shipping** holds the delivery options a customer sees at checkout.
 
-![Shipping methods](../../../../assets/screens/en/admin-shipping.png)
+![The delivery options a customer sees at checkout, with their price](../../../../assets/screens/en/admin-shipping.png)
 
 Each method has a **type**, a **name** and a **description** in both languages, a **position** in the list and an on/off switch.
 

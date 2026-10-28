@@ -25,7 +25,7 @@ primera cuenta de **propietario**. Esa página deja de funcionar en cuanto exist
 
 La primera pantalla muestra cómo va la tienda ahora mismo.
 
-![El panel](../../../assets/screens/es/admin-dashboard.png)
+![Las ventas de los últimos 14 días, los pedidos recientes y las alertas](../../../assets/screens/es/admin-dashboard.png)
 
 La pantalla tiene dos columnas. A la izquierda:
 

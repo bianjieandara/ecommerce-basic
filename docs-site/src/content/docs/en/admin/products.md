@@ -7,7 +7,7 @@ sidebar:
 
 ## The product list
 
-![The product list](../../../../assets/screens/en/admin-products.png)
+![The products in a grid, with their picture, price and stock](../../../../assets/screens/en/admin-products.png)
 
 Find products with the search box or the **Status**, **Category**, **On sale** and **Out of stock** filters. At the top right you
 choose how to see them:
@@ -30,7 +30,7 @@ Press **New product** to add one.
 
 ## Editing a product
 
-![Editing a product](../../../../assets/screens/en/admin-product-edit.png)
+![A product's form, with the preview of its card beside it](../../../../assets/screens/en/admin-product-edit.png)
 
 **Details**
 

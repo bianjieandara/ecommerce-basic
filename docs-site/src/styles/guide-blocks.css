@@ -10,12 +10,14 @@
   border-radius: var(--guide-radius-md);
   /* One amber family in two weights. The two boxes used to pull from different Starlight ramps, so a page that mixed them
      read as two designs: a grey chip next to an amber one. Both are amber now, and `is-accent` is simply the louder one. */
-  background: color-mix(in srgb, var(--guide-accent) 18%, var(--guide-card));
+  background: var(--guide-icon-tint);
+  border: var(--guide-border-width) solid var(--guide-icon-ring);
   color: var(--guide-accent-contrast);
 }
 
 .guide-icon-box.is-accent {
   background: var(--guide-accent);
+  border-color: var(--guide-accent);
   color: var(--guide-primary);
 }
 
@@ -37,8 +39,9 @@
 }
 
 .guide-block-title {
-  font-size: var(--guide-text-md);
+  font-size: var(--guide-text-base);
   line-height: var(--guide-leading-snug);
+  letter-spacing: var(--guide-tracking-tight);
   color: var(--sl-color-white);
 }
 
@@ -67,7 +70,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--guide-space-md);
-  padding: var(--guide-space-xl);
+  padding: var(--guide-space-2xl);
   border: var(--guide-border-width) solid var(--sl-color-hairline);
   border-radius: var(--guide-radius-lg);
   background: var(--guide-card);
@@ -76,6 +79,24 @@
 .guide-feature.is-row {
   flex-direction: row;
   align-items: flex-start;
+  gap: var(--guide-space-lg);
+}
+
+/* Beside the text, the icon and its gap cost about 4rem. In the three-column grid that left the text in a 160px ribbon that
+   broke every three words, so the icon goes back on top there and only sits beside the text in the two-column one, which has
+   room for both. The column count is what decides it: a card cannot ask its own width, since an element never matches a
+   container query on itself. */
+.guide-features:not(.is-wide) .guide-feature.is-row {
+  flex-direction: column;
+}
+
+/* A feature grid is the one place where the icons appear six at a time, so the loud weight of the chip belongs here: filled,
+   they give the grid a rhythm you catch before reading a word. Elsewhere the icon accompanies a single line and the tinted
+   chip is enough. */
+.guide-feature .guide-icon-box {
+  background: var(--guide-accent);
+  border-color: var(--guide-accent);
+  color: var(--guide-primary);
 }
 
 /* Flow: steps in a row, joined by a dashed line from each icon to the next. The container query (34rem; queries cannot read

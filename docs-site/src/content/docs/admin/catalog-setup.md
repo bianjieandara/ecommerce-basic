@@ -11,7 +11,7 @@ Las categorías agrupan los productos en el menú de la tienda y en la cuadrícu
 dirección (slug) y descripción en ambos idiomas, y un interruptor para mostrarla u ocultarla. Se organizan en árbol: una categoría
 puede tener una **categoría padre**.
 
-![Categorías](../../../assets/screens/es/admin-categories.png)
+![El árbol de categorías, cada una con su nombre, su dirección y su interruptor](../../../assets/screens/es/admin-categories.png)
 
 Las categorías se ven en dos paneles: el árbol a la izquierda y, a la derecha, el editor de la que eliges (o de una nueva con **Nueva
 categoría**). Usa las flechas para poner primero las categorías más importantes. Una categoría oculta desaparece de la tienda, pero sus productos
@@ -23,7 +23,7 @@ Los atributos son lo que diferencia a las variantes: **Talla**, **Color**, **Mat
 Negro, Blanco…). Un atributo se puede mostrar como **botones** o como **muestras de color**, y los colores llevan su tono para que
 la tienda dibuje un punto de color.
 
-![Atributos](../../../assets/screens/es/admin-attributes.png)
+![Los atributos Talla y Color con sus valores y sus muestras de color](../../../assets/screens/es/admin-attributes.png)
 
 Los atributos usan la misma disposición: la lista a la izquierda y el editor a la derecha.
 
@@ -34,7 +34,7 @@ atributos una vez y reutilízalos en todos los productos: así se puede filtrar 
 
 Cada imagen que subes se guarda aquí y se puede reutilizar en productos y categorías.
 
-![La biblioteca multimedia](../../../assets/screens/es/admin-media.png)
+![Las imágenes ya subidas, en cuadrícula, listas para reutilizar](../../../assets/screens/es/admin-media.png)
 
 Se aceptan imágenes **JPEG, PNG o WebP de hasta 10 MB**. Al subir una imagen, el navegador prepara **varios tamaños** (480, 960 y
 1600 px de ancho) antes de enviarla, de modo que los celulares descargan un archivo pequeño y los portátiles uno más nítido. Sube

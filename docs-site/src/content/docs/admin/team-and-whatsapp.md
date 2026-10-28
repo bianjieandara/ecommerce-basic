@@ -9,7 +9,7 @@ sidebar:
 
 **Usuarios** (solo propietarios) gestiona quién puede iniciar sesión.
 
-![Usuarios](../../../assets/screens/es/admin-users.png)
+![Quién puede iniciar sesión, con el rol de cada persona](../../../assets/screens/es/admin-users.png)
 
 Para añadir a alguien, rellena su **correo**, **nombre**, **rol** (Editor o Propietario) e **idioma**, y pulsa **Enviar
 invitación**. Recibe un correo con un enlace para elegir su contraseña. Hasta que lo acepte, no puede iniciar sesión.
@@ -32,7 +32,7 @@ plataforma oficial WhatsApp Business de Meta, lo que tiene dos consecuencias:
 
 La pantalla **WhatsApp** (solo propietarios) es donde se gestiona.
 
-![La pantalla de WhatsApp](../../../assets/screens/es/admin-whatsapp.png)
+![El estado de la conexión con WhatsApp y sus plantillas de mensaje](../../../assets/screens/es/admin-whatsapp.png)
 
 1. **Conexión con Meta** lista los siete valores que necesita la conexión, cada uno marcado como *Configurado* o *Falta*. Los valores
    nunca se muestran; se guardan de forma segura en el servidor al lanzar la tienda. Mira la

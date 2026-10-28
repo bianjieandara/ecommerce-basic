@@ -57,8 +57,12 @@
   --guide-border-width: 1px;
   --guide-focus-width: 3px;
   --guide-focus-offset: 3px;
-  --guide-icon-sm: 1.35rem;
-  --guide-icon-lg: 2.5rem;
+  --guide-icon-sm: 1.5rem;
+  --guide-icon-lg: 2.75rem;
+  /* The icon chip. The tint carries it on its own on a white card, and the ring keeps its edge from dissolving into the card
+     when the two are nearly the same lightness, which is what made the chips read as grey smudges at a glance. */
+  --guide-icon-tint: color-mix(in srgb, var(--guide-accent) 26%, var(--guide-card));
+  --guide-icon-ring: color-mix(in srgb, var(--guide-accent) 55%, transparent);
   --guide-dot-size: 0.4rem;
   --guide-dot-top: 0.8em;
 

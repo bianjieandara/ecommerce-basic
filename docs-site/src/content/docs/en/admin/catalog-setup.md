@@ -10,7 +10,7 @@ sidebar:
 Categories group products in the shop menu and on the home page grid. Each one has a name, address (slug) and description in
 both languages, a position, and an on/off switch.
 
-![Categories](../../../../assets/screens/en/admin-categories.png)
+![The category tree, each one with its name, address and switch](../../../../assets/screens/en/admin-categories.png)
 
 Categories are shown in two panes: the tree on the left and, on the right, the editor of the one you pick (or a new one with **New
 category**). Use the arrows to put the most important categories first. A category that is switched off disappears from the shop, but its
@@ -23,7 +23,7 @@ Attributes use the same layout: the list on the left and the editor on the right
 Attributes are the things that make variants different: **Size**, **Color**, **Material**. Each attribute has values (S, M, L;
 Black, White…). Colours can have a swatch so the shop shows a coloured dot.
 
-![Attributes](../../../../assets/screens/en/admin-attributes.png)
+![The Size and Color attributes with their values and swatches](../../../../assets/screens/en/admin-attributes.png)
 
 An attribute marked as **filterable** appears in the shop filters, with a count next to each value. Define attributes once and
 reuse them across products; that is what lets a shopper filter the whole shop by "Size M".
@@ -32,7 +32,7 @@ reuse them across products; that is what lets a shopper filter the whole shop by
 
 Every picture you upload is kept here and can be reused on products, categories and pages.
 
-![The media library](../../../../assets/screens/en/admin-media.png)
+![The pictures already uploaded, in a grid, ready to reuse](../../../../assets/screens/en/admin-media.png)
 
 When you upload a picture, the browser makes **several sizes** of it (480, 960 and 1600 px wide) before sending it, so phones
 download a small file and laptops a sharper one. JPEG, PNG and WebP pictures are accepted, up to 10 MB each. Upload pictures of at least 1000 px on the long side.

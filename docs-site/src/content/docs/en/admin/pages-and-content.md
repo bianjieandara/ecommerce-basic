@@ -9,7 +9,7 @@ sidebar:
 
 **Pages** lists every page of the shop that is made of sections.
 
-![The page list](../../../../assets/screens/en/admin-pages.png)
+![The pages of the shop, with their title and whether they are published](../../../../assets/screens/en/admin-pages.png)
 
 - **System pages** exist in every store and cannot be deleted: **Home, About, Contact, Privacy, Terms** and **Shipping and
   returns**. You can change what they say and how they are laid out.
@@ -20,7 +20,7 @@ sidebar:
 
 Open a page to edit it.
 
-![The page builder](../../../../assets/screens/en/admin-page-builder.png)
+![A page open, with its sections one below the other](../../../../assets/screens/en/admin-page-builder.png)
 
 **Page texts** hold the title and the text Google shows (search title and description), each in Spanish and English, and a
 **Published** switch.
@@ -50,7 +50,7 @@ sections.
 **Testimonials** are short quotes from happy customers. Add the name, a rating from 1 to 5, the text and the language, choose the
 order, and switch it on or off.
 
-![Testimonials](../../../../assets/screens/en/admin-testimonials.png)
+![The testimonials, with each customer's name, rating and order](../../../../assets/screens/en/admin-testimonials.png)
 
 They appear in the *Testimonials and reviews* section of any page that includes it. Only show real opinions: it keeps your
 customers' trust, and in many countries it is a legal requirement.

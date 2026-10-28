@@ -7,7 +7,7 @@ sidebar:
 
 ## La lista de productos
 
-![La lista de productos](../../../assets/screens/es/admin-products.png)
+![Los productos en cuadrícula, con su foto, su precio y sus existencias](../../../assets/screens/es/admin-products.png)
 
 Encuentra productos con el buscador o con los filtros **Estado**, **Categoría**, **En oferta** y **Agotados**. Arriba a la derecha
 eliges cómo verlos:
@@ -31,7 +31,7 @@ Pulsa **Nuevo producto** para crear uno.
 
 ## Editar un producto
 
-![Editar un producto](../../../assets/screens/es/admin-product-edit.png)
+![El formulario de un producto, con la vista previa de su tarjeta al lado](../../../assets/screens/es/admin-product-edit.png)
 
 **Datos**
 

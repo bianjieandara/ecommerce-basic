@@ -9,7 +9,7 @@ sidebar:
 
 **Páginas** lista todas las páginas de la tienda que se componen de secciones.
 
-![La lista de páginas](../../../assets/screens/es/admin-pages.png)
+![Las páginas de la tienda, con su título y si están publicadas](../../../assets/screens/es/admin-pages.png)
 
 - Las **páginas del sistema** existen en toda tienda y no se pueden eliminar: **Inicio, Nosotros, Contacto, Privacidad, Términos**
   y **Envíos y devoluciones**. Puedes cambiar lo que dicen y cómo están organizadas.
@@ -20,7 +20,7 @@ sidebar:
 
 Abre una página para editarla.
 
-![El editor de páginas](../../../assets/screens/es/admin-page-builder.png)
+![Una página abierta, con sus secciones una debajo de otra](../../../assets/screens/es/admin-page-builder.png)
 
 **Textos de la página** guarda el título y los textos que muestra Google (título y descripción para buscadores), cada uno en
 español e inglés, y un interruptor **Publicada**.
@@ -50,7 +50,7 @@ cuestión de mover secciones.
 Los **Testimonios** son citas breves de clientes contentos. Agrega el nombre del cliente, una calificación de 1 a 5, el texto y el
 idioma, elige el orden y decide si se muestra en la tienda.
 
-![Testimonios](../../../assets/screens/es/admin-testimonials.png)
+![Los testimonios, con el nombre de cada cliente, su calificación y su orden](../../../assets/screens/es/admin-testimonials.png)
 
 Aparecen en la sección *Testimonios y reseñas* de cualquier página que la incluya. Muestra solo opiniones reales: mantiene la
 confianza de tus clientes y, en muchos países, es una obligación legal.

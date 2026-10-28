@@ -12,7 +12,7 @@ pedido en preparación, enviado, entregado, cancelado, factura emitida…), el *
 tienda** (pedido nuevo, stock bajo…) y los **administradores** (restablecer contraseña, invitaciones).
 Cada uno indica si usa el **texto por defecto** o uno **personalizado**, y si **se envía** o está **desactivado**.
 
-![La lista de correos](../../../assets/screens/es/admin-emails.png)
+![Los correos de la tienda agrupados por quién los recibe, con su estado](../../../assets/screens/es/admin-emails.png)
 
 Abre uno para cambiarlo:
 
@@ -35,7 +35,7 @@ Solo los propietarios pueden **desactivar** los avisos que recibe la tienda; los
 
 **Envíos** contiene las opciones de entrega que ve el cliente al pagar.
 
-![Métodos de envío](../../../assets/screens/es/admin-shipping.png)
+![Las opciones de entrega que ve el cliente al pagar, con su precio](../../../assets/screens/es/admin-shipping.png)
 
 Cada método tiene un **tipo**, un **nombre** y una **descripción** en ambos idiomas, una **posición** en la lista y un interruptor
 (*Ofrecido al pagar* / *Oculto al pagar*).

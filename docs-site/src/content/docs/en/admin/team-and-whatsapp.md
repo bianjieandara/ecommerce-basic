@@ -9,7 +9,7 @@ sidebar:
 
 **Users** (owners only) manages who can sign in.
 
-![Users](../../../../assets/screens/en/admin-users.png)
+![Who can sign in, with each person’s role](../../../../assets/screens/en/admin-users.png)
 
 To add someone, fill in their **email**, **name**, **role** (Editor or Owner) and **language**, and press **Send invitation**. They
 receive an email with a link to choose their password. Until they accept, they cannot sign in.
@@ -32,7 +32,7 @@ WhatsApp Business platform from Meta, which has two consequences:
 
 The **WhatsApp** screen (owners only) is where this is managed.
 
-![The WhatsApp screen](../../../../assets/screens/en/admin-whatsapp.png)
+![The state of the WhatsApp connection and its message templates](../../../../assets/screens/en/admin-whatsapp.png)
 
 1. **Connection to Meta** lists the seven values the connection needs, each marked **Set** or **Missing**. The values themselves
    are never shown; they are stored securely on the server when the store is launched. See the
