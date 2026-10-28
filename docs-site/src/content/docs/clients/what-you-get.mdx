@@ -73,6 +73,28 @@ Elige tu país para ver los precios y los datos de impuestos que te corresponden
 
 <RegionPicker lang="es" />
 
+## Precio y garantía
+
+<Precio id="tienda-online" lang="es" />
+
+Te damos la cotización por escrito antes de empezar, y no cambia después.
+
+<FeatureGrid layout="card" items={[
+  {"icon": "coin", "title": "En tres pagos", "text": "Uno para empezar, otro cuando apruebas el diseño y el último cuando la tienda ya está publicada y funcionando."},
+  {"icon": "shield", "title": "30 días de garantía", "text": "Desde que la publicamos. Cualquier problema lo arreglamos sin costo."},
+  {"icon": "refresh", "title": "Si no te gusta, te devolvemos tu dinero", "text": "Sin discutir y sin letra chica. Preferimos eso a tener un cliente conforme a medias."},
+]} />
+
+### Qué se paga aparte
+
+<FeatureGrid items={[
+  {"icon": "cloud", "title": "La plataforma", "text": "Unos 5 USD al mes por cuenta de Cloudflare, donde corre la tienda."},
+  {"icon": "globe", "title": "El dominio", "text": "El precio anual de tu registrador."},
+  {"icon": "card", "title": "Las comisiones de pago", "text": "dLocal Go y PayPal cobran por cada venta. La tienda no añade ninguna comisión propia."},
+]} />
+
+Si prefieres que los cambios los hagamos nosotros, es opcional y tiene precios fijos: mira [Cambios hechos por nosotros](/clients/changes-service/).
+
 ## Dos formas de empezar
 
 No todo el mundo necesita una tienda completa el primer día. Si hoy vendes por WhatsApp y lo que te falta es un enlace que mandar cuando te piden el catálogo, empieza por el catálogo: cuesta alrededor de la mitad y se sube a tienda después, sin volver a empezar.
@@ -104,26 +126,11 @@ Toca una pantalla para ver cómo se ve la tienda en un celular. Es una tienda re
 
 ## Lo que administras tú
 
-Todo se maneja desde el panel, sin programar:
+Todo desde el panel, sin programar: productos e inventario, pedidos y facturas, las páginas con un editor visual, los textos de
+los correos, los envíos y la configuración. Hay dos roles: **propietario**, que puede todo, y **editor**, que trabaja en el día a
+día sin ver la configuración ni el botón de reembolso.
 
-<FeatureGrid items={[
-  {"icon": "box", "title": "Productos", "text": "Versiones, categorías, características y una biblioteca de fotos."},
-  {"icon": "layers", "title": "Inventario", "text": "Existencias, con un registro de cada cambio."},
-  {"icon": "receipt", "title": "Pedidos", "text": "El estado y el historial de cada uno. Desde ahí puedes responder al cliente por WhatsApp y, en pagos con tarjeta o PayPal, devolver el dinero."},
-  {"icon": "doc", "title": "Facturas", "text": "Verlas, enviarlas de nuevo, descargarlas en PDF o generarlas otra vez."},
-  {"icon": "pencil", "title": "Páginas", "text": "Un editor visual para la página de inicio y las páginas de contenido."},
-  {"icon": "mail", "title": "Correos, envíos, testimonios y reportes", "text": "El texto de los correos, los métodos de envío, las opiniones de clientes y los reportes de ventas."},
-  {"icon": "cog", "title": "Configuración", "text": "Colores, tipografías y el resto de la tienda."},
-]} />
-
-Quién puede entrar al panel: hay dos roles.
-
-<FeatureGrid items={[
-  {"icon": "key", "title": "Propietario", "text": "Puede hacerlo todo, incluidas la configuración y las cuentas de usuario."},
-  {"icon": "user", "title": "Editor", "text": "Trabaja en el día a día. No ve la configuración, las cuentas de usuario ni el botón de reembolso."},
-]} />
-
-Mira la [guía del panel](/admin/overview/) para ver cada pantalla.
+Si quieres ver cada pantalla antes de decidir, están todas en la [guía del panel](/admin/overview/).
 
 ## Lo que pasa sin que tengas que pedirlo
 
@@ -149,24 +156,6 @@ Son opcionales y se cobran aparte de la tienda. Solo se activan si los necesitas
 | **Ayuda de IA para traducir textos**                                | Nada extra. Solo se usa cuando tú lo pides.                                                                          |
 
 ## Antes de decidir
-
-### ¿Cuánto cuesta?
-
-<Precio id="tienda-online" lang="es" />
-
-Hay tres tipos de costo:
-
-<FeatureGrid layout="card" items={[
-  {"icon": "cloud", "title": "La plataforma", "text": "Unos 5 USD al mes por cuenta de Cloudflare, donde corre la tienda. Puedes elegir el plan mensual o anual de mantenimiento."},
-  {"icon": "globe", "title": "El dominio", "text": "El precio anual de tu registrador."},
-  {"icon": "card", "title": "Los cobros de cada proveedor", "text": "dLocal Go y PayPal cobran comisiones por cada venta, y Meta cobra por cada mensaje de WhatsApp que se envía, según su categoría y su país. La tienda no añade ninguna comisión propia. El correo no tiene ese costo."},
-]} />
-
-Aparte, si prefieres que otra persona haga los cambios de tu tienda, eso es opcional y tiene precios fijos: mira [Cambios hechos por nosotros](#cambios-hechos-por-nosotros).
-
-Construir y lanzar tu tienda tiene un precio aparte. Te damos la cotización por escrito antes de empezar, y no cambia después.
-
-Se paga en tres partes: una para empezar, otra cuando apruebas el diseño y la última cuando la tienda ya está publicada y funcionando. Tienes **30 días de garantía** desde que la publicamos: cualquier problema lo arreglamos sin costo, y si no te gusta cómo quedó, te devolvemos tu dinero. Los detalles están en [Qué debes aportar y cuánto cuesta](/clients/requirements-and-costs/).
 
 ### ¿Cuánto tarda y qué tienes que aportar?
 
@@ -199,89 +188,13 @@ Sí, la mayoría desde el panel, sin código: nombre, logo, colores y tipografí
 
 Algunas cosas sí requieren un desarrollador: una sección o un estilo que solo tú vas a tener, o conectar otro proveedor de pagos o de facturación. Las secciones a medida todavía no se cargan en la tienda, así que pide a tu desarrollador que confirme su estado antes de prometerte una.
 
-Si sabes que puedes hacerlo pero prefieres que otra persona lo haga, también puedes pedir que la agencia o tu desarrollador cambien la tienda por ti. Los precios están en [Cambios hechos por nosotros](#cambios-hechos-por-nosotros).
+Si sabes que puedes hacerlo pero prefieres que otra persona lo haga, también puedes pedir que la agencia o tu desarrollador cambien la tienda por ti. Los precios están en [Cambios hechos por nosotros](/clients/changes-service/).
 
-## Cambios hechos por nosotros
+## ¿Y si prefiero que lo hagan ustedes?
 
-Casi todo lo puedes cambiar tú desde el panel, pero mucha gente prefiere que lo haga otra persona: el texto de una página, un producto nuevo, el número de WhatsApp, la cuenta bancaria. Es una opción, no una obligación. Los precios cambian según tu país (usa el selector de arriba) y **ya incluyen el IVA**: lo que ves es lo que pagas, y te damos factura.
+Casi todo lo puedes cambiar tú desde el panel, pero mucha gente prefiere que lo haga otra persona: el texto de una página, un producto nuevo, el número de WhatsApp. Es una opción, no una obligación, y tiene precios fijos con IVA incluido.
 
-### Qué cuenta como un cambio
-
-Todo se mide en **créditos**. Un crédito es un cambio pequeño.
-
-| Tamaño                  | Créditos | Ejemplos                                                                                                                                                         |
-| ----------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pequeño**             | 1        | Cambiar un texto, el número de WhatsApp o la cuenta bancaria; cambiar el precio o las existencias de hasta 5 productos; mostrar u ocultar un producto; cambiar una foto. |
-| **Mediano**             | 2        | Dar de alta hasta 3 productos con sus fotos; preparar una promoción o un banner; ajustar envíos y sus precios; editar una página completa o los textos de los correos. |
-| **Grande**              | 5        | Crear una página nueva; cargar un catálogo de hasta 50 productos; reorganizar la página de inicio.                                                              |
-| **Más grande que eso**  | Cotización | Se te dice el precio antes de empezar.                                                                                                                         |
-
-### Cómo funcionan los créditos y los planes
-
-Un **crédito** es la unidad con la que se mide el trabajo. Cada cambio que pides cuesta 1, 2 o 5 créditos según su tamaño (mira la tabla de arriba). Hay tres formas de conseguir créditos, y puedes combinarlas:
-
-- **Pagar por cambio.** No hay créditos guardados: pagas el precio del cambio y lo hacemos.
-- **Paquete.** Compras un número de créditos de una vez. Se van descontando conforme pides cambios y duran 12 meses desde la compra. Cada crédito sale más barato que pagando por cambio.
-- **Plan mensual o anual.** Recibes créditos de forma periódica y una respuesta más rápida. En el plan mensual, los créditos de cada mes se usan ese mes y no pasan al siguiente. En el anual, los créditos de los 12 meses son un solo bolsillo: los usas cuando quieras mientras el plan esté vigente.
-
-**Cómo se descuentan.** Antes de empezar te decimos cuántos créditos cuesta lo que pediste y esperamos tu visto bueno. Si un pedido tiene varios cambios, se suman. Si lo que pides resulta ser más grande de lo que parecía, te avisamos antes de seguir; nunca se descuentan créditos de más sin que lo sepas.
-
-**Qué pasa si se acaban.** Puedes comprar un paquete, pagar el cambio suelto o subir de plan. Mientras tengas un plan, tus pedidos conservan la rapidez de respuesta de tu plan aunque pagues un cambio aparte.
-
-**Un ejemplo.** Eres de México y tienes el plan Crece (10 créditos al mes). Este mes pides cambiar el número de WhatsApp (1 crédito), dar de alta 3 productos con fotos (2 créditos) y preparar un banner de promoción (2 créditos). Usaste 5 de tus 10 créditos. Los otros 5 se pierden al terminar el mes. Si hubieras tenido el plan Anual Crece, esos 5 créditos seguirían disponibles para una temporada con más trabajo.
-
-**Cuándo empieza y cuándo termina.** Los créditos y los planes empiezan el día que se confirma tu pago. El plan mensual se renueva cada mes mientras lo pagues, y puedes cancelarlo cuando quieras para el mes siguiente. El plan anual dura 12 meses.
-
-### Pagar por cada cambio
-
-Sin compromiso: pides, haces el pago y lo hacemos.
-
-<ChangePlans lang="es" part="single" />
-
-### Paquetes de créditos
-
-Pagas una sola vez y usas los créditos cuando quieras durante 12 meses. Mientras más grande el paquete, más barato sale cada crédito. Sirve si haces cambios de vez en cuando.
-
-<ChangePlans lang="es" part="packs" />
-
-### Plan mensual
-
-Cada mes recibes un número de créditos y una respuesta más rápida. Los créditos de un mes no pasan al siguiente. Si prefieres pagar mes a mes, es la opción más flexible.
-
-<ChangePlans lang="es" part="plans" />
-
-### Planes anuales
-
-Pagas una sola vez y tienes 12 meses de servicio, con **2 meses gratis**. Los créditos del año son un solo bolsillo: los usas cuando los necesites, sin que se pierdan al terminar cada mes. Es lo que más conviene si tu tienda tiene temporadas, como Navidad o el Día de la Madre.
-
-<ChangePlans lang="es" part="yearly" />
-
-Una **revisión de la tienda** es una vuelta completa que te hacemos nosotros: revisamos textos, precios, existencias y enlaces, probamos que la compra funcione de principio a fin y te mandamos un resumen corto con lo que encontramos. No gasta créditos.
-
-### Cuál te conviene
-
-<FeatureGrid items={[
-  {"icon": "coin", "title": "Un cambio de vez en cuando", "text": "Paga por cambio."},
-  {"icon": "layers", "title": "Varios cambios al año, sin fecha fija", "text": "Un paquete de créditos."},
-  {"icon": "refresh", "title": "Cambios cada semana (promociones, productos nuevos, precios)", "text": "Un plan mensual."},
-  {"icon": "star", "title": "Ya sabes que vas a seguir y tienes temporadas fuertes", "text": "Un plan anual, que sale más barato y deja usar los créditos cuando los necesites."},
-]} />
-
-### Cómo se pide y cómo se paga
-
-<FlowSteps steps={[
-  {"icon": "chat", "title": "Escribes lo que quieres", "text": "Por WhatsApp o por correo."},
-  {"icon": "coin", "title": "Te decimos los créditos", "text": "Antes de empezar."},
-  {"icon": "check", "title": "Das tu visto bueno", "text": "Y entonces empezamos."},
-  {"icon": "pencil", "title": "Lo hacemos", "text": "Sin plan, en unos 7 días hábiles."},
-  {"icon": "wallet", "title": "Pagas", "text": {"intl": "Por PayPal o tarjeta.", "mx": "Por transferencia SPEI o tarjeta.", "ec": "Por transferencia o depósito bancario."}},
-]} />
-
-Si hacen falta, mandas las fotos o los textos al escribir. Si lo que pides resulta más grande de lo que parecía, te avisamos antes de seguir. Con plan, el tiempo de respuesta es el que indica la tabla. Los planes mensuales se cobran al inicio de cada mes, y los anuales, una sola vez al inicio del año.
-
-### Qué no incluye
-
-El dominio, la plataforma donde corre la tienda y las comisiones de los proveedores de pago se pagan aparte (ver [¿Cuánto cuesta?](#cuánto-cuesta)). Tampoco incluye manejar tus anuncios, y el trabajo que requiere programar algo a medida se cotiza por separado.
+Mira [Cambios hechos por nosotros](/clients/changes-service/).
 
 ## Qué tan terminada está
 

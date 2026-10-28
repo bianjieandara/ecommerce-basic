@@ -85,6 +85,8 @@ export const STAGES: Stage[] = [
       ['admin/messages-and-notifications', 'admin-emails'],
       ['admin/reports', 'admin-dashboard'],
       ['clients/operations', 'admin-jobs'],
+      // Belongs here and not under "Decidir": it is for someone who already has a store and would rather not touch it.
+      ['clients/changes-service', 'admin-settings'],
     ],
   },
 ];

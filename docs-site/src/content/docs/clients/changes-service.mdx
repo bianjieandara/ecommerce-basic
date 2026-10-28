@@ -1,0 +1,95 @@
+---
+title: Cambios hechos por nosotros
+description: "Si prefieres que los cambios de tu tienda los haga otra persona: qué cuenta como un cambio, los créditos y los planes."
+sidebar:
+  order: 4
+---
+
+import ChangePlans from '../../../components/ChangePlans.astro';
+import RegionPicker from '../../../components/RegionPicker.astro';
+import FlowSteps from '../../../components/FlowSteps.astro';
+import FeatureGrid from '../../../components/FeatureGrid.astro';
+
+<RegionPicker lang="es" />
+
+## Cambios hechos por nosotros
+
+Casi todo lo puedes cambiar tú desde el panel, pero mucha gente prefiere que lo haga otra persona: el texto de una página, un producto nuevo, el número de WhatsApp, la cuenta bancaria. Es una opción, no una obligación. Los precios cambian según tu país (usa el selector de arriba) y **ya incluyen el IVA**: lo que ves es lo que pagas, y te damos factura.
+
+### Qué cuenta como un cambio
+
+Todo se mide en **créditos**. Un crédito es un cambio pequeño.
+
+| Tamaño                  | Créditos | Ejemplos                                                                                                                                                         |
+| ----------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pequeño**             | 1        | Cambiar un texto, el número de WhatsApp o la cuenta bancaria; cambiar el precio o las existencias de hasta 5 productos; mostrar u ocultar un producto; cambiar una foto. |
+| **Mediano**             | 2        | Dar de alta hasta 3 productos con sus fotos; preparar una promoción o un banner; ajustar envíos y sus precios; editar una página completa o los textos de los correos. |
+| **Grande**              | 5        | Crear una página nueva; cargar un catálogo de hasta 50 productos; reorganizar la página de inicio.                                                              |
+| **Más grande que eso**  | Cotización | Se te dice el precio antes de empezar.                                                                                                                         |
+
+### Cómo funcionan los créditos y los planes
+
+Un **crédito** es la unidad con la que se mide el trabajo. Cada cambio que pides cuesta 1, 2 o 5 créditos según su tamaño (mira la tabla de arriba). Hay tres formas de conseguir créditos, y puedes combinarlas:
+
+- **Pagar por cambio.** No hay créditos guardados: pagas el precio del cambio y lo hacemos.
+- **Paquete.** Compras un número de créditos de una vez. Se van descontando conforme pides cambios y duran 12 meses desde la compra. Cada crédito sale más barato que pagando por cambio.
+- **Plan mensual o anual.** Recibes créditos de forma periódica y una respuesta más rápida. En el plan mensual, los créditos de cada mes se usan ese mes y no pasan al siguiente. En el anual, los créditos de los 12 meses son un solo bolsillo: los usas cuando quieras mientras el plan esté vigente.
+
+**Cómo se descuentan.** Antes de empezar te decimos cuántos créditos cuesta lo que pediste y esperamos tu visto bueno. Si un pedido tiene varios cambios, se suman. Si lo que pides resulta ser más grande de lo que parecía, te avisamos antes de seguir; nunca se descuentan créditos de más sin que lo sepas.
+
+**Qué pasa si se acaban.** Puedes comprar un paquete, pagar el cambio suelto o subir de plan. Mientras tengas un plan, tus pedidos conservan la rapidez de respuesta de tu plan aunque pagues un cambio aparte.
+
+**Un ejemplo.** Eres de México y tienes el plan Crece (10 créditos al mes). Este mes pides cambiar el número de WhatsApp (1 crédito), dar de alta 3 productos con fotos (2 créditos) y preparar un banner de promoción (2 créditos). Usaste 5 de tus 10 créditos. Los otros 5 se pierden al terminar el mes. Si hubieras tenido el plan Anual Crece, esos 5 créditos seguirían disponibles para una temporada con más trabajo.
+
+**Cuándo empieza y cuándo termina.** Los créditos y los planes empiezan el día que se confirma tu pago. El plan mensual se renueva cada mes mientras lo pagues, y puedes cancelarlo cuando quieras para el mes siguiente. El plan anual dura 12 meses.
+
+### Pagar por cada cambio
+
+Sin compromiso: pides, haces el pago y lo hacemos.
+
+<ChangePlans lang="es" part="single" />
+
+### Paquetes de créditos
+
+Pagas una sola vez y usas los créditos cuando quieras durante 12 meses. Mientras más grande el paquete, más barato sale cada crédito. Sirve si haces cambios de vez en cuando.
+
+<ChangePlans lang="es" part="packs" />
+
+### Plan mensual
+
+Cada mes recibes un número de créditos y una respuesta más rápida. Los créditos de un mes no pasan al siguiente. Si prefieres pagar mes a mes, es la opción más flexible.
+
+<ChangePlans lang="es" part="plans" />
+
+### Planes anuales
+
+Pagas una sola vez y tienes 12 meses de servicio, con **2 meses gratis**. Los créditos del año son un solo bolsillo: los usas cuando los necesites, sin que se pierdan al terminar cada mes. Es lo que más conviene si tu tienda tiene temporadas, como Navidad o el Día de la Madre.
+
+<ChangePlans lang="es" part="yearly" />
+
+Una **revisión de la tienda** es una vuelta completa que te hacemos nosotros: revisamos textos, precios, existencias y enlaces, probamos que la compra funcione de principio a fin y te mandamos un resumen corto con lo que encontramos. No gasta créditos.
+
+### Cuál te conviene
+
+<FeatureGrid items={[
+  {"icon": "coin", "title": "Un cambio de vez en cuando", "text": "Paga por cambio."},
+  {"icon": "layers", "title": "Varios cambios al año, sin fecha fija", "text": "Un paquete de créditos."},
+  {"icon": "refresh", "title": "Cambios cada semana (promociones, productos nuevos, precios)", "text": "Un plan mensual."},
+  {"icon": "star", "title": "Ya sabes que vas a seguir y tienes temporadas fuertes", "text": "Un plan anual, que sale más barato y deja usar los créditos cuando los necesites."},
+]} />
+
+### Cómo se pide y cómo se paga
+
+<FlowSteps steps={[
+  {"icon": "chat", "title": "Escribes lo que quieres", "text": "Por WhatsApp o por correo."},
+  {"icon": "coin", "title": "Te decimos los créditos", "text": "Antes de empezar."},
+  {"icon": "check", "title": "Das tu visto bueno", "text": "Y entonces empezamos."},
+  {"icon": "pencil", "title": "Lo hacemos", "text": "Sin plan, en unos 7 días hábiles."},
+  {"icon": "wallet", "title": "Pagas", "text": {"intl": "Por PayPal o tarjeta.", "mx": "Por transferencia SPEI o tarjeta.", "ec": "Por transferencia o depósito bancario."}},
+]} />
+
+Si hacen falta, mandas las fotos o los textos al escribir. Si lo que pides resulta más grande de lo que parecía, te avisamos antes de seguir. Con plan, el tiempo de respuesta es el que indica la tabla. Los planes mensuales se cobran al inicio de cada mes, y los anuales, una sola vez al inicio del año.
+
+### Qué no incluye
+
+El dominio, la plataforma donde corre la tienda y las comisiones de los proveedores de pago se pagan aparte (ver [¿Cuánto cuesta?](#cuánto-cuesta)). Tampoco incluye manejar tus anuncios, y el trabajo que requiere programar algo a medida se cotiza por separado.

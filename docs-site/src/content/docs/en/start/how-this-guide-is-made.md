@@ -2,7 +2,10 @@
 title: How this guide is made
 description: Where the screenshots come from and how to refresh them.
 sidebar:
+  # An internal note for the team, not for the client: out of the nav and out of search. The page still exists at its URL.
   order: 2
+  hidden: true
+pagefind: false
 ---
 
 The pages are Markdown files in `docs-site/src/content/docs/`, shown by [Starlight](https://starlight.astro.build). The

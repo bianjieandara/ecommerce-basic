@@ -73,6 +73,28 @@ Choose your country to see the prices and tax details that apply to you:
 
 <RegionPicker lang="en" />
 
+## Price and guarantee
+
+<Precio id="tienda-online" lang="en" />
+
+We give you the quote in writing before we start, and it does not change afterwards.
+
+<FeatureGrid layout="card" items={[
+  {"icon": "coin", "title": "In three payments", "text": "One to start, one when you approve the design and the last when the store is published and working."},
+  {"icon": "shield", "title": "30 days of guarantee", "text": "From the day we publish it. Anything that goes wrong, we fix at no cost."},
+  {"icon": "refresh", "title": "If you do not like it, you get your money back", "text": "No argument and no small print. We would rather that than a half-satisfied customer."},
+]} />
+
+### What is paid separately
+
+<FeatureGrid items={[
+  {"icon": "cloud", "title": "The platform", "text": "About 5 USD a month per Cloudflare account, where the store runs."},
+  {"icon": "globe", "title": "Your domain", "text": "The yearly price from your registrar."},
+  {"icon": "card", "title": "Payment fees", "text": "dLocal Go and PayPal charge on each sale. The store adds no fee of its own."},
+]} />
+
+If you would rather we made the changes for you, that is optional and has fixed prices: see [Changes we make for you](/en/clients/changes-service/).
+
 ## What your customers see
 
 Tap a screen to see the store on a phone. It is a real store, the demo one.
@@ -88,26 +110,11 @@ Tap a screen to see the store on a phone. It is a real store, the demo one.
 
 ## What you manage yourself
 
-Everything is handled from the panel, without coding:
+All from the panel, without programming: products and stock, orders and invoices, the pages through a visual editor, the text of
+the emails, shipping and settings. There are two roles: **owner**, who can do everything, and **editor**, who handles the day to
+day without seeing the settings or the refund button.
 
-<FeatureGrid items={[
-  {"icon": "box", "title": "Products", "text": "Versions, categories, features and a picture library."},
-  {"icon": "layers", "title": "Inventory", "text": "Stock levels, with a record of every change."},
-  {"icon": "receipt", "title": "Orders", "text": "The status and history of each one. From there you can reply to the customer on WhatsApp and, for card or PayPal payments, refund the money."},
-  {"icon": "doc", "title": "Invoices", "text": "View them, send them again, download them as PDFs, or generate them again."},
-  {"icon": "pencil", "title": "Pages", "text": "A visual editor for the home page and the content pages."},
-  {"icon": "mail", "title": "Emails, shipping, testimonials and reports", "text": "The wording of the emails, shipping methods, customer reviews, and sales reports."},
-  {"icon": "cog", "title": "Settings", "text": "Colours, fonts and the rest of the store."},
-]} />
-
-Who can sign in to the panel: there are two roles.
-
-<FeatureGrid items={[
-  {"icon": "key", "title": "Owner", "text": "Can do everything, including settings and user accounts."},
-  {"icon": "user", "title": "Editor", "text": "Handles day-to-day work, and does not see settings, user accounts or the refund button."},
-]} />
-
-See the [admin guide](/en/admin/overview/) for every screen.
+If you want to see every screen before deciding, they are all in the [panel guide](/en/admin/overview/).
 
 ## What happens without you having to ask
 
@@ -133,22 +140,6 @@ They are optional and charged separately from the store. They are switched on on
 | **AI help translating texts**                                  | Nothing extra. It is only used when you ask for it.                                                                 |
 
 ## Before you decide
-
-### How much does it cost?
-
-<Precio id="tienda-online" lang="en" />
-
-There are three kinds of cost:
-
-<FeatureGrid layout="card" items={[
-  {"icon": "cloud", "title": "The platform", "text": "About 5 USD a month per Cloudflare account, where the store runs. You can choose the monthly or yearly maintenance plan."},
-  {"icon": "globe", "title": "Your domain", "text": "The yearly price from your domain registrar."},
-  {"icon": "card", "title": "Fees from each provider", "text": "dLocal Go and PayPal charge fees on each sale, and Meta charges for each WhatsApp message sent, depending on its category and country. The store adds no fee of its own. Email has no such cost."},
-]} />
-
-Separately, if you would rather have someone else make the changes to your store, that is optional and has fixed prices: see [Changes we make for you](#changes-we-make-for-you).
-
-Building and launching your store has its own price. We give you the quote in writing before we start.
 
 ### How long does it take, and what do you provide?
 
@@ -181,89 +172,13 @@ Yes, most things, from the panel and without code: name, logo, colours and fonts
 
 Some things do need a developer: a section or style that only you will have, or connecting a different payment or invoicing provider. Custom sections are not loaded by the store yet, so ask your developer to confirm their status before you are promised one.
 
-If you can do it yourself but would rather have someone else do it, you can also ask the agency or your developer to make the changes for you. The prices are in [Changes we make for you](#changes-we-make-for-you).
+If you can do it yourself but would rather have someone else do it, you can also ask the agency or your developer to make the changes for you. The prices are in [Changes we make for you](/en/clients/changes-service/).
 
-## Changes we make for you
+## What if I would rather you did it?
 
-You can change almost everything yourself from the panel, but many people prefer to have someone else do it: the text of a page, a new product, the WhatsApp number, the bank account. It is an option, not a requirement. Prices depend on your country (use the selector above) and **already include VAT**: what you see is what you pay, and you get an invoice.
+You can change almost everything yourself from the panel, but plenty of people would rather someone else did it: the text on a page, a new product, the WhatsApp number. It is an option, not an obligation, and it has fixed prices with tax included.
 
-### What counts as a change
-
-Everything is measured in **credits**. One credit is one small change.
-
-| Size                | Credits | Examples                                                                                                                                                                  |
-| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Small**           | 1       | Change a piece of text, the WhatsApp number or the bank account; change the price or stock of up to 5 products; show or hide a product; swap a picture.                  |
-| **Medium**          | 2       | Add up to 3 products with their pictures; set up a promotion or a banner; adjust shipping and its prices; edit a whole page or the wording of the emails.                 |
-| **Large**           | 5       | Create a new page; load a catalogue of up to 50 products; rearrange the home page.                                                                                        |
-| **Bigger than that** | Quote  | You are told the price before we start.                                                                                                                                   |
-
-### How credits and plans work
-
-A **credit** is the unit work is measured in. Each change you ask for costs 1, 2 or 5 credits depending on its size (see the table above). There are three ways to get credits, and you can combine them:
-
-- **Pay per change.** There are no saved credits: you pay the price of the change and we do it.
-- **Pack.** You buy a number of credits at once. They are used up as you ask for changes and last 12 months from the purchase. Each credit costs less than paying per change.
-- **Monthly or yearly plan.** You receive credits on a regular basis and a faster response. On the monthly plan, each month's credits are used that month and do not carry over. On the yearly plan, the credits for all 12 months are one pool: you use them whenever you like while the plan is active.
-
-**How they are used up.** Before we start, we tell you how many credits what you asked for costs, and we wait for your go-ahead. If a request has several changes, they add up. If something turns out to be bigger than it looked, we tell you before going on; credits are never taken without you knowing.
-
-**What happens when they run out.** You can buy a pack, pay for a single change, or move up a plan. While you have a plan, your requests keep the response time of your plan even if you pay for one change separately.
-
-**An example.** You are in Mexico and have the Grow plan (10 credits a month). This month you ask to change the WhatsApp number (1 credit), add 3 products with pictures (2 credits) and set up a promotion banner (2 credits). You used 5 of your 10 credits. The other 5 are lost when the month ends. With the Yearly Grow plan, those 5 credits would still be there for a busier season.
-
-**When they start and end.** Credits and plans start the day your payment is confirmed. The monthly plan renews every month as long as you pay for it, and you can cancel it at any time for the following month. The yearly plan lasts 12 months.
-
-### Pay per change
-
-No commitment: you ask, you pay, and we do it.
-
-<ChangePlans lang="en" part="single" />
-
-### Credit packs
-
-You pay once and use the credits whenever you like within 12 months. The bigger the pack, the cheaper each credit. Good if you make changes now and then.
-
-<ChangePlans lang="en" part="packs" />
-
-### Monthly plan
-
-Each month you get a number of credits and a faster response. Credits from one month do not carry over to the next. If you prefer to pay month by month, this is the most flexible option.
-
-<ChangePlans lang="en" part="plans" />
-
-### Yearly plans
-
-You pay once and get 12 months of service, with **2 months free**. The year's credits are one pool: you use them when you need them, and they do not run out at the end of each month. This suits you best if your store has busy seasons, such as Christmas or Mother's Day.
-
-<ChangePlans lang="en" part="yearly" />
-
-A **store check-up** is a full pass we do ourselves: we review texts, prices, stock and links, test that buying works from start to finish, and send you a short summary of what we found. It does not use credits.
-
-### Which one suits you
-
-<FeatureGrid items={[
-  {"icon": "coin", "title": "A change now and then", "text": "Pay per change."},
-  {"icon": "layers", "title": "Several changes a year, with no fixed date", "text": "A credit pack."},
-  {"icon": "refresh", "title": "Changes every week (promotions, new products, prices)", "text": "A monthly plan."},
-  {"icon": "star", "title": "You know you will keep going and have busy seasons", "text": "A yearly plan, which costs less and lets you use the credits when you need them."},
-]} />
-
-### How to ask and how to pay
-
-<FlowSteps steps={[
-  {"icon": "chat", "title": "You write what you want", "text": "By WhatsApp or email."},
-  {"icon": "coin", "title": "We tell you the credits", "text": "Before we start."},
-  {"icon": "check", "title": "You give the go-ahead", "text": "Then we begin."},
-  {"icon": "pencil", "title": "We do it", "text": "Without a plan, in about 7 business days."},
-  {"icon": "wallet", "title": "You pay", "text": {"intl": "By PayPal or card.", "mx": "By SPEI bank transfer or card.", "ec": "By bank transfer or deposit."}},
-]} />
-
-If needed, you send the pictures or the text when you write. If what you ask for turns out bigger than it looked, we tell you before going on. With a plan, the response time is the one in the table. Monthly plans are charged at the start of each month, and yearly plans once at the start of the year.
-
-### What is not included
-
-The domain, the platform where the store runs and the payment providers' fees are paid separately (see [How much does it cost?](#how-much-does-it-cost)). Managing your ads is not included either, and work that needs custom code is quoted separately.
+See [Changes we make for you](/en/clients/changes-service/).
 
 ## How finished is it?
 

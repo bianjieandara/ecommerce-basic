@@ -1,13 +1,17 @@
 ---
-// Precio de la tienda en Ecuador, tomado de e-baq.com/precios.json al construir la guía. Si el sitio no responde, usa la copia
-// guardada en src/data/precios-respaldo.json para que el build no falle. Solo muestra precios con IVA incluido.
+// Precio de un producto, tomado de e-baq.com/precios.json al construir la guía. Si el sitio no responde, usa la copia guardada en
+// src/data/precios-respaldo.json para que el build no falle. Antes solo mostraba Ecuador, así que México y el resto veían la
+// sección de precios sin un solo número; ahora emite una línea por región y el CSS de guide-region.css enseña la que toca.
 import respaldo from '../data/precios-respaldo.json';
+import { REGIONS } from '../data/regions.mjs';
 
 interface Props {
   id: string;
   lang: 'es' | 'en';
+  /** Texto delante del importe. Por defecto, el de la tienda. */
+  label?: string;
 }
-const { id, lang } = Astro.props;
+const { id, lang, label } = Astro.props;
 
 const PRECIOS_URL = 'https://e-baq.com/precios.json';
 
@@ -17,11 +21,26 @@ interface PrecioPublicado {
   iva_incluido: boolean;
 }
 
-let precios: Record<string, Record<string, PrecioPublicado>> = respaldo;
+type Tabla = Record<string, Record<string, PrecioPublicado>>;
+
+/**
+ * El sitio manda, el respaldo rellena. Se mezcla por producto y por región en vez de reemplazar la tabla entera porque el feed
+ * publicado puede ir por detrás del repositorio: cuando se añadió el precio en pesos, e-baq.com todavía servía solo los dólares
+ * y la guía se quedó sin un número que enseñarle a México. Con la mezcla, una región que aún no está publicada usa la copia local.
+ */
+function mezclar(base: Tabla, encima: Tabla): Tabla {
+  const salida: Tabla = { ...base };
+  for (const [producto, regiones] of Object.entries(encima)) {
+    salida[producto] = { ...(base[producto] ?? {}), ...regiones };
+  }
+  return salida;
+}
+
+let precios: Tabla = respaldo;
 try {
   const respuesta = await fetch(PRECIOS_URL, { signal: AbortSignal.timeout(5000) });
   if (respuesta.ok) {
-    precios = await respuesta.json();
+    precios = mezclar(respaldo, await respuesta.json());
   } else {
     console.warn(`precios.json respondió ${respuesta.status}; se usa la copia del repositorio`);
   }
@@ -29,13 +48,34 @@ try {
   console.warn('No se pudo leer precios.json; se usa la copia del repositorio', error);
 }
 
-const precio = precios[id]?.EC;
-// Los precios de Ecuador están en dólares.
-const monto = precio ? `$${precio.monto}` : '';
-const texto =
-  lang === 'en'
-    ? `Your online store starts at ${monto} IVA included.`
-    : `Tu tienda en línea desde ${monto} IVA incluido.`;
+/** La región de la guía en minúsculas es la clave del archivo de precios en mayúsculas. */
+const CLAVE = { intl: 'INTL', mx: 'MX', ec: 'EC' } as const;
+
+/** El importe con su moneda. La nota de impuesto va aparte: dentro de la cifra se leía tan grande como el precio. */
+function formatear(precio: PrecioPublicado) {
+  const monto = precio.monto.toLocaleString(lang === 'en' ? 'en-US' : 'es-MX');
+  return {
+    importe: `$${monto} ${precio.moneda}`,
+    nota: precio.iva_incluido ? (lang === 'en' ? 'Tax included.' : 'IVA incluido.') : null,
+  };
+}
+
+const prefijo = label ?? (lang === 'en' ? 'Your online store, from' : 'Tu tienda en línea, desde');
+
+const lineas = REGIONS.map((region) => {
+  const precio = precios[id]?.[CLAVE[region]];
+  return { region, precio: precio ? formatear(precio) : null };
+});
 ---
 
-{precio?.iva_incluido && <p data-region-only="ec">{texto}</p>}
+{
+  lineas.map(({ region, precio }) =>
+    precio ? (
+      <p class="guide-price" data-region-only={region}>
+        <span class="guide-price-label">{prefijo}</span>
+        <b class="guide-price-amount">{precio.importe}</b>
+        {precio.nota && <span class="guide-price-note">{precio.nota}</span>}
+      </p>
+    ) : null,
+  )
+}

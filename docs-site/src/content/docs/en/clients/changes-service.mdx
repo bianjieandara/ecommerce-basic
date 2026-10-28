@@ -1,0 +1,95 @@
+---
+title: Changes we make for you
+description: "If you would rather someone else made the changes to your store: what counts as a change, the credits and the plans."
+sidebar:
+  order: 4
+---
+
+import ChangePlans from '../../../../components/ChangePlans.astro';
+import RegionPicker from '../../../../components/RegionPicker.astro';
+import FlowSteps from '../../../../components/FlowSteps.astro';
+import FeatureGrid from '../../../../components/FeatureGrid.astro';
+
+<RegionPicker lang="en" />
+
+## Changes we make for you
+
+You can change almost everything yourself from the panel, but many people prefer to have someone else do it: the text of a page, a new product, the WhatsApp number, the bank account. It is an option, not a requirement. Prices depend on your country (use the selector above) and **already include VAT**: what you see is what you pay, and you get an invoice.
+
+### What counts as a change
+
+Everything is measured in **credits**. One credit is one small change.
+
+| Size                | Credits | Examples                                                                                                                                                                  |
+| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Small**           | 1       | Change a piece of text, the WhatsApp number or the bank account; change the price or stock of up to 5 products; show or hide a product; swap a picture.                  |
+| **Medium**          | 2       | Add up to 3 products with their pictures; set up a promotion or a banner; adjust shipping and its prices; edit a whole page or the wording of the emails.                 |
+| **Large**           | 5       | Create a new page; load a catalogue of up to 50 products; rearrange the home page.                                                                                        |
+| **Bigger than that** | Quote  | You are told the price before we start.                                                                                                                                   |
+
+### How credits and plans work
+
+A **credit** is the unit work is measured in. Each change you ask for costs 1, 2 or 5 credits depending on its size (see the table above). There are three ways to get credits, and you can combine them:
+
+- **Pay per change.** There are no saved credits: you pay the price of the change and we do it.
+- **Pack.** You buy a number of credits at once. They are used up as you ask for changes and last 12 months from the purchase. Each credit costs less than paying per change.
+- **Monthly or yearly plan.** You receive credits on a regular basis and a faster response. On the monthly plan, each month's credits are used that month and do not carry over. On the yearly plan, the credits for all 12 months are one pool: you use them whenever you like while the plan is active.
+
+**How they are used up.** Before we start, we tell you how many credits what you asked for costs, and we wait for your go-ahead. If a request has several changes, they add up. If something turns out to be bigger than it looked, we tell you before going on; credits are never taken without you knowing.
+
+**What happens when they run out.** You can buy a pack, pay for a single change, or move up a plan. While you have a plan, your requests keep the response time of your plan even if you pay for one change separately.
+
+**An example.** You are in Mexico and have the Grow plan (10 credits a month). This month you ask to change the WhatsApp number (1 credit), add 3 products with pictures (2 credits) and set up a promotion banner (2 credits). You used 5 of your 10 credits. The other 5 are lost when the month ends. With the Yearly Grow plan, those 5 credits would still be there for a busier season.
+
+**When they start and end.** Credits and plans start the day your payment is confirmed. The monthly plan renews every month as long as you pay for it, and you can cancel it at any time for the following month. The yearly plan lasts 12 months.
+
+### Pay per change
+
+No commitment: you ask, you pay, and we do it.
+
+<ChangePlans lang="en" part="single" />
+
+### Credit packs
+
+You pay once and use the credits whenever you like within 12 months. The bigger the pack, the cheaper each credit. Good if you make changes now and then.
+
+<ChangePlans lang="en" part="packs" />
+
+### Monthly plan
+
+Each month you get a number of credits and a faster response. Credits from one month do not carry over to the next. If you prefer to pay month by month, this is the most flexible option.
+
+<ChangePlans lang="en" part="plans" />
+
+### Yearly plans
+
+You pay once and get 12 months of service, with **2 months free**. The year's credits are one pool: you use them when you need them, and they do not run out at the end of each month. This suits you best if your store has busy seasons, such as Christmas or Mother's Day.
+
+<ChangePlans lang="en" part="yearly" />
+
+A **store check-up** is a full pass we do ourselves: we review texts, prices, stock and links, test that buying works from start to finish, and send you a short summary of what we found. It does not use credits.
+
+### Which one suits you
+
+<FeatureGrid items={[
+  {"icon": "coin", "title": "A change now and then", "text": "Pay per change."},
+  {"icon": "layers", "title": "Several changes a year, with no fixed date", "text": "A credit pack."},
+  {"icon": "refresh", "title": "Changes every week (promotions, new products, prices)", "text": "A monthly plan."},
+  {"icon": "star", "title": "You know you will keep going and have busy seasons", "text": "A yearly plan, which costs less and lets you use the credits when you need them."},
+]} />
+
+### How to ask and how to pay
+
+<FlowSteps steps={[
+  {"icon": "chat", "title": "You write what you want", "text": "By WhatsApp or email."},
+  {"icon": "coin", "title": "We tell you the credits", "text": "Before we start."},
+  {"icon": "check", "title": "You give the go-ahead", "text": "Then we begin."},
+  {"icon": "pencil", "title": "We do it", "text": "Without a plan, in about 7 business days."},
+  {"icon": "wallet", "title": "You pay", "text": {"intl": "By PayPal or card.", "mx": "By SPEI bank transfer or card.", "ec": "By bank transfer or deposit."}},
+]} />
+
+If needed, you send the pictures or the text when you write. If what you ask for turns out bigger than it looked, we tell you before going on. With a plan, the response time is the one in the table. Monthly plans are charged at the start of each month, and yearly plans once at the start of the year.
+
+### What is not included
+
+The domain, the platform where the store runs and the payment providers' fees are paid separately (see [How much does it cost?](#how-much-does-it-cost)). Managing your ads is not included either, and work that needs custom code is quoted separately.

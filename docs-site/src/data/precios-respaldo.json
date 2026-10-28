@@ -1,8 +1,17 @@
 {
+  "entrada-web": {
+    "EC": { "monto": 399, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 8900, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 399, "moneda": "USD", "iva_incluido": true }
+  },
   "catalogo": {
-    "EC": { "monto": 599, "moneda": "USD", "iva_incluido": true }
+    "EC": { "monto": 599, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 14900, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 699, "moneda": "USD", "iva_incluido": true }
   },
   "tienda-online": {
-    "EC": { "monto": 799, "moneda": "USD", "iva_incluido": true }
+    "EC": { "monto": 799, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 29599, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 959, "moneda": "USD", "iva_incluido": true }
   }
 }

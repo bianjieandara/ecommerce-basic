@@ -77,3 +77,31 @@
   padding: var(--guide-space-lg) var(--guide-space-xl);
   white-space: nowrap;
 }
+
+/* Price line. It is the first thing anyone asks for, so it reads as a figure and not as another sentence in the paragraph.
+   It sets no `display` of its own: the rule above hides the regions that do not apply, and a `display` here would outrank it
+   (same specificity, later in the file) and show every region's price at once. The parts stack as blocks instead. */
+.guide-price {
+  margin-block: var(--guide-space-lg) var(--guide-space-2xl);
+  padding-inline-start: var(--guide-space-xl);
+  border-inline-start: var(--guide-line-bold) solid var(--guide-accent);
+}
+
+.guide-price-label,
+.guide-price-note {
+  display: block;
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-snug);
+  color: var(--guide-muted);
+}
+
+.guide-price-amount {
+  display: block;
+  margin-block: var(--guide-space-xs);
+  font-size: var(--guide-text-hero);
+  font-weight: var(--guide-weight-bold);
+  line-height: var(--guide-leading-tight);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--sl-color-white);
+  font-variant-numeric: tabular-nums;
+}

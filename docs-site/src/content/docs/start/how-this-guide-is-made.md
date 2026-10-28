@@ -3,6 +3,9 @@ title: Cómo se hace esta guía
 description: De dónde salen las capturas y cómo renovarlas.
 sidebar:
   order: 2
+  # Nota interna del equipo, no del cliente: fuera de la navegación y del buscador. La página sigue existiendo por su dirección.
+  hidden: true
+pagefind: false
 ---
 
 Las páginas son archivos Markdown en `docs-site/src/content/docs/`, que muestra [Starlight](https://starlight.astro.build).
