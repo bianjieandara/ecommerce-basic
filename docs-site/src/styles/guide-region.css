@@ -18,11 +18,17 @@
   margin: 0;
 }
 
+/* A bar, not three loose buttons. Without the frame it read as decoration and people scrolled past it, which left anyone whose
+   browser time zone is not Mexican or Ecuadorian reading dollars without realising there was anything to change. */
 .region-picker {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--guide-space-sm);
+  padding: var(--guide-space-lg) var(--guide-space-xl);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-xl);
+  background: var(--sl-color-accent-low);
 }
 
 .region-picker-label {

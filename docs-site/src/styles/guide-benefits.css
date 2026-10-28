@@ -347,3 +347,17 @@
     gap: var(--guide-space-xl);
   }
 }
+
+/* The section cover used the splash template, which drops the sidebar: someone arriving from a search had no way into the rest
+   of the guide, on the one page whose whole job is to make them keep reading. It is a normal doc page now, and the cover brings
+   its own headline, so Starlight's title block would be a second one. It stays in the markup for the outline and screen readers. */
+:root:has(.benefits-cover) .content-panel:has(> h1#_top) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

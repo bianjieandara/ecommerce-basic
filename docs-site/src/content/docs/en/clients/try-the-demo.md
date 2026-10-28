@@ -13,7 +13,7 @@ admin. Nothing charges money and no e-mail leaves the store.
 `demo@ecommerce.relion-app.com`; the password is shown on that same sign-in page.
 
 :::caution[Everything resets every night]
-At 03:00 (store time) the demo returns to its starting state. What you change, your orders and your products disappear. If you
+At 03:00 Bogotá time (02:00 in Mexico City) the demo returns to its starting state. What you change, your orders and your products disappear. If you
 want to leave something for someone, do it the same day.
 :::
 

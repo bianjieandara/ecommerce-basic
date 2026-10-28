@@ -13,7 +13,7 @@ precios, crear productos y entrar al panel. Nada cobra dinero y ningún correo s
 `demo@ecommerce.relion-app.com`; la contraseña se muestra en la misma página de acceso.
 
 :::caution[Todo se deshace cada noche]
-A las 03:00 (hora de la tienda) la demo vuelve a su estado inicial. Lo que cambies, tus pedidos y tus productos desaparecen. Si
+A las 03:00 de Bogotá (las 02:00 en Ciudad de México) la demo vuelve a su estado inicial. Lo que cambies, tus pedidos y tus productos desaparecen. Si
 quieres dejar algo a alguien, hazlo en el mismo día.
 :::
 
