@@ -1,13 +1,14 @@
-/* Design tokens and base look of the user guide: Space Grotesk, eBaq's graphite and its amber accent. This is the only file
+/* Design tokens and base look of the user guide: Space Grotesk, eBaq's graphite, its amber accent and the deep teal that carries meaning on white. This is the only file
    with raw values; guide-content.css and guide-home.css use var(--guide-*) only. Change --guide-primary to re-skin the guide. */
 :root {
   /* Brand and neutral colours. */
   --guide-primary: #080806;
   /* eBaq's amber. Bright enough for focus rings and dark surfaces, too pale to read on white. */
   --guide-accent: #ffc107;
-  /* The same amber darkened until it reads as text or a link on the page background.
-     Anything carrying meaning (links, bullets, callout edges) uses this one; the dark theme sends it back to the brand amber. */
-  --guide-accent-contrast: #7a5200;
+  /* The meaning colour. Amber darkened far enough to read on white comes out muddy brown, so this one crosses to amber's
+     complement instead: a deep teal that carries links, bullets, callout edges and prices at 6.9:1 on white and sits beside
+     the brand amber rather than muddying it. The dark theme, where the amber itself is readable, sends it back to the amber. */
+  --guide-accent-contrast: #0f6558;
   --guide-on-primary: #ffffff;
   --guide-on-primary-muted: #e6e6e6;
   --guide-on-primary-subtle: rgb(255 255 255 / 0.45);
@@ -153,8 +154,8 @@
 
 :root[data-theme='light'] {
   --sl-color-purple: var(--guide-accent-contrast);
-  --sl-color-purple-low: #fff6dd;
-  --sl-color-purple-high: #5c3d00;
+  --sl-color-purple-low: #e3f1ed;
+  --sl-color-purple-high: #0a4238;
   --sl-color-accent: var(--guide-primary);
   --sl-color-accent-low: #f5f5f3;
   --sl-color-accent-high: #080806;
