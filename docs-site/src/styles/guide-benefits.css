@@ -1,41 +1,7 @@
-/* The "Por qué te conviene" section: a dark pitch page (SectionCover, SplitContrast, ActBands, BeforeAfter) that re-skins the whole
-   page by feeding Starlight's own tokens, so the sidebar, the text and the tables follow without any component override.
-   Only `var(--guide-*)` here; the raw values are in guide.css. */
-
-/* Any page that renders one of the section's blocks turns dark, in both themes. The selector sits on the root so the colour also
-   covers what the page does not paint, such as the strip an overscroll shows. */
-:root:has(.benefits-pitch) {
-  --sl-color-bg: var(--guide-pitch-bg);
-  --sl-color-bg-sidebar: var(--guide-pitch-bg);
-  --sl-color-bg-nav: var(--guide-pitch-bg);
-  --sl-color-text: var(--guide-pitch-muted);
-  --sl-color-text-accent: var(--guide-pitch-accent);
-  --sl-color-white: var(--guide-pitch-text);
-  --sl-color-gray-1: var(--guide-pitch-text);
-  --sl-color-gray-2: var(--guide-pitch-muted);
-  --sl-color-gray-3: var(--guide-pitch-muted);
-  --sl-color-hairline: var(--guide-pitch-line);
-  --sl-color-hairline-shade: var(--guide-pitch-line);
-  --sl-color-accent: var(--guide-pitch-accent);
-  --sl-color-accent-low: var(--guide-pitch-raise);
-  --sl-color-accent-high: var(--guide-pitch-text);
-  --sl-color-purple: var(--guide-pitch-accent);
-  --sl-color-purple-low: var(--guide-pitch-tint);
-  --sl-color-purple-high: var(--guide-pitch-accent);
-  --sl-color-bg-inline-code: var(--guide-pitch-raise);
-  --guide-card: var(--guide-pitch-raise);
-  --guide-muted: var(--guide-pitch-muted);
-  /* The page is dark whatever the theme, so the readable amber here is the bright one, not the dark one the light theme uses.
-     Without this the icon chips come out as brown on near-black. */
-  --guide-accent-contrast: var(--guide-pitch-accent);
-  --guide-border-hover: var(--guide-pitch-accent);
-  background: var(--guide-pitch-bg);
-  color: var(--guide-pitch-muted);
-}
-
-:root:has(.benefits-pitch) body {
-  background: var(--guide-pitch-bg);
-}
+/* The "Por qué te conviene" section (SectionCover, SplitContrast, ActBands, BeforeAfter). It used to re-skin the whole page to a
+   dark pitch in both themes, which made the guide read as two different sites; it now follows the visitor's theme like every
+   other page and keeps what made it a pitch: big figures, wide bands and amber. The `--guide-pitch-*` tokens it is built from are
+   aliases of the ordinary theme tokens, defined in guide.css. Only `var(--guide-*)` here; the raw values are in guide.css. */
 
 /* A figure that carries its own block: the number is the headline, not an ornament. */
 .guide-stat {
@@ -137,7 +103,7 @@
 .benefits-action.is-primary {
   background: var(--guide-pitch-accent-strong);
   border-color: var(--guide-pitch-accent-strong);
-  color: var(--guide-pitch-bg);
+  color: var(--guide-primary);
 }
 
 .benefits-doors {
@@ -267,7 +233,7 @@
   height: var(--guide-act-size);
   border-radius: var(--guide-radius-pill);
   background: var(--guide-pitch-accent-strong);
-  color: var(--guide-pitch-bg);
+  color: var(--guide-primary);
   font-size: var(--guide-text-xl);
   font-weight: var(--guide-weight-bold);
 }

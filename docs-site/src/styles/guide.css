@@ -91,18 +91,20 @@
 
   /* "Pitch" look of the Por qué te conviene section (guide-benefits.css). It is dark in both themes on purpose, so the section
      reads as a sales pitch and not as one more page of the guide. */
-  /* The dark pitch section used a coral accent left over from the old brand, which made the guide read as two different
-     sites. These are eBaq's own graphite steps and its amber, so the pitch is the dark half of one palette. */
-  --guide-pitch-bg: #080806;
-  --guide-pitch-raise: #151510;
-  --guide-pitch-line: #303027;
-  --guide-pitch-text: #f5f5f0;
-  --guide-pitch-muted: #a3a197;
-  --guide-pitch-accent: #ffc107;
-  /* The louder amber, for the primary button and the act numbers. Both put the near-black background on top of it, which is
-     exactly how the eBaq site draws its call to action. */
-  --guide-pitch-accent-strong: #ffd54f;
-  --guide-pitch-tint: rgb(255 193 7 / 0.12);
+  /* "Por qué te conviene" used to invert the whole page to a dark pitch whatever the theme, which left the guide looking like
+     two different sites. The names stay, so none of its components change, but each one now points at the ordinary theme token:
+     the section follows the visitor's theme and keeps what actually made it a pitch, which is big figures and amber.
+     `--guide-pitch-accent-strong` is the one exception: it is a surface, always with ink on top, so it stays the brand amber. */
+  --guide-pitch-bg: var(--sl-color-bg);
+  /* The raised surface of the bands and doors. Not `--guide-card`: that is plain white in the light theme, and a filled band
+     with no border then vanished into the page. This is the guide's subtle tint, so a band reads as raised in both themes. */
+  --guide-pitch-raise: var(--sl-color-accent-low);
+  --guide-pitch-line: var(--sl-color-hairline);
+  --guide-pitch-text: var(--sl-color-white);
+  --guide-pitch-muted: var(--guide-muted);
+  --guide-pitch-accent: var(--guide-accent-contrast);
+  --guide-pitch-accent-strong: var(--guide-accent);
+  --guide-pitch-tint: color-mix(in srgb, var(--guide-accent) 12%, transparent);
 
   /* Figures big enough to carry a section on their own, and the numbered discs of the three acts. */
   --guide-stat-hero: clamp(2.75rem, 9vw, 4.5rem);
