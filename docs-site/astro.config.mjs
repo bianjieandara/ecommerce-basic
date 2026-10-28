@@ -1,10 +1,12 @@
 // @ts-check
-// Starlight site for the user guide. Spanish is the main language (served at the root), English lives under /en/. The guide has
-// two audiences, store owners who run the admin and clients who get a store, and the sidebar groups follow that. Screenshots
-// are in docs-site/src/assets/screens/<lang>/ and are taken by scripts/docs/screenshots.mjs.
+// Starlight site for the user guide. Spanish is the main language (served at the root), English lives under /en/. Store-owner
+// pages (admin/ and clients/) are grouped in the sidebar by the stage of running a store they serve (data/guide-stages.ts),
+// the same grouping the home page uses, so the two never drift apart. Screenshots are in docs-site/src/assets/screens/<lang>/
+// and are taken by scripts/docs/screenshots.mjs.
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import { regionBootstrapScript } from './src/data/regions.mjs';
+import { STAGES } from './src/data/guide-stages';
 
 export default defineConfig({
   site: 'https://docs.e-baq.com',
@@ -13,6 +15,8 @@ export default defineConfig({
       title: { es: 'Guía de la tienda', en: 'Store guide' },
       description:
         'Cómo funciona la tienda para quien compra, cómo la gestiona su equipo desde el panel y cómo un cliente consigue y lanza una.',
+      // The right "On this page" column is gone everywhere, not only on the stage pages, so every page gains that reading width.
+      tableOfContents: false,
       customCss: [
         './src/styles/guide.css',
         './src/styles/guide-content.css',
@@ -51,16 +55,11 @@ export default defineConfig({
           translations: { en: 'What shoppers see' },
           items: [{ autogenerate: { directory: 'storefront' } }],
         },
-        {
-          label: 'Gestionar la tienda (panel)',
-          translations: { en: 'Running the store (admin)' },
-          items: [{ autogenerate: { directory: 'admin' } }],
-        },
-        {
-          label: 'Conseguir una tienda (clientes)',
-          translations: { en: 'Getting a store (clients)' },
-          items: [{ autogenerate: { directory: 'clients' } }],
-        },
+        ...STAGES.map((stage) => ({
+          label: stage.title.es,
+          translations: { en: stage.title.en },
+          items: stage.pages.map(([slug]) => ({ slug })),
+        })),
       ],
     }),
   ],

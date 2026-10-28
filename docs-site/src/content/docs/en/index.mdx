@@ -3,29 +3,10 @@ title: Store template guide
 description: How the store works for shoppers, how owners run it, and how a client gets one.
 template: splash
 hero:
-  title: What do you need to do today?
-  tagline: Pick your role and we take you straight to what matters to you.
+  title: Your store, stage by stage.
+  tagline: Pick the moment you are in and we show you what you need.
 ---
 
-<div class="role-grid">
-  <a class="role-tile" href="/en/storefront/overview/">
-    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h13l-1.5 8H8z"/><circle cx="9" cy="19" r="1.2"/><circle cx="17" cy="19" r="1.2"/></svg></span>
-    <span class="role-title">I shop at the store</span>
-    <span class="role-text">Browse, pay and follow my order.</span>
-    <span class="role-go">Read the guide →</span>
-  </a>
-  <a class="role-tile is-featured" href="/en/admin/overview/">
-    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M9 10v9"/></svg></span>
-    <span class="role-title">I run the business</span>
-    <span class="role-text">Products, stock, orders, invoices and reports.</span>
-    <span class="role-go">Read the guide →</span>
-  </a>
-  <a class="role-tile" href="/en/clients/what-you-get/">
-    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-14 14z"/><path d="M5 19c3-4 6-7 9-9"/></svg></span>
-    <span class="role-title">I want a store</span>
-    <span class="role-text">What is included, what to bring and how launch works.</span>
-    <span class="role-go">Read the guide →</span>
-  </a>
-</div>
+import StageHome from '../../../components/StageHome.astro';
 
-The screenshots are taken by a script from the real store, so they are refreshed whenever the screens change. [How the guide is built](/en/start/how-this-guide-is-made/).
+<StageHome lang="en" />

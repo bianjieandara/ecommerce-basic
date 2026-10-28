@@ -1,0 +1,63 @@
+---
+// The guide's home page body: the four business stages from data/guide-stages.ts, each listing its real pages. Titles and
+// descriptions come from each page's own frontmatter (getEntry), so this file only owns the grouping and the thumbnails.
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import { STAGES } from '../data/guide-stages';
+
+interface Props {
+  lang: 'es' | 'en';
+}
+const { lang } = Astro.props;
+
+const shots = import.meta.glob<{ default: ImageMetadata }>('../assets/screens/*/*.png', { eager: true });
+const shotFor = (name: string) => shots[`../assets/screens/${lang}/${name}.png`].default;
+
+const prefix = lang === 'en' ? 'en/' : '';
+const pagesFor = async (pages: [string, string][]) =>
+  Promise.all(
+    pages.map(async ([slug, shot]) => {
+      const entry = await getEntry('docs', `${prefix}${slug}`);
+      return { href: `/${prefix}${slug}/`, title: entry?.data.title ?? slug, description: entry?.data.description ?? '', shot };
+    }),
+  );
+
+const copy =
+  lang === 'en'
+    ? { shopper: 'Shopping at a store instead?', shopperLink: 'See how the storefront works', shots: "Screenshots come from the real store and renew when its screens change." }
+    : { shopper: '¿Compras en una tienda en vez de llevarla?', shopperLink: 'Mira cómo funciona para quien compra', shots: 'Las capturas son de la tienda real y se renuevan cuando cambian las pantallas.' };
+---
+
+<div class="stage-home not-content">
+  {
+    STAGES.map(async (stage, index) => (
+      <section class="stage-section" id={stage.id}>
+        <header class="stage-section-head">
+          <span class="stage-num">{index + 1}</span>
+          <div>
+            <h2>{stage.title[lang]}</h2>
+            <p>{stage.blurb[lang]}</p>
+          </div>
+        </header>
+        <ul class="stage-cards">
+          {(await pagesFor(stage.pages)).map((page) => (
+            <li>
+              <a class="stage-card" href={page.href}>
+                <span class="stage-card-shot">
+                  <Image src={shotFor(page.shot)} alt="" loading={index === 0 ? 'eager' : 'lazy'} />
+                </span>
+                <strong>{page.title}</strong>
+                <span class="stage-card-desc">{page.description}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<p class="stage-foot">
+  <a href={`/${prefix}storefront/overview/`}>{copy.shopper} {copy.shopperLink} →</a>
+  <span>{copy.shots}</span>
+</p>

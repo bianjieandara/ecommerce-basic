@@ -30,6 +30,7 @@ portátil para el panel y un celular para la tienda, porque así se usa cada uno
 
 | Tú eres…                                       | Empieza por                                                     |
 | ---------------------------------------------- | --------------------------------------------------------------- |
+| Alguien que todavía no sabe si le conviene     | [Por qué te conviene](/benefits/own-website/)                   |
 | Quien compra, o quiere un recorrido            | [Lo que ve quien compra](/storefront/overview/)                 |
 | Dueño o empleado de una tienda, en el panel    | [Gestionar la tienda](/admin/overview/)                         |
 | Un cliente que decide comprar o lanza una      | [Qué recibes](/clients/what-you-get/)                           |

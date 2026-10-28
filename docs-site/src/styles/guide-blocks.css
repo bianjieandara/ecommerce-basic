@@ -318,3 +318,148 @@
   text-align: end;
   font-weight: var(--guide-weight-semibold);
 }
+
+/* Screen tour (ScreenTour.astro): text on the left, a sticky screenshot on the right that tracks the block being read. Below the
+   50rem breakpoint (Starlight's own, repeated per the other guide files) the sticky column drops and each block shows its own
+   screenshot inline instead. */
+.guide-tour {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(var(--guide-tour-col-min), var(--guide-tour-col));
+  gap: var(--guide-space-4xl);
+  align-items: start;
+}
+
+.guide-tour-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-5xl);
+  min-width: 0;
+}
+
+.guide-tour-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-sm);
+  padding-inline-start: var(--guide-space-lg);
+  border-inline-start: var(--guide-line-bold) solid var(--sl-color-hairline);
+  transition:
+    border-color var(--guide-duration-slow) var(--guide-ease-out),
+    color var(--guide-duration-slow) var(--guide-ease-out);
+}
+
+.guide-tour-block h2 {
+  font-size: var(--guide-text-lg);
+}
+
+.guide-tour-block p {
+  color: var(--guide-muted);
+}
+
+.guide-tour-step {
+  font-size: var(--guide-text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--guide-muted);
+}
+
+.guide-tour-block.is-active {
+  border-inline-start-color: var(--guide-accent);
+}
+
+.guide-tour-inline {
+  display: none;
+  margin: 0;
+  border-radius: var(--guide-radius-lg);
+  overflow: hidden;
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+}
+
+.guide-tour-inline.is-capped {
+  max-height: var(--guide-tour-shot-max);
+  width: fit-content;
+}
+
+.guide-tour-inline img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.guide-tour-inline.is-capped img {
+  width: auto;
+  max-height: var(--guide-tour-shot-max);
+}
+
+.guide-tour-screen {
+  position: sticky;
+  top: calc(var(--sl-nav-height, 3.5rem) + var(--guide-space-xl));
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-sm);
+}
+
+.guide-tour-pic {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: var(--guide-radius-lg);
+  overflow: hidden;
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  background: var(--guide-card);
+}
+
+.guide-tour-pic img {
+  width: 100%;
+  transition: opacity var(--guide-duration-slow) var(--guide-ease-out);
+}
+
+.guide-tour-pic.is-capped {
+  padding-block: var(--guide-space-xl);
+}
+
+.guide-tour-pic.is-capped img {
+  width: auto;
+  max-height: var(--guide-tour-shot-max);
+}
+
+.guide-tour-box {
+  position: absolute;
+  border: var(--guide-line-bold) solid var(--guide-accent);
+  border-radius: var(--guide-radius-sm);
+  box-shadow: 0 0 0 100vmax var(--guide-tour-shade);
+  transition: all var(--guide-duration-slow) var(--guide-ease-out);
+  pointer-events: none;
+}
+
+.guide-tour-cap {
+  margin: 0;
+  font-size: var(--guide-text-sm);
+  color: var(--guide-muted);
+}
+
+@media (max-width: 50rem) {
+  .guide-tour {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .guide-tour-text {
+    gap: var(--guide-space-4xl);
+  }
+
+  .guide-tour-block {
+    border-inline-start-color: transparent;
+    padding-inline-start: 0;
+  }
+
+  .guide-tour-block p {
+    color: var(--sl-color-text);
+  }
+
+  .guide-tour-inline {
+    display: block;
+  }
+
+  .guide-tour-screen {
+    display: none;
+  }
+}

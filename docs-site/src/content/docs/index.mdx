@@ -3,29 +3,10 @@ title: Guía de la tienda
 description: Cómo funciona la tienda para quien compra, cómo la gestiona su equipo y cómo un cliente consigue una.
 template: splash
 hero:
-  title: ¿Qué necesitas hacer hoy?
-  tagline: Elige tu papel y te llevamos directo a lo que te toca.
+  title: Tu tienda, etapa por etapa.
+  tagline: Elige en qué momento estás y te mostramos lo que necesitas.
 ---
 
-<div class="role-grid">
-  <a class="role-tile" href="/storefront/overview/">
-    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h13l-1.5 8H8z"/><circle cx="9" cy="19" r="1.2"/><circle cx="17" cy="19" r="1.2"/></svg></span>
-    <span class="role-title">Compro en la tienda</span>
-    <span class="role-text">Explorar, pagar y seguir mi pedido.</span>
-    <span class="role-go">Ver la guía →</span>
-  </a>
-  <a class="role-tile is-featured" href="/admin/overview/">
-    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M9 10v9"/></svg></span>
-    <span class="role-title">Llevo el negocio</span>
-    <span class="role-text">Productos, stock, pedidos, facturas y reportes.</span>
-    <span class="role-go">Ver la guía →</span>
-  </a>
-  <a class="role-tile" href="/clients/what-you-get/">
-    <span class="role-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-14 14z"/><path d="M5 19c3-4 6-7 9-9"/></svg></span>
-    <span class="role-title">Quiero una tienda</span>
-    <span class="role-text">Qué incluye, qué debes aportar y cómo se lanza.</span>
-    <span class="role-go">Ver la guía →</span>
-  </a>
-</div>
+import StageHome from '../../components/StageHome.astro';
 
-Las capturas las toma un script desde la tienda real, así que se renuevan cuando cambian las pantallas. [Cómo se hace esta guía](/start/how-this-guide-is-made/).
+<StageHome lang="es" />

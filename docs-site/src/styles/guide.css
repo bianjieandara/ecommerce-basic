@@ -80,6 +80,10 @@
   --guide-connector: 1.5rem;
   --guide-line-bold: 2px;
   --guide-icon-stroke: 1.8;
+  --guide-tour-col-min: 14rem;
+  --guide-tour-col: 22rem;
+  --guide-tour-shot-max: 28rem;
+  --guide-tour-shade: rgb(17 17 17 / 0.3);
 
   /* Motion (guide-motion.css) and the shadow and hover border that go with it. */
   --guide-duration: 0.15s;

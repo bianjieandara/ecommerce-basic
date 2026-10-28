@@ -1,0 +1,99 @@
+---
+title: Pedidos
+description: Encontrar pedidos, moverlos por sus estados y hablar con el cliente.
+sidebar:
+  order: 5
+---
+
+import ScreenTour from '../../../components/ScreenTour.astro';
+
+<ScreenTour
+  lang="es"
+  blocks={[
+    {
+      heading: 'Busca y filtra',
+      text: 'Busca por número, nombre, correo o teléfono. También puedes filtrar por estado, método de pago y un rango de fechas. Los pedidos más nuevos aparecen arriba.',
+      shot: 'admin-orders',
+      alt: 'La lista de pedidos, con el buscador y los filtros',
+      box: [2.5, 23, 95, 19.5],
+    },
+    {
+      heading: 'La lista y el pedido, lado a lado',
+      text: 'En una pantalla ancha, el pedido que eliges se abre a la derecha sin salir de la lista; el primero de la página se muestra al entrar.',
+      shot: 'admin-orders',
+      alt: 'La lista de pedidos con un pedido abierto a la derecha',
+      box: [2.5, 46.5, 95, 53.5],
+    },
+    {
+      heading: 'En el celular',
+      text: 'Solo ves la lista, y cada pedido se abre en su propia página. La lista se convierte en tarjetas, así que puedes gestionar pedidos desde el bolsillo.',
+      shot: 'admin-orders-phone',
+      alt: 'La lista de pedidos en un celular, como tarjetas',
+      capHeight: true,
+    },
+    {
+      heading: 'Un pedido',
+      text: 'Se ve como un recibo: arriba la tienda, el número, la fecha y el estado; después el cliente con su teléfono y dirección de envío, los productos con los totales, el método de pago y, cuando la tienda la registró, la campaña de origen. Al pie quedan el historial y los mensajes enviados.',
+      shot: 'admin-order-detail',
+      alt: 'Un pedido abierto, con los datos del cliente y los productos',
+      box: [2.5, 14.4, 72, 34.4],
+      cropRatio: '1280/1250',
+    },
+    {
+      heading: 'Cambiar el estado',
+      text: 'Elige el nuevo estado, añade si quieres una nota para el historial y decide si avisar al cliente por correo. Para Enviado aparece el campo Código de seguimiento.',
+      shot: 'admin-order-detail',
+      alt: 'El panel para cambiar el estado de un pedido',
+      box: [76.25, 14.4, 21.2, 19.3],
+      cropRatio: '1280/1250',
+    },
+    {
+      heading: 'WhatsApp y factura',
+      text: 'Responder por WhatsApp abre un chat con el cliente, y Copiar enlace del cliente copia su página privada de seguimiento. En Factura puedes verla, enviarla de nuevo, descargar el PDF o generarlo otra vez.',
+      shot: 'admin-order-detail',
+      alt: 'Los botones de WhatsApp y la tarjeta de la factura',
+      box: [76.25, 36.8, 21.2, 28.4],
+      cropRatio: '1280/1250',
+    },
+  ]}
+/>
+
+## Los estados del pedido
+
+| Estado                | Significado                                                     | Quién lo cambia                                                             |
+| ---------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **Pendiente de pago** | El pedido se creó y espera el dinero.                              | La tienda, al crear el pedido.                                                |
+| **Pagado**             | Llegó el dinero. Se emite una factura y se avisa al cliente.       | Tarjeta y PayPal: automático. Transferencia, contra entrega y WhatsApp: tú.   |
+| **En preparación**    | Lo estás preparando.                                               | Tú.                                                                            |
+| **Enviado**            | Salió de la tienda. Añade aquí el **código de seguimiento**.      | Tú.                                                                            |
+| **Entregado**          | El cliente lo tiene.                                               | Tú.                                                                            |
+| **Cancelado**          | El pedido no se hará. El stock reservado vuelve al estante.        | Tú, o la tienda cuando vence un pago online.                                   |
+| **Reembolsado**        | Devolviste el dinero fuera de la tienda. Esto solo lo registra.    | Tú.                                                                            |
+
+## Cambiar el estado
+
+En **Cambiar estado**, elige el **nuevo estado**, añade si quieres una **nota para el historial** y decide si **avisar al cliente
+por correo**. Para *Enviado* aparece el campo **Código de seguimiento**. Pulsa **Cambiar estado**.
+
+:::tip[Una rutina para transferencias]
+1. El pedido llega como **Pendiente de pago** y el cliente ve tus datos bancarios.
+2. Cuando la transferencia aparece en tu banco, abre el pedido y ponlo en **Pagado**. Salen la factura y el correo de «pago
+   recibido».
+3. Prepáralo (**En preparación**), envíalo (**Enviado**, con el código de seguimiento) y márcalo como **Entregado**.
+:::
+
+:::caution
+Los pedidos con tarjeta y PayPal los marca como **Pagados** el propio proveedor. No hace falta, y no conviene, marcarlos a mano.
+Si un pago online no se confirma dentro del tiempo de reserva (45 minutos por defecto), el pedido vence y se libera el stock.
+:::
+
+## Reembolsos
+
+En un pedido **Pagado** con tarjeta (dLocal Go o PayPal), el propietario ve el botón **Reembolsar** con el importe y el proveedor.
+Pide confirmación una vez, devuelve el pago completo al cliente y deja el pedido como **Reembolsado**. PayPal responde al instante;
+dLocal Go tarda un poco y avisa a la tienda, así que el pedido pasa a **Reembolsado** cuando llega el aviso. En la línea de tiempo
+queda quién lo pidió. Solo se reembolsa el pago completo, y solo una vez por pedido. Si el proveedor lo rechaza (por ejemplo, un
+pago demasiado antiguo), el botón vuelve a estar disponible y el motivo aparece en pantalla.
+
+Los editores no ven el botón. Con los demás métodos (transferencia, efectivo), pon **Reembolsado** después de devolver el dinero.
+Un reembolso parcial se hace en el panel del proveedor y el pedido sigue **Pagado**.

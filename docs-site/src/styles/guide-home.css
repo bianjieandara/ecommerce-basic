@@ -1,88 +1,119 @@
-/* Role tiles of the guide's home page (index.mdx): three cards, one per audience, the featured one in the brand colour. Tokens: guide.css. */
-.role-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--guide-space-lg);
-  margin-block: var(--guide-space-2xl);
-}
-
-.role-tile {
+/* The guide's home page body (StageHome.astro): the four business stages, each a numbered section of page cards. Tokens: guide.css. */
+.stage-home {
   display: flex;
   flex-direction: column;
-  gap: var(--guide-space-sm);
-  min-height: var(--guide-tile-min-height);
-  padding: var(--guide-space-2xl);
-  border-radius: var(--guide-radius-xl);
-  border: var(--guide-border-width) solid var(--sl-color-hairline);
-  background: var(--guide-card);
-  color: var(--sl-color-text);
-  text-decoration: none;
+  gap: var(--guide-space-5xl);
+  margin-block: var(--guide-space-2xl) var(--guide-space-3xl);
 }
 
-.role-tile.is-featured {
-  background: var(--guide-primary);
-  border-color: var(--guide-primary);
-  color: var(--guide-on-primary);
+.stage-section-head {
+  display: flex;
+  gap: var(--guide-space-lg);
+  align-items: flex-start;
+  margin-bottom: var(--guide-space-xl);
 }
 
-.role-icon {
-  width: var(--guide-icon-lg);
-  height: var(--guide-icon-lg);
-  border-radius: var(--guide-radius-md);
+.stage-num {
   display: grid;
   place-items: center;
-  background: var(--sl-color-accent-low);
-  color: var(--sl-color-accent-high);
-}
-
-.role-tile.is-featured .role-icon {
-  background: var(--guide-on-primary-soft);
+  flex: none;
+  width: var(--guide-icon-lg);
+  height: var(--guide-icon-lg);
+  border-radius: var(--guide-radius-pill);
+  background: var(--guide-primary);
   color: var(--guide-on-primary);
-}
-
-.role-title {
   font-family: var(--guide-font-display);
   font-weight: var(--guide-weight-bold);
-  font-size: var(--guide-text-xl);
-  line-height: var(--guide-leading-tight);
-  margin-top: var(--guide-space-xs);
+  font-size: var(--guide-text-lg);
 }
 
-.role-text {
+.stage-section-head h2 {
+  margin: 0;
+}
+
+.stage-section-head p {
+  margin: var(--guide-space-xs) 0 0;
   color: var(--guide-muted);
 }
 
-.role-tile.is-featured .role-text {
-  color: var(--guide-on-primary-muted);
+.stage-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--guide-space-xl);
 }
 
-.role-go {
-  margin-top: auto;
+.stage-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-sm);
+  height: 100%;
+  text-decoration: none;
+  color: var(--sl-color-text);
+}
+
+.stage-card-shot {
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--guide-radius-lg);
+  overflow: hidden;
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  background: var(--guide-card);
+}
+
+.stage-card-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.stage-card strong {
+  font-family: var(--guide-font-display);
+  font-weight: var(--guide-weight-bold);
+  font-size: var(--guide-text-base);
+  color: var(--sl-color-white);
+}
+
+.stage-card-desc {
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+.stage-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--guide-space-sm) var(--guide-space-2xl);
+  align-items: baseline;
+  padding-top: var(--guide-space-2xl);
+  border-top: var(--guide-border-width) solid var(--sl-color-hairline);
+  font-size: var(--guide-text-sm);
+  color: var(--guide-muted);
+}
+
+.stage-foot a {
   font-weight: var(--guide-weight-semibold);
-}
-
-.role-tile:focus-visible {
-  outline: var(--guide-focus-width) solid var(--sl-color-accent);
-  outline-offset: var(--guide-focus-offset);
+  color: var(--sl-color-text);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .role-tile {
+  .stage-card-shot {
     transition:
       transform var(--guide-duration-slow) var(--guide-ease-out),
       box-shadow var(--guide-duration-slow) var(--guide-ease-out);
   }
-  .role-tile:hover {
+
+  .stage-card:hover .stage-card-shot {
     transform: translateY(var(--guide-lift));
     box-shadow: var(--guide-shadow-lift);
   }
 }
 
 @media (max-width: 50rem) {
-  .role-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .role-tile {
-    min-height: 0;
+  .stage-cards {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,0 +1,118 @@
+---
+// A sticky screenshot that tracks which block of text the reader is looking at, with a box over the part being explained. For
+// pages whose job is to point at the real screen, not just describe it. Screenshots come from assets/screens/<lang>/.
+import { Image } from 'astro:assets';
+
+interface Block {
+  /** Short heading shown above this block, and as the caption under the screenshot while it is in view. */
+  heading: string;
+  text: string;
+  /** Screenshot file name without folder or extension, e.g. `admin-orders`. */
+  shot: string;
+  alt: string;
+  /** The part of the screenshot this block is about, as [left, top, width, height] in percent. Omit to show the whole shot. */
+  box?: [number, number, number, number];
+  /** Crops a screenshot taller than its useful part to this ratio (e.g. `1280/1200`) instead of its own height. */
+  cropRatio?: string;
+  /** Caps a tall (phone) screenshot's height instead of stretching it to the column's width. */
+  capHeight?: boolean;
+}
+interface Props {
+  lang: 'es' | 'en';
+  blocks: Block[];
+}
+const { lang, blocks } = Astro.props;
+
+const shots = import.meta.glob<{ default: ImageMetadata }>('../assets/screens/*/*.png', { eager: true });
+const shotFor = (name: string) => shots[`../assets/screens/${lang}/${name}.png`].default;
+
+// What the client script needs to swap the screenshot, its crop and its box as the reader scrolls: one entry per block, in order.
+const tourData = blocks.map((block) => ({
+  src: shotFor(block.shot).src,
+  box: block.box ?? null,
+  cropRatio: block.cropRatio ?? null,
+  capHeight: !!block.capHeight,
+}));
+---
+
+<div class="guide-tour not-content" data-screen-tour data-tour-data={JSON.stringify(tourData)}>
+  <div class="guide-tour-text">
+    {
+      blocks.map((block, index) => (
+        <section class="guide-tour-block" data-tour-block={index} tabindex="0">
+          <span class="guide-tour-step">
+            {index + 1} / {blocks.length}
+          </span>
+          <h2>{block.heading}</h2>
+          <p>{block.text}</p>
+          <figure
+            class:list={['guide-tour-inline', { 'is-capped': block.capHeight }]}
+            style={block.cropRatio ? `aspect-ratio:${block.cropRatio}` : undefined}
+          >
+            <Image src={shotFor(block.shot)} alt={block.alt} loading={index === 0 ? 'eager' : 'lazy'} />
+          </figure>
+        </section>
+      ))
+    }
+  </div>
+  <div class="guide-tour-screen">
+    <div class="guide-tour-pic" data-tour-pic>
+      <Image src={shotFor(blocks[0].shot)} alt={blocks[0].alt} data-tour-img loading="eager" />
+      <div class="guide-tour-box" data-tour-box hidden />
+    </div>
+    <p class="guide-tour-cap" data-tour-cap>{blocks[0].heading}</p>
+  </div>
+</div>
+
+<script>
+  // Highlights the block nearest the middle of the viewport, and keeps the sticky screenshot in sync with it: its image, crop,
+  // box and caption. Nothing moves without JavaScript; the blocks' own inline screenshots (CSS-hidden here) still work.
+  document.querySelectorAll<HTMLElement>('[data-screen-tour]').forEach((root) => {
+    const data = JSON.parse(root.dataset.tourData ?? '[]') as {
+      src: string;
+      box: [number, number, number, number] | null;
+      cropRatio: string | null;
+      capHeight: boolean;
+    }[];
+    const blocks = [...root.querySelectorAll<HTMLElement>('[data-tour-block]')];
+    const picEl = root.querySelector<HTMLElement>('[data-tour-pic]');
+    const imgEl = root.querySelector<HTMLImageElement>('[data-tour-img]');
+    const boxEl = root.querySelector<HTMLElement>('[data-tour-box]');
+    const capEl = root.querySelector<HTMLElement>('[data-tour-cap]');
+    if (!picEl || !imgEl || !boxEl || !capEl) return;
+    // Guarded once above; these four are used inside `show`, a closure TS cannot narrow across.
+    const pic = picEl;
+    const img = imgEl;
+    const box = boxEl;
+    const cap = capEl;
+
+    let current = -1;
+    function show(index: number) {
+      if (index === current) return;
+      current = index;
+      const d = data[index];
+      blocks.forEach((block, i) => block.classList.toggle('is-active', i === index));
+      pic.style.aspectRatio = d.cropRatio ?? '';
+      pic.classList.toggle('is-capped', d.capHeight);
+      if (!img.src.endsWith(d.src)) img.src = d.src;
+      if (d.box) {
+        const [left, top, width, height] = d.box;
+        Object.assign(box.style, { left: `${left}%`, top: `${top}%`, width: `${width}%`, height: `${height}%` });
+        box.hidden = false;
+      } else {
+        box.hidden = true;
+      }
+      cap.textContent = blocks[index].querySelector('h2')?.textContent ?? '';
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.find((entry) => entry.isIntersecting);
+        if (visible) show(blocks.indexOf(visible.target as HTMLElement));
+      },
+      { rootMargin: '-35% 0px -55% 0px' },
+    );
+    blocks.forEach((block) => observer.observe(block));
+    show(0);
+  });
+</script>

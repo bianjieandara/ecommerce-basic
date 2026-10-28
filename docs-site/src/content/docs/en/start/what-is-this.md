@@ -29,6 +29,7 @@ and a phone for the shop, because that is how each is mostly used.
 
 | You are…                                  | Start with                                                  |
 | ----------------------------------------- | ----------------------------------------------------------- |
+| Someone still weighing whether it is worth it | [Why it pays off](/en/benefits/own-website/)             |
 | A shopper or someone who wants a tour     | [What shoppers see](/en/storefront/overview/)                  |
 | A store owner or an employee in the admin | [Running the store](/en/admin/overview/)                       |
 | A client deciding to buy or launching one | [What you get](/en/clients/what-you-get/)                      |
