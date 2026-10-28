@@ -47,23 +47,18 @@
   cursor: pointer;
 }
 
+/* Amber marks whatever is active, the way the eBaq site marks its buttons. Ink on amber reads in either theme, so this needs
+   no dark-theme counterpart; a black pill next to amber icons was the loudest thing making the page look unplanned. */
 .guide-pill-button[aria-pressed='true'] {
-  border-color: var(--guide-primary);
-  background: var(--guide-primary);
-  color: var(--guide-on-primary);
+  border-color: var(--guide-accent);
+  background: var(--guide-accent);
+  color: var(--guide-primary);
   font-weight: var(--guide-weight-semibold);
 }
 
 .guide-pill-button:focus-visible {
   outline: var(--guide-focus-width) solid var(--guide-accent);
   outline-offset: var(--guide-focus-offset);
-}
-
-/* Dark theme: the primary colour is near-black, so the active button uses the accent-high text colour on the tinted surface. */
-:root[data-theme='dark'] .guide-pill-button[aria-pressed='true'] {
-  border-color: var(--sl-color-accent-high);
-  background: var(--sl-color-accent-low);
-  color: var(--sl-color-accent-high);
 }
 
 .guide-table-scroll {

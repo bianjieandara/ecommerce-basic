@@ -8,13 +8,15 @@
   width: var(--guide-icon-lg);
   height: var(--guide-icon-lg);
   border-radius: var(--guide-radius-md);
-  background: var(--sl-color-accent-low);
-  color: var(--sl-color-accent-high);
+  /* One amber family in two weights. The two boxes used to pull from different Starlight ramps, so a page that mixed them
+     read as two designs: a grey chip next to an amber one. Both are amber now, and `is-accent` is simply the louder one. */
+  background: color-mix(in srgb, var(--guide-accent) 18%, var(--guide-card));
+  color: var(--guide-accent-contrast);
 }
 
 .guide-icon-box.is-accent {
-  background: var(--sl-color-purple-low);
-  color: var(--sl-color-purple-high);
+  background: var(--guide-accent);
+  color: var(--guide-primary);
 }
 
 .guide-icon {

@@ -25,6 +25,9 @@
   --sl-color-bg-inline-code: var(--guide-pitch-raise);
   --guide-card: var(--guide-pitch-raise);
   --guide-muted: var(--guide-pitch-muted);
+  /* The page is dark whatever the theme, so the readable amber here is the bright one, not the dark one the light theme uses.
+     Without this the icon chips come out as brown on near-black. */
+  --guide-accent-contrast: var(--guide-pitch-accent);
   --guide-border-hover: var(--guide-pitch-accent);
   background: var(--guide-pitch-bg);
   color: var(--guide-pitch-muted);
