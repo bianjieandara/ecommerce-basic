@@ -7,7 +7,7 @@ sidebar:
 
 import ChangePlans from '../../../components/ChangePlans.astro';
 import RegionPicker from '../../../components/RegionPicker.astro';
-import Precio from '../../../components/Precio.astro';
+import PrecioFila from '../../../components/PrecioFila.astro';
 import RegionText from '../../../components/RegionText.astro';
 import FlowSteps from '../../../components/FlowSteps.astro';
 import FeatureGrid from '../../../components/FeatureGrid.astro';
@@ -73,9 +73,20 @@ Elige tu país para ver los precios y los datos de impuestos que te corresponden
 
 <RegionPicker lang="es" />
 
+## Lo que todo el mundo pregunta
+
+<FeatureGrid layout="card" items={[
+  {"icon": "coin", "title": "¿Cuánto cuesta?", "text": "Hay tres opciones según lo que necesites, y están aquí abajo con su precio. La cotización va por escrito antes de empezar y no cambia después."},
+  {"icon": "pencil", "title": "¿Puedo cambiarlo yo?", "text": "Sí. Textos, fotos, precios y productos los cambias tú desde el panel, sin programar y sin pedirle permiso a nadie."},
+  {"icon": "refresh", "title": "¿Y si no me gusta?", "text": "Tienes 30 días de garantía desde que la publicamos. Si no te gusta cómo quedó, te devolvemos tu dinero."},
+]} />
+
+**Antes de decidir, tócala.** La [tienda de demostración](/clients/try-the-demo/) es una tienda real con productos de ejemplo. Se reinicia cada noche a las 03:00, así que puedes probar lo que quieras sin romper nada.
+
+
 ## Precio y garantía
 
-<Precio id="tienda-online" lang="es" />
+<PrecioFila lang="es" />
 
 Te damos la cotización por escrito antes de empezar, y no cambia después.
 
@@ -195,11 +206,3 @@ Si sabes que puedes hacerlo pero prefieres que otra persona lo haga, también pu
 Casi todo lo puedes cambiar tú desde el panel, pero mucha gente prefiere que lo haga otra persona: el texto de una página, un producto nuevo, el número de WhatsApp. Es una opción, no una obligación, y tiene precios fijos con IVA incluido.
 
 Mira [Cambios hechos por nosotros](/clients/changes-service/).
-
-## Qué tan terminada está
-
-:::note
-Las funciones de compra, pago, pedidos, facturas, inventario, catálogo, contenido y reportes que describe esta página ya están hechas y probadas. Las pruebas de pago con tarjeta y PayPal se hicieron en los entornos de prueba de cada proveedor, así que no se cobró dinero real. Algunas partes opcionales todavía se están terminando, por ejemplo algunas herramientas de marketing. Tu contacto te dirá exactamente qué incluye tu lanzamiento.
-:::
-
-Antes de decidir, prueba la [tienda de demostración](/clients/try-the-demo/). Es una tienda real, con productos de ejemplo, y se reinicia cada noche a las 03:00.

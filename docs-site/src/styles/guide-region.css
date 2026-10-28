@@ -105,3 +105,60 @@
   color: var(--sl-color-white);
   font-variant-numeric: tabular-nums;
 }
+
+/* The three products side by side. The grid sits inside the region wrapper, never on it: see PrecioFila.astro. */
+.guide-price-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--guide-space-lg);
+  margin-block: var(--guide-space-xl) var(--guide-space-3xl);
+}
+
+.guide-price-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-sm);
+  min-width: 0;
+  padding: var(--guide-space-2xl);
+  border: var(--guide-border-width) solid var(--sl-color-hairline);
+  border-radius: var(--guide-radius-lg);
+  background: var(--guide-card);
+}
+
+.guide-price-card-name {
+  margin: 0;
+  font-size: var(--guide-text-lg);
+  font-weight: var(--guide-weight-bold);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--sl-color-white);
+}
+
+.guide-price-card-amount {
+  margin: 0;
+  font-size: var(--guide-text-h3);
+  font-weight: var(--guide-weight-bold);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--guide-accent-contrast);
+  font-variant-numeric: tabular-nums;
+}
+
+.guide-price-card-from {
+  font-size: var(--guide-text-xs);
+  font-weight: var(--guide-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--guide-tracking-wide);
+  color: var(--guide-muted);
+}
+
+.guide-price-card-for {
+  margin: 0;
+  font-size: var(--guide-text-md);
+  color: var(--sl-color-white);
+}
+
+.guide-price-card-detail {
+  margin: 0;
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}

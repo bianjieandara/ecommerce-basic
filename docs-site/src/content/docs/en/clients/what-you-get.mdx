@@ -7,7 +7,7 @@ sidebar:
 
 import ChangePlans from '../../../../components/ChangePlans.astro';
 import RegionPicker from '../../../../components/RegionPicker.astro';
-import Precio from '../../../../components/Precio.astro';
+import PrecioFila from '../../../../components/PrecioFila.astro';
 import RegionText from '../../../../components/RegionText.astro';
 import FlowSteps from '../../../../components/FlowSteps.astro';
 import FeatureGrid from '../../../../components/FeatureGrid.astro';
@@ -73,9 +73,20 @@ Choose your country to see the prices and tax details that apply to you:
 
 <RegionPicker lang="en" />
 
+## What everyone asks
+
+<FeatureGrid layout="card" items={[
+  {"icon": "coin", "title": "How much does it cost?", "text": "There are three options depending on what you need, and they are right below with their prices. The quote comes in writing before we start and does not change."},
+  {"icon": "pencil", "title": "Can I change it myself?", "text": "Yes. Text, photos, prices and products you change yourself from the panel, without programming and without asking anyone."},
+  {"icon": "refresh", "title": "What if I do not like it?", "text": "You have 30 days of guarantee from the day we publish it. If you do not like how it turned out, you get your money back."},
+]} />
+
+**Before you decide, go and touch it.** The [demo store](/en/clients/try-the-demo/) is a real store with sample products. It resets every night at 03:00, so you can try anything without breaking it.
+
+
 ## Price and guarantee
 
-<Precio id="tienda-online" lang="en" />
+<PrecioFila lang="en" />
 
 We give you the quote in writing before we start, and it does not change afterwards.
 
@@ -179,11 +190,3 @@ If you can do it yourself but would rather have someone else do it, you can also
 You can change almost everything yourself from the panel, but plenty of people would rather someone else did it: the text on a page, a new product, the WhatsApp number. It is an option, not an obligation, and it has fixed prices with tax included.
 
 See [Changes we make for you](/en/clients/changes-service/).
-
-## How finished is it?
-
-:::note
-The shopping, payment, order, invoicing, inventory, catalogue, content and report features described on this page are built and have been tested. The card and PayPal payment tests were run in each provider's test environment, so no real money was charged. Some optional parts are still being finished, for example some marketing tools. Your contact will tell you exactly what is included in your launch.
-:::
-
-Before you decide, try the [demo store](/en/clients/try-the-demo/). It is a real store with sample products, and it resets every night at 03:00.

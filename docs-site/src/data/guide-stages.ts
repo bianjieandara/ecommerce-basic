@@ -37,8 +37,9 @@ export const STAGES: Stage[] = [
     },
     pages: [
       ['clients/what-you-get', 'shop-catalog-desktop'],
-      ['clients/requirements-and-costs', 'admin-settings-general'],
+      // La demo va antes que los requisitos: tocar una tienda real convence más que leer lo que hay que aportar.
       ['clients/try-the-demo', 'shop-category-desktop'],
+      ['clients/requirements-and-costs', 'admin-settings-general'],
     ],
   },
   {

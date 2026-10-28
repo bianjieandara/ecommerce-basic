@@ -1,0 +1,65 @@
+---
+// Los tres productos en fila, con su precio en la moneda de la región. Existe porque la página enseñaba un solo importe, el de
+// la tienda, y quien lo veía sólo podía aceptarlo o irse; viendo los tres, elige.
+//
+// El div de la región no lleva `display`: la regla que oculta las demás regiones tiene la misma especificidad, así que una
+// cuadrícula puesta ahí las mostraría todas a la vez. La cuadrícula va dentro.
+import { REGIONS } from '../data/regions.mjs';
+import { cargarPrecios, CLAVE_REGION, formatearPrecio, type Lang } from '../data/precios';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+
+/** Qué es cada producto y para quién, en el orden en que crece el compromiso. */
+const PRODUCTOS = [
+  {
+    id: 'entrada-web',
+    es: { nombre: 'Página web', para: 'Para que te encuentren y vean qué vendes.', detalle: 'Hasta cinco secciones y un botón directo a tu WhatsApp.' },
+    en: { nombre: 'Website', para: 'So people find you and see what you sell.', detalle: 'Up to five sections and a button straight to your WhatsApp.' },
+  },
+  {
+    id: 'catalogo',
+    es: { nombre: 'Catálogo', para: 'Para mandar un enlace cuando te piden el catálogo.', detalle: 'El pedido se cierra por WhatsApp, como ahora, pero sin mandar fotos sueltas.' },
+    en: { nombre: 'Catalogue', para: 'To send one link when someone asks for your catalogue.', detalle: 'The order still closes over WhatsApp, without sending loose photos.' },
+  },
+  {
+    id: 'tienda-online',
+    es: { nombre: 'Tienda', para: 'Para que compren y paguen sin hablar contigo.', detalle: 'Carrito, pagos en línea, envíos y facturas automáticas.' },
+    en: { nombre: 'Store', para: 'So people buy and pay without talking to you.', detalle: 'Cart, online payments, shipping and automatic invoices.' },
+  },
+] as const;
+
+const precios = await cargarPrecios();
+const desde = lang === 'en' ? 'from' : 'desde';
+
+const filas = REGIONS.map((region) => ({
+  region,
+  tarjetas: PRODUCTOS.map((producto) => {
+    const precio = precios[producto.id]?.[CLAVE_REGION[region]];
+    return { ...producto[lang], precio: precio ? formatearPrecio(precio, lang) : null };
+  }),
+}));
+---
+
+{
+  filas.map(({ region, tarjetas }) => (
+    <div data-region-only={region}>
+      <div class="guide-price-row">
+        {tarjetas.map((t) => (
+          <div class="guide-price-card">
+            <h3 class="guide-price-card-name">{t.nombre}</h3>
+            {t.precio && (
+              <p class="guide-price-card-amount">
+                <span class="guide-price-card-from">{desde}</span> {t.precio.importe}
+              </p>
+            )}
+            <p class="guide-price-card-for">{t.para}</p>
+            <p class="guide-price-card-detail">{t.detalle}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  ))
+}
