@@ -5,8 +5,9 @@ sidebar:
   order: 1
 ---
 
+import ActBands from '../../../components/ActBands.astro';
+import BeforeAfter from '../../../components/BeforeAfter.astro';
 import FeatureGrid from '../../../components/FeatureGrid.astro';
-import FlowSteps from '../../../components/FlowSteps.astro';
 
 Una **página propia** es una dirección en internet que es tuya (`tunegocio.com`), con tus textos, tus fotos, tus precios y tu
 teléfono. No es un perfil en una red social ni un número de WhatsApp: es el lugar al que llega quien ya te está buscando y
@@ -17,25 +18,71 @@ Los datos de esta sección son de México y de 2025–2026. Cada cifra dice de d
 están en [México en números](/benefits/mexico-data/).
 :::
 
-## Cómo trabaja para ti
-
-<FlowSteps steps={[
-  {"icon": "search", "title": "Alguien te busca", "text": "Tu nombre, tu producto o «cerca de mí», desde el celular."},
-  {"icon": "globe", "title": "Encuentra tu página", "text": "Con tu catálogo, tus precios, tu horario y cómo llegar."},
-  {"icon": "chat", "title": "Te escribe o te compra", "text": "Por WhatsApp, por teléfono, en tu local o en línea."},
-  {"icon": "star", "title": "Y sabe a dónde volver", "text": "La dirección es la misma el año que viene."},
+<ActBands acts={[
+  {
+    eyebrow: "El problema",
+    title: "Te buscan donde no estás",
+    text: "Casi todo el país ya busca en internet antes de gastar, y lo hace con tiempo. Si no hay nada tuyo que encontrar, lo que encuentran es a otro.",
+    figures: [
+      { value: "86.1 %", label: "de la población usó internet en 2025 (INEGI)" },
+      { value: "67 %", label: "empieza a buscar más de una semana antes (AMVO)" },
+    ],
+  },
+  {
+    eyebrow: "Lo que ganas",
+    title: "Una dirección tuya, abierta siempre",
+    text: "Tu página contesta precio, medidas, horario y cómo llegar mientras tú duermes o atiendes a alguien más. Y la decisión se toma ahí aunque el cobro sea en tu mostrador: 62 % piensa combinar la tienda en línea con la física, y solo 13 % comprará únicamente en el local.",
+    figures: [
+      { value: "24/7", label: "sin que tengas que contestar" },
+      { value: "5 USD", label: "al mes de plataforma, más tu dominio" },
+    ],
+  },
+  {
+    eyebrow: "La prueba",
+    title: "Quita las dudas que matan la venta",
+    text: "75 % de las compras que se interrumpen tienen que ver con falta de información o con tener que preguntar para saber algo. Una ficha clara (qué incluye, cuánto tarda, cuánto cuesta el envío, cómo se devuelve) es venta.",
+    figures: [
+      { value: "75 %", label: "de los abandonos empiezan por falta de información" },
+      { value: "84.6 %", label: "de las personas usa celular; 38.1 %, computadora" },
+    ],
+  },
 ]} />
+
+## El mismo martes, con y sin página
+
+<BeforeAfter
+  before={{
+    label: "Sin página propia",
+    rows: [
+      { time: "21:40", text: "Alguien busca «papelería cerca de mí» desde el celular." },
+      { time: "21:41", text: "No encuentra tu negocio. Encuentra a tu competencia." },
+      { time: "21:43", text: "Te escribe por WhatsApp: «¿tienes? ¿a cómo?»." },
+      { time: "09:15", text: "Contestas al otro día. Ya lo resolvió en otro lado." },
+    ],
+    total: "$0",
+    note: "y una conversación más que contestar mañana",
+  }}
+  after={{
+    label: "Con página propia",
+    rows: [
+      { time: "21:40", text: "La misma búsqueda abre tu página, con fotos y precios." },
+      { time: "21:42", text: "Ve tu horario, tu dirección y cómo llegar." },
+      { time: "21:44", text: "Te escribe ya decidido, o aparta por WhatsApp." },
+      { time: "09:15", text: "Llega a tu mostrador a recoger lo que ya eligió." },
+    ],
+    total: "Una venta",
+    note: "que se decidió sin que tú estuvieras despierto",
+  }}
+/>
 
 ## Lo que ganas
 
 <FeatureGrid items={[
   {"icon": "users", "title": "Te encuentra quien ya te busca", "text": "En 2025, 86.1 % de la población mexicana de 6 años y más usó internet: 104.9 millones de personas (INEGI, ENDUTIH 2025). No hace falta convencer a nadie de entrar a internet; ya están ahí, buscando lo que tú vendes."},
-  {"icon": "clock", "title": "Responde antes de que te escriban", "text": "67 % de los compradores empieza a buscar más de una semana antes de comprar (AMVO, Pulso El Buen Fin 2026). Mientras tú duermes o atiendes, tu página contesta precio, medidas, horario y cómo llegar."},
-  {"icon": "pin", "title": "Lleva gente a tu local, no solo a tu carrito", "text": "62 % piensa combinar la tienda en línea y la física, y solo 13 % comprará únicamente en el local (AMVO, Pulso El Buen Fin 2026). La decisión se toma en el celular aunque el cobro sea en tu mostrador."},
-  {"icon": "doc", "title": "Quita las dudas que hacen abandonar", "text": "75 % de las compras que se interrumpen tienen que ver con falta de información o con tener que preguntar (AMVO, Estudio de Venta Online 2026). Una ficha clara (qué incluye, cuánto tarda, cuánto cuesta el envío, cómo se devuelve) es venta."},
-  {"icon": "phone", "title": "Está hecha para el celular, que es lo que casi todos traen", "text": "84.6 % de las personas usó teléfono celular en 2025 y 38.1 %, computadora (INEGI, ENDUTIH 2025). Una página que se lee mal en un teléfono está cerrada para la mayoría."},
+  {"icon": "phone", "title": "Está hecha para el celular", "text": "84.6 % de las personas usó teléfono celular en 2025 y 38.1 %, computadora (INEGI, ENDUTIH 2025). Una página que se lee mal en un teléfono está cerrada para la mayoría."},
   {"icon": "key", "title": "La dirección es tuya", "text": "Un perfil en una red social vive en la cuenta de otra empresa y lo ve quien el algoritmo decida. Tu dominio y tu página son tuyos: nadie te los puede suspender ni te cambia el alcance de un día para otro."},
-  {"icon": "megaphone", "title": "Es a donde mandas tus anuncios y tu WhatsApp", "text": "WhatsApp llega a 91.4 % de los usuarios de internet de 16 años y más en México (Digital 2026, We Are Social y Meltwater con datos de GWI). Un anuncio o un mensaje rinden más cuando el enlace abre una página que ya explica y ya vende."},
+  {"icon": "megaphone", "title": "Es a donde mandas tus anuncios y tu WhatsApp", "text": "WhatsApp llega a 91.4 % de los usuarios de internet de 16 años y más en México (Digital 2026). Un anuncio o un mensaje rinden más cuando el enlace abre una página que ya explica y ya vende."},
+  {"icon": "pin", "title": "Lleva gente a tu local, no solo a tu carrito", "text": "62 % piensa combinar la tienda en línea y la física (AMVO, Pulso El Buen Fin 2026). La decisión se toma en el celular aunque el cobro sea en tu mostrador."},
   {"icon": "coin", "title": "Cuesta poco de mantener", "text": "Son unos 5 USD al mes de plataforma más el precio anual de tu dominio, sin comisión por venta. El detalle está en Qué recibes."},
 ]} />
 

@@ -1,0 +1,49 @@
+---
+title: Por qué te conviene
+description: Qué gana tu negocio con una página propia y con vender en línea, con datos de México.
+template: splash
+sidebar:
+  order: 0
+  label: Empieza por aquí
+---
+
+import SectionCover from '../../../components/SectionCover.astro';
+
+<SectionCover
+  eyebrow="México · 2026"
+  title="Tus clientes ya están en internet. Tu negocio, todavía no."
+  lead="86 de cada 100 mexicanos usan internet. Solo 4 de cada 100 micronegocios venden ahí. Esto es lo que gana el tuyo si cruza."
+  actions={[
+    { href: "/benefits/selling-online/", label: "Qué gano vendiendo en línea", primary: true },
+    { href: "/clients/try-the-demo/", label: "Ver la tienda de demostración" },
+  ]}
+  doors={[
+    {
+      href: "/benefits/own-website/",
+      icon: "globe",
+      title: "Una página propia",
+      text: "Que te encuentren cuando ya te están buscando, sin depender del algoritmo de nadie.",
+      go: "Leer",
+    },
+    {
+      href: "/benefits/selling-online/",
+      icon: "cart",
+      title: "Vender en línea",
+      text: "Cobrar de noche y en domingo, sin pagarle comisión a un marketplace por cada venta.",
+      go: "Leer",
+    },
+    {
+      href: "/benefits/mexico-data/",
+      icon: "chart",
+      title: "México en números",
+      text: "Cada cifra con su fuente, su fecha y qué mide de verdad. Sin datos de blog.",
+      go: "Leer",
+    },
+  ]}
+  figures={[
+    { value: "104.9", label: "millones de personas con internet en México" },
+    { value: "941", label: "mil millones de pesos vendidos en línea en 2025" },
+    { value: "67 %", label: "empieza a buscar más de una semana antes de comprar" },
+    { value: "0 %", label: "de comisión de plataforma en tu propia tienda" },
+  ]}
+/>

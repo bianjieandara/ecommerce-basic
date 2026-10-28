@@ -1,0 +1,31 @@
+---
+// A row of the figures that carry a page, each counted up from zero when it comes into view. The only place that renders a
+// counted figure group, so the cover and the data page cannot drift apart.
+/** One figure. `value` is shown exactly as written; the script reads the number out of it. */
+export interface StatFigure {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  figures: StatFigure[];
+}
+const { figures } = Astro.props;
+---
+
+<div class="benefits-strip benefits-pitch not-content">
+  {
+    figures.map((figure) => (
+      <div>
+        <span class="guide-stat" data-count>
+          {figure.value}
+        </span>
+        <span class="guide-stat-label">{figure.label}</span>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  import '../scripts/count-up.js';
+</script>

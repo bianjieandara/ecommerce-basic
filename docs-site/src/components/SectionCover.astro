@@ -1,0 +1,62 @@
+---
+// Cover of the "Por qué te conviene" section: a dark hero, the doors into its pages and a strip of the figures that make the case.
+// It carries `benefits-pitch`, which is what turns the whole page dark (guide-benefits.css).
+import GuideIcon from './GuideIcon.astro';
+import StatStrip from './StatStrip.astro';
+import type { StatFigure } from './StatStrip.astro';
+import type { IconName } from '../data/guide-blocks';
+
+/** One page of the section, as a card the reader can walk into. */
+export interface CoverDoor {
+  href: string;
+  icon: IconName;
+  title: string;
+  text: string;
+  go: string;
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  actions?: { href: string; label: string; primary?: boolean }[];
+  doors: CoverDoor[];
+  /** The figures under the doors, rendered by StatStrip so they count up like the ones on the data page. */
+  figures: StatFigure[];
+}
+const { eyebrow, title, lead, actions = [], doors, figures } = Astro.props;
+---
+
+<div class="benefits-cover benefits-pitch not-content">
+  <div class="benefits-cover-head">
+    <span class="guide-eyebrow">{eyebrow}</span>
+    <h1>{title}</h1>
+    <p class="benefits-cover-lead">{lead}</p>
+    {
+      actions.length > 0 && (
+        <div class="benefits-actions">
+          {actions.map((action) => (
+            <a class:list={['benefits-action', { 'is-primary': action.primary }]} href={action.href}>
+              {action.label}
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+
+  <div class="benefits-doors">
+    {
+      doors.map((door) => (
+        <a class="benefits-door" href={door.href}>
+          <GuideIcon name={door.icon} />
+          <strong>{door.title}</strong>
+          <span>{door.text}</span>
+          <span class="benefits-door-go">{door.go} →</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <StatStrip figures={figures} />
+</div>

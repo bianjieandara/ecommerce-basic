@@ -1,0 +1,50 @@
+---
+// Two sides of the same market face to face: what the country already buys against what its small businesses actually sell.
+// The gap between the two figures is the argument, so both sides keep the same shape and only the numbers change.
+/** One side of the split: a headline figure, what it means, the figures behind it and where they come from. */
+export interface SplitSide {
+  eyebrow: string;
+  value: string;
+  text: string;
+  items: { value: string; label: string }[];
+  source: string;
+}
+
+interface Props {
+  left: SplitSide;
+  /** The side that shows the gap; it sits on a raised background so the contrast reads without colour alone. */
+  right: SplitSide;
+}
+const { left, right } = Astro.props;
+const sides = [
+  { side: left, gap: false },
+  { side: right, gap: true },
+];
+---
+
+<div class="benefits-split benefits-pitch not-content">
+  {
+    sides.map(({ side, gap }) => (
+      <div class:list={['benefits-side', { 'is-gap': gap }]}>
+        <span class="guide-eyebrow">{side.eyebrow}</span>
+        <span class:list={['guide-stat', 'is-hero', { 'is-accent': gap }]} data-count>
+          {side.value}
+        </span>
+        <span class="guide-stat-label">{side.text}</span>
+        <ul class="benefits-side-list">
+          {side.items.map((item) => (
+            <li>
+              <b>{item.value}</b>
+              <span>{item.label}</span>
+            </li>
+          ))}
+        </ul>
+        <span class="guide-source">{side.source}</span>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  import '../scripts/count-up.js';
+</script>

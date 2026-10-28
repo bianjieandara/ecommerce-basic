@@ -85,6 +85,24 @@
   --guide-tour-shot-max: 28rem;
   --guide-tour-shade: rgb(17 17 17 / 0.3);
 
+  /* "Pitch" look of the Por qué te conviene section (guide-benefits.css). It is dark in both themes on purpose, so the section
+     reads as a sales pitch and not as one more page of the guide. */
+  --guide-pitch-bg: #0d0d0d;
+  --guide-pitch-raise: #161616;
+  --guide-pitch-line: #2d2d2d;
+  --guide-pitch-text: #ffffff;
+  --guide-pitch-muted: #b4b4b4;
+  --guide-pitch-accent: #ff6b6b;
+  --guide-pitch-accent-strong: #ff3b3b;
+  --guide-pitch-tint: rgb(255 107 107 / 0.12);
+
+  /* Figures big enough to carry a section on their own, and the numbered discs of the three acts. */
+  --guide-stat-hero: clamp(2.75rem, 9vw, 4.5rem);
+  --guide-stat-lg: clamp(2rem, 6vw, 2.75rem);
+  --guide-stat-md: 1.75rem;
+  --guide-act-size: 3.25rem;
+  --guide-split-min: 17rem;
+
   /* Motion (guide-motion.css) and the shadow and hover border that go with it. */
   --guide-duration: 0.15s;
   --guide-duration-slow: 0.35s;

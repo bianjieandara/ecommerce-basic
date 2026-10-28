@@ -1,0 +1,44 @@
+---
+// The same day told twice, hour by hour: once without what the page is arguing for and once with it. It is the cheapest way to
+// show a cost that never appears on an invoice, which is the sale that was lost while nobody answered.
+/** One column of the comparison. `total` is what the day ended up being worth. */
+export interface DayColumn {
+  label: string;
+  rows: { time: string; text: string }[];
+  total: string;
+  note: string;
+}
+
+interface Props {
+  before: DayColumn;
+  /** The column with the better ending; it is outlined so the two are told apart without colour. */
+  after: DayColumn;
+}
+const { before, after } = Astro.props;
+const columns = [
+  { column: before, isAfter: false },
+  { column: after, isAfter: true },
+];
+---
+
+<div class="benefits-ba benefits-pitch not-content">
+  {
+    columns.map(({ column, isAfter }) => (
+      <div class:list={['benefits-ba-col', { 'is-after': isAfter }]}>
+        <span class="guide-eyebrow">{column.label}</span>
+        <ul class="benefits-ba-rows">
+          {column.rows.map((row) => (
+            <li>
+              <span class="benefits-ba-time">{row.time}</span>
+              <span>{row.text}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="benefits-ba-total">
+          <span class:list={['guide-stat', { 'is-accent': isAfter }]}>{column.total}</span>
+          <span class="guide-stat-label">{column.note}</span>
+        </div>
+      </div>
+    ))
+  }
+</div>

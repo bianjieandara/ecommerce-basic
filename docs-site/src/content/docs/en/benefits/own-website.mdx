@@ -5,8 +5,9 @@ sidebar:
   order: 1
 ---
 
+import ActBands from '../../../../components/ActBands.astro';
+import BeforeAfter from '../../../../components/BeforeAfter.astro';
 import FeatureGrid from '../../../../components/FeatureGrid.astro';
-import FlowSteps from '../../../../components/FlowSteps.astro';
 
 **Your own website** is an internet address that belongs to you (`yourbusiness.com`), with your words, your photos, your
 prices and your phone number. It is not a social media profile or a WhatsApp number: it is where the person who is already
@@ -17,25 +18,71 @@ The figures in this section are Mexican and come from 2025–2026. Each one name
 in [Mexico by the numbers](/en/benefits/mexico-data/).
 :::
 
-## How it works for you
-
-<FlowSteps steps={[
-  {"icon": "search", "title": "Someone searches", "text": "Your name, your product or «near me», from a phone."},
-  {"icon": "globe", "title": "They find your page", "text": "With your catalog, your prices, your hours and how to get there."},
-  {"icon": "chat", "title": "They write or they buy", "text": "On WhatsApp, by phone, at your counter or online."},
-  {"icon": "star", "title": "And they know where to come back", "text": "The address is the same next year."},
+<ActBands acts={[
+  {
+    eyebrow: "The problem",
+    title: "They look for you where you are not",
+    text: "Almost the whole country searches online before spending, and it does so well in advance. If there is nothing of yours to find, what they find is someone else.",
+    figures: [
+      { value: "86.1 %", label: "of the population used the internet in 2025 (INEGI)" },
+      { value: "67 %", label: "start searching more than a week ahead (AMVO)" },
+    ],
+  },
+  {
+    eyebrow: "What you gain",
+    title: "An address of your own, always open",
+    text: "Your page answers price, size, hours and directions while you sleep or serve someone else. And the decision happens there even when the payment happens at your counter: 62% plan to combine the online and the physical store, and only 13% will buy in the shop alone.",
+    figures: [
+      { value: "24/7", label: "without you having to answer" },
+      { value: "5 USD", label: "a month of platform, plus your domain" },
+    ],
+  },
+  {
+    eyebrow: "The proof",
+    title: "It removes the doubts that kill a sale",
+    text: "75% of interrupted purchases have to do with missing information or with having to ask for it. A clear product page (what it includes, how long it takes, what shipping costs, how returns work) is a sale.",
+    figures: [
+      { value: "75 %", label: "of abandoned purchases start with missing information" },
+      { value: "84.6 %", label: "of people use a mobile phone; 38.1%, a computer" },
+    ],
+  },
 ]} />
+
+## The same Tuesday, with and without a website
+
+<BeforeAfter
+  before={{
+    label: "Without your own website",
+    rows: [
+      { time: "21:40", text: "Someone searches «stationery near me» from their phone." },
+      { time: "21:41", text: "They do not find your business. They find your competitor." },
+      { time: "21:43", text: "They message you on WhatsApp: «do you have it? how much?»." },
+      { time: "09:15", text: "You answer the next day. They already sorted it elsewhere." },
+    ],
+    total: "$0",
+    note: "and one more conversation to answer tomorrow",
+  }}
+  after={{
+    label: "With your own website",
+    rows: [
+      { time: "21:40", text: "The same search opens your page, with photos and prices." },
+      { time: "21:42", text: "They see your hours, your address and how to get there." },
+      { time: "21:44", text: "They write already decided, or reserve it over WhatsApp." },
+      { time: "09:15", text: "They walk up to your counter to collect what they chose." },
+    ],
+    total: "A sale",
+    note: "decided while you were asleep",
+  }}
+/>
 
 ## What you gain
 
 <FeatureGrid items={[
   {"icon": "users", "title": "The people already looking for you can find you", "text": "In 2025, 86.1% of Mexicans aged 6 and over used the internet: 104.9 million people (INEGI, ENDUTIH 2025). Nobody needs convincing to go online; they are already there, searching for what you sell."},
-  {"icon": "clock", "title": "It answers before anyone writes to you", "text": "67% of shoppers start searching more than a week before buying (AMVO, Pulso El Buen Fin 2026). While you sleep or serve someone else, your page answers price, size, hours and directions."},
-  {"icon": "pin", "title": "It brings people to your shop, not only to your cart", "text": "62% plan to combine the online and the physical store, and only 13% will buy in the shop alone (AMVO, Pulso El Buen Fin 2026). The decision happens on a phone even when the payment happens at your counter."},
-  {"icon": "doc", "title": "It removes the doubts that kill a sale", "text": "75% of interrupted purchases have to do with missing information or with having to ask for it (AMVO, Estudio de Venta Online 2026). A clear product page (what it includes, how long it takes, what shipping costs, how returns work) is a sale."},
-  {"icon": "phone", "title": "It is built for the phone, which is what nearly everyone carries", "text": "84.6% of people used a mobile phone in 2025 and 38.1% used a computer (INEGI, ENDUTIH 2025). A page that reads badly on a phone is closed for most people."},
+  {"icon": "phone", "title": "It is built for the phone", "text": "84.6% of people used a mobile phone in 2025 and 38.1% used a computer (INEGI, ENDUTIH 2025). A page that reads badly on a phone is closed for most people."},
   {"icon": "key", "title": "The address is yours", "text": "A social media profile lives in another company's account and is seen by whoever the algorithm picks. Your domain and your page are yours: nobody can suspend them or cut your reach overnight."},
-  {"icon": "megaphone", "title": "It is where your ads and your WhatsApp send people", "text": "WhatsApp reaches 91.4% of internet users aged 16 and over in Mexico (Digital 2026, We Are Social and Meltwater with GWI data). An ad or a message goes further when the link opens a page that already explains and already sells."},
+  {"icon": "megaphone", "title": "It is where your ads and your WhatsApp send people", "text": "WhatsApp reaches 91.4% of internet users aged 16 and over in Mexico (Digital 2026). An ad or a message goes further when the link opens a page that already explains and already sells."},
+  {"icon": "pin", "title": "It brings people to your shop, not only to your cart", "text": "62% plan to combine the online and the physical store (AMVO, Pulso El Buen Fin 2026). The decision happens on a phone even when the payment happens at your counter."},
   {"icon": "coin", "title": "It is cheap to keep", "text": "About 5 USD a month of platform plus your domain's yearly price, with no commission per sale. The detail is in What you get."},
 ]} />
 

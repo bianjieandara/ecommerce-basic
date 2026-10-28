@@ -5,6 +5,8 @@ sidebar:
   order: 2
 ---
 
+import SplitContrast from '../../../../components/SplitContrast.astro';
+import ActBands from '../../../../components/ActBands.astro';
 import FeatureGrid from '../../../../components/FeatureGrid.astro';
 
 **Your own online store** is your catalog with a cart and a checkout: people buy on their own, at any hour, without you
@@ -16,29 +18,74 @@ The figures in this section are Mexican and come from 2025–2026. Each one name
 in [Mexico by the numbers](/en/benefits/mexico-data/).
 :::
 
-## The size of what is happening
+## Demand already arrived. Supply did not.
 
-<FeatureGrid layout="card" items={[
-  {"icon": "chart", "title": "941 billion pesos", "text": "That is what retail e-commerce sold in Mexico in 2025, 19.2% more than the year before, while the country's economy grew 0.8% (AMVO, Estudio de Venta Online 2026)."},
-  {"icon": "users", "title": "77.2 million shoppers", "text": "People who already buy online in Mexico; twice as many as in 2018 (AMVO, Estudio de Venta Online 2026)."},
-  {"icon": "cart", "title": "17.7% of retail", "text": "Of every 100 pesos spent in Mexican retail, almost 18 are spent online. That is 8th place in the world for that share (AMVO, Estudio de Venta Online 2026)."},
-  {"icon": "box", "title": "Yet only 4.4% of micro-businesses sell online", "text": "Against 27.9% of small firms and 33.4% of medium ones (INEGI, Censos Económicos 2024, with 2023 data). Demand grew faster than supply, and that gap is the opening."},
-]} />
+<SplitContrast
+  left={{
+    eyebrow: "What people buy",
+    value: "+19.2 %",
+    text: "is how much e-commerce grew in 2025, to 941 billion pesos, while the country's economy grew 0.8%.",
+    items: [
+      { value: "77.2 M", label: "digital shoppers, twice as many as in 2018" },
+      { value: "17.7 %", label: "of the country's retail trade" },
+      { value: "8th", label: "place in the world for that share" },
+    ],
+    source: "AMVO · Estudio de Venta Online 2026",
+  }}
+  right={{
+    eyebrow: "What your competition sells",
+    value: "4.4 %",
+    text: "of Mexican micro-businesses sold online. Demand grew faster than supply, and that gap is the opening.",
+    items: [
+      { value: "27.9 %", label: "of small firms" },
+      { value: "33.4 %", label: "of medium ones" },
+      { value: "5.5 %", label: "of all businesses in the country" },
+    ],
+    source: "INEGI · Censos Económicos 2024 (2023 data)",
+  }}
+/>
 
 It is still moving: businesses that sell **only** by internet, catalog or television grew their revenue 17.6% in August 2026
 against August 2025 (INEGI, Encuesta Mensual sobre Empresas Comerciales).
 
-## What you gain
+<ActBands acts={[
+  {
+    eyebrow: "First",
+    title: "You sell without being there",
+    text: "The cart charges at night, on a Sunday and while you are serving another customer. There is no pending message between the urge and the payment, and there is no closing time.",
+    figures: [
+      { value: "90 %", label: "want home delivery; 21%, store pickup" },
+      { value: "70 %", label: "expect delivery within a week at most" },
+    ],
+  },
+  {
+    eyebrow: "What shows most",
+    title: "You pay nobody a commission",
+    text: "A marketplace keeps between 8% and 20.5% of every sale, forever. Your store keeps nothing: you pay the platform it runs on, your domain, and the fee of whoever processes the payment.",
+    figures: [
+      { value: "0 %", label: "platform commission" },
+      { value: "5 USD", label: "a month, whether you sell 1 or 1,000" },
+    ],
+  },
+  {
+    eyebrow: "What is left",
+    title: "The customer is yours",
+    text: "Their email, their phone and their order history stay in your store, in its own database. In a marketplace, the customer belongs to the marketplace, and you lose them the day you leave.",
+    figures: [
+      { value: "8 in 10", label: "feel safe buying online (AMVO)" },
+    ],
+  },
+]} />
+
+## What you gain, in short
 
 <FeatureGrid items={[
-  {"icon": "clock", "title": "You sell without being there", "text": "The cart charges at night, on a Sunday and while you are serving another customer. There is no pending message between the urge and the payment."},
-  {"icon": "coin", "title": "You pay no commission to sell", "text": "The store keeps no percentage of your sales. You only pay the platform it runs on (about 5 USD a month), your domain and your payment provider's fee. Compare that with a marketplace below."},
-  {"icon": "user", "title": "The customer is yours", "text": "Their email, their phone and their order history stay in your store, in its own database. In a marketplace, the customer belongs to the marketplace."},
   {"icon": "refresh", "title": "The repetitive work happens by itself", "text": "Stock drops on a sale and comes back if an order goes unpaid, the invoice is issued when you are paid, and the customer gets an email at every step. That is your time, not spent copying data."},
   {"icon": "card", "title": "You charge the way Mexico pays", "text": "Debit card (used by 69% of online shoppers) and credit card (54%), per AMVO. The store adds bank transfer, PayPal, closing the order on WhatsApp, and paying on delivery."},
   {"icon": "star", "title": "You hold up through the big weeks", "text": "During El Buen Fin 2025 the online channel sold 45.9 billion pesos, 31% more than the year before, and made up 21% of the campaign's sales (AMVO). An open store has no queue and no capacity limit."},
   {"icon": "chart", "title": "You know what happened, not what it felt like", "text": "Orders, sales, taxes, stock and where visitors drop off, in the admin reports."},
   {"icon": "globe", "title": "You sell beyond your neighbourhood", "text": "The same store serves the person ten blocks away and the one in another state, in Spanish and in English."},
+  {"icon": "clock", "title": "And you never close", "text": "77% say they will probably take part in El Buen Fin 2026. Your shop has opening hours; your store does not."},
 ]} />
 
 ## Your store against a marketplace
@@ -67,14 +114,14 @@ window as your only one.
 
 This is what AMVO measures in its Estudio de Venta Online 2026, and what a well-built store answers:
 
-| What holds the shopper back                                             | What the store does                                                                  |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| A high shipping cost is the main reason for abandoning                  | You set the shipping methods and prices, and they are shown before paying            |
-| 75% of interruptions come from missing information or having to ask     | A product page with variants, photos, features and your own text; search and filters |
-| 71% come from problems with the buying and payment process              | Checkout on a single page, five payment methods and fast pages                       |
-| 70% expect delivery within a week at most; 32% the same or the next day | Emails and order tracking through a private link, so nobody has to ask               |
-| 90% want home delivery; 21% prefer to collect                           | Home delivery and store pickup, each with its own price                              |
-| 8 in 10 feel safe buying online, but they ask for secure payment        | Payments through recognised providers and bot protection on the forms                |
+| What holds the shopper back                                              | What the store does                                                            |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| A high shipping cost is the main reason for abandoning                   | You set the shipping methods and prices, and they are shown before paying      |
+| 75% of interruptions come from missing information or having to ask      | A product page with variants, photos, features and your own text; search and filters |
+| 71% come from problems with the buying and payment process               | Checkout on a single page, five payment methods and fast pages                 |
+| 70% expect delivery within a week at most; 32% the same or the next day   | Emails and order tracking through a private link, so nobody has to ask         |
+| 90% want home delivery; 21% prefer to collect                            | Home delivery and store pickup, each with its own price                        |
+| 8 in 10 feel safe buying online, but they ask for secure payment          | Payments through recognised providers and bot protection on the forms          |
 
 ## What a store does not solve
 

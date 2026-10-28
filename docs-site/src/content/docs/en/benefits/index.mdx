@@ -1,0 +1,49 @@
+---
+title: Why it pays off
+description: What your business gains from its own website and from selling online, with Mexican data.
+template: splash
+sidebar:
+  order: 0
+  label: Start here
+---
+
+import SectionCover from '../../../../components/SectionCover.astro';
+
+<SectionCover
+  eyebrow="Mexico · 2026"
+  title="Your customers are already online. Your business is not."
+  lead="86 in every 100 Mexicans use the internet. Only 4 in every 100 micro-businesses sell there. This is what yours gains by crossing over."
+  actions={[
+    { href: "/en/benefits/selling-online/", label: "What I gain by selling online", primary: true },
+    { href: "/en/clients/try-the-demo/", label: "See the demo store" },
+  ]}
+  doors={[
+    {
+      href: "/en/benefits/own-website/",
+      icon: "globe",
+      title: "Your own website",
+      text: "Be found by the people already looking for you, without depending on anyone's algorithm.",
+      go: "Read",
+    },
+    {
+      href: "/en/benefits/selling-online/",
+      icon: "cart",
+      title: "Selling online",
+      text: "Charge at night and on a Sunday, without paying a marketplace a commission on every sale.",
+      go: "Read",
+    },
+    {
+      href: "/en/benefits/mexico-data/",
+      icon: "chart",
+      title: "Mexico by the numbers",
+      text: "Every figure with its source, its date and what it really measures. No blog data.",
+      go: "Read",
+    },
+  ]}
+  figures={[
+    { value: "104.9", label: "million people online in Mexico" },
+    { value: "941", label: "billion pesos sold online in 2025" },
+    { value: "67 %", label: "start searching more than a week before buying" },
+    { value: "0 %", label: "platform commission in your own store" },
+  ]}
+/>

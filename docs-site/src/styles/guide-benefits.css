@@ -1,0 +1,380 @@
+/* The "Por qué te conviene" section: a dark pitch page (SectionCover, SplitContrast, ActBands, BeforeAfter) that re-skins the whole
+   page by feeding Starlight's own tokens, so the sidebar, the text and the tables follow without any component override.
+   Only `var(--guide-*)` here; the raw values are in guide.css. */
+
+/* Any page that renders one of the section's blocks turns dark, in both themes. The selector sits on the root so the colour also
+   covers what the page does not paint, such as the strip an overscroll shows. */
+:root:has(.benefits-pitch) {
+  --sl-color-bg: var(--guide-pitch-bg);
+  --sl-color-bg-sidebar: var(--guide-pitch-bg);
+  --sl-color-bg-nav: var(--guide-pitch-bg);
+  --sl-color-text: var(--guide-pitch-muted);
+  --sl-color-text-accent: var(--guide-pitch-accent);
+  --sl-color-white: var(--guide-pitch-text);
+  --sl-color-gray-1: var(--guide-pitch-text);
+  --sl-color-gray-2: var(--guide-pitch-muted);
+  --sl-color-gray-3: var(--guide-pitch-muted);
+  --sl-color-hairline: var(--guide-pitch-line);
+  --sl-color-hairline-shade: var(--guide-pitch-line);
+  --sl-color-accent: var(--guide-pitch-accent);
+  --sl-color-accent-low: var(--guide-pitch-raise);
+  --sl-color-accent-high: var(--guide-pitch-text);
+  --sl-color-purple: var(--guide-pitch-accent);
+  --sl-color-purple-low: var(--guide-pitch-tint);
+  --sl-color-purple-high: var(--guide-pitch-accent);
+  --sl-color-bg-inline-code: var(--guide-pitch-raise);
+  --guide-card: var(--guide-pitch-raise);
+  --guide-muted: var(--guide-pitch-muted);
+  --guide-border-hover: var(--guide-pitch-accent);
+  background: var(--guide-pitch-bg);
+  color: var(--guide-pitch-muted);
+}
+
+:root:has(.benefits-pitch) body {
+  background: var(--guide-pitch-bg);
+}
+
+/* A figure that carries its own block: the number is the headline, not an ornament. */
+.guide-stat {
+  display: block;
+  font-size: var(--guide-stat-lg);
+  font-weight: var(--guide-weight-bold);
+  line-height: var(--guide-leading-tight);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--sl-color-white);
+  font-variant-numeric: tabular-nums;
+}
+
+.guide-stat.is-hero {
+  font-size: var(--guide-stat-hero);
+}
+
+.guide-stat.is-accent {
+  color: var(--guide-pitch-accent);
+}
+
+.guide-stat-label {
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+.guide-source {
+  font-size: var(--guide-text-xs);
+  letter-spacing: var(--guide-tracking-wide);
+  text-transform: uppercase;
+  color: var(--guide-muted);
+}
+
+.guide-eyebrow {
+  font-size: var(--guide-text-xs);
+  font-weight: var(--guide-weight-semibold);
+  letter-spacing: var(--guide-tracking-wide);
+  text-transform: uppercase;
+  color: var(--guide-pitch-accent);
+}
+
+/* The cover writes its own headline, so the page title Starlight prints above it would be a second h1 on the same screen. Its
+   panel goes, and with it the rule that separated the two. */
+:root:has(.benefits-cover) .content-panel:first-of-type {
+  display: none;
+}
+
+:root:has(.benefits-cover) .content-panel + .content-panel {
+  border-top: 0;
+}
+
+/* Section cover: the hero of /benefits/, its three doors and the strip of figures underneath. */
+.benefits-cover {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-4xl);
+}
+
+.benefits-cover-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-lg);
+}
+
+.benefits-cover-head h1 {
+  margin: 0;
+  font-size: var(--guide-text-hero);
+  line-height: var(--guide-leading-tight);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--sl-color-white);
+}
+
+.benefits-cover-lead {
+  margin: 0;
+  font-size: var(--guide-text-lg);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+.benefits-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--guide-space-md);
+}
+
+.benefits-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--guide-touch-min);
+  padding: 0 var(--guide-space-2xl);
+  border-radius: var(--guide-radius-pill);
+  border: var(--guide-border-width) solid var(--guide-pitch-line);
+  font-size: var(--guide-text-sm);
+  font-weight: var(--guide-weight-semibold);
+  color: var(--sl-color-white);
+  text-decoration: none;
+}
+
+.benefits-action.is-primary {
+  background: var(--guide-pitch-accent-strong);
+  border-color: var(--guide-pitch-accent-strong);
+  color: var(--guide-pitch-bg);
+}
+
+.benefits-doors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--guide-feature-min)), 1fr));
+  gap: var(--guide-space-lg);
+}
+
+.benefits-door {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-md);
+  padding: var(--guide-space-2xl);
+  border: var(--guide-border-width) solid var(--guide-pitch-line);
+  border-radius: var(--guide-radius-xl);
+  background: var(--guide-pitch-raise);
+  color: inherit;
+  text-decoration: none;
+}
+
+.benefits-door strong {
+  font-size: var(--guide-text-lg);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--sl-color-white);
+}
+
+.benefits-door span {
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+.benefits-door-go {
+  margin-top: auto;
+  font-weight: var(--guide-weight-semibold);
+  color: var(--guide-pitch-accent);
+}
+
+.benefits-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--guide-col-min)), 1fr));
+  gap: var(--guide-space-2xl);
+  padding-top: var(--guide-space-2xl);
+  border-top: var(--guide-border-width) solid var(--guide-pitch-line);
+}
+
+/* Split contrast: what the country buys against what the competition sells. */
+.benefits-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--guide-split-min)), 1fr));
+  gap: var(--guide-border-width);
+  border: var(--guide-border-width) solid var(--guide-pitch-line);
+  border-radius: var(--guide-radius-xl);
+  overflow: hidden;
+  background: var(--guide-pitch-line);
+}
+
+.benefits-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-lg);
+  padding: var(--guide-space-3xl);
+  background: var(--guide-pitch-bg);
+}
+
+.benefits-side.is-gap {
+  background: var(--guide-pitch-raise);
+}
+
+.benefits-side-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.benefits-side-list li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--guide-space-md);
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+.benefits-side-list b {
+  flex: none;
+  white-space: nowrap;
+  font-size: var(--guide-stat-md);
+  font-weight: var(--guide-weight-bold);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--sl-color-white);
+  font-variant-numeric: tabular-nums;
+}
+
+.benefits-side .guide-source {
+  margin-top: auto;
+}
+
+/* Three acts: full-width numbered bands that tell the problem, the gain and the proof. */
+.benefits-acts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-2xl);
+}
+
+.benefits-act {
+  display: flex;
+  gap: var(--guide-space-3xl);
+  padding: var(--guide-space-3xl);
+  border-radius: var(--guide-radius-xl);
+  background: var(--guide-pitch-raise);
+}
+
+.benefits-act.is-plain {
+  background: none;
+  border: var(--guide-border-width) solid var(--guide-pitch-line);
+}
+
+.benefits-act-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--guide-act-size);
+  height: var(--guide-act-size);
+  border-radius: var(--guide-radius-pill);
+  background: var(--guide-pitch-accent-strong);
+  color: var(--guide-pitch-bg);
+  font-size: var(--guide-text-xl);
+  font-weight: var(--guide-weight-bold);
+}
+
+.benefits-act.is-plain .benefits-act-num {
+  background: none;
+  border: var(--guide-line-bold) solid var(--sl-color-white);
+  color: var(--sl-color-white);
+}
+
+.benefits-act-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-md);
+  min-width: 0;
+}
+
+.benefits-act-body h2 {
+  margin: 0;
+  font-size: var(--guide-text-h2);
+  line-height: var(--guide-leading-snug);
+  letter-spacing: var(--guide-tracking-tight);
+  color: var(--sl-color-white);
+}
+
+.benefits-act-body p {
+  margin: 0;
+  font-size: var(--guide-text-base);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+.benefits-act-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--guide-space-3xl);
+  margin-top: var(--guide-space-xs);
+}
+
+/* The figures share the row instead of each claiming the width its label happens to need. */
+.benefits-act-figures > div {
+  flex: 1 1 var(--guide-col-min);
+  min-width: 0;
+}
+
+/* Before and after: the same day told twice. */
+.benefits-ba {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--guide-split-min)), 1fr));
+  gap: var(--guide-space-lg);
+}
+
+.benefits-ba-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-lg);
+  padding: var(--guide-space-2xl);
+  border: var(--guide-border-width) solid var(--guide-pitch-line);
+  border-radius: var(--guide-radius-xl);
+}
+
+.benefits-ba-col.is-after {
+  border-color: var(--sl-color-white);
+}
+
+.benefits-ba-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.benefits-ba-rows li {
+  display: flex;
+  gap: var(--guide-space-md);
+  font-size: var(--guide-text-sm);
+  line-height: var(--guide-leading-normal);
+  color: var(--guide-muted);
+}
+
+.benefits-ba-time {
+  flex: none;
+  width: 3.25rem;
+  font-weight: var(--guide-weight-semibold);
+  color: var(--sl-color-white);
+  font-variant-numeric: tabular-nums;
+}
+
+.benefits-ba-total {
+  display: flex;
+  flex-direction: column;
+  gap: var(--guide-space-xs);
+  margin-top: auto;
+  padding-top: var(--guide-space-lg);
+  border-top: var(--guide-border-width) solid var(--guide-pitch-line);
+}
+
+@media (max-width: 50rem) {
+  .benefits-act {
+    gap: var(--guide-space-lg);
+    padding: var(--guide-space-2xl);
+  }
+
+  .benefits-side {
+    padding: var(--guide-space-2xl);
+  }
+
+  .benefits-act-figures {
+    gap: var(--guide-space-xl);
+  }
+}

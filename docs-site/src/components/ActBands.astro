@@ -1,0 +1,49 @@
+---
+// The section's pages are told in acts: numbered bands at full width that move from the problem to what the reader gains and then
+// to the proof. Alternating backgrounds give the page a rhythm a list of headings never has.
+/** One act: its number comes from the order, so a page cannot renumber itself by accident. */
+export interface Act {
+  eyebrow: string;
+  title: string;
+  text: string;
+  figures?: { value: string; label: string }[];
+}
+
+interface Props {
+  acts: Act[];
+}
+const { acts } = Astro.props;
+---
+
+<div class="benefits-acts benefits-pitch not-content">
+  {
+    acts.map((act, index) => (
+      <section class:list={['benefits-act', { 'is-plain': index % 2 === 1 }]}>
+        <span class="benefits-act-num" aria-hidden="true">
+          {index + 1}
+        </span>
+        <div class="benefits-act-body">
+          <span class="guide-eyebrow">{act.eyebrow}</span>
+          <h2>{act.title}</h2>
+          <p>{act.text}</p>
+          {act.figures && act.figures.length > 0 && (
+            <div class="benefits-act-figures">
+              {act.figures.map((figure) => (
+                <div>
+                  <span class="guide-stat" data-count>
+                    {figure.value}
+                  </span>
+                  <span class="guide-stat-label">{figure.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    ))
+  }
+</div>
+
+<script>
+  import '../scripts/count-up.js';
+</script>
