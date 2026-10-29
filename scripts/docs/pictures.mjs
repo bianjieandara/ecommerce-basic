@@ -162,8 +162,10 @@ export async function addCategoryPictures(cookie) {
   const browser = await openBrowser({ port: 9412, width: 960, height: 960 });
   try {
     for (const category of categories) {
-      const look = CATEGORY_LOOKS[category.id];
-      if (!look) continue;
+      // A catalogue this script does not know gets a neutral tile rather than none: a category with no picture at all
+      // is an empty block in the tile layouts, which reads as broken rather than as plain.
+      // Three symbols, like every other look: the tile draws a fixed three, and a shorter list paints "undefined".
+      const look = CATEGORY_LOOKS[category.id] ?? ['#e2e8f0', '#64748b', ['📦', '📦', '📦']];
       const sizes = await render(browser, categoryHtml(look), 960, 960, [960, 480]);
       const mediaId = await upload(cookie, `category ${category.name}`, sizes, 960, 960);
       sql(`UPDATE categories SET image_media_id = '${mediaId}' WHERE id = '${category.id}'`);

@@ -25,7 +25,8 @@ const TILES = {
   },
   flush: {
     // A hairline of page background between tiles, so two photographs of the same tone stay legible side by side.
-    list: 'full-bleed grid grid-cols-2 gap-px md:grid-cols-3',
+    // The columns fit themselves to the number of categories: a fixed three left a fourth one orphaned on its own row.
+    list: 'full-bleed grid gap-px [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]',
     tile: 'p-5 md:p-7 aspect-4/5 md:aspect-4/3',
     arrow: false,
   },

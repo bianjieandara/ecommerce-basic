@@ -97,6 +97,11 @@ html {
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* A full-bleed band is 100vw wide, which counts the scrollbar, so it overhangs the page by those few pixels. Clipping
+     here, at the root, trims the overhang without a horizontal scrollbar. It must not be on an inner element: "clip"
+     clips to the padding box, so on <main> it would cut the band back to the page's column and there would be no bleed
+     at all. "clip" rather than "hidden" because it creates no scroll container, so sticky inside still works. */
+  overflow-x: clip;
 }
 
 body {

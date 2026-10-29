@@ -114,12 +114,10 @@ const consentLabels = {
     switchSearch={switchSearch}
     announcement={general.announcement[locale]}
   />
-  {/* overflow-x: clip, not hidden: it trims what a full-bleed section overhangs without turning <main> into a scroll
-      container, so position: sticky inside it (the catalog filters) keeps working against the window. */}
   <main
     id="main"
     tabindex="-1"
-    class="mx-auto min-h-[60dvh] max-w-7xl overflow-x-clip px-5 py-8 focus:outline-none md:px-8 md:py-12"
+    class="mx-auto min-h-[60dvh] max-w-7xl px-5 py-8 focus:outline-none md:px-8 md:py-12"
   >
     <slot />
   </main>

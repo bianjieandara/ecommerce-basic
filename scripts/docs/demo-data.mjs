@@ -57,6 +57,12 @@ async function addOrders(cookie) {
   const country = JSON.parse(
     sql("SELECT value_json AS v FROM settings WHERE group_key = 'general'")[0].v,
   ).country;
+  // A plan asks for a payment method, but not every store offers every one: Raiz has no cash on delivery. Checkout
+  // refuses a method the store disabled, so an unavailable one falls back to the first the store does enable.
+  const enabled = JSON.parse(
+    sql("SELECT value_json AS v FROM settings WHERE group_key = 'checkout'")[0].v,
+  ).enabledMethods;
+  const methodFor = (wanted) => (enabled.includes(wanted) ? wanted : (enabled[0] ?? 'bank_transfer'));
   const plans = [
     {
       shopper: 0,
@@ -105,7 +111,7 @@ async function addOrders(cookie) {
       acceptedLegal: true,
       shippingMethodId: plan.ship,
       address: plan.ship === 'ship-flat' ? (SHIPPING_ADDRESS[country] ?? SHIPPING_ADDRESS.CO) : null,
-      paymentMethod: plan.method,
+      paymentMethod: methodFor(plan.method),
       note: '',
       attribution: {},
       turnstileToken: TURNSTILE_TEST_TOKEN,
