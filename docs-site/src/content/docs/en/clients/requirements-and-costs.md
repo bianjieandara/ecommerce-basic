@@ -27,8 +27,9 @@ storage, task queue and analytics, so moving one to another account is possible.
 ## What it costs to run
 
 What you pay is the **care plan**, quoted with your project and starting in the first month: it keeps the store up, with daily
-backups, the security certificate current and your domain renewed in your name. Your country's price is on
-[e-baq.com](https://e-baq.com) and in your quote.
+backups, the security certificate current and your domain renewed in your name. We also watch that the site stays up, so we hear
+about it rather than you hearing it from a customer who could not buy, and a visits report reaches you every month. Your country's
+price is on [e-baq.com](https://e-baq.com) and in your quote.
 
 The table below is what the platform costs underneath. It matters if you would rather run the store on your own Cloudflare account,
 and it is why there is no commission per sale. Check Cloudflare's current pricing before quoting.

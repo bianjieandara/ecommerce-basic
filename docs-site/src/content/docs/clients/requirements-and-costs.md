@@ -38,15 +38,16 @@ de datos, almacenamiento de imágenes, cola de tareas y analítica, así que mov
 ## Cuánto cuesta mantenerla
 
 Lo que pagas tú es el **plan de cuidado**, que se te cotiza junto al proyecto y empieza el primer mes: mantiene la tienda prendida,
-con respaldos diarios, el certificado de seguridad al día y tu dominio renovado a tu nombre. El precio de tu país está en
-[e-baq.com](https://e-baq.com) y en tu cotización.
+con respaldos diarios, el certificado de seguridad al día y tu dominio renovado a tu nombre. Además vigilamos que el sitio esté
+arriba, para enterarnos nosotros y no tú por un cliente que no pudo comprar, y cada mes te llega un reporte de visitas. El precio
+de tu país está en [e-baq.com](https://e-baq.com) y en tu cotización.
 
 Lo de abajo es lo que cuesta la plataforma por dentro. Te sirve si prefieres correr la tienda en tu propia cuenta de Cloudflare, y
 explica por qué no hay comisión por venta. Comprueba los precios actuales de Cloudflare antes de cotizar.
 
 | Costo                               | Habitual                                                                                              |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Plan Cloudflare Workers**         | Unos **5 USD al mes por cuenta**. En la cuenta de la agencia un solo plan cubre muchas tiendas.       |
+| **Plan Cloudflare Workers**         | Unos **5 USD al mes por cuenta**, que es lo que cuesta la plataforma por dentro, no lo que pagas tú. En la cuenta de la agencia un solo plan cubre muchas tiendas. |
 | **Uso incluido**                    | Lecturas y escrituras de la base de datos, 3.000 correos al mes y 10 horas de navegador al mes (para los PDF de facturas) van incluidos por cuenta y se comparten entre sus tiendas; más allá, el uso cuesta unos centavos por mil. |
 | **Almacenamiento de imágenes**      | 10 GB gratis y sin costo por descargas.                                                               |
 | **Dominio**                         | El precio anual de tu registrador.                                                                    |
