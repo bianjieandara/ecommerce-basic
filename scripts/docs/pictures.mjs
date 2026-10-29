@@ -107,7 +107,7 @@ async function render(browser, html, width, height, widths) {
  * @param height Height of the full picture.
  * @returns The new media asset id.
  */
-async function upload(cookie, name, sizes, width, height) {
+export async function upload(cookie, name, sizes, width, height) {
   const form = new FormData();
   form.set('originalName', `${name}.jpg`);
   form.set('width', String(width));

@@ -499,9 +499,47 @@ const testimonials = [
   ],
 ];
 
+/**
+ * What every photograph of this store has in common. The subjects below are joined to it, so the twelve shots look like
+ * one shoot rather than twelve stock images. No people and no text: hands and lettering are what AI photographs get wrong.
+ */
+const photoStyle =
+  'on a dark walnut wood table, warm side light from the left, deep warm brown background, single subject centred, square composition, rich earthy colours, artisanal food still life, shallow depth of field, no people, no hands, no text, no lettering, no logo';
+
+/** The subject of each picture. The key is the row it belongs to; `hero` is the banner, in order. */
+const photos = {
+  hero: [
+    'an overhead arrangement of roasted coffee beans, dried chillies and small glass jars of preserves spread across weathered wood',
+    'a roasting drum pouring fresh dark coffee beans into a wooden tray, steam rising',
+  ],
+  categories: {
+    'cat-cafe': 'a heap of dark roasted coffee beans beside a brown paper bag',
+    'cat-salsas': 'three glass jars of red chilli salsa with dried chillies beside them',
+    'cat-dulce': 'a glass jar of amber honey with a wooden dipper and a jar of fig jam',
+    'cat-despensa': 'a cloth sack of dried beans spilling onto wood beside a vanilla pod',
+  },
+  products: {
+    'prod-cafe-altura':
+      'a brown kraft paper bag of roasted coffee beans standing upright, beans scattered at its base',
+    'prod-cafe-olla': 'a paper bag of ground coffee with cinnamon sticks leaning against it',
+    'prod-cafe-descafeinado': 'a small brown paper bag of ground coffee beside a white ceramic cup',
+    'prod-salsa-macha': 'a glass jar of dark red chilli oil salsa with peanuts and sesame seeds beside it',
+    'prod-salsa-morita': 'a glass jar of smoky dark red salsa with charred chillies and garlic beside it',
+    'prod-mole-pasta': 'a glass jar of thick dark brown mole paste with dried chillies and sesame beside it',
+    'prod-miel-abeja': 'a glass jar of golden crystallised honey with a wooden honey dipper',
+    'prod-mermelada-higo': 'a small glass jar of dark fig jam with two fresh figs cut open beside it',
+    'prod-cajeta': 'a glass jar of golden caramel cajeta with a spoon of it lifted above the jar',
+    'prod-frijol-bayo': 'a burlap sack of pale brown dried beans spilling onto the table',
+    'prod-pinole': 'a small cloth bag of toasted maize flour with cinnamon sticks and a wooden scoop',
+    'prod-vainilla': 'a small dark glass bottle of vanilla extract with three vanilla pods beside it',
+  },
+};
+
 export default {
   slug: 'demo-despensa',
   storeName: 'Comal',
+  photoStyle,
+  photos,
   theme,
   home,
   testimonials,
