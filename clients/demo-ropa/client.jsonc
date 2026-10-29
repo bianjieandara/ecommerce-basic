@@ -1,0 +1,46 @@
+{
+  "slug": "demo-ropa",
+  "workerName": "demo-ropa-store",
+  "accountId": null,
+  "d1": {
+    "name": "demo-ropa-db",
+    "id": "cbc08639-7b08-4075-bafc-b1e6e1226a0a",
+  },
+  "r2": {
+    "bucket": "demo-ropa-media",
+  },
+  "kv": {
+    "id": "24bf4cbe563b46fdadd5b2d2d07b9e7d",
+  },
+  "queue": {
+    "name": "demo-ropa-jobs",
+    "dlq": "demo-ropa-jobs-dlq",
+  },
+  "analyticsDataset": "demo_ropa_events",
+  "rateLimitNamespaceBase": 1010,
+  // Staggered against the other demos so the four nightly resets never run in the same minute.
+  "cron": "5,20,35,50 * * * *",
+  "customDomains": ["ropa.relion-app.com"],
+  // A demo store, like the one on ecommerce.relion-app.com: Cloudflare's test Turnstile key is deliberate here.
+  "allowTestTurnstile": true,
+  // Demo mode: a shared login, the nightly reset from snapshot.json, and e-mails kept in the outbox instead of sent.
+  // DEMO_LOGIN_EMAIL and DEMO_LOGIN_PASSWORD are public by design (the login page shows them).
+  "vars": {
+    "DEMO_MODE": "on",
+    "DEMO_LOGIN_EMAIL": "demo@ropa.relion-app.com",
+    "DEMO_LOGIN_PASSWORD": "demo-ropa-2026",
+    "DEMO_GUIDE_URL": "https://docs.e-baq.com/clients/try-the-demo/",
+    "DEMO_PAYPAL_BUYER_EMAIL": "",
+    "DEMO_PAYPAL_BUYER_PASSWORD": "",
+    "EMAIL_TRANSPORT": "outbox",
+    "PUBLIC_SITE_URL": "https://ropa.relion-app.com",
+    "EMAIL_FROM": "Casa Mina <orders@ropa.relion-app.com>",
+    "PAYPAL_ENV": "sandbox",
+    "DLOCALGO_ENV": "sandbox",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "PUBLIC_MEDIA_BASE_URL": "",
+    "WHATSAPP_PHONE_NUMBER_ID": "",
+    "WHATSAPP_WABA_ID": "",
+    "META_GRAPH_VERSION": "",
+  },
+}

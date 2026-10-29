@@ -1,0 +1,46 @@
+{
+  "slug": "demo-skincare",
+  "workerName": "demo-skincare-store",
+  "accountId": null,
+  "d1": {
+    "name": "demo-skincare-db",
+    "id": "ed8814ae-5cf7-4754-be87-d116e2adca3d",
+  },
+  "r2": {
+    "bucket": "demo-skincare-media",
+  },
+  "kv": {
+    "id": "0d1c1c359ae945a0ac26ccf64fa9d811",
+  },
+  "queue": {
+    "name": "demo-skincare-jobs",
+    "dlq": "demo-skincare-jobs-dlq",
+  },
+  "analyticsDataset": "demo_skincare_events",
+  "rateLimitNamespaceBase": 1020,
+  // Staggered against the other demos so the four nightly resets never run in the same minute.
+  "cron": "10,25,40,55 * * * *",
+  "customDomains": ["skincare.relion-app.com"],
+  // A demo store, like the one on ecommerce.relion-app.com: Cloudflare's test Turnstile key is deliberate here.
+  "allowTestTurnstile": true,
+  // Demo mode: a shared login, the nightly reset from snapshot.json, and e-mails kept in the outbox instead of sent.
+  // DEMO_LOGIN_EMAIL and DEMO_LOGIN_PASSWORD are public by design (the login page shows them).
+  "vars": {
+    "DEMO_MODE": "on",
+    "DEMO_LOGIN_EMAIL": "demo@skincare.relion-app.com",
+    "DEMO_LOGIN_PASSWORD": "demo-skincare-2026",
+    "DEMO_GUIDE_URL": "https://docs.e-baq.com/clients/try-the-demo/",
+    "DEMO_PAYPAL_BUYER_EMAIL": "",
+    "DEMO_PAYPAL_BUYER_PASSWORD": "",
+    "EMAIL_TRANSPORT": "outbox",
+    "PUBLIC_SITE_URL": "https://skincare.relion-app.com",
+    "EMAIL_FROM": "Raiz <orders@skincare.relion-app.com>",
+    "PAYPAL_ENV": "sandbox",
+    "DLOCALGO_ENV": "sandbox",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "PUBLIC_MEDIA_BASE_URL": "",
+    "WHATSAPP_PHONE_NUMBER_ID": "",
+    "WHATSAPP_WABA_ID": "",
+    "META_GRAPH_VERSION": "",
+  },
+}

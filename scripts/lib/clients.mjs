@@ -181,16 +181,23 @@ export function assertRealTurnstileKey(client) {
 }
 
 /**
- * Keeps demo mode to the public demo. Demo mode shares one login and keeps the e-mails it did not send, so it is only safe on
- * the demo client, with sandbox payments, and with a real login chosen. Any other client with demo mode is refused.
+ * Slugs allowed to run demo mode: the original `demo` and one per vertical (`demo-ropa`, `demo-skincare`, `demo-despensa`).
+ * A real store's slug can never match, so a client of ours cannot turn demo mode on by accident.
+ */
+export const DEMO_SLUG_PATTERN = /^demo(-[a-z0-9-]+)?$/;
+
+/**
+ * Keeps demo mode to the demo stores. Demo mode shares one login and keeps the e-mails it did not send, so it is only safe on
+ * a demo client, with sandbox payments, and with a real login chosen. Any other client with demo mode is refused.
  * @param {any} client Parsed client configuration.
- * @throws {Error} When demo mode is set on a client that is not the demo, or the demo is not configured safely.
+ * @throws {Error} When demo mode is set on a client that is not a demo, or the demo is not configured safely.
  */
 export function assertDemoConfig(client) {
   const vars = client.vars ?? {};
   if (vars.DEMO_MODE !== 'on') return;
   const problems = [];
-  if (client.slug !== 'demo') problems.push('only the demo client may set DEMO_MODE to "on"');
+  if (!DEMO_SLUG_PATTERN.test(client.slug))
+    problems.push('only a demo client ("demo", or "demo-" and a vertical) may set DEMO_MODE to "on"');
   if (vars.EMAIL_TRANSPORT !== 'outbox')
     problems.push('EMAIL_TRANSPORT must be "outbox" so no demo e-mail is sent');
   if (vars.PAYPAL_ENV !== 'sandbox') problems.push('PAYPAL_ENV must be "sandbox"');

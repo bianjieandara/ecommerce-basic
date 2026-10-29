@@ -1,4 +1,4 @@
-// Demo mode wiring. Off unless DEMO_MODE is "on" (only the public demo's client sets it). The reset, the locks and the public
+// Demo mode wiring. Off unless DEMO_MODE is "on" (only the public demo stores set it). The reset, the locks and the public
 // demo details the pages show are built here, so create-container only passes them along.
 import { DemoOrderEmails } from '@/application/demo/order-emails';
 import { ResetDemo } from '@/application/demo/reset-demo';

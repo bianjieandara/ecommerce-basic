@@ -343,7 +343,7 @@ const demoCookie = await signIn(DEMO_TEST_VARS.DEMO_LOGIN_EMAIL, DEMO_TEST_VARS.
   );
 }
 
-// 7. Deploy guard: demo mode is refused anywhere but the demo, with live payments, or without a login.
+// 7. Deploy guard: demo mode is refused anywhere but a demo store, with live payments, or without a login.
 {
   const demo = {
     slug: 'demo',
@@ -365,6 +365,7 @@ const demoCookie = await signIn(DEMO_TEST_VARS.DEMO_LOGIN_EMAIL, DEMO_TEST_VARS.
     }
   };
   record('the demo configuration passes the deploy guard', !refuses(demo));
+  record('a per-vertical demo passes the deploy guard', !refuses({ ...demo, slug: 'demo-ropa' }));
   record('demo mode on a real client is refused', refuses({ ...demo, slug: 'acme' }));
   record(
     'demo mode with live payments is refused',

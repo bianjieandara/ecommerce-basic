@@ -1,0 +1,46 @@
+{
+  "slug": "demo-despensa",
+  "workerName": "demo-despensa-store",
+  "accountId": null,
+  "d1": {
+    "name": "demo-despensa-db",
+    "id": "eb7a094e-e9ca-4aa7-8761-d99d6d1f41a8",
+  },
+  "r2": {
+    "bucket": "demo-despensa-media",
+  },
+  "kv": {
+    "id": "31b1e44c23c5487c855ceec7fceec171",
+  },
+  "queue": {
+    "name": "demo-despensa-jobs",
+    "dlq": "demo-despensa-jobs-dlq",
+  },
+  "analyticsDataset": "demo_despensa_events",
+  "rateLimitNamespaceBase": 1030,
+  // Staggered against the other demos so the four nightly resets never run in the same minute.
+  "cron": "3,18,33,48 * * * *",
+  "customDomains": ["despensa.relion-app.com"],
+  // A demo store, like the one on ecommerce.relion-app.com: Cloudflare's test Turnstile key is deliberate here.
+  "allowTestTurnstile": true,
+  // Demo mode: a shared login, the nightly reset from snapshot.json, and e-mails kept in the outbox instead of sent.
+  // DEMO_LOGIN_EMAIL and DEMO_LOGIN_PASSWORD are public by design (the login page shows them).
+  "vars": {
+    "DEMO_MODE": "on",
+    "DEMO_LOGIN_EMAIL": "demo@despensa.relion-app.com",
+    "DEMO_LOGIN_PASSWORD": "demo-despensa-2026",
+    "DEMO_GUIDE_URL": "https://docs.e-baq.com/clients/try-the-demo/",
+    "DEMO_PAYPAL_BUYER_EMAIL": "",
+    "DEMO_PAYPAL_BUYER_PASSWORD": "",
+    "EMAIL_TRANSPORT": "outbox",
+    "PUBLIC_SITE_URL": "https://despensa.relion-app.com",
+    "EMAIL_FROM": "Comal <orders@despensa.relion-app.com>",
+    "PAYPAL_ENV": "sandbox",
+    "DLOCALGO_ENV": "sandbox",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "PUBLIC_MEDIA_BASE_URL": "",
+    "WHATSAPP_PHONE_NUMBER_ID": "",
+    "WHATSAPP_WABA_ID": "",
+    "META_GRAPH_VERSION": "",
+  },
+}
