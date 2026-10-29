@@ -1,15 +1,21 @@
 // The widget definitions shipped with the template, with the fields each one exposes to admins in the page builder.
 import { bilingual as text, type LocalizedText } from '@/domain/shared/localized-text';
 import {
+  BADGE_LAYOUTS,
   CATEGORY_LAYOUTS,
+  DEFAULT_BADGE_LAYOUT,
   DEFAULT_CATEGORY_LAYOUT,
   DEFAULT_HERO_LAYOUT,
   DEFAULT_PRODUCT_LAYOUT,
+  DEFAULT_TESTIMONIAL_LAYOUT,
   HERO_LAYOUTS,
   PRODUCT_LAYOUTS,
+  TESTIMONIAL_LAYOUTS,
+  type BadgeLayout,
   type CategoryLayout,
   type HeroLayout,
   type ProductLayout,
+  type TestimonialLayout,
 } from '@/domain/content/section-layouts';
 import type { WidgetDefinition } from './widget-types';
 
@@ -33,6 +39,18 @@ const HERO_LAYOUT_LABELS: Record<HeroLayout, LocalizedText> = {
   bleed: text('A sangre', 'Full bleed'),
   scene: text('Escena', 'Scene'),
   editorial: text('Editorial', 'Editorial'),
+};
+
+/** What each benefits layout is called in the page builder. */
+const BADGE_LAYOUT_LABELS: Record<BadgeLayout, LocalizedText> = {
+  icons: text('Con iconos', 'With icons'),
+  line: text('Una línea de texto', 'One line of text'),
+};
+
+/** What each testimonials layout is called in the page builder. */
+const TESTIMONIAL_LAYOUT_LABELS: Record<TestimonialLayout, LocalizedText> = {
+  cards: text('Tarjetas', 'Cards'),
+  quiet: text('Solo texto', 'Text only'),
 };
 
 /** What each category layout is called in the page builder. */
@@ -188,12 +206,19 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
         label: text('Mostrar testimonios propios', 'Show manual testimonials'),
       },
       { name: 'limit', kind: 'number', label: text('Cantidad', 'Count'), min: 1, max: 12 },
+      {
+        name: 'layout',
+        kind: 'select',
+        label: text('Diseño', 'Layout'),
+        options: layoutOptions(TESTIMONIAL_LAYOUTS, TESTIMONIAL_LAYOUT_LABELS),
+      },
     ],
     defaults: {
       title: { es: 'Lo que dicen nuestros clientes', en: 'What our customers say' },
       includeGoogle: true,
       includeManual: true,
       limit: 6,
+      layout: DEFAULT_TESTIMONIAL_LAYOUT,
     },
   },
   {
@@ -299,7 +324,13 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
           { name: 'text', kind: 'localizedText', label: text('Texto', 'Text'), max: 80 },
         ],
       },
+      {
+        name: 'layout',
+        kind: 'select',
+        label: text('Diseño', 'Layout'),
+        options: layoutOptions(BADGE_LAYOUTS, BADGE_LAYOUT_LABELS),
+      },
     ],
-    defaults: { items: [] },
+    defaults: { items: [], layout: DEFAULT_BADGE_LAYOUT },
   },
 ];

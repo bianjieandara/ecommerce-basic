@@ -56,6 +56,34 @@ export type CategoryLayout = (typeof CATEGORY_LAYOUTS)[number];
 /** The category layout used when a block says nothing. */
 export const DEFAULT_CATEGORY_LAYOUT: CategoryLayout = 'tiles';
 
+/** How the benefits row is drawn. */
+export const BADGE_LAYOUTS = [
+  /** An icon and a short text per benefit, in a divided row. */
+  'icons',
+  /** One quiet line of text, the benefits separated by middots and no icons at all. */
+  'line',
+] as const;
+
+/** One benefits layout. */
+export type BadgeLayout = (typeof BADGE_LAYOUTS)[number];
+
+/** The benefits layout used when a block says nothing. */
+export const DEFAULT_BADGE_LAYOUT: BadgeLayout = 'icons';
+
+/** How customer quotes are drawn. */
+export const TESTIMONIAL_LAYOUTS = [
+  /** A card per quote, with its star rating. */
+  'cards',
+  /** No cards and no stars: the quotes are set as type, parted by hairlines. */
+  'quiet',
+] as const;
+
+/** One testimonials layout. */
+export type TestimonialLayout = (typeof TESTIMONIAL_LAYOUTS)[number];
+
+/** The testimonials layout used when a block says nothing. */
+export const DEFAULT_TESTIMONIAL_LAYOUT: TestimonialLayout = 'cards';
+
 /**
  * Narrows a stored value to a hero layout, falling back when a page holds an older or unknown value.
  * @param value Value read from a section's config.
@@ -63,6 +91,28 @@ export const DEFAULT_CATEGORY_LAYOUT: CategoryLayout = 'tiles';
  */
 export function heroLayoutOf(value: unknown): HeroLayout {
   return (HERO_LAYOUTS as readonly unknown[]).includes(value) ? (value as HeroLayout) : DEFAULT_HERO_LAYOUT;
+}
+
+/**
+ * Narrows a stored value to a benefits layout, falling back when a page holds an older or unknown value.
+ * @param value Value read from a section's config.
+ * @returns A valid benefits layout.
+ */
+export function badgeLayoutOf(value: unknown): BadgeLayout {
+  return (BADGE_LAYOUTS as readonly unknown[]).includes(value)
+    ? (value as BadgeLayout)
+    : DEFAULT_BADGE_LAYOUT;
+}
+
+/**
+ * Narrows a stored value to a testimonials layout, falling back when a page holds an older or unknown value.
+ * @param value Value read from a section's config.
+ * @returns A valid testimonials layout.
+ */
+export function testimonialLayoutOf(value: unknown): TestimonialLayout {
+  return (TESTIMONIAL_LAYOUTS as readonly unknown[]).includes(value)
+    ? (value as TestimonialLayout)
+    : DEFAULT_TESTIMONIAL_LAYOUT;
 }
 
 /**

@@ -1,16 +1,29 @@
 ---
 // Testimonials widget: customer quotes as a swipeable row on phones and a three-column grid from md up.
 // Plain scroll-snap items, not the Carousel component: the carousel's buttons and autoplay would show on desktop too.
+// "cards" keeps each quote in a card with its star rating; "quiet" drops both and sets the quotes as type.
 import Icon from '@/ui/components/Icon.astro';
+import { testimonialLayoutOf } from '@/domain/content/section-layouts';
 import { t } from '@/ui/i18n';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import type { WidgetProps } from './types';
 
 const { section, data, view } = Astro.props as WidgetProps;
-const config = section.config as { title?: LocalizedText; includeManual?: boolean; limit?: number };
+const config = section.config as {
+  title?: LocalizedText;
+  includeManual?: boolean;
+  limit?: number;
+  layout?: string;
+};
 const items = config.includeManual === false ? [] : (data.testimonials ?? []).slice(0, config.limit ?? 6);
 const title = pickText(config.title, view.locale, 'es');
+const layout = testimonialLayoutOf(config.layout);
 const STAR_COUNT = 5;
+// The quiet layout parts the quotes with a rule instead of a card, so the card's padding and background go with it.
+const figure =
+  layout === 'cards'
+    ? 'flex w-full flex-col gap-5 rounded-card bg-surface p-7 md:p-8'
+    : 'flex w-full flex-col gap-4 border-t border-text/15 pt-5';
 ---
 
 {items.length > 0 && (
@@ -19,17 +32,27 @@ const STAR_COUNT = 5;
     <ul class="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-2 scrollbar-none md:mx-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
       {items.map((item) => (
         <li class="flex w-[82%] shrink-0 snap-start md:w-auto">
-          <figure class="flex w-full flex-col gap-5 rounded-card bg-surface p-7 md:p-8">
-            <p
-              class="flex gap-0.5"
-              role="img"
-              aria-label={t(view.locale, 'common.ratingLabel', { count: item.rating })}
+          <figure class={figure}>
+            {layout === 'cards' && (
+              <p
+                class="flex gap-0.5"
+                role="img"
+                aria-label={t(view.locale, 'common.ratingLabel', { count: item.rating })}
+              >
+                {Array.from({ length: STAR_COUNT }, (_, index) => (
+                  <Icon name="star" size={18} class={index < item.rating ? 'text-accent' : 'text-text/20'} />
+                ))}
+              </p>
+            )}
+            <blockquote
+              class={
+                layout === 'cards'
+                  ? 'text-lg leading-snug font-medium'
+                  : 'font-display text-lg leading-snug md:text-xl'
+              }
             >
-              {Array.from({ length: STAR_COUNT }, (_, index) => (
-                <Icon name="star" size={18} class={index < item.rating ? 'text-accent' : 'text-text/20'} />
-              ))}
-            </p>
-            <blockquote class="text-lg leading-snug font-medium">{item.body}</blockquote>
+              {item.body}
+            </blockquote>
             <figcaption class="eyebrow mt-auto">{item.authorName}</figcaption>
           </figure>
         </li>

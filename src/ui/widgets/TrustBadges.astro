@@ -1,29 +1,45 @@
 ---
-// Benefit row: shipping, returns, secure payment and support, each with an icon and short text.
+// Benefit row: shipping, returns, secure payment and support. "icons" gives each one an icon in a divided row; "line"
+// sets them as one quiet line of text, which is what a store wants when its benefits are facts, not badges.
 import Icon from '@/ui/components/Icon.astro';
+import { badgeLayoutOf } from '@/domain/content/section-layouts';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import type { IconName } from '@/ui/components/icons';
 import type { WidgetProps } from './types';
 
 const { section, view } = Astro.props as WidgetProps;
-const config = section.config as { items?: { icon: IconName; text: LocalizedText }[] };
+const config = section.config as { items?: { icon: IconName; text: LocalizedText }[]; layout?: string };
 // Pages saved by an earlier version named the returns icon "return"; its name is now "returns".
 const items = (config.items ?? []).map((item) => ({
   ...item,
   icon: (item.icon as string) === 'return' ? ('returns' as IconName) : item.icon,
 }));
+const layout = badgeLayoutOf(config.layout);
 ---
 
-{items.length > 0 && (
-  <ul
-    class="grid grid-cols-2 gap-x-4 gap-y-6 border-y border-text/10 py-7 md:grid-cols-4 md:gap-y-0 md:divide-x md:divide-text/10"
-    data-reveal
-  >
-    {items.map((item) => (
-      <li class="flex items-center gap-3 text-sm font-medium md:px-8 md:first:pl-0 md:last:pr-0">
-        <Icon name={item.icon} size={22} class="shrink-0 text-accent" />
-        <span>{pickText(item.text, view.locale, 'es')}</span>
-      </li>
-    ))}
-  </ul>
-)}
+{items.length > 0 &&
+  (layout === 'icons' ? (
+    <ul
+      class="grid grid-cols-2 gap-x-4 gap-y-6 border-y border-text/10 py-7 md:grid-cols-4 md:gap-y-0 md:divide-x md:divide-text/10"
+      data-reveal
+    >
+      {items.map((item) => (
+        <li class="flex items-center gap-3 text-sm font-medium md:px-8 md:first:pl-0 md:last:pr-0">
+          <Icon name={item.icon} size={22} class="shrink-0 text-accent" />
+          <span>{pickText(item.text, view.locale, 'es')}</span>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <ul
+      class="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-text/15 pt-5 text-sm text-text/70"
+      data-reveal
+    >
+      {items.map((item, index) => (
+        <li class="flex items-center gap-3">
+          {index > 0 && <span aria-hidden="true">&middot;</span>}
+          <span>{pickText(item.text, view.locale, 'es')}</span>
+        </li>
+      ))}
+    </ul>
+  ))}
