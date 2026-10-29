@@ -397,7 +397,7 @@ function home(hero) {
             cta: { href: '/shop', label: text('Ver la despensa', 'See the pantry') },
           },
           {
-            image: hero[2],
+            image: hero[1],
             title: text('Tostamos los martes', 'We roast on Tuesdays'),
             subtitle: text(
               'El café sale al día siguiente de tostarse, no antes.',
@@ -513,25 +513,32 @@ const photos = {
     'a roasting drum pouring fresh dark coffee beans into a wooden tray, steam rising',
   ],
   categories: {
-    'cat-cafe': 'a heap of dark roasted coffee beans beside a brown paper bag',
-    'cat-salsas': 'three glass jars of red chilli salsa with dried chillies beside them',
-    'cat-dulce': 'a glass jar of amber honey with a wooden dipper and a jar of fig jam',
+    'cat-cafe': 'a heap of dark roasted coffee beans spilling across the wood with a wooden scoop among them',
+    'cat-salsas': 'three small ceramic bowls of red chilli salsas, dried chillies scattered between them',
+    'cat-dulce':
+      'a ceramic bowl of amber honey with a wooden dipper and a bowl of dark fig jam, honeycomb beside them',
     'cat-despensa': 'a cloth sack of dried beans spilling onto wood beside a vanilla pod',
   },
   products: {
     'prod-cafe-altura':
       'a brown kraft paper bag of roasted coffee beans standing upright, beans scattered at its base',
-    'prod-cafe-olla': 'a paper bag of ground coffee with cinnamon sticks leaning against it',
+    'prod-cafe-olla':
+      'a clay mug of dark coffee with a small heap of ground coffee and cinnamon sticks beside it',
     'prod-cafe-descafeinado': 'a small brown paper bag of ground coffee beside a white ceramic cup',
-    'prod-salsa-macha': 'a glass jar of dark red chilli oil salsa with peanuts and sesame seeds beside it',
-    'prod-salsa-morita': 'a glass jar of smoky dark red salsa with charred chillies and garlic beside it',
-    'prod-mole-pasta': 'a glass jar of thick dark brown mole paste with dried chillies and sesame beside it',
-    'prod-miel-abeja': 'a glass jar of golden crystallised honey with a wooden honey dipper',
-    'prod-mermelada-higo': 'a small glass jar of dark fig jam with two fresh figs cut open beside it',
-    'prod-cajeta': 'a glass jar of golden caramel cajeta with a spoon of it lifted above the jar',
+    'prod-salsa-macha':
+      'a shallow ceramic bowl of dark red chilli oil salsa, peanuts and sesame seeds scattered around it',
+    'prod-salsa-morita':
+      'a small ceramic bowl of smoky dark red salsa, charred chillies and a head of garlic beside it',
+    'prod-mole-pasta':
+      'a mound of thick dark brown mole paste on a ceramic plate, dried chillies and sesame seeds beside it',
+    'prod-miel-abeja':
+      'golden honey dripping from a wooden dipper into a small ceramic bowl, a piece of honeycomb beside it',
+    'prod-mermelada-higo': 'dark fig jam in a small ceramic bowl, two fresh figs cut open beside it',
+    'prod-cajeta': 'golden caramel cajeta in a small ceramic bowl, a spoon lifting a slow thread of it',
     'prod-frijol-bayo': 'a burlap sack of pale brown dried beans spilling onto the table',
-    'prod-pinole': 'a small cloth bag of toasted maize flour with cinnamon sticks and a wooden scoop',
-    'prod-vainilla': 'a small dark glass bottle of vanilla extract with three vanilla pods beside it',
+    'prod-pinole': 'a wooden bowl of toasted maize flour with a wooden scoop and cinnamon sticks beside it',
+    'prod-vainilla':
+      'three vanilla pods tied with twine on a wooden board, a small ceramic dish of dark vanilla extract beside them',
   },
 };
 
