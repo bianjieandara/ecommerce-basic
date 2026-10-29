@@ -44,15 +44,33 @@ jobs:
 
       # The demo has no accountId in client.jsonc, so deploy-client uses these variables as they are.
       #
-      # `CLOUDFLARE_API_TOKEN` holds a Global API Key, not an API token, which is why every run died with
-      # "Invalid format for Authorization header [code: 6111]": wrangler sends that variable as a bearer token,
-      # and a Global API Key is not one. The key goes in `CLOUDFLARE_API_KEY` beside the account's e-mail
-      # instead. The secret keeps its name because a secret's value cannot be read back to copy it elsewhere.
-      # A scoped API token would be better than a Global API Key, which cannot be limited to this repository:
-      # make one and this pair can go back to being a single `CLOUDFLARE_API_TOKEN`.
+      # The credential is read from one secret and handed to wrangler as whatever it turns out to be, because
+      # the two kinds go in different variables and a secret's value cannot be read back to sort them out by
+      # hand. A Global API Key is 37 hex characters and travels in `CLOUDFLARE_API_KEY` beside the account's
+      # e-mail; an API token is longer and mixed-case and travels in `CLOUDFLARE_API_TOKEN`. Sending one as
+      # the other is what produced "Invalid format for Authorization header [6111]" and, the other way round,
+      # "[6103]" for X-Auth-Key. The value is trimmed first: a newline picked up while pasting the secret
+      # breaks both headers, and Cloudflare answers the same way it does for a credential that is simply wrong.
+      #
+      # A scoped API token is better than a Global API Key, which cannot be limited to this repository or
+      # revoked without breaking everything else signed with it.
       - name: Deploy
-        run: npm run deploy:client -- demo
+        shell: bash
+        run: |
+          credential="$(printf '%s' "$CF_CREDENTIAL" | tr -d '[:space:]')"
+          if [ -z "$credential" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is empty."
+            exit 1
+          elif printf '%s' "$credential" | grep -qE '^[0-9a-f]{37}$'; then
+            echo "Using the credential as a Global API Key."
+            export CLOUDFLARE_API_KEY="$credential"
+            export CLOUDFLARE_EMAIL="$CF_EMAIL"
+          else
+            echo "Using the credential as an API token."
+            export CLOUDFLARE_API_TOKEN="$credential"
+          fi
+          npm run deploy:client -- demo
         env:
-          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+          CF_CREDENTIAL: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
