@@ -125,6 +125,13 @@ export const en = {
       cash_on_delivery: 'Cash on delivery',
     },
   },
+  trust: {
+    title: 'Who you are buying from',
+    payWith: 'Ways to pay',
+    reviews: '{rating} out of 5 · {count} Google reviews',
+    reviewsOne: '{rating} out of 5 · {count} Google review',
+    seeOnGoogle: 'See on Google',
+  },
   order: {
     number: 'Order {number}',
     status: 'Status',

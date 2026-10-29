@@ -126,6 +126,13 @@ export const es: Dictionary = {
       cash_on_delivery: 'Pago contra entrega',
     },
   },
+  trust: {
+    title: 'Quién te vende',
+    payWith: 'Formas de pago',
+    reviews: '{rating} de 5 · {count} reseñas en Google',
+    reviewsOne: '{rating} de 5 · {count} reseña en Google',
+    seeOnGoogle: 'Ver en Google',
+  },
   order: {
     number: 'Pedido {number}',
     status: 'Estado',

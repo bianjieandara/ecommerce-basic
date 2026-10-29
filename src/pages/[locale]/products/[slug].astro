@@ -6,6 +6,7 @@ import Price from '@/ui/components/Price.astro';
 import AddToCart from '@/ui/store/AddToCart.tsx';
 import BackInStockForm from '@/ui/store/BackInStockForm.tsx';
 import RelatedProducts from '@/ui/store/RelatedProducts.astro';
+import SellerTrust from '@/ui/store/SellerTrust.astro';
 import TurnstileScript from '@/ui/components/TurnstileScript.astro';
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import { isLocale } from '@/domain/shared/locale';
@@ -16,6 +17,7 @@ import { renderMarkdown } from '@/ui/lib/markdown';
 import { buildSrcSet, mediaUrl } from '@/ui/lib/media-url';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { loadStoreContext } from '@/http/store-context';
+import { loadSellerTrust } from '@/http/seller-trust';
 import { buildTitle, catalogOptionsFor, contactFor, metaDescription, storeViewFor } from '@/http/storefront';
 import { productStructuredData } from '@/ui/lib/storefront-seo';
 import { themeToCss } from '@/ui/lib/theme-css';
@@ -33,6 +35,8 @@ const related = await catalog.listRelatedProducts(lang, product.id, 8);
 
 const view = storeViewFor(store, lang);
 const contact = contactFor(store, lang);
+// Who sells, with the payment methods the checkout will really offer: the buyer decides to trust the store here.
+const { seller } = await loadSellerTrust(app, store, lang);
 const requested = Astro.url.searchParams.get('v');
 const selected =
   product.variants.find((variant) => variant.id === requested) ??
@@ -290,6 +294,7 @@ const category = product.categories[0];
           }}
         />
       )}
+      <SellerTrust locale={lang} seller={seller} />
       <section class="flex flex-col gap-3 border-t border-text/10 pt-6">
         <h2 class="eyebrow">{t(lang, 'product.description')}</h2>
         <div class="max-w-prose leading-relaxed [&_p]:my-3" set:html={description} />

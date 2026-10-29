@@ -1,0 +1,91 @@
+---
+// Seller card: who sells, where it is, how to call it, its Google rating and the payment methods it accepts. Shown where
+// the buyer hesitates (the product and the checkout), because a store that does not say who it is reads as a scam.
+import Icon from '@/ui/components/Icon.astro';
+import { telLink } from '@/domain/shared/phone';
+import { t } from '@/ui/i18n';
+import { paymentMethodLabel } from '@/ui/lib/payment-method-label';
+import type { Locale } from '@/domain/shared/locale';
+import type { SellerTrust } from '@/http/seller-trust';
+
+interface Props {
+  locale: Locale;
+  seller: SellerTrust;
+  /** The checkout shows it full width; the product page shows it in the narrow column. */
+  class?: string;
+  /** Off at the checkout, where the buyer is choosing a method right above the card. */
+  showMethods?: boolean;
+}
+
+const { locale, seller, class: className = '', showMethods = true } = Astro.props;
+// The identification reads as the store wrote it ("RUC 1792…"), and as the number alone when no type is set.
+const identity = [seller.legalName, [seller.taxIdType, seller.taxId].filter(Boolean).join(' ')]
+  .filter(Boolean)
+  .join(' · ');
+const phoneHref = telLink(seller.phone);
+const methods = showMethods
+  ? seller.methods.map((method) => paymentMethodLabel(locale, method)).join(' · ')
+  : '';
+const hasSomething = identity !== '' || seller.address !== '' || seller.reviews !== null || methods !== '';
+---
+
+{hasSomething && (
+  <section
+    aria-labelledby="seller-trust-title"
+    class:list={['flex flex-col gap-3 rounded-card bg-surface p-5', className]}
+  >
+    <h2 id="seller-trust-title" class="eyebrow">
+      {t(locale, 'trust.title')}
+    </h2>
+    <ul class="flex flex-col gap-2 text-sm">
+      {identity && (
+        <li class="flex items-start gap-2.5">
+          <Icon name="shield" size={18} class="mt-0.5 shrink-0 text-accent" />
+          <span class="font-medium wrap-break-word">{identity}</span>
+        </li>
+      )}
+      {seller.address && (
+        <li class="flex items-start gap-2.5">
+          <Icon name="map" size={18} class="mt-0.5 shrink-0 text-accent" />
+          <span class="wrap-break-word">{seller.address}</span>
+        </li>
+      )}
+      {phoneHref && (
+        <li class="flex items-center gap-2.5">
+          <Icon name="phone" size={18} class="shrink-0 text-accent" />
+          <a href={phoneHref} class="-my-3 inline-flex min-h-11 items-center underline">
+            {seller.phone}
+          </a>
+        </li>
+      )}
+      {seller.reviews && (
+        <li class="flex items-center gap-2.5">
+          <Icon name="star" size={18} class="shrink-0 text-accent" />
+          <span class="flex flex-wrap items-center gap-x-2">
+            {t(locale, 'trust.reviews', {
+              rating: seller.reviews.rating.toFixed(1),
+              count: String(seller.reviews.count),
+            })}
+            {seller.reviews.mapsUri && (
+              <a
+                href={seller.reviews.mapsUri}
+                rel="noopener"
+                class="-my-3 inline-flex min-h-11 items-center underline"
+              >
+                {t(locale, 'trust.seeOnGoogle')}
+              </a>
+            )}
+          </span>
+        </li>
+      )}
+      {methods && (
+        <li class="flex items-start gap-2.5">
+          <Icon name="lock" size={18} class="mt-0.5 shrink-0 text-accent" />
+          <span>
+            <span class="text-text/60">{t(locale, 'trust.payWith')}:</span> {methods}
+          </span>
+        </li>
+      )}
+    </ul>
+  </section>
+)}

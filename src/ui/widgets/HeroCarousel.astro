@@ -1,9 +1,12 @@
 ---
-// Hero carousel: large slides with a picture, a title, a subtitle and an optional button. A slide without a picture is a
-// block in the primary colour. The text sits on a dark gradient so it stays readable on any picture.
+// Hero carousel: large slides with a picture, a title, a subtitle and an optional button. The layout comes from the page
+// builder. Three layouts put the text on the picture over a dark gradient or in a solid block; "editorial" puts the text
+// above the picture instead, for stores whose photographs should carry no type at all. A slide without a picture is a
+// block in the surface colour.
 import Carousel from '@/ui/components/Carousel.astro';
 import CtaLink from '@/ui/components/CtaLink.astro';
 import SectionPicture from '@/ui/components/SectionPicture.astro';
+import { heroLayoutOf, type HeroLayout } from '@/domain/content/section-layouts';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { t } from '@/ui/i18n';
 import { localizedHref } from '@/ui/lib/localized-href';
@@ -17,12 +20,70 @@ interface Slide {
 }
 
 const { section, view, data, first = false } = Astro.props as WidgetProps;
-const config = section.config as { slides?: Slide[]; autoplaySeconds?: number };
+const config = section.config as { slides?: Slide[]; autoplaySeconds?: number; layout?: string };
 const slides = config.slides ?? [];
+const layout = heroLayoutOf(config.layout);
+
+/** What changes from one layout to the next. "editorial" is the one that does not write on the picture. */
+const LAYOUTS: Record<
+  HeroLayout,
+  {
+    /** Class on the element wrapping the whole carousel. */
+    root: string;
+    /** Class on one slide. */
+    slide: string;
+    /** A dark gradient under the text, so it reads on any photograph. */
+    scrim: boolean;
+    /** Class on the block that holds title, subtitle and button. */
+    caption: string;
+    /** Carousel controls float over the slides instead of sitting in a row below them. */
+    overlay: boolean;
+    sizes: string;
+  }
+> = {
+  contained: {
+    root: '',
+    slide: 'relative flex min-h-112 flex-col justify-end overflow-hidden rounded-card md:min-h-144',
+    scrim: true,
+    caption: 'relative flex max-w-2xl flex-col items-start gap-5 p-6 pb-24 md:p-14',
+    overlay: true,
+    sizes: '(min-width: 1152px) 1152px, 100vw',
+  },
+  bleed: {
+    root: 'full-bleed',
+    slide: 'relative flex min-h-128 flex-col justify-end overflow-hidden md:min-h-[34rem]',
+    scrim: true,
+    // The text keeps the page's column even though the picture does not, so it lines up with every section below it.
+    caption:
+      'relative mx-auto flex w-full max-w-7xl flex-col items-start gap-5 px-5 pb-24 pt-10 md:px-8 md:pb-28',
+    overlay: true,
+    sizes: '100vw',
+  },
+  scene: {
+    root: '',
+    slide: 'relative flex min-h-112 flex-col justify-end overflow-hidden md:min-h-144',
+    scrim: false,
+    // A solid block resting in the corner: nothing is written over the photograph, so no shot is ever unusable.
+    caption: 'relative flex max-w-md flex-col items-start gap-4 bg-text p-6 text-background md:p-8',
+    overlay: false,
+    sizes: '(min-width: 1152px) 1152px, 100vw',
+  },
+  editorial: {
+    root: '',
+    slide: 'flex flex-col gap-8',
+    scrim: false,
+    caption: 'mx-auto flex max-w-2xl flex-col items-center gap-5 text-center',
+    overlay: false,
+    sizes: '(min-width: 1152px) 1152px, 100vw',
+  },
+};
+
+const style = LAYOUTS[layout];
+const onPicture = layout !== 'editorial';
 ---
 
 {slides.length > 0 && (
-  <div data-reveal>
+  <div data-reveal class={style.root}>
     <Carousel
       label={t(view.locale, 'nav.home')}
       previousLabel={t(view.locale, 'nav.previous')}
@@ -30,38 +91,60 @@ const slides = config.slides ?? [];
       autoplay={(config.autoplaySeconds ?? 6) * 1000}
       slideBasis="100%"
       single
-      overlay
+      overlay={style.overlay}
     >
       {slides.map((slide, index) => {
         const image = slide.image ? data.media?.[slide.image] : undefined;
+        const eager = first && index === 0;
+        const title = pickText(slide.title, view.locale, 'es');
+        const subtitle = pickText(slide.subtitle, view.locale, 'es');
+        const cta = slide.cta;
+        // On the picture the type is white over the scrim or over the solid block; above it, it is the page's own ink.
+        const light = onPicture && (image !== undefined || layout === 'scene');
         return (
           <div
-            class={`relative flex min-h-112 flex-col justify-end overflow-hidden rounded-card md:min-h-144 ${image ? 'bg-text text-white' : 'bg-surface text-text'}`}
+            class={`${style.slide} ${onPicture && !image ? 'bg-surface text-text' : ''} ${onPicture && image && style.scrim ? 'bg-text text-white' : ''}`}
           >
-            {image && (
-              <>
-                <SectionPicture
-                  image={image}
-                  sizes="(min-width: 1152px) 1152px, 100vw"
-                  eager={first && index === 0}
-                  class="absolute inset-0 h-full w-full object-cover object-[70%_50%]"
-                />
-                <div class="absolute inset-0 bg-linear-to-t from-black/75 via-black/25 to-transparent" />
-              </>
-            )}
-            <div class="relative flex max-w-2xl flex-col items-start gap-5 p-6 pb-24 md:p-14">
-              <h2 class="text-3xl leading-[1.06] tracking-[-0.04em] text-balance md:text-5xl">
-                {pickText(slide.title, view.locale, 'es')}
+            {onPicture
+              ? image && (
+                  <>
+                    <SectionPicture
+                      image={image}
+                      sizes={style.sizes}
+                      eager={eager}
+                      class="absolute inset-0 h-full w-full object-cover object-[70%_50%]"
+                    />
+                    {style.scrim && (
+                      <div class="absolute inset-0 bg-linear-to-t from-black/75 via-black/25 to-transparent" />
+                    )}
+                  </>
+                )
+              : null}
+
+            <div class={style.caption}>
+              <h2
+                class={`text-3xl leading-[1.06] tracking-[-0.04em] text-balance ${layout === 'editorial' ? 'md:text-4xl' : 'md:text-5xl'}`}
+              >
+                {title}
               </h2>
-              <p class="max-w-md text-base opacity-85 md:text-lg">
-                {pickText(slide.subtitle, view.locale, 'es')}
+              <p class={`max-w-md text-base md:text-lg ${light ? 'opacity-85' : 'text-text/70'}`}>
+                {subtitle}
               </p>
-              {slide.cta && (
-                <CtaLink href={localizedHref(view.locale, slide.cta.href)} tone={image ? 'light' : 'dark'}>
-                  {pickText(slide.cta.label, view.locale, 'es')}
+              {cta && (
+                <CtaLink href={localizedHref(view.locale, cta.href)} tone={light ? 'light' : 'dark'}>
+                  {pickText(cta.label, view.locale, 'es')}
                 </CtaLink>
               )}
             </div>
+
+            {!onPicture && image && (
+              <SectionPicture
+                image={image}
+                sizes={style.sizes}
+                eager={eager}
+                class="aspect-4/3 w-full object-cover md:aspect-16/9"
+              />
+            )}
           </div>
         );
       })}

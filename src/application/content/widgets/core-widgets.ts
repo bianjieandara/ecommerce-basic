@@ -1,6 +1,45 @@
 // The widget definitions shipped with the template, with the fields each one exposes to admins in the page builder.
-import { bilingual as text } from '@/domain/shared/localized-text';
+import { bilingual as text, type LocalizedText } from '@/domain/shared/localized-text';
+import {
+  DEFAULT_HERO_LAYOUT,
+  DEFAULT_PRODUCT_LAYOUT,
+  HERO_LAYOUTS,
+  PRODUCT_LAYOUTS,
+  type HeroLayout,
+  type ProductLayout,
+} from '@/domain/content/section-layouts';
 import type { WidgetDefinition } from './widget-types';
+
+/**
+ * Turns a closed set of layout values into the page builder's choices. The labels are a full record, so a layout added to
+ * the domain list without a name here fails to compile instead of showing up blank.
+ * @param values The layout values, in the order they are offered.
+ * @param labels One bilingual name per value.
+ * @returns Options for a select field.
+ */
+function layoutOptions<T extends string>(
+  values: readonly T[],
+  labels: Record<T, LocalizedText>,
+): { value: T; label: LocalizedText }[] {
+  return values.map((value) => ({ value, label: labels[value] }));
+}
+
+/** What each hero layout is called in the page builder. */
+const HERO_LAYOUT_LABELS: Record<HeroLayout, LocalizedText> = {
+  contained: text('En tarjeta', 'Card'),
+  bleed: text('A sangre', 'Full bleed'),
+  scene: text('Escena', 'Scene'),
+  editorial: text('Editorial', 'Editorial'),
+};
+
+/** What each product layout is called in the page builder. */
+const PRODUCT_LAYOUT_LABELS: Record<ProductLayout, LocalizedText> = {
+  carousel: text('Carrusel', 'Carousel'),
+  grid: text('Cuadrícula', 'Grid'),
+  gallery: text('Galería', 'Gallery'),
+  flush: text('Sin márgenes', 'Flush'),
+  list: text('Lista', 'List'),
+};
 
 /** Every core widget definition, in the order shown in the admin picker. */
 export const CORE_WIDGETS: WidgetDefinition[] = [
@@ -28,8 +67,14 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
         min: 0,
         max: 30,
       },
+      {
+        name: 'layout',
+        kind: 'select',
+        label: text('Diseño', 'Layout'),
+        options: layoutOptions(HERO_LAYOUTS, HERO_LAYOUT_LABELS),
+      },
     ],
-    defaults: { slides: [], autoplaySeconds: 6 },
+    defaults: { slides: [], autoplaySeconds: 6, layout: DEFAULT_HERO_LAYOUT },
   },
   {
     type: 'featured_products',
@@ -56,10 +101,7 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
         name: 'layout',
         kind: 'select',
         label: text('Diseño', 'Layout'),
-        options: [
-          { value: 'carousel', label: text('Carrusel', 'Carousel') },
-          { value: 'grid', label: text('Cuadrícula', 'Grid') },
-        ],
+        options: layoutOptions(PRODUCT_LAYOUTS, PRODUCT_LAYOUT_LABELS),
       },
     ],
     defaults: {
@@ -68,7 +110,7 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
       categoryIds: [],
       productIds: [],
       limit: 8,
-      layout: 'carousel',
+      layout: DEFAULT_PRODUCT_LAYOUT,
     },
   },
   {

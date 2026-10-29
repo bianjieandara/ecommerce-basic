@@ -1,6 +1,7 @@
 ---
-// Product tile for grids and carousels: a rounded tinted picture with the status badges and a price tag on it, then the
-// centred name and category.
+// Product tile for grids, carousels and lists. The variant decides how loud the tile is: "card" is the tinted picture with
+// the badges and the price tag on it; the quieter ones drop the tint and the tag and put the price in the caption, which is
+// what the gallery, flush and look-book layouts are built on.
 import Badge from '@/ui/components/Badge.astro';
 import Price from '@/ui/components/Price.astro';
 import { t } from '@/ui/i18n';
@@ -8,6 +9,9 @@ import { buildSrcSet, mediaUrl } from '@/ui/lib/media-url';
 import { routes } from '@/ui/lib/routes';
 import type { ProductCardDto } from '@/application/dto/catalog-dto';
 import type { StoreView } from '@/ui/lib/store-view';
+
+/** How loud the tile is. One per product layout that needs its own tile; "card" is the storefront default. */
+export type ProductCardVariant = 'card' | 'plain' | 'flush' | 'list';
 
 interface Props {
   product: ProductCardDto;
@@ -18,6 +22,8 @@ interface Props {
   sizes?: string;
   /** Heading level of the name: 3 under a section title, 2 where the page title is the only heading above (the shop). */
   headingLevel?: 2 | 3;
+  /** Tile style. The shop and the default home block use "card"; the other layouts pass their own. */
+  variant?: ProductCardVariant;
 }
 
 const {
@@ -26,16 +32,63 @@ const {
   eager = false,
   sizes = '(min-width: 1280px) 23vw, (min-width: 768px) 31vw, 46vw',
   headingLevel = 3,
+  variant = 'card',
 } = Astro.props;
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const srcset = product.imageVariants.length > 1 ? buildSrcSet(product.imageVariants) : undefined;
 const href = routes.product(view.locale, product.slug);
+
+/** Classes per variant: the article, the picture box, the picture itself, the caption and the name inside it. */
+const STYLES: Record<
+  ProductCardVariant,
+  { root: string; media: string; tile: string; image: string; caption: string; name: string }
+> = {
+  card: {
+    root: 'group flex min-w-0 flex-col gap-3',
+    media: 'relative',
+    // The tint shows through the picture (multiply), so a white product shot takes on the pastel.
+    tile: 'block overflow-hidden rounded-card bg-accent-soft',
+    image:
+      'aspect-square w-full object-cover mix-blend-multiply transition duration-300 group-hover:scale-[1.03]',
+    caption: 'text-center',
+    name: 'text-base font-medium leading-snug',
+  },
+  plain: {
+    root: 'group flex min-w-0 flex-col gap-4',
+    media: 'relative',
+    tile: 'block overflow-hidden bg-surface',
+    image: 'aspect-4/5 w-full object-cover transition duration-500 group-hover:scale-[1.02]',
+    caption: 'text-center',
+    name: 'font-display text-base font-normal leading-snug',
+  },
+  flush: {
+    root: 'group flex min-w-0 flex-col bg-surface',
+    media: 'relative',
+    tile: 'block overflow-hidden',
+    image: 'aspect-4/5 w-full object-cover transition duration-500 group-hover:scale-[1.02]',
+    caption: 'px-4 pb-4 pt-3',
+    name: 'text-sm font-medium leading-snug',
+  },
+  list: {
+    root: 'group flex min-w-0 items-center gap-3',
+    media: 'relative w-16 shrink-0',
+    tile: 'block overflow-hidden bg-surface',
+    image: 'aspect-4/5 w-full object-cover',
+    caption: 'min-w-0',
+    name: 'text-sm font-medium leading-snug',
+  },
+};
+
+const style = STYLES[variant];
+// Only the card hangs the price on the picture; everywhere else it reads as a line of the caption.
+const priceOnPicture = variant === 'card';
+// A 64px tile has no room for a badge, and the look-book row already says what the piece is.
+const showBadges = variant !== 'list';
 ---
 
-<article class="group flex min-w-0 flex-col gap-3">
-  <div class="relative">
-    {/* The tint shows through the picture (multiply), so a white product shot takes on the pastel. */}
-    <a href={href} class="block overflow-hidden rounded-card bg-accent-soft" aria-hidden="true" tabindex="-1">
+<article class={style.root}>
+  <div class={style.media}>
+    <a href={href} class={style.tile} aria-hidden="true" tabindex="-1">
       {product.imageKey ? (
         <img
           src={mediaUrl(product.imageKey)}
@@ -47,7 +100,7 @@ const href = routes.product(view.locale, product.slug);
           loading={eager ? 'eager' : 'lazy'}
           fetchpriority={eager ? 'high' : undefined}
           decoding="async"
-          class="aspect-square w-full object-cover mix-blend-multiply transition duration-300 group-hover:scale-[1.03]"
+          class={style.image}
         />
       ) : (
         <span
@@ -59,13 +112,38 @@ const href = routes.product(view.locale, product.slug);
         </span>
       )}
     </a>
-    <div class="absolute left-3 top-3 flex flex-wrap gap-1">
-      {product.isOnSale && <Badge tone="danger">{t(view.locale, 'product.onSale')}</Badge>}
-      {product.isNew && <Badge tone="success">{t(view.locale, 'product.new')}</Badge>}
-      {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}
-    </div>
-    {/* Price tag on the picture. pointer-events-none lets a tap reach the picture's link under it. */}
-    <div class="pointer-events-none absolute bottom-3 right-3 rounded-full bg-primary px-3 py-2 text-sm whitespace-nowrap max-sm:[&_s]:hidden [&_s]:text-on-primary/70 [&_span]:text-on-primary">
+    {showBadges && (
+      <div class="absolute left-3 top-3 flex flex-wrap gap-1">
+        {product.isOnSale && <Badge tone="danger">{t(view.locale, 'product.onSale')}</Badge>}
+        {product.isNew && <Badge tone="success">{t(view.locale, 'product.new')}</Badge>}
+        {!product.inStock && <Badge>{t(view.locale, 'product.outOfStock')}</Badge>}
+      </div>
+    )}
+    {priceOnPicture && (
+      /* Price tag on the picture. pointer-events-none lets a tap reach the picture's link under it. */
+      <div class="pointer-events-none absolute bottom-3 right-3 rounded-full bg-primary px-3 py-2 text-sm whitespace-nowrap max-sm:[&_s]:hidden [&_s]:text-on-primary/70 [&_span]:text-on-primary">
+        <Price
+          amountMinor={product.minPriceMinor}
+          compareAtMinor={product.compareAtPriceMinor}
+          currency={view.currency}
+          locale={view.locale}
+          country={view.country}
+          from={product.maxPriceMinor !== product.minPriceMinor}
+          class="gap-x-2"
+        />
+      </div>
+    )}
+  </div>
+
+  <div class={style.caption}>
+    <Heading class={style.name}>
+      <a href={href} class="-my-3.5 inline-block py-3.5 hover:underline">
+        {product.name}
+      </a>
+    </Heading>
+    {priceOnPicture ? (
+      <p class="text-xs text-text/70">{product.categoryName}</p>
+    ) : (
       <Price
         amountMinor={product.minPriceMinor}
         compareAtMinor={product.compareAtPriceMinor}
@@ -73,16 +151,8 @@ const href = routes.product(view.locale, product.slug);
         locale={view.locale}
         country={view.country}
         from={product.maxPriceMinor !== product.minPriceMinor}
-        class="gap-x-2"
+        class={`mt-0.5 text-sm [&_span]:font-medium ${variant === 'plain' ? 'justify-center' : ''}`}
       />
-    </div>
-  </div>
-  <div class="text-center">
-    <Heading class="text-base font-medium leading-snug">
-      <a href={href} class="-my-3.5 inline-block py-3.5 hover:underline">
-        {product.name}
-      </a>
-    </Heading>
-    <p class="text-xs text-text/70">{product.categoryName}</p>
+    )}
   </div>
 </article>

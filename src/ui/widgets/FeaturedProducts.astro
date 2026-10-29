@@ -1,36 +1,79 @@
 ---
-// Featured block: a row of products (carousel) or a grid. Products are loaded by the page, not here.
+// Featured block: a row of products (carousel) or one of the grids. The layout comes from the page builder, so a store
+// chooses between the default cards, a quiet gallery, a flush band or a compact list. Products are loaded by the page.
 import Carousel from '@/ui/components/Carousel.astro';
 import Icon from '@/ui/components/Icon.astro';
-import ProductCard from '@/ui/store/ProductCard.astro';
+import ProductCard, { type ProductCardVariant } from '@/ui/store/ProductCard.astro';
+import { productLayoutOf, type ProductLayout } from '@/domain/content/section-layouts';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { t } from '@/ui/i18n';
 import { routes } from '@/ui/lib/routes';
 import type { WidgetProps } from './types';
 
 const { section, data, view, first = false } = Astro.props as WidgetProps;
-const config = section.config as { title?: LocalizedText; layout?: 'carousel' | 'grid' };
+const config = section.config as { title?: LocalizedText; layout?: string };
 const products = data.productsBySection[section.id] ?? [];
 const title = pickText(config.title, view.locale, 'es');
+const layout = productLayoutOf(config.layout);
+
+/** The grids: how the list is arranged, which tile it uses and how wide that tile ends up. */
+const GRIDS: Record<
+  Exclude<ProductLayout, 'carousel'>,
+  { list: string; variant: ProductCardVariant; sizes: string }
+> = {
+  grid: {
+    list: 'grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6',
+    variant: 'card',
+    sizes: '(min-width: 768px) 25vw, 46vw',
+  },
+  gallery: {
+    // The narrow column is the point: the margins either side are what makes the pictures read as pieces, not stock.
+    list: 'mx-auto grid max-w-5xl grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-3 md:gap-x-12',
+    variant: 'plain',
+    sizes: '(min-width: 768px) 28vw, 46vw',
+  },
+  flush: {
+    // A hairline of page background between tiles, so two photographs of the same tone stay legible side by side.
+    list: 'full-bleed grid grid-cols-2 gap-px md:grid-cols-4',
+    variant: 'flush',
+    sizes: '(min-width: 768px) 25vw, 50vw',
+  },
+  list: {
+    list: 'grid grid-cols-1 gap-4 md:grid-cols-3',
+    variant: 'list',
+    sizes: '64px',
+  },
+};
+
+const grid = layout === 'carousel' ? null : GRIDS[layout];
 ---
 
 {products.length > 0 && (
   <section class="flex flex-col gap-8" data-reveal>
-    <div class="flex items-end justify-between gap-4">
+    <div
+      class={`flex items-end justify-between gap-4 ${layout === 'gallery' ? 'md:justify-center md:text-center' : ''}`}
+    >
       <h2 class="text-xl md:text-2xl">{title}</h2>
       <a
         href={routes.shop(view.locale)}
-        class="group inline-flex min-h-11 items-center gap-2 text-sm font-medium underline-offset-4 hover:underline"
+        class={`group inline-flex min-h-11 items-center gap-2 text-sm font-medium underline-offset-4 hover:underline ${layout === 'gallery' ? 'md:hidden' : ''}`}
       >
         {t(view.locale, 'nav.shop')}
         <Icon name="arrow-right" size={16} class="transition group-hover:translate-x-0.5" />
       </a>
     </div>
-    {config.layout === 'grid' ? (
-      <ul class="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
+
+    {grid ? (
+      <ul class={`list-none ${grid.list}`}>
         {products.map((product, index) => (
-          <li>
-            <ProductCard product={product} view={view} eager={first && index < 2} />
+          <li class="min-w-0">
+            <ProductCard
+              product={product}
+              view={view}
+              variant={grid.variant}
+              sizes={grid.sizes}
+              eager={first && index < 2}
+            />
           </li>
         ))}
       </ul>
@@ -51,6 +94,16 @@ const title = pickText(config.title, view.locale, 'es');
           />
         ))}
       </Carousel>
+    )}
+
+    {layout === 'gallery' && (
+      <a
+        href={routes.shop(view.locale)}
+        class="mx-auto hidden min-h-11 items-center gap-2 text-sm font-medium underline-offset-4 hover:underline md:inline-flex"
+      >
+        {t(view.locale, 'nav.shop')}
+        <Icon name="arrow-right" size={16} />
+      </a>
     )}
   </section>
 )}

@@ -22,6 +22,14 @@
   --radius-card: 1.5rem;
 }
 
+/* A band that reaches both edges of the window from inside the page's column (a full-bleed hero, a flush product strip).
+   100vw counts the scrollbar, so on a desktop with a classic scrollbar the band is a few pixels wider than the window;
+   the storefront's <main> has overflow-x: clip, which trims them without making the page scroll sideways. */
+@utility full-bleed {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+
 /* Small uppercase label above a title or in a footer column. */
 @utility eyebrow {
   font-size: var(--eyebrow-size);

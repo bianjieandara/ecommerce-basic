@@ -7,7 +7,9 @@ There are three levels, from the least to the most code. Start at the first one.
 The store owner changes these in `/admin` from a phone or a laptop:
 
 - **Settings** (`/admin/settings`): store details, tax, shipping, payments, notifications and the other setting groups.
-- **Page builder** (`/admin/pages`): content pages and the layout of the home page.
+- **Page builder** (`/admin/pages`): content pages and the layout of the home page. The hero and the product blocks each
+  carry a "Layout" choice (`src/domain/content/section-layouts.ts`), so two stores built from this template do not have to
+  look alike without anyone writing CSS.
 - **Email templates** (`/admin/emails`): edit, preview and send a test of each template.
 - **Users** (`/admin/users`): owners, staff and their roles.
 - **Catalog, media, inventory, WhatsApp templates**: covered in the admin pages of their own stages.

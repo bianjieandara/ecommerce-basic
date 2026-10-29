@@ -1,0 +1,61 @@
+// Layout variants a home section can take. A store picks one in the page builder, so two stores built from this template
+// do not have to look alike. The page builder derives its choices and its validation from these lists, and the renderers
+// in src/ui/widgets switch on the values.
+
+/** How the hero draws a slide. */
+export const HERO_LAYOUTS = [
+  /** The picture in a rounded card inside the page's column, with the text over a dark gradient. */
+  'contained',
+  /** The picture from edge to edge of the window, with the text over a dark gradient. */
+  'bleed',
+  /** The picture plain, with the text in a solid block resting on its lower corner. */
+  'scene',
+  /** No overlay: the title sits above the picture and the picture is a quiet band below it. */
+  'editorial',
+] as const;
+
+/** One hero layout. */
+export type HeroLayout = (typeof HERO_LAYOUTS)[number];
+
+/** The hero layout used when a slide set says nothing. */
+export const DEFAULT_HERO_LAYOUT: HeroLayout = 'contained';
+
+/** How a block of products arranges them. */
+export const PRODUCT_LAYOUTS = [
+  /** A row that scrolls sideways. */
+  'carousel',
+  /** A grid of cards: tinted tile, badges and the price on the picture. */
+  'grid',
+  /** A grid with wide margins, a plain tile and a small caption under it. */
+  'gallery',
+  /** A grid with no gaps: the pictures touch, and the name and price sit on the picture. */
+  'flush',
+  /** A compact list: a small picture beside the name and the price. */
+  'list',
+] as const;
+
+/** One product layout. */
+export type ProductLayout = (typeof PRODUCT_LAYOUTS)[number];
+
+/** The product layout used when a block says nothing. */
+export const DEFAULT_PRODUCT_LAYOUT: ProductLayout = 'carousel';
+
+/**
+ * Narrows a stored value to a hero layout, falling back when a page holds an older or unknown value.
+ * @param value Value read from a section's config.
+ * @returns A valid hero layout.
+ */
+export function heroLayoutOf(value: unknown): HeroLayout {
+  return (HERO_LAYOUTS as readonly unknown[]).includes(value) ? (value as HeroLayout) : DEFAULT_HERO_LAYOUT;
+}
+
+/**
+ * Narrows a stored value to a product layout, falling back when a page holds an older or unknown value.
+ * @param value Value read from a section's config.
+ * @returns A valid product layout.
+ */
+export function productLayoutOf(value: unknown): ProductLayout {
+  return (PRODUCT_LAYOUTS as readonly unknown[]).includes(value)
+    ? (value as ProductLayout)
+    : DEFAULT_PRODUCT_LAYOUT;
+}

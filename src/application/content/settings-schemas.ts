@@ -154,7 +154,7 @@ export const taxSettings = z.object({
   showBreakdown: z.boolean().default(true),
 });
 
-/** Invoice issuing and the seller data printed on invoices. */
+/** Invoice issuing and the seller data printed on invoices and shown to the buyer in the store. */
 export const invoicingSettings = z.object({
   enabled: z.boolean().default(false),
   autoIssue: z.enum(['on_paid', 'manual']).default('on_paid'),
@@ -165,6 +165,9 @@ export const invoicingSettings = z.object({
   legalName: z.string().max(200).default(''),
   taxId: z.string().max(40).default(''),
   taxIdType: z.string().max(20).default('NIT'),
+  // The seller card on the product and checkout pages. A buyer who cannot tell who is selling abandons the order, so
+  // the identity is published by default; a store that must not publish it turns this off.
+  showSellerIdentity: z.boolean().default(true),
   taxRegime: z.string().max(100).default(''),
   address: z.string().max(300).default(''),
   phone: z.string().max(40).default(''),

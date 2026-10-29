@@ -3,13 +3,16 @@
 import StoreLayout from '@/ui/layouts/StoreLayout.astro';
 import CheckoutForm from '@/ui/store/CheckoutForm.tsx';
 import DemoPaymentHint from '@/ui/store/DemoPaymentHint.astro';
+import SellerTrust from '@/ui/store/SellerTrust.astro';
 import TurnstileScript from '@/ui/components/TurnstileScript.astro';
 import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 import { PATHS } from '@/domain/shared/paths';
 import { t } from '@/ui/i18n';
 import { legalAcceptanceFor } from '@/ui/lib/legal-acceptance';
+import { paymentMethodLabels } from '@/ui/lib/payment-method-label';
 import { loadStoreContext } from '@/http/store-context';
+import { loadSellerTrust } from '@/http/seller-trust';
 import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
 import { themeToCss } from '@/ui/lib/theme-css';
 
@@ -24,7 +27,7 @@ const store = await loadStoreContext(app);
 const view = storeViewFor(store, lang);
 const contact = contactFor(store, lang);
 const title = t(lang, 'checkout.title');
-const invoicing = await app.settings.get('invoicing');
+const { seller, invoicing } = await loadSellerTrust(app, store, lang);
 const labels = {
   contact: t(lang, 'checkout.contact'),
   delivery: t(lang, 'checkout.delivery'),
@@ -56,13 +59,7 @@ const labels = {
   continueShopping: t(lang, 'common.continueShopping'),
   quoteError: t(lang, 'checkout.quoteError'),
   formError: t(lang, 'checkout.formError'),
-  methods: {
-    dlocalgo: t(lang, 'checkout.methods.dlocalgo'),
-    paypal: t(lang, 'checkout.methods.paypal'),
-    whatsapp: t(lang, 'checkout.methods.whatsapp'),
-    bank_transfer: t(lang, 'checkout.methods.bank_transfer'),
-    cash_on_delivery: t(lang, 'checkout.methods.cash_on_delivery'),
-  },
+  methods: paymentMethodLabels(lang),
   errors: {
     generic: t(lang, 'errors.generic'),
     NOT_FOUND: t(lang, 'errors.NOT_FOUND'),
@@ -114,5 +111,6 @@ const labels = {
     legal={legalAcceptanceFor(lang)}
     askTaxId={invoicing.enabled && invoicing.askBuyerTaxId}
   />
+  <SellerTrust locale={lang} seller={seller} class="mt-10 md:max-w-xl" showMethods={false} />
 </StoreLayout>
 <TurnstileScript />

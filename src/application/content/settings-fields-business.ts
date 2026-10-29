@@ -120,6 +120,13 @@ export const businessFieldDefinitions = {
     legalName: { kind: 'text', label: bilingual('Razón social', 'Legal name'), max: 200 },
     taxId: { kind: 'text', label: bilingual('Identificación fiscal', 'Tax ID'), max: 40 },
     taxIdType: { kind: 'text', label: bilingual('Tipo de identificación', 'Tax ID type'), max: 20 },
+    showSellerIdentity: {
+      kind: 'boolean',
+      label: bilingual(
+        'Mostrar la razón social y la identificación en la tienda',
+        'Show the legal name and tax ID in the store',
+      ),
+    },
     taxRegime: { kind: 'text', label: bilingual('Régimen fiscal', 'Tax regime'), max: 100 },
     address: { kind: 'textarea', label: bilingual('Dirección fiscal', 'Legal address'), max: 300 },
     phone: { kind: 'tel', label: bilingual('Teléfono de facturación', 'Invoicing phone'), max: 40 },
