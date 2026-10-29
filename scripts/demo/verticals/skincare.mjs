@@ -331,9 +331,158 @@ const products = [
   },
 ];
 
+/** Text in both languages. */
+const text = (es, en) => ({ es, en });
+
+/** The look an owner would arrive at in Settings > Theme: off-white, a serif for headings, a muted green accent. */
+const theme = {
+  colorPrimary: '#1B1C18',
+  colorOnPrimary: '#FBFAF6',
+  colorAccent: '#4A5346',
+  colorBackground: '#FBFAF6',
+  colorSurface: '#EFEEE6',
+  colorText: '#1B1C18',
+  fontPreset: 'editorial',
+  radius: 'none',
+};
+
+/**
+ * The home page of a shop whose argument is the label: the product is treated as an object, and the routine is explained
+ * once, in three lines, because that is the question that arrives on WhatsApp.
+ * @param {string[]} hero Media ids of the hero pictures.
+ * @returns {object[]} Sections as the page builder saves them.
+ */
+function home(hero) {
+  return [
+    {
+      id: 'home-hero',
+      type: 'hero_carousel',
+      enabled: true,
+      config: {
+        // "editorial" keeps the type above the picture, so nothing is written over a still life.
+        layout: 'editorial',
+        autoplaySeconds: 0,
+        slides: [
+          {
+            image: hero[0],
+            title: text('Seis ingredientes. Todos en la etiqueta.', 'Six ingredients. All on the label.'),
+            subtitle: text(
+              'Cosmética hecha en lotes de 40 piezas, con fecha de elaboración.',
+              'Skincare made in batches of 40, each with its making date.',
+            ),
+            cta: { href: '/shop', label: text('Ver la tienda', 'See the shop') },
+          },
+        ],
+      },
+    },
+    {
+      id: 'home-categories',
+      type: 'category_grid',
+      enabled: true,
+      config: { title: text('Para qué es', 'What it is for'), categoryIds: [], layout: 'links' },
+    },
+    {
+      id: 'home-featured',
+      type: 'featured_products',
+      enabled: true,
+      config: {
+        title: text('Lo esencial', 'The essentials'),
+        source: 'featured',
+        categoryIds: [],
+        productIds: [],
+        limit: 6,
+        layout: 'gallery',
+      },
+    },
+    {
+      id: 'home-rutina',
+      type: 'summary',
+      enabled: true,
+      config: {
+        title: text('La rutina', 'The routine'),
+        items: [
+          {
+            text: text(
+              'Limpia con el jabón de avena, mañana y noche.',
+              'Cleanse with the oat soap, morning and night.',
+            ),
+          },
+          {
+            text: text(
+              'Equilibra con el tónico de manzanilla, en algodón.',
+              'Balance with the chamomile toner, on cotton.',
+            ),
+          },
+          {
+            text: text(
+              'Nutre con tres gotas de aceite, sólo de noche.',
+              'Nourish with three drops of oil, at night only.',
+            ),
+          },
+        ],
+      },
+    },
+    {
+      id: 'home-badges',
+      type: 'trust_badges',
+      enabled: true,
+      config: {
+        layout: 'line',
+        items: [
+          { icon: 'truck', text: text('Envíos a todo México', 'Shipping across Mexico') },
+          { icon: 'return', text: text('Lotes de 40 piezas', 'Batches of 40') },
+          { icon: 'lock', text: text('Pago en OXXO o transferencia', 'Pay at OXXO or by transfer') },
+          { icon: 'chat', text: text('Taller en la Roma, CDMX', 'Workshop in Roma, Mexico City') },
+        ],
+      },
+    },
+    {
+      id: 'home-testimonials',
+      type: 'testimonials',
+      enabled: true,
+      config: {
+        title: text('Lo que nos escriben', 'What people write to us'),
+        includeGoogle: false,
+        includeManual: true,
+        limit: 3,
+        layout: 'quiet',
+      },
+    },
+    {
+      id: 'home-whatsapp',
+      type: 'whatsapp_cta',
+      enabled: true,
+      config: {
+        title: text('¿No sabes cuál te toca?', 'Not sure which one is for you?'),
+        text: text(
+          'Cuéntanos cómo está tu piel y te decimos por dónde empezar.',
+          'Tell us how your skin is and we will say where to start.',
+        ),
+        buttonLabel: text('Escribir por WhatsApp', 'Chat on WhatsApp'),
+        layout: 'line',
+      },
+    },
+  ];
+}
+
+/** Opinions the store shows on its home page: author, rating, language and what they wrote. */
+const testimonials = [
+  ['Mariana L.', 5, 'es', 'Llevo tres meses con el aceite de rosa mosqueta y es lo único que no me irritó.'],
+  [
+    'Paulina G.',
+    5,
+    'es',
+    'Me gusta que diga qué lleva y cuándo se hizo. Es lo que no encuentro en la farmacia.',
+  ],
+  ['Andrea V.', 4, 'es', 'El bálsamo dura muchísimo. El frasco del tónico sí me gustaría más grande.'],
+];
+
 export default {
   slug: 'demo-skincare',
   storeName: 'Raíz',
+  theme,
+  home,
+  testimonials,
   seoDescription: {
     es: 'Cosmética natural hecha en lotes de 40 piezas, con todos los ingredientes en la etiqueta. Envíos a todo México.',
     en: 'Natural skincare made in batches of 40, with every ingredient on the label. Shipping across Mexico.',

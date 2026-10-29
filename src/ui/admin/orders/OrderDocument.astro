@@ -28,7 +28,8 @@ interface Props {
 }
 
 const { view, lang, country, timezone, storeName, canRefund = false } = Astro.props;
-const { order, timeline, messages, invoice, canIssue, customerLink, pdfHref, targets, refund } = view;
+const { order, timeline, messages, invoice, canIssue, customerLink, pdfHref, receiptHref, targets, refund } =
+  view;
 const providerName = { dlocalgo: 'dLocal Go', paypal: 'PayPal' };
 const labels = pickNamespace(lang, 'admin').orders;
 const invoiceLabels = pickNamespace(lang, 'admin').invoices;
@@ -155,6 +156,19 @@ const facts: [string, string][] = [
       class="flex min-w-0 flex-col gap-4 @4xl:sticky @4xl:top-24"
       aria-label={t(lang, 'admin.orders.actions')}
     >
+      {receiptHref && (
+        <section class={PANEL} aria-label={labels.receiptTitle}>
+          <h2 class={HEADING}>{labels.receiptTitle}</h2>
+          {order.paymentReceiptAt && (
+            <p class="text-text/70 text-sm">
+              {labels.receiptArrived.replace('{when}', when(order.paymentReceiptAt))}
+            </p>
+          )}
+          <a href={receiptHref} target="_blank" rel="noopener noreferrer" class={BUTTON}>
+            {labels.receiptOpen}
+          </a>
+        </section>
+      )}
       {targets.length > 0 && (
         <section class={PANEL} aria-label={labels.changeTitle}>
           <h2 class={HEADING}>{labels.changeTitle}</h2>

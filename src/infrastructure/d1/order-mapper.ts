@@ -37,6 +37,8 @@ export interface OrderRow {
   marketing_consent: number;
   ga_client_id: string | null;
   ga_session_id: string | null;
+  payment_receipt_key: string | null;
+  payment_receipt_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -118,6 +120,8 @@ export function toOrder(row: OrderRow, items: OrderItem[]): Order {
     marketingConsent: row.marketing_consent === 1,
     gaClientId: row.ga_client_id,
     gaSessionId: row.ga_session_id,
+    paymentReceiptKey: row.payment_receipt_key,
+    paymentReceiptAt: row.payment_receipt_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

@@ -13,6 +13,7 @@ import { CapturePayment } from '@/application/ordering/capture-payment';
 import { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import { ExpireStaleOrders } from '@/application/ordering/expire-orders';
 import { GetOrderStatus } from '@/application/ordering/get-order-status';
+import { SubmitPaymentReceipt } from '@/application/ordering/submit-payment-receipt';
 import { OrderLinks } from '@/application/ordering/order-links';
 import { RefundOrder } from '@/application/ordering/refund-order';
 import { PlaceOrder } from '@/application/ordering/place-order';
@@ -54,6 +55,7 @@ export interface OrderingServices {
   quoteCart: (options: { newDays: number }) => QuoteCart;
   placeOrder: PlaceOrder;
   orderStatus: GetOrderStatus;
+  submitPaymentReceipt: SubmitPaymentReceipt;
   invoicePdf: GetInvoicePdf;
   invoiceHtml: GetInvoiceHtml;
   voidInvoice: VoidInvoice;
@@ -174,6 +176,16 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     quoteCart,
     placeOrder,
     orderStatus,
+    submitPaymentReceipt: new SubmitPaymentReceipt({
+      orders,
+      storage: media,
+      settings,
+      notifications,
+      hasher,
+      ids,
+      clock,
+      siteUrl,
+    }),
     invoicePdf: new GetInvoicePdf({ ...pdfDeps, orderStatus, invoices, media }),
     invoiceHtml: new GetInvoiceHtml({ orderStatus, invoices, settings }),
     voidInvoice: new VoidInvoice({ invoices, orders, clock, ids, media }),

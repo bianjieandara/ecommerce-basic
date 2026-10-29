@@ -60,6 +60,10 @@ export interface Order {
   /** GA4 visitor and session ids, stored only with marketing consent. The GA4 purchase needs the client id. */
   gaClientId: string | null;
   gaSessionId: string | null;
+  /** R2 key of the proof of payment the buyer uploaded, or null while none was. */
+  paymentReceiptKey: string | null;
+  /** When that receipt arrived, so a screen can say how long the store has had it. */
+  paymentReceiptAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

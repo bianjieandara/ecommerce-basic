@@ -29,6 +29,7 @@ import type { CapturePayment } from '@/application/ordering/capture-payment';
 import type { ConfirmPayment } from '@/application/ordering/confirm-payment';
 import type { ExpireStaleOrders } from '@/application/ordering/expire-orders';
 import type { GetOrderStatus } from '@/application/ordering/get-order-status';
+import type { SubmitPaymentReceipt } from '@/application/ordering/submit-payment-receipt';
 import type { PlaceOrder } from '@/application/ordering/place-order';
 import type { GetInvoiceHtml } from '@/application/invoicing/get-invoice-html';
 import type { GetInvoicePdf } from '@/application/invoicing/get-invoice-pdf';
@@ -86,6 +87,7 @@ export interface Container {
   confirmPayment: ConfirmPayment;
   capturePayment: CapturePayment;
   orderStatus: GetOrderStatus;
+  submitPaymentReceipt: SubmitPaymentReceipt;
   expireStaleOrders: ExpireStaleOrders;
   /** Issues the invoice of a paid order (automatically or by the admin). */
   issueInvoice: IssueInvoice;

@@ -355,9 +355,156 @@ const products = [
   },
 ];
 
+/** Text in both languages. */
+const text = (es, en) => ({ es, en });
+
+/** The look an owner would arrive at in Settings > Theme: warm cream, a burnt chilli accent, square corners. */
+const theme = {
+  colorPrimary: '#14110D',
+  colorOnPrimary: '#FFFDF8',
+  colorAccent: '#8A3B1C',
+  colorBackground: '#FFFDF8',
+  colorSurface: '#F2E7D6',
+  colorText: '#14110D',
+  fontPreset: 'volt',
+  radius: 'none',
+};
+
+/**
+ * The home page of a shop that sells food: the photograph fills the window, the shelf runs edge to edge, and every item
+ * says which town it came from, which is the whole argument against a supermarket.
+ * @param {string[]} hero Media ids of the hero pictures.
+ * @returns {object[]} Sections as the page builder saves them.
+ */
+function home(hero) {
+  return [
+    {
+      id: 'home-hero',
+      type: 'hero_carousel',
+      enabled: true,
+      config: {
+        // "bleed" takes the picture to both edges of the window; the type keeps the page's column.
+        layout: 'bleed',
+        autoplaySeconds: 7,
+        slides: [
+          {
+            image: hero[0],
+            title: text('De productores que podemos nombrar', 'From producers we can name'),
+            subtitle: text(
+              'Café, salsas y conservas de Veracruz, Oaxaca y Puebla.',
+              'Coffee, salsas and preserves from Veracruz, Oaxaca and Puebla.',
+            ),
+            cta: { href: '/shop', label: text('Ver la despensa', 'See the pantry') },
+          },
+          {
+            image: hero[2],
+            title: text('Tostamos los martes', 'We roast on Tuesdays'),
+            subtitle: text(
+              'El café sale al día siguiente de tostarse, no antes.',
+              'The coffee ships the day after it is roasted, not before.',
+            ),
+            cta: { href: '/shop', label: text('Ver el café', 'See the coffee') },
+          },
+        ],
+      },
+    },
+    {
+      id: 'home-new',
+      type: 'featured_products',
+      enabled: true,
+      config: {
+        title: text('Lo que salió esta semana', 'Out of the kitchen this week'),
+        source: 'newest',
+        categoryIds: [],
+        productIds: [],
+        limit: 8,
+        layout: 'flush',
+      },
+    },
+    {
+      id: 'home-categories',
+      type: 'category_grid',
+      enabled: true,
+      config: { title: text('La despensa', 'The pantry'), categoryIds: [], layout: 'flush' },
+    },
+    {
+      id: 'home-promo',
+      type: 'promo_banner',
+      enabled: true,
+      config: {
+        layout: 'plain',
+        image: null,
+        title: text('Cada frasco lleva lote y fecha', 'Every jar carries its batch and date'),
+        text: text(
+          'Si algo llega roto, se repone sin devolución y sin discutir.',
+          'If something arrives broken we replace it, with no return and no argument.',
+        ),
+        cta: { href: '/shop', label: text('Ver la despensa', 'See the pantry') },
+        align: 'left',
+      },
+    },
+    {
+      id: 'home-badges',
+      type: 'trust_badges',
+      enabled: true,
+      config: {
+        layout: 'line',
+        items: [
+          { icon: 'truck', text: text('Envíos a todo México en 3 a 5 días', 'Across Mexico in 3 to 5 days') },
+          { icon: 'return', text: text('Se repone lo que llegue roto', 'Broken on arrival is replaced') },
+          { icon: 'lock', text: text('Pago en OXXO o transferencia', 'Pay at OXXO or by transfer') },
+          { icon: 'chat', text: text('Xalapa, Veracruz', 'Xalapa, Veracruz') },
+        ],
+      },
+    },
+    {
+      id: 'home-testimonials',
+      type: 'testimonials',
+      enabled: true,
+      config: {
+        title: text('Lo que dicen', 'What people say'),
+        includeGoogle: false,
+        includeManual: true,
+        limit: 3,
+        // Food is the one of the three where the rating earns its place, so this store keeps the cards.
+        layout: 'cards',
+      },
+    },
+    {
+      id: 'home-whatsapp',
+      type: 'whatsapp_cta',
+      enabled: true,
+      config: {
+        title: text('¿Quieres el café de otro tueste?', 'Want the coffee from another roast?'),
+        text: text(
+          'Escríbenos antes del martes y lo apartamos del siguiente.',
+          'Write before Tuesday and we will set some aside from the next one.',
+        ),
+        buttonLabel: text('Escribir por WhatsApp', 'Chat on WhatsApp'),
+        layout: 'card',
+      },
+    },
+  ];
+}
+
+/** Opinions the store shows on its home page: author, rating, language and what they wrote. */
+const testimonials = [
+  ['Jorge M.', 5, 'es', 'El café llegó tostado hacía tres días. Se nota muchísimo contra el del súper.'],
+  ['Rocío H.', 5, 'es', 'La salsa macha se acabó en una semana en mi casa. Ya pedí dos más.'],
+  [
+    'Luis A.',
+    4,
+    'es',
+    'La miel se cristalizó y pensé que estaba mal, hasta que leí la explicación. Buenísima.',
+  ],
+];
+
 export default {
   slug: 'demo-despensa',
   storeName: 'Comal',
+  theme,
+  home,
+  testimonials,
   seoDescription: {
     es: 'Café, salsas y conservas de productores con nombre, en Veracruz, Oaxaca y Puebla. Envíos a todo México.',
     en: 'Coffee, salsas and preserves from named producers in Veracruz, Oaxaca and Puebla. Shipping across Mexico.',

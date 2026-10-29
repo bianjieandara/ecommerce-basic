@@ -12,7 +12,9 @@ import { orderEventLabel } from '@/ui/lib/order-event-label';
 import { purchaseAttribute } from '@/ui/lib/track-order';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { loadStoreContext } from '@/http/store-context';
+import PaymentReceiptForm from '@/ui/store/PaymentReceiptForm.tsx';
 import { paymentInstructions } from '@/application/ordering/order-sections';
+import { MAX_RECEIPT_BYTES, RECEIPT_TYPES } from '@/domain/ordering/payment-receipt';
 import type { InstructedMethod } from '@/application/ports/payments';
 import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
 import { themeToCss } from '@/ui/lib/theme-css';
@@ -49,6 +51,24 @@ const HELP_OF: Record<InstructedMethod, DotPath> = {
 };
 const method = found?.order.paymentMethod ?? '';
 const instructions = paymentInstructions(checkout, method);
+// The limit is announced in the text the buyer reads, so the form never promises more than the server takes.
+const receiptMb = String(Math.round(MAX_RECEIPT_BYTES / (1024 * 1024)));
+const receiptLabels = {
+  title: t(lang, 'order.receiptTitle'),
+  intro: t(lang, 'order.receiptIntro'),
+  file: t(lang, 'order.receiptFile', { mb: receiptMb }),
+  submit: t(lang, 'order.receiptSubmit'),
+  sending: t(lang, 'order.receiptSending'),
+  done: t(lang, 'order.receiptDone'),
+  uploaded: t(lang, 'order.receiptUploaded'),
+  view: t(lang, 'order.receiptView'),
+  replace: t(lang, 'order.receiptReplace'),
+  error: t(lang, 'order.receiptError'),
+  tooLarge: t(lang, 'order.receiptTooLarge', { mb: receiptMb }),
+  wrongType: t(lang, 'order.receiptWrongType'),
+  unavailable: t(lang, 'order.receiptUnavailable'),
+  rateLimited: t(lang, 'order.receiptRateLimited'),
+};
 // The browser reports the purchase from this attribute, only while the order is paid and recent (see ui/lib/track-order.ts).
 const purchase = found ? purchaseAttribute(found.order, Date.now()) : null;
 const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsappMessage} #${number}`) : '';
@@ -82,6 +102,17 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
           <p>{t(lang, HELP_OF[method as InstructedMethod])}</p>
           <div set:html={renderMarkdown(pickText(instructions, lang, 'es'))} />
         </div>
+      )}
+      {pending && instructions && found && (
+        <PaymentReceiptForm
+          client:visible
+          orderNumber={found.order.number}
+          accessKey={key}
+          accept={RECEIPT_TYPES.join(',')}
+          maxBytes={MAX_RECEIPT_BYTES}
+          hasReceipt={found.order.paymentReceiptKey !== null}
+          labels={receiptLabels}
+        />
       )}
       {pending && found.order.paymentMethod === 'cash_on_delivery' && (
         <div class="rounded-brand bg-surface flex flex-col gap-2 p-4 text-sm">

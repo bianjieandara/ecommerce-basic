@@ -24,14 +24,21 @@ const figure =
   layout === 'cards'
     ? 'flex w-full flex-col gap-5 rounded-card bg-surface p-7 md:p-8'
     : 'flex w-full flex-col gap-4 border-t border-text/15 pt-5';
+// On a phone the cards swipe sideways, and a card cut by the edge is what says "there is more". A quote with no card
+// behind it has no edge to cut, so the same row just looks clipped: the quiet layout stacks instead.
+const list =
+  layout === 'cards'
+    ? '-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-2 scrollbar-none md:mx-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden'
+    : 'grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-4';
+const itemClass = layout === 'cards' ? 'flex w-[82%] shrink-0 snap-start md:w-auto' : 'flex';
 ---
 
 {items.length > 0 && (
   <section class="flex flex-col gap-8" data-reveal>
     <h2 class="text-xl md:text-2xl">{title}</h2>
-    <ul class="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-2 scrollbar-none md:mx-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
+    <ul class={list}>
       {items.map((item) => (
-        <li class="flex w-[82%] shrink-0 snap-start md:w-auto">
+        <li class={itemClass}>
           <figure class={figure}>
             {layout === 'cards' && (
               <p

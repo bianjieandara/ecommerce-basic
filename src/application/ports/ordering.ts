@@ -79,6 +79,16 @@ export interface OrderRepository {
   findByPaymentReference(method: PaymentMethod, reference: string): Promise<Order | null>;
   setPaymentReference(id: string, reference: string, nowIso: string): Promise<void>;
   /**
+   * Points an order at a newly stored proof of payment and writes its timeline event in the same batch. Returns the key
+   * it replaced, so the caller can delete those bytes; a re-read afterwards would race a second upload.
+   * Returns null when the order is no longer waiting for payment, and then writes nothing.
+   */
+  setPaymentReceipt(
+    id: string,
+    key: string,
+    event: NewOrderEvent,
+  ): Promise<{ previousKey: string | null } | null>;
+  /**
    * Moves an order from `from` to `to` together with its event. Returns false, and writes nothing, when the order is no
    * longer in `from`, so two competing changes cannot both apply.
    */

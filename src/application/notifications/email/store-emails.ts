@@ -1,7 +1,12 @@
 // Emails sent to the store team: new orders, low stock and the weekly summary.
 import type { EmailDefinition } from './definition';
 
-type StoreEmailKey = 'order_alert_store' | 'low_stock_store' | 'weekly_report_store' | 'payment_late_store';
+type StoreEmailKey =
+  | 'order_alert_store'
+  | 'low_stock_store'
+  | 'weekly_report_store'
+  | 'payment_late_store'
+  | 'payment_receipt_store';
 
 /** Store emails, by key. */
 export const STORE_EMAILS: Record<StoreEmailKey, EmailDefinition> = {
@@ -48,6 +53,34 @@ Payment method: {{order.paymentMethod}}
 {{block:shippingAddress}}
 
 {{#if order.note}}Customer note: {{order.note}}{{/if}}`,
+      },
+    },
+  },
+
+  payment_receipt_store: {
+    key: 'payment_receipt_store',
+    audience: 'store',
+    label: 'Proof of payment uploaded (store alert)',
+    description:
+      'Sent to the store when the buyer uploads a receipt for an order paid by hand. The payment still has to be checked.',
+    variables: ['order.number', 'order.total', 'order.paymentMethod', 'customer.fullName'],
+    blocks: ['orderTotals'],
+    defaults: {
+      es: {
+        subject: 'Comprobante del pedido {{order.number}}',
+        body: `{{customer.fullName}} subio el comprobante del pedido **{{order.number}}** ({{order.paymentMethod}}).
+
+Revisa que el dinero este y confirma el pedido desde el panel. El pedido sigue esperando el pago hasta que lo confirmes.
+
+{{block:orderTotals}}`,
+      },
+      en: {
+        subject: 'Proof of payment for order {{order.number}}',
+        body: `{{customer.fullName}} uploaded the receipt for order **{{order.number}}** ({{order.paymentMethod}}).
+
+Check that the money arrived and confirm the order from the admin. The order stays unpaid until you do.
+
+{{block:orderTotals}}`,
       },
     },
   },

@@ -70,6 +70,38 @@ export class D1OrderRepository implements OrderRepository {
     ]).run();
   }
 
+  async setPaymentReceipt(
+    id: string,
+    key: string,
+    event: NewOrderEvent,
+  ): Promise<{ previousKey: string | null } | null> {
+    // The batch is one transaction, so the first statement reads the key this update is about to replace: that is the value
+    // the write itself saw, not a re-read afterwards, which a second upload could make name the wrong object to delete.
+    // All three guard on the order still waiting for payment, so a receipt can never land on an order already settled.
+    const results = await this.db.batch([
+      statement(
+        this.db,
+        `SELECT payment_receipt_key AS previous_key FROM orders WHERE id = ? AND status = 'pending_payment'`,
+        [id],
+      ),
+      statement(
+        this.db,
+        `INSERT INTO order_events (id, order_id, type, note, actor, created_at)
+         SELECT ?, id, ?, ?, ?, ? FROM orders WHERE id = ? AND status = 'pending_payment'`,
+        [crypto.randomUUID(), event.type, event.note ?? null, event.actor, event.at, id],
+      ),
+      statement(
+        this.db,
+        `UPDATE orders SET payment_receipt_key = ?, payment_receipt_at = ?, updated_at = ?
+         WHERE id = ? AND status = 'pending_payment'`,
+        [key, event.at, event.at, id],
+      ),
+    ]);
+    if ((results[2]?.meta.changes ?? 0) === 0) return null;
+    const row = ((results[0]?.results ?? []) as { previous_key: string | null }[])[0];
+    return { previousKey: row?.previous_key ?? null };
+  }
+
   async transition(
     id: string,
     from: OrderStatus,

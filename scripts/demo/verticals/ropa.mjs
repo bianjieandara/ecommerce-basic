@@ -364,9 +364,155 @@ const products = [
   },
 ];
 
+/** Text in both languages. */
+const text = (es, en) => ({ es, en });
+
+/** The look an owner would arrive at in Settings > Theme: warm paper, square corners, a clay accent. */
+const theme = {
+  colorPrimary: '#1B1A17',
+  colorOnPrimary: '#FDFCF9',
+  colorAccent: '#8F4324',
+  colorBackground: '#FDFCF9',
+  colorSurface: '#F1EEE7',
+  colorText: '#1B1A17',
+  fontPreset: 'manrope',
+  radius: 'none',
+};
+
+/**
+ * The home page of a shop that sells clothes: the look carries it, and the pieces of that look are bought from under it.
+ * @param {string[]} hero Media ids of the hero pictures.
+ * @returns {object[]} Sections as the page builder saves them.
+ */
+function home(hero) {
+  return [
+    {
+      id: 'home-hero',
+      type: 'hero_carousel',
+      enabled: true,
+      config: {
+        // "scene" writes nothing over the photograph: the type sits in a solid block in the corner.
+        layout: 'scene',
+        autoplaySeconds: 7,
+        slides: [
+          {
+            image: hero[0],
+            title: text('Ropa de diario, bien hecha', 'Everyday clothes, properly made'),
+            subtitle: text(
+              'Tiradas de 30 piezas hechas en Guadalajara.',
+              'Runs of 30 pieces, made in Guadalajara.',
+            ),
+            cta: { href: '/shop', label: text('Ver el catálogo', 'See the catalogue') },
+          },
+          {
+            image: hero[1],
+            title: text('Look de otoño', 'The autumn look'),
+            subtitle: text('Blusa de lino y pantalón recto.', 'Linen blouse and straight trousers.'),
+            cta: { href: '/shop', label: text('Ver las piezas', 'See the pieces') },
+          },
+        ],
+      },
+    },
+    {
+      id: 'home-look',
+      type: 'featured_products',
+      enabled: true,
+      config: {
+        title: text('Las piezas de este look', 'The pieces of this look'),
+        source: 'featured',
+        categoryIds: [],
+        productIds: [],
+        limit: 3,
+        layout: 'list',
+      },
+    },
+    {
+      id: 'home-new',
+      type: 'featured_products',
+      enabled: true,
+      config: {
+        title: text('Lo nuevo', 'New in'),
+        source: 'newest',
+        categoryIds: [],
+        productIds: [],
+        limit: 8,
+        // Not "grid": the default card brings back the tinted tile and the price pill, which is the one thing on this
+        // page that would still read as a theme next to the scene hero and the quiet rows below it.
+        layout: 'gallery',
+      },
+    },
+    {
+      id: 'home-categories',
+      type: 'category_grid',
+      enabled: true,
+      config: { title: text('Qué hay', 'What there is'), categoryIds: [], layout: 'links' },
+    },
+    {
+      id: 'home-badges',
+      type: 'trust_badges',
+      enabled: true,
+      config: {
+        layout: 'line',
+        items: [
+          { icon: 'truck', text: text('Envíos a todo México', 'Shipping across Mexico') },
+          { icon: 'return', text: text('Cambios en 10 días', 'Exchanges within 10 days') },
+          { icon: 'lock', text: text('Pago en OXXO o transferencia', 'Pay at OXXO or by transfer') },
+          { icon: 'chat', text: text('Guadalajara, desde 2019', 'Guadalajara, since 2019') },
+        ],
+      },
+    },
+    {
+      id: 'home-testimonials',
+      type: 'testimonials',
+      enabled: true,
+      config: {
+        title: text('Lo que nos escriben', 'What people write to us'),
+        includeGoogle: false,
+        includeManual: true,
+        limit: 3,
+        layout: 'quiet',
+      },
+    },
+    {
+      id: 'home-whatsapp',
+      type: 'whatsapp_cta',
+      enabled: true,
+      config: {
+        title: text('¿Dudas con la talla?', 'Unsure about the size?'),
+        text: text(
+          'Mándanos tus medidas y te decimos cuál pedir.',
+          'Send us your measurements and we will tell you which to order.',
+        ),
+        buttonLabel: text('Escribir por WhatsApp', 'Chat on WhatsApp'),
+        layout: 'line',
+      },
+    },
+  ];
+}
+
+/** Opinions the store shows on its home page: author, rating, language and what they wrote. */
+const testimonials = [
+  [
+    'Camila T.',
+    5,
+    'es',
+    'Pedí la blusa de lino un martes y llegó el jueves. La tela es mejor de lo que esperaba.',
+  ],
+  ['Daniela R.', 5, 'es', 'No estaba mi talla y me la hicieron en diez días, sin cobrarme más.'],
+  [
+    'Sofía M.',
+    4,
+    'es',
+    'El pantalón recto queda justo como en la foto. Me gustaría que hubiera más colores.',
+  ],
+];
+
 export default {
   slug: 'demo-ropa',
   storeName: 'Casa Mina',
+  theme,
+  home,
+  testimonials,
   seoDescription: {
     es: 'Ropa de diario hecha en Guadalajara en tiradas de 30 piezas. Envíos a todo México y cambios en 10 días.',
     en: 'Everyday clothing made in Guadalajara in runs of 30. Shipping across Mexico, exchanges within 10 days.',

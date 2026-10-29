@@ -4,10 +4,31 @@
 //
 // Usage: node scripts/docs/demo-data.mjs
 // Environment: DOCS_BASE (store URL), DOCS_STATE (wrangler persist folder, default .wrangler/docs-state), see shared.mjs.
+import { loadVertical } from '../demo/seed-vertical.mjs';
 import { addCategoryPictures, addProductPictures } from './pictures.mjs';
 import { addHomePage, applyDemoCookieBanner, applyDemoTheme } from './home-content.mjs';
 import { ownerCookie } from './owner-session.mjs';
 import { post, sql, TURNSTILE_TEST_TOKEN } from './shared.mjs';
+
+/** Where the shipped demo orders go, per country of the store. A demo in Mexico delivering to Bogotá reads as filler. */
+const SHIPPING_ADDRESS = {
+  CO: {
+    line1: 'Calle 45 # 12-34',
+    line2: 'Apto 301',
+    city: 'Bogotá',
+    region: 'Cundinamarca',
+    postalCode: '110111',
+    country: 'CO',
+  },
+  MX: {
+    line1: 'Av. Insurgentes Sur 300',
+    line2: 'Int. 4',
+    city: 'Ciudad de México',
+    region: 'CDMX',
+    postalCode: '06700',
+    country: 'MX',
+  },
+};
 
 /** Shoppers who place the demo orders. */
 const SHOPPERS = [
@@ -25,16 +46,23 @@ const SHOPPERS = [
  */
 async function addOrders(cookie) {
   const existing = sql('SELECT COUNT(*) AS n FROM orders')[0].n;
+  // One variant per product, in a stable order, so the plans below can name a product by its place in the catalogue and
+  // work for any store. Naming products by id only ever worked for the one catalogue the ids belonged to.
   const variants = sql(
-    'SELECT v.id, v.product_id FROM product_variants v WHERE v.is_active = 1 ORDER BY v.product_id',
+    `SELECT v.id, v.product_id FROM product_variants v WHERE v.is_active = 1 AND v.stock > 0
+       GROUP BY v.product_id ORDER BY v.product_id`,
   );
-  const variantOf = (productId) => variants.find((variant) => variant.product_id === productId)?.id;
+  const variantAt = (index) => variants[index]?.id;
+  // The store's own country decides where the shipped orders go; an unknown one falls back to the original demo's.
+  const country = JSON.parse(
+    sql("SELECT value_json AS v FROM settings WHERE group_key = 'general'")[0].v,
+  ).country;
   const plans = [
     {
       shopper: 0,
       items: [
-        ['prod-tee', 2],
-        ['prod-cap', 1],
+        [0, 2],
+        [5, 1],
       ],
       method: 'bank_transfer',
       ship: 'ship-pickup',
@@ -42,7 +70,7 @@ async function addOrders(cookie) {
     },
     {
       shopper: 1,
-      items: [['prod-hoodie', 1]],
+      items: [[1, 1]],
       method: 'cash_on_delivery',
       ship: 'ship-flat',
       steps: ['paid', 'processing', 'shipped'],
@@ -50,18 +78,18 @@ async function addOrders(cookie) {
     {
       shopper: 2,
       items: [
-        ['prod-candle', 2],
-        ['prod-notebook', 2],
+        [2, 2],
+        [7, 2],
       ],
       method: 'bank_transfer',
       ship: 'ship-flat',
       steps: ['paid', 'processing'],
     },
-    { shopper: 3, items: [['prod-plant', 1]], method: 'whatsapp', ship: 'ship-pickup', steps: [] },
-    { shopper: 4, items: [['prod-bottle', 3]], method: 'bank_transfer', ship: 'ship-flat', steps: ['paid'] },
+    { shopper: 3, items: [[8, 1]], method: 'whatsapp', ship: 'ship-pickup', steps: [] },
+    { shopper: 4, items: [[3, 3]], method: 'bank_transfer', ship: 'ship-flat', steps: ['paid'] },
     {
       shopper: 5,
-      items: [['prod-tote', 1]],
+      items: [[9, 1]],
       method: 'bank_transfer',
       ship: 'ship-pickup',
       steps: ['cancelled'],
@@ -71,22 +99,12 @@ async function addOrders(cookie) {
     const [name, email, phone] = SHOPPERS[plan.shopper];
     const placed = await post('/api/checkout', {
       locale: plan.shopper % 2 === 0 ? 'es' : 'en',
-      items: plan.items.map(([productId, quantity]) => ({ variantId: variantOf(productId), quantity })),
+      items: plan.items.map(([index, quantity]) => ({ variantId: variantAt(index), quantity })),
       customer: { name, email, phone },
       whatsappOptIn: false,
       acceptedLegal: true,
       shippingMethodId: plan.ship,
-      address:
-        plan.ship === 'ship-flat'
-          ? {
-              line1: 'Calle 45 # 12-34',
-              line2: 'Apto 301',
-              city: 'Bogotá',
-              region: 'Cundinamarca',
-              postalCode: '110111',
-              country: 'CO',
-            }
-          : null,
+      address: plan.ship === 'ship-flat' ? (SHIPPING_ADDRESS[country] ?? SHIPPING_ADDRESS.CO) : null,
       paymentMethod: plan.method,
       note: '',
       attribution: {},
@@ -109,9 +127,9 @@ async function addOrders(cookie) {
  * Adds shopper testimonials.
  * @param cookie Admin session.
  */
-async function addTestimonials(cookie) {
+async function addTestimonials(cookie, vertical) {
   if (sql('SELECT COUNT(*) AS n FROM testimonials')[0].n > 0) return;
-  const items = [
+  const items = vertical?.testimonials ?? [
     ['Camila T.', 5, 'es', 'Llegó rápido y el empaque es precioso. Volveré a comprar.'],
     ['Daniel P.', 5, 'en', 'Great quality for the price, and the checkout was effortless.'],
     ['Laura M.', 4, 'es', 'La vela huele increíble. Me gustaría ver más aromas.'],
@@ -125,15 +143,20 @@ async function addTestimonials(cookie) {
   }
 }
 
+// A per-vertical demo passes its slug, so its own catalogue module supplies the home page, the theme and the opinions.
+// Without one this fills the generic demo store, exactly as it did before there were three.
+const slug = process.argv.slice(2).find((argument) => !argument.startsWith('--'));
+const vertical = slug ? await loadVertical(slug) : undefined;
+
 const cookie = await ownerCookie();
-console.log('signed in as the demo owner');
+console.log(`signed in as the demo owner${vertical ? ` (${vertical.storeName})` : ''}`);
 await addProductPictures(cookie);
 await addCategoryPictures(cookie);
-await applyDemoTheme(cookie);
+await applyDemoTheme(cookie, vertical);
 await applyDemoCookieBanner(cookie);
-await addHomePage(cookie);
+await addHomePage(cookie, vertical);
 console.log('pictures added');
 await addOrders(cookie);
 console.log('orders added');
-await addTestimonials(cookie);
+await addTestimonials(cookie, vertical);
 console.log('testimonials added. Demo owner login is in .wrangler/docs-admin.json');

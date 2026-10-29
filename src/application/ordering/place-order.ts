@@ -197,6 +197,8 @@ export class PlaceOrder {
       gaClientId: ga?.clientId ?? null,
       gaSessionId: ga?.sessionId ?? null,
       status: 'pending_payment',
+      paymentReceiptKey: null,
+      paymentReceiptAt: null,
       paymentMethod: input.paymentMethod,
       paymentReference: initiation.kind === 'redirect' ? (initiation.providerReference ?? null) : null,
       currency: general.currency,

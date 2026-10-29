@@ -41,6 +41,11 @@ export async function loadAdminOrderView(app: Container, orderNumber: number) {
       accessKey && invoice
         ? `/api/orders/${order.number}/invoice.pdf?key=${encodeURIComponent(accessKey)}`
         : null,
+    // The buyer's own receipt address, opened with the key the owner already holds for the customer's links.
+    receiptHref:
+      accessKey && order.paymentReceiptKey
+        ? `/api/orders/${order.number}/receipt?key=${encodeURIComponent(accessKey)}`
+        : null,
     // A refund through the provider is offered while the order can still become refunded and its provider supports it. After the
     // request the order stays paid until the provider confirms, so the screen says it is waiting instead of offering the button again.
     refund:

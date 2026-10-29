@@ -121,8 +121,9 @@ function homeSections(hero) {
 /**
  * Sets up the home page, unless it already has a hero.
  * @param cookie Admin session.
+ * @param vertical Catalogue module of a per-vertical demo, which brings its own home; omitted for the generic demo.
  */
-export async function addHomePage(cookie) {
+export async function addHomePage(cookie, vertical) {
   const page = sql("SELECT id, sections_json FROM pages WHERE slug = 'home'")[0];
   // A store that never saved its home page has no row yet; the system page is then addressed by its slug.
   if (page?.sections_json.includes('home-hero')) return;
@@ -134,35 +135,33 @@ export async function addHomePage(cookie) {
       seoTitle: text('', ''),
       seoDescription: text('', ''),
       isPublished: true,
-      sections: homeSections(hero),
+      sections: vertical ? vertical.home(hero) : homeSections(hero),
     },
     cookie,
   );
   if (!saved.json?.ok) throw new Error(`Could not save the home page: ${JSON.stringify(saved.json?.error)}`);
 }
 
+/** The generic demo's look: a template starts neutral, and this is what choosing colours in Settings > Theme gives. */
+const DEMO_THEME = {
+  colorPrimary: '#111111',
+  colorOnPrimary: '#ffffff',
+  colorAccent: '#cf3426',
+  colorBackground: '#ffffff',
+  colorSurface: '#f4f4f2',
+  colorText: '#111111',
+  fontPreset: 'volt',
+  radius: 'md',
+};
+
 /**
- * Gives the demo store an editorial look: warm paper background, oxblood buttons, a serif for headings. A template starts
- * neutral; this is what an owner gets by choosing colours and the "Editorial" typeface in Settings > Theme.
+ * Saves the store's colours and typeface. A per-vertical demo brings its own, so the three do not only sell different
+ * things but read differently; without one the generic demo's look is used.
  * @param cookie Admin session.
+ * @param vertical Catalogue module of a per-vertical demo, or undefined.
  */
-export async function applyDemoTheme(cookie) {
-  const response = await post(
-    '/api/admin/settings/theme',
-    {
-      values: {
-        colorPrimary: '#111111',
-        colorOnPrimary: '#ffffff',
-        colorAccent: '#cf3426',
-        colorBackground: '#ffffff',
-        colorSurface: '#f4f4f2',
-        colorText: '#111111',
-        fontPreset: 'volt',
-        radius: 'md',
-      },
-    },
-    cookie,
-  );
+export async function applyDemoTheme(cookie, vertical) {
+  const response = await post('/api/admin/settings/theme', { values: vertical?.theme ?? DEMO_THEME }, cookie);
   if (response.status !== 200) throw new Error(`Could not save the theme: ${JSON.stringify(response.json)}`);
 }
 
