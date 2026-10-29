@@ -42,9 +42,17 @@ jobs:
       - name: Check
         run: npm run check
 
-      # The demo has no accountId in client.jsonc, so deploy-client uses these two variables as they are.
+      # The demo has no accountId in client.jsonc, so deploy-client uses these variables as they are.
+      #
+      # `CLOUDFLARE_API_TOKEN` holds a Global API Key, not an API token, which is why every run died with
+      # "Invalid format for Authorization header [code: 6111]": wrangler sends that variable as a bearer token,
+      # and a Global API Key is not one. The key goes in `CLOUDFLARE_API_KEY` beside the account's e-mail
+      # instead. The secret keeps its name because a secret's value cannot be read back to copy it elsewhere.
+      # A scoped API token would be better than a Global API Key, which cannot be limited to this repository:
+      # make one and this pair can go back to being a single `CLOUDFLARE_API_TOKEN`.
       - name: Deploy
         run: npm run deploy:client -- demo
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
