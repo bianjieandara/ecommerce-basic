@@ -1,52 +1,89 @@
 ---
-// Category tiles. Shows the chosen categories, or every active category when none is chosen. A category with a picture gets
-// a photo tile with its name on a gradient; one without gets a plain tile.
+// Category block. Shows the chosen categories, or every active category when none is chosen. The layout comes from the
+// page builder: rounded picture tiles, the same pictures flush against each other and the window, or no pictures at all
+// for a store whose categories should read as a line of type rather than three more cards.
 import Icon from '@/ui/components/Icon.astro';
+import { categoryLayoutOf } from '@/domain/content/section-layouts';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { mediaUrl } from '@/ui/lib/media-url';
 import { routes } from '@/ui/lib/routes';
 import type { WidgetProps } from './types';
 
 const { section, data, view } = Astro.props as WidgetProps;
-const config = section.config as { title?: LocalizedText; categoryIds?: string[] };
+const config = section.config as { title?: LocalizedText; categoryIds?: string[]; layout?: string };
 const chosen = config.categoryIds ?? [];
 const categories =
   chosen.length > 0 ? data.categories.filter((category) => chosen.includes(category.id)) : data.categories;
+const layout = categoryLayoutOf(config.layout);
+
+/** The two picture layouts differ only in their frame: the list, the tile and whether the corner arrow is drawn. */
+const TILES = {
+  tiles: {
+    list: 'grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6',
+    tile: 'rounded-card p-5 md:p-8 aspect-square md:aspect-4/3',
+    arrow: true,
+  },
+  flush: {
+    // A hairline of page background between tiles, so two photographs of the same tone stay legible side by side.
+    list: 'full-bleed grid grid-cols-2 gap-px md:grid-cols-3',
+    tile: 'p-5 md:p-7 aspect-4/5 md:aspect-4/3',
+    arrow: false,
+  },
+};
+const tile = layout === 'links' ? null : TILES[layout];
 ---
 
 {categories.length > 0 && (
   <section class="flex flex-col gap-8" data-reveal>
     <h2 class="text-xl md:text-2xl">{pickText(config.title, view.locale, 'es')}</h2>
-    <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6">
-      {categories.map((category) => (
-        <li>
-          <a
-            href={routes.category(view.locale, category.slug)}
-            class="group relative flex aspect-square items-end overflow-hidden rounded-card bg-surface p-5 font-display text-lg font-semibold tracking-tight transition-colors hover:bg-text hover:text-background md:aspect-4/3 md:p-8 md:text-2xl"
-          >
-            {category.imageKey && (
-              <>
-                <img
-                  src={mediaUrl(category.imageKey)}
-                  alt=""
-                  width="960"
-                  height="960"
-                  loading="lazy"
-                  decoding="async"
-                  class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
-                <span class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
-              </>
-            )}
-            <span class={`relative ${category.imageKey ? 'text-white' : ''}`}>{category.name}</span>
-            <span
-              class={`absolute right-4 top-4 flex size-10 items-center justify-center rounded-full border transition group-hover:rotate-45 md:right-6 md:top-6 md:size-12 ${category.imageKey ? 'border-white/60 text-white' : 'border-current'}`}
+
+    {tile ? (
+      <ul class={`list-none ${tile.list}`}>
+        {categories.map((category) => (
+          <li>
+            <a
+              href={routes.category(view.locale, category.slug)}
+              class={`group relative flex items-end overflow-hidden bg-surface font-display text-lg font-semibold tracking-tight transition-colors hover:bg-text hover:text-background md:text-2xl ${tile.tile}`}
             >
-              <Icon name="arrow-up-right" size={18} />
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
+              {category.imageKey && (
+                <>
+                  <img
+                    src={mediaUrl(category.imageKey)}
+                    alt=""
+                    width="960"
+                    height="960"
+                    loading="lazy"
+                    decoding="async"
+                    class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <span class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+                </>
+              )}
+              <span class={`relative ${category.imageKey ? 'text-white' : ''}`}>{category.name}</span>
+              {tile.arrow && (
+                <span
+                  class={`absolute right-4 top-4 flex size-10 items-center justify-center rounded-full border transition group-hover:rotate-45 md:right-6 md:top-6 md:size-12 ${category.imageKey ? 'border-white/60 text-white' : 'border-current'}`}
+                >
+                  <Icon name="arrow-up-right" size={18} />
+                </span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul class="flex list-none flex-wrap gap-x-7 gap-y-1 border-t border-text/15 pt-5">
+        {categories.map((category) => (
+          <li>
+            <a
+              href={routes.category(view.locale, category.slug)}
+              class="inline-flex min-h-11 items-center font-display text-lg tracking-tight underline-offset-4 hover:underline md:text-xl"
+            >
+              {category.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
   </section>
 )}

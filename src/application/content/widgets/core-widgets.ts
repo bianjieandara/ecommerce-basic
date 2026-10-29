@@ -1,10 +1,13 @@
 // The widget definitions shipped with the template, with the fields each one exposes to admins in the page builder.
 import { bilingual as text, type LocalizedText } from '@/domain/shared/localized-text';
 import {
+  CATEGORY_LAYOUTS,
+  DEFAULT_CATEGORY_LAYOUT,
   DEFAULT_HERO_LAYOUT,
   DEFAULT_PRODUCT_LAYOUT,
   HERO_LAYOUTS,
   PRODUCT_LAYOUTS,
+  type CategoryLayout,
   type HeroLayout,
   type ProductLayout,
 } from '@/domain/content/section-layouts';
@@ -30,6 +33,13 @@ const HERO_LAYOUT_LABELS: Record<HeroLayout, LocalizedText> = {
   bleed: text('A sangre', 'Full bleed'),
   scene: text('Escena', 'Scene'),
   editorial: text('Editorial', 'Editorial'),
+};
+
+/** What each category layout is called in the page builder. */
+const CATEGORY_LAYOUT_LABELS: Record<CategoryLayout, LocalizedText> = {
+  tiles: text('Mosaico', 'Tiles'),
+  flush: text('Sin márgenes', 'Flush'),
+  links: text('Solo texto', 'Text only'),
 };
 
 /** What each product layout is called in the page builder. */
@@ -120,8 +130,18 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
     fields: [
       { name: 'title', kind: 'localizedText', label: text('Título', 'Title'), max: 80 },
       { name: 'categoryIds', kind: 'categoryIds', label: text('Categorías', 'Categories'), max: 12 },
+      {
+        name: 'layout',
+        kind: 'select',
+        label: text('Diseño', 'Layout'),
+        options: layoutOptions(CATEGORY_LAYOUTS, CATEGORY_LAYOUT_LABELS),
+      },
     ],
-    defaults: { title: { es: 'Compra por categoría', en: 'Shop by category' }, categoryIds: [] },
+    defaults: {
+      title: { es: 'Compra por categoría', en: 'Shop by category' },
+      categoryIds: [],
+      layout: DEFAULT_CATEGORY_LAYOUT,
+    },
   },
   {
     type: 'promo_banner',

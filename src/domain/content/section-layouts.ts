@@ -40,6 +40,22 @@ export type ProductLayout = (typeof PRODUCT_LAYOUTS)[number];
 /** The product layout used when a block says nothing. */
 export const DEFAULT_PRODUCT_LAYOUT: ProductLayout = 'carousel';
 
+/** How a block of categories shows them. */
+export const CATEGORY_LAYOUTS = [
+  /** Rounded picture tiles with the name on the picture and an arrow in the corner. */
+  'tiles',
+  /** The same pictures with square corners, touching each other and reaching both edges of the window. */
+  'flush',
+  /** No pictures at all: the categories read as a row of type under a rule. */
+  'links',
+] as const;
+
+/** One category layout. */
+export type CategoryLayout = (typeof CATEGORY_LAYOUTS)[number];
+
+/** The category layout used when a block says nothing. */
+export const DEFAULT_CATEGORY_LAYOUT: CategoryLayout = 'tiles';
+
 /**
  * Narrows a stored value to a hero layout, falling back when a page holds an older or unknown value.
  * @param value Value read from a section's config.
@@ -47,6 +63,17 @@ export const DEFAULT_PRODUCT_LAYOUT: ProductLayout = 'carousel';
  */
 export function heroLayoutOf(value: unknown): HeroLayout {
   return (HERO_LAYOUTS as readonly unknown[]).includes(value) ? (value as HeroLayout) : DEFAULT_HERO_LAYOUT;
+}
+
+/**
+ * Narrows a stored value to a category layout, falling back when a page holds an older or unknown value.
+ * @param value Value read from a section's config.
+ * @returns A valid category layout.
+ */
+export function categoryLayoutOf(value: unknown): CategoryLayout {
+  return (CATEGORY_LAYOUTS as readonly unknown[]).includes(value)
+    ? (value as CategoryLayout)
+    : DEFAULT_CATEGORY_LAYOUT;
 }
 
 /**
