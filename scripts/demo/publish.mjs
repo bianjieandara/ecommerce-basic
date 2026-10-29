@@ -2,22 +2,28 @@
 // bucket and uploads demo/snapshot.json there. The demo Worker restores that snapshot in its next nightly reset (or on demand),
 // so this needs no admin login. It refuses any client that is not a demo (client.jsonc must set vars.DEMO_MODE to "on").
 //
-// Usage: node scripts/demo/publish.mjs [--dry-run]            publish to the live demo (needs `wrangler login`)
-//        node scripts/demo/publish.mjs --snapshot-only        publish only the snapshot file, after checking over HTTP that every image
+// Usage: node scripts/demo/publish.mjs [<slug>] [--dry-run]   publish to that demo (default "demo"; needs `wrangler login`)
+//        node scripts/demo/publish.mjs <slug> --snapshot-only publish only the snapshot file, after checking over HTTP that every image
 //                                                             of it is already in the live bucket (when only settings or text changed)
-//        node scripts/demo/publish.mjs --local                put the snapshot into the local build's bucket (tests)
-// Run `npm run demo:snapshot` first.
+//        node scripts/demo/publish.mjs <slug> --local         put the snapshot into the local build's bucket (tests)
+// Run `npm run demo:snapshot` for the same slug first.
 import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { cloudflareEnv, readClient, ROOT } from '../lib/clients.mjs';
+import { cloudflareEnv, demoSlugFromArgv, readClient, ROOT } from '../lib/clients.mjs';
 import { runStep } from '../lib/run.mjs';
 import { STATE } from '../docs/shared.mjs';
 
-const CLIENT = 'demo';
-// DEMO_SNAPSHOT_FILE lets a test publish a snapshot of its own, so the committed one is never replaced by test data.
-const SNAPSHOT = process.env.DEMO_SNAPSHOT_FILE ?? join(ROOT, 'clients', CLIENT, 'snapshot', 'snapshot.json');
+/**
+ * Where a demo store's committed snapshot lives.
+ * DEMO_SNAPSHOT_FILE lets a test publish a snapshot of its own, so a committed one is never replaced by test data.
+ * @param {string} slug Demo store slug.
+ * @returns {string} Absolute path to the snapshot file.
+ */
+function snapshotPath(slug) {
+  return process.env.DEMO_SNAPSHOT_FILE ?? join(ROOT, 'clients', slug, 'snapshot', 'snapshot.json');
+}
 const CONTENT_TYPES = { webp: 'image/webp', jpg: 'image/jpeg', png: 'image/png' };
 
 /**
@@ -34,18 +40,19 @@ export function contentTypeOf(key) {
 
 /**
  * Publishes the snapshot and, for the live demo, its images.
- * @param {{ dryRun?: boolean, local?: boolean, skipImages?: boolean }} options `local` writes into the local build's persisted bucket
- *   instead of R2; `skipImages` leaves the images alone (the caller has checked they are in the bucket).
+ * @param {{ slug?: string, dryRun?: boolean, local?: boolean, skipImages?: boolean }} options Which demo store to publish to
+ *   (default `demo`); `local` writes into the local build's persisted bucket instead of R2; `skipImages` leaves the images
+ *   alone (the caller has checked they are in the bucket).
  */
-export function publish({ dryRun = false, local = false, skipImages = false }) {
-  const client = readClient(CLIENT);
+export function publish({ slug = 'demo', dryRun = false, local = false, skipImages = false }) {
+  const client = readClient(slug);
   if (client.vars?.DEMO_MODE !== 'on')
     throw new Error(
-      `clients/${CLIENT}/client.jsonc must set vars.DEMO_MODE to "on" to receive a demo snapshot.`,
+      `clients/${slug}/client.jsonc must set vars.DEMO_MODE to "on" to receive a demo snapshot.`,
     );
-  const snapshot = JSON.parse(readFileSync(SNAPSHOT, 'utf8'));
+  const snapshot = JSON.parse(readFileSync(snapshotPath(slug), 'utf8'));
   const bucket = client.r2.bucket;
-  const env = cloudflareEnv(CLIENT, client.accountId);
+  const env = cloudflareEnv(slug, client.accountId);
   const target = local ? ['--local', '--persist-to', STATE] : ['--remote'];
 
   if (!local && !skipImages) copyImages({ snapshot, bucket, env, dryRun });
@@ -60,7 +67,7 @@ export function publish({ dryRun = false, local = false, skipImages = false }) {
       `${bucket}/demo/snapshot.json`,
       ...target,
       '--file',
-      SNAPSHOT,
+      snapshotPath(slug),
       '--content-type',
       'application/json',
     ],
@@ -149,12 +156,13 @@ export function copyImages({ snapshot, bucket, env, dryRun }, run = runStep) {
  * @param {{ media: string[] }} snapshot The snapshot about to be published.
  * @param {string} baseUrl Public address of the media bucket (PUBLIC_MEDIA_BASE_URL of the demo).
  * @param {typeof fetch} fetcher Fetch implementation; tests pass a stand-in.
+ * @param {string} slug Demo store the address belongs to, for the error message.
  * @throws {Error} Listing the first images that are missing, empty or unreachable.
  */
-export async function assertImagesLive(snapshot, baseUrl, fetcher = fetch) {
+export async function assertImagesLive(snapshot, baseUrl, fetcher = fetch, slug = 'demo') {
   if (!baseUrl)
     throw new Error(
-      `clients/${CLIENT}/client.jsonc must set vars.PUBLIC_MEDIA_BASE_URL to check the live images.`,
+      `clients/${slug}/client.jsonc must set vars.PUBLIC_MEDIA_BASE_URL to check the live images.`,
     );
   const problems = [];
   for (const key of snapshot.media) {
@@ -175,12 +183,13 @@ export async function assertImagesLive(snapshot, baseUrl, fetcher = fetch) {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const slug = demoSlugFromArgv(process.argv.slice(2));
   const snapshotOnly = process.argv.includes('--snapshot-only');
   const local = process.argv.includes('--local');
   if (snapshotOnly && !local) {
-    const snapshot = JSON.parse(readFileSync(SNAPSHOT, 'utf8'));
-    await assertImagesLive(snapshot, readClient(CLIENT).vars?.PUBLIC_MEDIA_BASE_URL);
+    const snapshot = JSON.parse(readFileSync(snapshotPath(slug), 'utf8'));
+    await assertImagesLive(snapshot, readClient(slug).vars?.PUBLIC_MEDIA_BASE_URL, fetch, slug);
     console.log(`all ${snapshot.media.length} images of the snapshot are in the live bucket`);
   }
-  publish({ dryRun: process.argv.includes('--dry-run'), local, skipImages: snapshotOnly });
+  publish({ slug, dryRun: process.argv.includes('--dry-run'), local, skipImages: snapshotOnly });
 }

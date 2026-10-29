@@ -105,8 +105,8 @@ public/             3         static assets
 | `npm run docs:dev` / `npm run docs:build`     | Runs or builds the user guide in `docs-site/` (port 4500).                                                                              |
 | `node scripts/docs/store.mjs [--demo]`        | Runs the production build as a local store on port 4400 with its own database (`.wrangler/docs-state`). `--demo` adds test demo values. |
 | `npm run docs:data`                           | Fills that local store with the sample content: pictures, the home page, the theme, orders and testimonials.                            |
-| `npm run demo:snapshot`                       | Freezes the local store into `clients/demo/snapshot/snapshot.json` (tables listed in `scripts/demo/snapshot.mjs`).                      |
-| `npm run demo:publish [-- --local]`           | Copies the snapshot and its images to the demo bucket (`--local` writes into the local store instead).                                  |
+| `npm run demo:snapshot [-- <slug>]`           | Freezes the local store into `clients/<slug>/snapshot/snapshot.json` (default `demo`; tables in `scripts/demo/snapshot.mjs`).           |
+| `npm run demo:publish [-- <slug>] [--local]`  | Copies that demo's snapshot and images to its bucket (default `demo`; `--local` writes into the local store instead).                   |
 | `npm run test:all`                            | Every test file against the local store on port 4400, about 25 minutes. Some tests change the store, so restock or reseed first.        |
 | `npm run test:demo`                           | Demo mode against a store started with `--demo`: notices, locks, outbox, reset and the deploy guard (34 checks).                        |
 
@@ -165,6 +165,7 @@ rm -rf .wrangler/demo-build                                   # start from an em
 DOCS_STATE=.wrangler/demo-build node scripts/docs/store.mjs --demo &   # migrations and dev seed, port 4400
 DOCS_STATE=.wrangler/demo-build npm run docs:data              # the sample content (through the admin API)
 DOCS_STATE=.wrangler/demo-build npm run demo:snapshot          # writes clients/demo/snapshot/snapshot.json
+# ...or `-- demo-ropa` for one of the per-vertical demos, each of which has its own build, bucket and snapshot
 DOCS_STATE=.wrangler/demo-build npm run demo:publish           # copies the images and the snapshot to the demo bucket
 ```
 

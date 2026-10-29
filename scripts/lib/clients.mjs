@@ -187,6 +187,23 @@ export function assertRealTurnstileKey(client) {
 export const DEMO_SLUG_PATTERN = /^demo(-[a-z0-9-]+)?$/;
 
 /**
+ * Reads which demo store a demo script works on: the first argument that is not a flag, or `demo` when there is none,
+ * so the scripts keep working as they did before there were several demos.
+ * @param {string[]} argv Arguments after the script name.
+ * @returns {string} The slug of a demo store.
+ * @throws {Error} When the slug is malformed or belongs to a store that is not a demo.
+ */
+export function demoSlugFromArgv(argv) {
+  const slug = assertSlug(argv.find((argument) => !argument.startsWith('--')) ?? 'demo');
+  if (!DEMO_SLUG_PATTERN.test(slug))
+    throw new Error(
+      `"${slug}" is not a demo store. These scripts write the shared demo login and reset the store every night, ` +
+        'so they only run on "demo" and on "demo-" plus a vertical.',
+    );
+  return slug;
+}
+
+/**
  * Keeps demo mode to the demo stores. Demo mode shares one login and keeps the e-mails it did not send, so it is only safe on
  * a demo client, with sandbox payments, and with a real login chosen. Any other client with demo mode is refused.
  * @param {any} client Parsed client configuration.

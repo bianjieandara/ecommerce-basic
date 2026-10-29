@@ -1,19 +1,22 @@
-// Freezes the sample store of a LOCAL build into clients/demo/snapshot/snapshot.json, the file the demo store restores every night.
+// Freezes the sample store of a LOCAL build into clients/<slug>/snapshot/snapshot.json, the file that demo store restores every night.
 // It reads an explicit, ordered list of tables (parents first), leaves out what belongs to visitors or to the server (sessions,
 // logs, payment events, the search index) and rewrites every admin user id to one fixed demo account id. The file is small
 // text, so it is committed and reviewed like any other change.
 //
-// Usage: npm run demo:snapshot        (reads .wrangler/demo-build, or DOCS_STATE)
+// Usage: npm run demo:snapshot                  (the "demo" store; reads .wrangler/demo-build, or DOCS_STATE)
+//        npm run demo:snapshot -- demo-ropa     (another demo store, for example one of the per-vertical ones)
 import { createHash } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { demoSlugFromArgv } from '../lib/clients.mjs';
 import { sql, STATE } from '../docs/shared.mjs';
 import { assertBannerAlways } from './banner-rule.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const SLUG = demoSlugFromArgv(process.argv.slice(2));
 // DEMO_SNAPSHOT_FILE lets a test write elsewhere, so a test run never overwrites the committed snapshot.
-const OUT = process.env.DEMO_SNAPSHOT_FILE ?? join(ROOT, 'clients', 'demo', 'snapshot', 'snapshot.json');
+const OUT = process.env.DEMO_SNAPSHOT_FILE ?? join(ROOT, 'clients', SLUG, 'snapshot', 'snapshot.json');
 
 /** Id the demo account gets in the snapshot. The Worker reads it from the file, so the value lives in one place. */
 const DEMO_ACCOUNT_ID = 'demo-account';
