@@ -115,7 +115,18 @@ async function applyPictures(slug, vertical) {
     if (!saved.json?.ok)
       throw new Error(`Could not save the home page: ${JSON.stringify(saved.json?.error)}`);
   }
-  console.log(`${slug}: ${keys.length} photographs in place`);
+  // Every run uploads new assets, and the ones it replaced stay behind. They would travel in the snapshot and be copied
+  // to R2 on every publish, so anything nothing points at any more goes. The JSON columns are checked too: a hero lives
+  // inside a page's sections and the logo inside a settings group, and neither is a foreign key.
+  sql(`DELETE FROM media_assets
+       WHERE id NOT IN (SELECT media_id FROM product_images)
+         AND id NOT IN (SELECT image_media_id FROM categories WHERE image_media_id IS NOT NULL)
+         AND id NOT IN (SELECT image_media_id FROM product_variants WHERE image_media_id IS NOT NULL)
+         AND id NOT IN (SELECT avatar_media_id FROM testimonials WHERE avatar_media_id IS NOT NULL)
+         AND NOT EXISTS (SELECT 1 FROM pages p WHERE p.sections_json LIKE '%' || media_assets.id || '%')
+         AND NOT EXISTS (SELECT 1 FROM settings s WHERE s.value_json LIKE '%' || media_assets.id || '%')`);
+  const left = sql('SELECT COUNT(*) AS n FROM media_assets')[0].n;
+  console.log(`${slug}: ${keys.length} photographs in place, ${left} media assets kept`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

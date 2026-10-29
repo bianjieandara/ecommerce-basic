@@ -507,9 +507,47 @@ const testimonials = [
   ],
 ];
 
+/**
+ * What every photograph of this store has in common. Garments are the hardest subject these models have: a blouse "worn"
+ * comes back with one long sleeve and one short. Everything here is folded flat, stacked or on a hanger, which is also
+ * how a small workshop photographs its own stock.
+ */
+const photoStyle =
+  'on a plain warm beige paper backdrop, soft diffused daylight from the left, gentle shadow, centred, square composition, muted earth tones, calm minimal still life, shallow depth of field';
+
+/** The subject of each picture. The key is the row it belongs to; `hero` is the banner, in order. */
+const photos = {
+  hero: [
+    'a workshop table seen from above with folded linen garments, wooden thread spools, a tape measure and fabric scissors arranged across it',
+    'folded linen clothes stacked in soft daylight on a pale wooden shelf',
+  ],
+  categories: {
+    'cat-blusas': 'three folded linen and cotton blouses in a neat stack',
+    'cat-vestidos': 'two linen dresses on plain wooden hangers against a pale wall',
+    'cat-pantalones': 'folded denim and folded linen trousers in two neat stacks side by side',
+    'cat-accesorios': 'hammered brass earrings, a woven palm bag and a folded shawl arranged together',
+  },
+  products: {
+    'prod-blusa-lino': 'a neatly folded natural linen blouse resting on a pale linen cloth',
+    'prod-blusa-manta': 'a folded cream cotton blouse with hand embroidery at the collar, laid flat',
+    'prod-camisa-popelina': 'a crisply folded white cotton poplin shirt with shell buttons, laid flat',
+    'prod-vestido-midi': 'a sand coloured linen dress draped on a plain wooden hanger against a pale wall',
+    'prod-vestido-tirantes': 'a light cotton slip dress draped over the back of a wooden chair',
+    'prod-vestido-camisero': 'a folded cotton shirt dress with its fabric belt coiled beside it',
+    'prod-pantalon-recto': 'a pair of folded indigo denim trousers in a neat stack, the hem turned up',
+    'prod-pantalon-lino': 'folded sand coloured linen trousers in a neat stack',
+    'prod-short-mezclilla': 'folded denim shorts with a hand frayed hem, laid flat',
+    'prod-aretes-laton': 'a pair of hammered brass earrings lying on a pale stone dish',
+    'prod-bolsa-palma': 'a woven palm basket bag with a leather handle standing upright',
+    'prod-rebozo': 'a handwoven cotton shawl folded with its knotted fringe spread out',
+  },
+};
+
 export default {
   slug: 'demo-ropa',
   storeName: 'Casa Mina',
+  photoStyle,
+  photos,
   theme,
   home,
   testimonials,

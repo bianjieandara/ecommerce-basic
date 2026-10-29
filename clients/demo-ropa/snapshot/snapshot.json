@@ -1,0 +1,2877 @@
+{
+  "version": "46492d2de7462469",
+  "takenAt": "2026-10-29T18:00:17.185Z",
+  "accountId": "demo-account",
+  "tables": {
+    "settings": [
+      {
+        "group_key": "general",
+        "value_json": "{\"storeName\":\"Casa Mina\",\"logoMediaId\":null,\"faviconMediaId\":null,\"defaultLocale\":\"es\",\"currency\":\"MXN\",\"country\":\"MX\",\"timezone\":\"America/Mexico_City\"}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "tax",
+        "value_json": "{\"pricesIncludeTax\":true,\"defaultRateBp\":1600,\"label\":{\"es\":\"IVA\",\"en\":\"VAT\"},\"taxShipping\":false,\"showBreakdown\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "catalog",
+        "value_json": "{\"pageSize\":24,\"newDays\":30,\"defaultSort\":\"featured\",\"showOutOfStock\":\"last\",\"showStockOnProduct\":\"low\",\"lowStockDisplayThreshold\":5}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "inventory",
+        "value_json": "{\"defaultLowStockThreshold\":3,\"lowStockAlerts\":true,\"lowStockAlertChannels\":[\"email\",\"whatsapp\"],\"backInStockEnabled\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "contact",
+        "value_json": "{\"email\":\"hola@casamina.mx\",\"phone\":\"+52 33 0000 0000\",\"whatsappNumber\":\"523300000000\",\"whatsappMessage\":{\"es\":\"Hola, vi una prenda en la tienda y quiero preguntar por tallas.\",\"en\":\"Hi, I saw a piece in the shop and want to ask about sizes.\"},\"showWhatsappFloat\":true,\"address\":\"Calle Libertad 100, Col. Americana, Guadalajara, Jal.\",\"mapsEmbedUrl\":\"\",\"openingHours\":{\"es\":\"Taller abierto de lunes a viernes, 10:00 a 18:00\",\"en\":\"Workshop open Monday to Friday, 10:00 to 18:00\"},\"social\":{}}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "checkout",
+        "value_json": "{\"enabledMethods\":[\"dlocalgo\",\"paypal\",\"whatsapp\",\"bank_transfer\",\"cash_on_delivery\"],\"bankTransferInstructions\":{\"es\":\"Transferencia SPEI a CLABE 000000000000000000, a nombre de Casa Mina. Manda el comprobante por WhatsApp.\",\"en\":\"SPEI transfer to CLABE 000000000000000000, in the name of Casa Mina. Send the receipt on WhatsApp.\"},\"cashOnDeliveryNote\":{\"es\":\"Paga en efectivo al recibir, solo en Guadalajara y Zapopan.\",\"en\":\"Pay in cash on delivery, in Guadalajara and Zapopan only.\"},\"onlineHoldMinutes\":45,\"manualAutoCancelDays\":3,\"paypalSettlementCurrency\":null,\"paypalExchangeRate\":null,\"orderNotificationEmail\":\"pedidos@casamina.mx\",\"whatsappOptInDefault\":false}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "invoicing",
+        "value_json": "{\"enabled\":true,\"autoIssue\":\"on_paid\",\"series\":\"A\",\"legalName\":\"Casa Mina\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Libertad 100, Col. Americana, Guadalajara, Jal.\",\"phone\":\"+52 33 0000 0000\",\"email\":\"facturacion@casamina.mx\",\"footerNotes\":{\"es\":\"Gracias por comprar una pieza hecha en lotes cortos.\",\"en\":\"Thank you for buying a piece made in short runs.\"},\"attachPdf\":true,\"askBuyerTaxId\":true,\"sendPdfByWhatsapp\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "seo",
+        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Casa Mina\",\"en\":\"%s | Casa Mina\"},\"defaultDescription\":{\"es\":\"Ropa de diario hecha en Guadalajara en tiradas de 30 piezas. Envíos a todo México y cambios en 10 días.\",\"en\":\"Everyday clothing made in Guadalajara in runs of 30. Shipping across Mexico, exchanges within 10 days.\"},\"ogImageMediaId\":null}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "theme",
+        "value_json": "{\"colorPrimary\":\"#1B1A17\",\"colorOnPrimary\":\"#FDFCF9\",\"colorAccent\":\"#8F4324\",\"colorBackground\":\"#FDFCF9\",\"colorSurface\":\"#F1EEE7\",\"colorText\":\"#1B1A17\",\"fontPreset\":\"manrope\",\"radius\":\"none\"}",
+        "updated_at": "2026-10-29T12:49:21.816Z"
+      },
+      {
+        "group_key": "marketing",
+        "value_json": "{\"metaPixelId\":\"\",\"metaCapiEnabled\":false,\"metaTestEventCode\":\"\",\"ga4MeasurementId\":\"\",\"feedEnabled\":true,\"feedBrand\":\"\",\"feedColorAttribute\":\"color\",\"feedSizeAttribute\":\"size\",\"consentBannerMode\":\"always\"}",
+        "updated_at": "2026-10-29T12:49:21.827Z"
+      }
+    ],
+    "shipping_methods": [
+      {
+        "id": "ship-flat",
+        "kind": "flat",
+        "name_json": "{\"es\":\"Envío estándar\",\"en\":\"Standard shipping\"}",
+        "description_json": "{\"es\":\"Entrega en 2 a 5 días hábiles\",\"en\":\"Delivered in 2 to 5 business days\"}",
+        "price_minor": 9900,
+        "free_over_minor": 99900,
+        "is_active": 1,
+        "position": 1
+      },
+      {
+        "id": "ship-pickup",
+        "kind": "pickup",
+        "name_json": "{\"es\":\"Recoger en el taller\",\"en\":\"Workshop pickup\"}",
+        "description_json": "{\"es\":\"Sin costo, de lunes a viernes\",\"en\":\"Free, Monday to Friday\"}",
+        "price_minor": 0,
+        "free_over_minor": null,
+        "is_active": 1,
+        "position": 2
+      }
+    ],
+    "media_assets": [
+      {
+        "id": "e34eb3cf-4569-4090-8232-2746ae4a56d3",
+        "original_name": "hero-0.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/e34eb3cf-4569-4090-8232-2746ae4a56d3/1024.jpg\",\"bytes\":398969}]",
+        "alt_json": "{}",
+        "bytes_total": 398969,
+        "created_at": "2026-10-29T17:54:10.223Z"
+      },
+      {
+        "id": "efcd1db3-3727-43fe-b47a-5ab35a2873ec",
+        "original_name": "hero-1.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/efcd1db3-3727-43fe-b47a-5ab35a2873ec/1024.jpg\",\"bytes\":555344}]",
+        "alt_json": "{}",
+        "bytes_total": 555344,
+        "created_at": "2026-10-29T17:54:10.248Z"
+      },
+      {
+        "id": "dd7296ad-dc09-433c-b76d-40af51115e3b",
+        "original_name": "cat-accesorios.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/dd7296ad-dc09-433c-b76d-40af51115e3b/1024.jpg\",\"bytes\":577384}]",
+        "alt_json": "{}",
+        "bytes_total": 577384,
+        "created_at": "2026-10-29T17:54:10.272Z"
+      },
+      {
+        "id": "0db48e4c-9383-4cb6-8a28-83ac4e66aeb7",
+        "original_name": "cat-blusas.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/0db48e4c-9383-4cb6-8a28-83ac4e66aeb7/1024.jpg\",\"bytes\":479583}]",
+        "alt_json": "{}",
+        "bytes_total": 479583,
+        "created_at": "2026-10-29T17:54:11.609Z"
+      },
+      {
+        "id": "e093bb49-f49c-4ea6-b254-c991e0c9f409",
+        "original_name": "cat-pantalones.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/e093bb49-f49c-4ea6-b254-c991e0c9f409/1024.jpg\",\"bytes\":447812}]",
+        "alt_json": "{}",
+        "bytes_total": 447812,
+        "created_at": "2026-10-29T17:54:12.928Z"
+      },
+      {
+        "id": "f35378c9-0fa1-49f5-b637-291cc44cde4c",
+        "original_name": "cat-vestidos.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/f35378c9-0fa1-49f5-b637-291cc44cde4c/1024.jpg\",\"bytes\":463597}]",
+        "alt_json": "{}",
+        "bytes_total": 463597,
+        "created_at": "2026-10-29T17:54:14.255Z"
+      },
+      {
+        "id": "f1e0ce4b-e911-494a-9a76-dec242f9261e",
+        "original_name": "prod-aretes-laton.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/f1e0ce4b-e911-494a-9a76-dec242f9261e/1024.jpg\",\"bytes\":447451}]",
+        "alt_json": "{}",
+        "bytes_total": 447451,
+        "created_at": "2026-10-29T17:54:15.599Z"
+      },
+      {
+        "id": "0171f214-84a1-40bf-a547-f82f927f0985",
+        "original_name": "prod-blusa-lino.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/0171f214-84a1-40bf-a547-f82f927f0985/1024.jpg\",\"bytes\":559161}]",
+        "alt_json": "{}",
+        "bytes_total": 559161,
+        "created_at": "2026-10-29T17:54:18.282Z"
+      },
+      {
+        "id": "d4f0ac68-10c3-435e-acad-839ee25ea60d",
+        "original_name": "prod-blusa-manta.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/d4f0ac68-10c3-435e-acad-839ee25ea60d/1024.jpg\",\"bytes\":452187}]",
+        "alt_json": "{}",
+        "bytes_total": 452187,
+        "created_at": "2026-10-29T17:54:20.905Z"
+      },
+      {
+        "id": "e104181b-95c3-47c9-9f71-456abe3901d3",
+        "original_name": "prod-bolsa-palma.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/e104181b-95c3-47c9-9f71-456abe3901d3/1024.jpg\",\"bytes\":314801}]",
+        "alt_json": "{}",
+        "bytes_total": 314801,
+        "created_at": "2026-10-29T17:54:23.583Z"
+      },
+      {
+        "id": "35dfeed2-7ab5-4601-8f44-7334d4411f05",
+        "original_name": "prod-camisa-popelina.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/35dfeed2-7ab5-4601-8f44-7334d4411f05/1024.jpg\",\"bytes\":344228}]",
+        "alt_json": "{}",
+        "bytes_total": 344228,
+        "created_at": "2026-10-29T17:54:26.201Z"
+      },
+      {
+        "id": "a45e439a-3d49-4cdc-810d-8b7be824ca82",
+        "original_name": "prod-pantalon-lino.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/a45e439a-3d49-4cdc-810d-8b7be824ca82/1024.jpg\",\"bytes\":394451}]",
+        "alt_json": "{}",
+        "bytes_total": 394451,
+        "created_at": "2026-10-29T17:54:28.787Z"
+      },
+      {
+        "id": "e88c32ec-f23e-46d3-9355-0cc5b12c9f22",
+        "original_name": "prod-pantalon-recto.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/e88c32ec-f23e-46d3-9355-0cc5b12c9f22/1024.jpg\",\"bytes\":454831}]",
+        "alt_json": "{}",
+        "bytes_total": 454831,
+        "created_at": "2026-10-29T17:54:31.421Z"
+      },
+      {
+        "id": "fde61bc2-360c-4090-8faa-c7eb28878055",
+        "original_name": "prod-rebozo.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/fde61bc2-360c-4090-8faa-c7eb28878055/1024.jpg\",\"bytes\":437625}]",
+        "alt_json": "{}",
+        "bytes_total": 437625,
+        "created_at": "2026-10-29T17:54:34.015Z"
+      },
+      {
+        "id": "52941597-c1de-40ce-b805-30bd701c30ca",
+        "original_name": "prod-short-mezclilla.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/52941597-c1de-40ce-b805-30bd701c30ca/1024.jpg\",\"bytes\":353903}]",
+        "alt_json": "{}",
+        "bytes_total": 353903,
+        "created_at": "2026-10-29T17:54:36.707Z"
+      },
+      {
+        "id": "4c7e936e-50f5-4b6b-bbd5-852a3f05ec46",
+        "original_name": "prod-vestido-camisero.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/4c7e936e-50f5-4b6b-bbd5-852a3f05ec46/1024.jpg\",\"bytes\":633528}]",
+        "alt_json": "{}",
+        "bytes_total": 633528,
+        "created_at": "2026-10-29T17:54:39.256Z"
+      },
+      {
+        "id": "10f3532a-0380-4ba6-a75a-c8397a21a2bc",
+        "original_name": "prod-vestido-midi.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/10f3532a-0380-4ba6-a75a-c8397a21a2bc/1024.jpg\",\"bytes\":400625}]",
+        "alt_json": "{}",
+        "bytes_total": 400625,
+        "created_at": "2026-10-29T17:54:41.838Z"
+      },
+      {
+        "id": "f0832c05-e9b5-46e8-a576-8267f83ec4a9",
+        "original_name": "prod-vestido-tirantes.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/f0832c05-e9b5-46e8-a576-8267f83ec4a9/1024.jpg\",\"bytes\":421540}]",
+        "alt_json": "{}",
+        "bytes_total": 421540,
+        "created_at": "2026-10-29T17:54:44.401Z"
+      }
+    ],
+    "attributes": [
+      {
+        "id": "attr-size",
+        "code": "size",
+        "name_json": "{\"es\":\"Talla\",\"en\":\"Size\"}",
+        "display": "buttons",
+        "is_filterable": 1,
+        "position": 1
+      },
+      {
+        "id": "attr-waist",
+        "code": "waist",
+        "name_json": "{\"es\":\"Talla de pantalón\",\"en\":\"Trouser size\"}",
+        "display": "buttons",
+        "is_filterable": 1,
+        "position": 2
+      },
+      {
+        "id": "attr-color",
+        "code": "color",
+        "name_json": "{\"es\":\"Color\",\"en\":\"Colour\"}",
+        "display": "swatches",
+        "is_filterable": 1,
+        "position": 3
+      }
+    ],
+    "attribute_values": [
+      {
+        "id": "val-size-ch",
+        "attribute_id": "attr-size",
+        "code": "ch",
+        "label_json": "{\"es\":\"CH\",\"en\":\"S\"}",
+        "color_hex": null,
+        "position": 1
+      },
+      {
+        "id": "val-size-m",
+        "attribute_id": "attr-size",
+        "code": "m",
+        "label_json": "{\"es\":\"M\",\"en\":\"M\"}",
+        "color_hex": null,
+        "position": 2
+      },
+      {
+        "id": "val-size-g",
+        "attribute_id": "attr-size",
+        "code": "g",
+        "label_json": "{\"es\":\"G\",\"en\":\"L\"}",
+        "color_hex": null,
+        "position": 3
+      },
+      {
+        "id": "val-waist-26",
+        "attribute_id": "attr-waist",
+        "code": "26",
+        "label_json": "{\"es\":\"26\",\"en\":\"26\"}",
+        "color_hex": null,
+        "position": 1
+      },
+      {
+        "id": "val-waist-28",
+        "attribute_id": "attr-waist",
+        "code": "28",
+        "label_json": "{\"es\":\"28\",\"en\":\"28\"}",
+        "color_hex": null,
+        "position": 2
+      },
+      {
+        "id": "val-waist-30",
+        "attribute_id": "attr-waist",
+        "code": "30",
+        "label_json": "{\"es\":\"30\",\"en\":\"30\"}",
+        "color_hex": null,
+        "position": 3
+      },
+      {
+        "id": "val-waist-32",
+        "attribute_id": "attr-waist",
+        "code": "32",
+        "label_json": "{\"es\":\"32\",\"en\":\"32\"}",
+        "color_hex": null,
+        "position": 4
+      },
+      {
+        "id": "val-color-arena",
+        "attribute_id": "attr-color",
+        "code": "arena",
+        "label_json": "{\"es\":\"Arena\",\"en\":\"Sand\"}",
+        "color_hex": "#d8cdb8",
+        "position": 1
+      },
+      {
+        "id": "val-color-negro",
+        "attribute_id": "attr-color",
+        "code": "negro",
+        "label_json": "{\"es\":\"Negro\",\"en\":\"Black\"}",
+        "color_hex": "#1a1a18",
+        "position": 2
+      }
+    ],
+    "categories": [
+      {
+        "id": "cat-blusas",
+        "parent_id": null,
+        "image_media_id": "0db48e4c-9383-4cb6-8a28-83ac4e66aeb7",
+        "position": 1,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-vestidos",
+        "parent_id": null,
+        "image_media_id": "f35378c9-0fa1-49f5-b637-291cc44cde4c",
+        "position": 2,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-pantalones",
+        "parent_id": null,
+        "image_media_id": "e093bb49-f49c-4ea6-b254-c991e0c9f409",
+        "position": 3,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-accesorios",
+        "parent_id": null,
+        "image_media_id": "dd7296ad-dc09-433c-b76d-40af51115e3b",
+        "position": 4,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      }
+    ],
+    "category_translations": [
+      {
+        "category_id": "cat-blusas",
+        "locale": "es",
+        "name": "Blusas",
+        "slug": "blusas",
+        "description": "Blusas y camisas en lino y manta"
+      },
+      {
+        "category_id": "cat-blusas",
+        "locale": "en",
+        "name": "Tops",
+        "slug": "tops",
+        "description": "Linen and cotton tops and shirts"
+      },
+      {
+        "category_id": "cat-vestidos",
+        "locale": "es",
+        "name": "Vestidos",
+        "slug": "vestidos",
+        "description": "Vestidos de diario, midi y camiseros"
+      },
+      {
+        "category_id": "cat-vestidos",
+        "locale": "en",
+        "name": "Dresses",
+        "slug": "dresses",
+        "description": "Everyday, midi and shirt dresses"
+      },
+      {
+        "category_id": "cat-pantalones",
+        "locale": "es",
+        "name": "Pantalones",
+        "slug": "pantalones",
+        "description": "Mezclilla y lino, de la 26 a la 32"
+      },
+      {
+        "category_id": "cat-pantalones",
+        "locale": "en",
+        "name": "Trousers",
+        "slug": "trousers",
+        "description": "Denim and linen, sizes 26 to 32"
+      },
+      {
+        "category_id": "cat-accesorios",
+        "locale": "es",
+        "name": "Accesorios",
+        "slug": "accesorios",
+        "description": "Latón, palma y telar de pedal"
+      },
+      {
+        "category_id": "cat-accesorios",
+        "locale": "en",
+        "name": "Accessories",
+        "slug": "accessories",
+        "description": "Brass, palm and pedal-loom weaving"
+      }
+    ],
+    "products": [
+      {
+        "id": "prod-blusa-lino",
+        "status": "active",
+        "base_price_minor": 42000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 42000,
+        "max_price_minor": 42000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 24,
+        "created_at": "2026-09-02T10:00:00Z",
+        "updated_at": "2026-09-02T10:00:00Z"
+      },
+      {
+        "id": "prod-blusa-manta",
+        "status": "active",
+        "base_price_minor": 38000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 38000,
+        "max_price_minor": 38000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 11,
+        "created_at": "2026-08-14T10:00:00Z",
+        "updated_at": "2026-08-14T10:00:00Z"
+      },
+      {
+        "id": "prod-camisa-popelina",
+        "status": "active",
+        "base_price_minor": 52000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 52000,
+        "max_price_minor": 52000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 6,
+        "created_at": "2026-10-05T10:00:00Z",
+        "updated_at": "2026-10-05T10:00:00Z"
+      },
+      {
+        "id": "prod-vestido-midi",
+        "status": "active",
+        "base_price_minor": 78000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 78000,
+        "max_price_minor": 78000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 18,
+        "created_at": "2026-09-20T10:00:00Z",
+        "updated_at": "2026-09-20T10:00:00Z"
+      },
+      {
+        "id": "prod-vestido-tirantes",
+        "status": "active",
+        "base_price_minor": 69000,
+        "compare_at_price_minor": 79000,
+        "tax_rate_bp": null,
+        "min_price_minor": 69000,
+        "max_price_minor": 69000,
+        "is_on_sale": 1,
+        "is_featured": 0,
+        "sales_count": 9,
+        "created_at": "2026-07-11T10:00:00Z",
+        "updated_at": "2026-07-11T10:00:00Z"
+      },
+      {
+        "id": "prod-vestido-camisero",
+        "status": "active",
+        "base_price_minor": 85000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 85000,
+        "max_price_minor": 85000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 4,
+        "created_at": "2026-10-12T10:00:00Z",
+        "updated_at": "2026-10-12T10:00:00Z"
+      },
+      {
+        "id": "prod-pantalon-recto",
+        "status": "active",
+        "base_price_minor": 65000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 65000,
+        "max_price_minor": 65000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 21,
+        "created_at": "2026-08-28T10:00:00Z",
+        "updated_at": "2026-08-28T10:00:00Z"
+      },
+      {
+        "id": "prod-pantalon-lino",
+        "status": "active",
+        "base_price_minor": 59000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 59000,
+        "max_price_minor": 59000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 13,
+        "created_at": "2026-06-18T10:00:00Z",
+        "updated_at": "2026-06-18T10:00:00Z"
+      },
+      {
+        "id": "prod-short-mezclilla",
+        "status": "active",
+        "base_price_minor": 45000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 45000,
+        "max_price_minor": 45000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 7,
+        "created_at": "2026-05-30T10:00:00Z",
+        "updated_at": "2026-05-30T10:00:00Z"
+      },
+      {
+        "id": "prod-aretes-laton",
+        "status": "active",
+        "base_price_minor": 18000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 18000,
+        "max_price_minor": 18000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 32,
+        "created_at": "2026-09-08T10:00:00Z",
+        "updated_at": "2026-09-08T10:00:00Z"
+      },
+      {
+        "id": "prod-bolsa-palma",
+        "status": "active",
+        "base_price_minor": 54000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 54000,
+        "max_price_minor": 54000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 15,
+        "created_at": "2026-07-25T10:00:00Z",
+        "updated_at": "2026-07-25T10:00:00Z"
+      },
+      {
+        "id": "prod-rebozo",
+        "status": "active",
+        "base_price_minor": 115000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 115000,
+        "max_price_minor": 115000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 3,
+        "created_at": "2026-04-16T10:00:00Z",
+        "updated_at": "2026-04-16T10:00:00Z"
+      }
+    ],
+    "product_translations": [
+      {
+        "product_id": "prod-blusa-lino",
+        "locale": "es",
+        "name": "Blusa de lino",
+        "slug": "blusa-de-lino",
+        "short_description": "Lino lavado, corte holgado.",
+        "description_md": "Blusa de lino lavado, de caída suelta y manga tres cuartos. El lino se ablanda con cada lavada y no pierde la forma.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-blusa-lino",
+        "locale": "en",
+        "name": "Linen blouse",
+        "slug": "linen-blouse",
+        "short_description": "Washed linen, relaxed fit.",
+        "description_md": "A washed linen blouse with a loose drape and three-quarter sleeves. Linen softens with every wash and keeps its shape.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-blusa-manta",
+        "locale": "es",
+        "name": "Blusa de manta bordada",
+        "slug": "blusa-de-manta-bordada",
+        "short_description": "Bordada a mano en el cuello.",
+        "description_md": "Manta de algodón con bordado hecho a mano en el cuello. Cada pieza lleva unas tres horas de bordado, así que no hay dos iguales.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-blusa-manta",
+        "locale": "en",
+        "name": "Embroidered cotton blouse",
+        "slug": "embroidered-cotton-blouse",
+        "short_description": "Hand embroidery at the neck.",
+        "description_md": "Cotton cloth with hand embroidery at the neck. Each piece takes about three hours to embroider, so no two are alike.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-camisa-popelina",
+        "locale": "es",
+        "name": "Camisa de popelina",
+        "slug": "camisa-de-popelina",
+        "short_description": "Algodón peinado, puño doble.",
+        "description_md": "Camisa de popelina de algodón peinado, con puño doble y botones de concha. Plancha fácil y aguanta el uso diario.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-camisa-popelina",
+        "locale": "en",
+        "name": "Poplin shirt",
+        "slug": "poplin-shirt",
+        "short_description": "Combed cotton, double cuff.",
+        "description_md": "A combed cotton poplin shirt with a double cuff and shell buttons. Easy to iron and made for daily wear.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-vestido-midi",
+        "locale": "es",
+        "name": "Vestido midi de lino",
+        "slug": "vestido-midi-de-lino",
+        "short_description": "Largo a media pierna, con bolsas.",
+        "description_md": "Vestido de lino a media pierna, con bolsas laterales y cinturón del mismo tejido. Se usa solo en calor y con suéter en frío.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-vestido-midi",
+        "locale": "en",
+        "name": "Linen midi dress",
+        "slug": "linen-midi-dress",
+        "short_description": "Mid-calf, with pockets.",
+        "description_md": "A mid-calf linen dress with side pockets and a belt in the same cloth. Wear it alone in the heat, with a jumper when it cools.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-vestido-tirantes",
+        "locale": "es",
+        "name": "Vestido de tirantes",
+        "slug": "vestido-de-tirantes",
+        "short_description": "Última temporada, precio de salida.",
+        "description_md": "Vestido de tirantes ajustables en algodón ligero. Queda de la temporada pasada, por eso el precio.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-vestido-tirantes",
+        "locale": "en",
+        "name": "Strap dress",
+        "slug": "strap-dress",
+        "short_description": "Last season, reduced.",
+        "description_md": "A light cotton dress with adjustable straps. Left over from last season, which is why the price dropped.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-vestido-camisero",
+        "locale": "es",
+        "name": "Vestido camisero",
+        "slug": "vestido-camisero",
+        "short_description": "Botones al frente, cinturón.",
+        "description_md": "Vestido camisero de algodón, abotonado al frente y con cinturón. Sirve para la oficina y para el fin de semana.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-vestido-camisero",
+        "locale": "en",
+        "name": "Shirt dress",
+        "slug": "shirt-dress",
+        "short_description": "Button front, belted.",
+        "description_md": "A cotton shirt dress, buttoned at the front and belted. It works for the office and for the weekend.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-pantalon-recto",
+        "locale": "es",
+        "name": "Pantalón recto de mezclilla",
+        "slug": "pantalon-recto-de-mezclilla",
+        "short_description": "Mezclilla rígida, tiro alto.",
+        "description_md": "Mezclilla rígida de 12 onzas, tiro alto y pierna recta. No lleva elástico, así que se amolda con el uso.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-pantalon-recto",
+        "locale": "en",
+        "name": "Straight denim trousers",
+        "slug": "straight-denim-trousers",
+        "short_description": "Rigid denim, high rise.",
+        "description_md": "12 oz rigid denim, high rise, straight leg. No stretch, so it moulds to you as you wear it.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-pantalon-lino",
+        "locale": "es",
+        "name": "Pantalón de lino",
+        "slug": "pantalon-de-lino",
+        "short_description": "Resorte en la cintura.",
+        "description_md": "Pantalón de lino con resorte en la cintura y bolsas hondas. El más vendido del verano, por fresco.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-pantalon-lino",
+        "locale": "en",
+        "name": "Linen trousers",
+        "slug": "linen-trousers",
+        "short_description": "Elastic waist.",
+        "description_md": "Linen trousers with an elastic waist and deep pockets. Our summer best seller, because they breathe.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-short-mezclilla",
+        "locale": "es",
+        "name": "Short de mezclilla",
+        "slug": "short-de-mezclilla",
+        "short_description": "Bastilla deshilada a mano.",
+        "description_md": "Short de mezclilla con la bastilla deshilada a mano, una por una. Tiro medio.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-short-mezclilla",
+        "locale": "en",
+        "name": "Denim shorts",
+        "slug": "denim-shorts",
+        "short_description": "Hand-frayed hem.",
+        "description_md": "Denim shorts with the hem frayed by hand, one at a time. Mid rise.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-aretes-laton",
+        "locale": "es",
+        "name": "Aretes de latón",
+        "slug": "aretes-de-laton",
+        "short_description": "Hechos a mano, poste de plata.",
+        "description_md": "Aretes de latón martillado a mano, con poste de plata .925 para que no irriten. Pesan poco, se pueden traer todo el día.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-aretes-laton",
+        "locale": "en",
+        "name": "Brass earrings",
+        "slug": "brass-earrings",
+        "short_description": "Handmade, silver posts.",
+        "description_md": "Hand-hammered brass earrings on .925 silver posts so they do not irritate. Light enough to wear all day.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-bolsa-palma",
+        "locale": "es",
+        "name": "Bolsa de palma",
+        "slug": "bolsa-de-palma",
+        "short_description": "Tejida en Oaxaca, asa de piel.",
+        "description_md": "Bolsa de palma tejida por una familia de Oaxaca, con asa de piel curtida con vegetales. Le caben una laptop de 13 pulgadas y el mandado.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-bolsa-palma",
+        "locale": "en",
+        "name": "Palm bag",
+        "slug": "palm-bag",
+        "short_description": "Woven in Oaxaca, leather handle.",
+        "description_md": "A palm bag woven by a family in Oaxaca, with a vegetable-tanned leather handle. It holds a 13-inch laptop and the groceries.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-rebozo",
+        "locale": "es",
+        "name": "Rebozo tejido en telar",
+        "slug": "rebozo-tejido-en-telar",
+        "short_description": "Telar de pedal, dos semanas de trabajo.",
+        "description_md": "Rebozo de algodón tejido en telar de pedal. Cada pieza lleva unas dos semanas, con el rapacejo anudado a mano al final.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-rebozo",
+        "locale": "en",
+        "name": "Loom-woven rebozo",
+        "slug": "loom-woven-rebozo",
+        "short_description": "Pedal loom, two weeks of work.",
+        "description_md": "A cotton rebozo woven on a pedal loom. Each one takes about two weeks, with the fringe knotted by hand at the end.",
+        "seo_title": "",
+        "seo_description": ""
+      }
+    ],
+    "product_categories": [
+      {
+        "product_id": "prod-blusa-lino",
+        "category_id": "cat-blusas"
+      },
+      {
+        "product_id": "prod-blusa-manta",
+        "category_id": "cat-blusas"
+      },
+      {
+        "product_id": "prod-camisa-popelina",
+        "category_id": "cat-blusas"
+      },
+      {
+        "product_id": "prod-vestido-midi",
+        "category_id": "cat-vestidos"
+      },
+      {
+        "product_id": "prod-vestido-tirantes",
+        "category_id": "cat-vestidos"
+      },
+      {
+        "product_id": "prod-vestido-camisero",
+        "category_id": "cat-vestidos"
+      },
+      {
+        "product_id": "prod-pantalon-recto",
+        "category_id": "cat-pantalones"
+      },
+      {
+        "product_id": "prod-pantalon-lino",
+        "category_id": "cat-pantalones"
+      },
+      {
+        "product_id": "prod-short-mezclilla",
+        "category_id": "cat-pantalones"
+      },
+      {
+        "product_id": "prod-aretes-laton",
+        "category_id": "cat-accesorios"
+      },
+      {
+        "product_id": "prod-bolsa-palma",
+        "category_id": "cat-accesorios"
+      },
+      {
+        "product_id": "prod-rebozo",
+        "category_id": "cat-accesorios"
+      }
+    ],
+    "product_images": [
+      {
+        "product_id": "prod-aretes-laton",
+        "media_id": "f1e0ce4b-e911-494a-9a76-dec242f9261e",
+        "position": 0
+      },
+      {
+        "product_id": "prod-blusa-lino",
+        "media_id": "0171f214-84a1-40bf-a547-f82f927f0985",
+        "position": 0
+      },
+      {
+        "product_id": "prod-blusa-manta",
+        "media_id": "d4f0ac68-10c3-435e-acad-839ee25ea60d",
+        "position": 0
+      },
+      {
+        "product_id": "prod-bolsa-palma",
+        "media_id": "e104181b-95c3-47c9-9f71-456abe3901d3",
+        "position": 0
+      },
+      {
+        "product_id": "prod-camisa-popelina",
+        "media_id": "35dfeed2-7ab5-4601-8f44-7334d4411f05",
+        "position": 0
+      },
+      {
+        "product_id": "prod-pantalon-lino",
+        "media_id": "a45e439a-3d49-4cdc-810d-8b7be824ca82",
+        "position": 0
+      },
+      {
+        "product_id": "prod-pantalon-recto",
+        "media_id": "e88c32ec-f23e-46d3-9355-0cc5b12c9f22",
+        "position": 0
+      },
+      {
+        "product_id": "prod-rebozo",
+        "media_id": "fde61bc2-360c-4090-8faa-c7eb28878055",
+        "position": 0
+      },
+      {
+        "product_id": "prod-short-mezclilla",
+        "media_id": "52941597-c1de-40ce-b805-30bd701c30ca",
+        "position": 0
+      },
+      {
+        "product_id": "prod-vestido-camisero",
+        "media_id": "4c7e936e-50f5-4b6b-bbd5-852a3f05ec46",
+        "position": 0
+      },
+      {
+        "product_id": "prod-vestido-midi",
+        "media_id": "10f3532a-0380-4ba6-a75a-c8397a21a2bc",
+        "position": 0
+      },
+      {
+        "product_id": "prod-vestido-tirantes",
+        "media_id": "f0832c05-e9b5-46e8-a576-8267f83ec4a9",
+        "position": 0
+      }
+    ],
+    "product_variants": [
+      {
+        "id": "var-blusa-lino-ch-arena",
+        "product_id": "prod-blusa-lino",
+        "sku": "BLULIN-CH-ARE",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 17000,
+        "stock": 5,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-blusa-lino-m-arena",
+        "product_id": "prod-blusa-lino",
+        "sku": "BLULIN-M-ARE",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 17000,
+        "stock": 9,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-blusa-lino-g-arena",
+        "product_id": "prod-blusa-lino",
+        "sku": "BLULIN-G-ARE",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 17000,
+        "stock": 4,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-blusa-lino-ch-negro",
+        "product_id": "prod-blusa-lino",
+        "sku": "BLULIN-CH-NEG",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 17000,
+        "stock": 3,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 4,
+        "is_active": 1
+      },
+      {
+        "id": "var-blusa-lino-m-negro",
+        "product_id": "prod-blusa-lino",
+        "sku": "BLULIN-M-NEG",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 17000,
+        "stock": 0,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 5,
+        "is_active": 1
+      },
+      {
+        "id": "var-blusa-lino-g-negro",
+        "product_id": "prod-blusa-lino",
+        "sku": "BLULIN-G-NEG",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 17000,
+        "stock": 2,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 6,
+        "is_active": 1
+      },
+      {
+        "id": "var-blusa-manta-ch",
+        "product_id": "prod-blusa-manta",
+        "sku": "BLUSAMANTA-CH",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 15000,
+        "stock": 2,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-blusa-manta-m",
+        "product_id": "prod-blusa-manta",
+        "sku": "BLUSAMANTA-M",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 15000,
+        "stock": 7,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-blusa-manta-g",
+        "product_id": "prod-blusa-manta",
+        "sku": "BLUSAMANTA-G",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 15000,
+        "stock": 5,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-camisa-popelina-ch",
+        "product_id": "prod-camisa-popelina",
+        "sku": "CAMISAPOPELINA-CH",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 21000,
+        "stock": 3,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-camisa-popelina-m",
+        "product_id": "prod-camisa-popelina",
+        "sku": "CAMISAPOPELINA-M",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 21000,
+        "stock": 5,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-camisa-popelina-g",
+        "product_id": "prod-camisa-popelina",
+        "sku": "CAMISAPOPELINA-G",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 21000,
+        "stock": 3,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-midi-ch",
+        "product_id": "prod-vestido-midi",
+        "sku": "VESTIDOMIDI-CH",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 31000,
+        "stock": 2,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-midi-m",
+        "product_id": "prod-vestido-midi",
+        "sku": "VESTIDOMIDI-M",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 31000,
+        "stock": 4,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-midi-g",
+        "product_id": "prod-vestido-midi",
+        "sku": "VESTIDOMIDI-G",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 31000,
+        "stock": 3,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-tirantes-ch",
+        "product_id": "prod-vestido-tirantes",
+        "sku": "VESTIDOTIRANTES-CH",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 28000,
+        "stock": 1,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-tirantes-m",
+        "product_id": "prod-vestido-tirantes",
+        "sku": "VESTIDOTIRANTES-M",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 28000,
+        "stock": 2,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-tirantes-g",
+        "product_id": "prod-vestido-tirantes",
+        "sku": "VESTIDOTIRANTES-G",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 28000,
+        "stock": 0,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-camisero-ch",
+        "product_id": "prod-vestido-camisero",
+        "sku": "VESTIDOCAMISERO-CH",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 34000,
+        "stock": 1,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-camisero-m",
+        "product_id": "prod-vestido-camisero",
+        "sku": "VESTIDOCAMISERO-M",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 34000,
+        "stock": 3,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-vestido-camisero-g",
+        "product_id": "prod-vestido-camisero",
+        "sku": "VESTIDOCAMISERO-G",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 34000,
+        "stock": 2,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-pantalon-recto-26",
+        "product_id": "prod-pantalon-recto",
+        "sku": "PANTALONRECTO-26",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 26000,
+        "stock": 5,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-pantalon-recto-28",
+        "product_id": "prod-pantalon-recto",
+        "sku": "PANTALONRECTO-28",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 26000,
+        "stock": 8,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-pantalon-recto-30",
+        "product_id": "prod-pantalon-recto",
+        "sku": "PANTALONRECTO-30",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 26000,
+        "stock": 6,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-pantalon-recto-32",
+        "product_id": "prod-pantalon-recto",
+        "sku": "PANTALONRECTO-32",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 26000,
+        "stock": 3,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 4,
+        "is_active": 1
+      },
+      {
+        "id": "var-pantalon-lino-26",
+        "product_id": "prod-pantalon-lino",
+        "sku": "PANTALONLINO-26",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 23000,
+        "stock": 3,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-pantalon-lino-28",
+        "product_id": "prod-pantalon-lino",
+        "sku": "PANTALONLINO-28",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 23000,
+        "stock": 6,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-pantalon-lino-30",
+        "product_id": "prod-pantalon-lino",
+        "sku": "PANTALONLINO-30",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 23000,
+        "stock": 0,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-pantalon-lino-32",
+        "product_id": "prod-pantalon-lino",
+        "sku": "PANTALONLINO-32",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 23000,
+        "stock": 2,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 4,
+        "is_active": 1
+      },
+      {
+        "id": "var-short-mezclilla-26",
+        "product_id": "prod-short-mezclilla",
+        "sku": "SHORTMEZCLILLA-26",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 18000,
+        "stock": 1,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-short-mezclilla-28",
+        "product_id": "prod-short-mezclilla",
+        "sku": "SHORTMEZCLILLA-28",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 18000,
+        "stock": 4,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-short-mezclilla-30",
+        "product_id": "prod-short-mezclilla",
+        "sku": "SHORTMEZCLILLA-30",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 18000,
+        "stock": 2,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-short-mezclilla-32",
+        "product_id": "prod-short-mezclilla",
+        "sku": "SHORTMEZCLILLA-32",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 18000,
+        "stock": 1,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 4,
+        "is_active": 1
+      },
+      {
+        "id": "var-aretes-laton",
+        "product_id": "prod-aretes-laton",
+        "sku": "ARELAT-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 6000,
+        "stock": 16,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-bolsa-palma",
+        "product_id": "prod-bolsa-palma",
+        "sku": "BOLPAL-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 22000,
+        "stock": 6,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-rebozo",
+        "product_id": "prod-rebozo",
+        "sku": "REB-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 52000,
+        "stock": 0,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      }
+    ],
+    "variant_attribute_values": [
+      {
+        "variant_id": "var-blusa-lino-ch-arena",
+        "attribute_value_id": "val-size-ch"
+      },
+      {
+        "variant_id": "var-blusa-lino-ch-arena",
+        "attribute_value_id": "val-color-arena"
+      },
+      {
+        "variant_id": "var-blusa-lino-m-arena",
+        "attribute_value_id": "val-size-m"
+      },
+      {
+        "variant_id": "var-blusa-lino-m-arena",
+        "attribute_value_id": "val-color-arena"
+      },
+      {
+        "variant_id": "var-blusa-lino-g-arena",
+        "attribute_value_id": "val-size-g"
+      },
+      {
+        "variant_id": "var-blusa-lino-g-arena",
+        "attribute_value_id": "val-color-arena"
+      },
+      {
+        "variant_id": "var-blusa-lino-ch-negro",
+        "attribute_value_id": "val-size-ch"
+      },
+      {
+        "variant_id": "var-blusa-lino-ch-negro",
+        "attribute_value_id": "val-color-negro"
+      },
+      {
+        "variant_id": "var-blusa-lino-m-negro",
+        "attribute_value_id": "val-size-m"
+      },
+      {
+        "variant_id": "var-blusa-lino-m-negro",
+        "attribute_value_id": "val-color-negro"
+      },
+      {
+        "variant_id": "var-blusa-lino-g-negro",
+        "attribute_value_id": "val-size-g"
+      },
+      {
+        "variant_id": "var-blusa-lino-g-negro",
+        "attribute_value_id": "val-color-negro"
+      },
+      {
+        "variant_id": "var-blusa-manta-ch",
+        "attribute_value_id": "val-size-ch"
+      },
+      {
+        "variant_id": "var-blusa-manta-m",
+        "attribute_value_id": "val-size-m"
+      },
+      {
+        "variant_id": "var-blusa-manta-g",
+        "attribute_value_id": "val-size-g"
+      },
+      {
+        "variant_id": "var-camisa-popelina-ch",
+        "attribute_value_id": "val-size-ch"
+      },
+      {
+        "variant_id": "var-camisa-popelina-m",
+        "attribute_value_id": "val-size-m"
+      },
+      {
+        "variant_id": "var-camisa-popelina-g",
+        "attribute_value_id": "val-size-g"
+      },
+      {
+        "variant_id": "var-vestido-midi-ch",
+        "attribute_value_id": "val-size-ch"
+      },
+      {
+        "variant_id": "var-vestido-midi-m",
+        "attribute_value_id": "val-size-m"
+      },
+      {
+        "variant_id": "var-vestido-midi-g",
+        "attribute_value_id": "val-size-g"
+      },
+      {
+        "variant_id": "var-vestido-tirantes-ch",
+        "attribute_value_id": "val-size-ch"
+      },
+      {
+        "variant_id": "var-vestido-tirantes-m",
+        "attribute_value_id": "val-size-m"
+      },
+      {
+        "variant_id": "var-vestido-tirantes-g",
+        "attribute_value_id": "val-size-g"
+      },
+      {
+        "variant_id": "var-vestido-camisero-ch",
+        "attribute_value_id": "val-size-ch"
+      },
+      {
+        "variant_id": "var-vestido-camisero-m",
+        "attribute_value_id": "val-size-m"
+      },
+      {
+        "variant_id": "var-vestido-camisero-g",
+        "attribute_value_id": "val-size-g"
+      },
+      {
+        "variant_id": "var-pantalon-recto-26",
+        "attribute_value_id": "val-waist-26"
+      },
+      {
+        "variant_id": "var-pantalon-recto-28",
+        "attribute_value_id": "val-waist-28"
+      },
+      {
+        "variant_id": "var-pantalon-recto-30",
+        "attribute_value_id": "val-waist-30"
+      },
+      {
+        "variant_id": "var-pantalon-recto-32",
+        "attribute_value_id": "val-waist-32"
+      },
+      {
+        "variant_id": "var-pantalon-lino-26",
+        "attribute_value_id": "val-waist-26"
+      },
+      {
+        "variant_id": "var-pantalon-lino-28",
+        "attribute_value_id": "val-waist-28"
+      },
+      {
+        "variant_id": "var-pantalon-lino-30",
+        "attribute_value_id": "val-waist-30"
+      },
+      {
+        "variant_id": "var-pantalon-lino-32",
+        "attribute_value_id": "val-waist-32"
+      },
+      {
+        "variant_id": "var-short-mezclilla-26",
+        "attribute_value_id": "val-waist-26"
+      },
+      {
+        "variant_id": "var-short-mezclilla-28",
+        "attribute_value_id": "val-waist-28"
+      },
+      {
+        "variant_id": "var-short-mezclilla-30",
+        "attribute_value_id": "val-waist-30"
+      },
+      {
+        "variant_id": "var-short-mezclilla-32",
+        "attribute_value_id": "val-waist-32"
+      }
+    ],
+    "inventory_movements": [
+      {
+        "id": "mov-var-blusa-lino-ch-arena",
+        "variant_id": "var-blusa-lino-ch-arena",
+        "product_id": "prod-blusa-lino",
+        "delta": 6,
+        "stock_after": 6,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-blusa-lino-m-arena",
+        "variant_id": "var-blusa-lino-m-arena",
+        "product_id": "prod-blusa-lino",
+        "delta": 9,
+        "stock_after": 9,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-blusa-lino-g-arena",
+        "variant_id": "var-blusa-lino-g-arena",
+        "product_id": "prod-blusa-lino",
+        "delta": 4,
+        "stock_after": 4,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-blusa-lino-ch-negro",
+        "variant_id": "var-blusa-lino-ch-negro",
+        "product_id": "prod-blusa-lino",
+        "delta": 3,
+        "stock_after": 3,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-blusa-lino-g-negro",
+        "variant_id": "var-blusa-lino-g-negro",
+        "product_id": "prod-blusa-lino",
+        "delta": 2,
+        "stock_after": 2,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-blusa-manta-ch",
+        "variant_id": "var-blusa-manta-ch",
+        "product_id": "prod-blusa-manta",
+        "delta": 4,
+        "stock_after": 4,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-blusa-manta-m",
+        "variant_id": "var-blusa-manta-m",
+        "product_id": "prod-blusa-manta",
+        "delta": 7,
+        "stock_after": 7,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-blusa-manta-g",
+        "variant_id": "var-blusa-manta-g",
+        "product_id": "prod-blusa-manta",
+        "delta": 5,
+        "stock_after": 5,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-camisa-popelina-ch",
+        "variant_id": "var-camisa-popelina-ch",
+        "product_id": "prod-camisa-popelina",
+        "delta": 3,
+        "stock_after": 3,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-camisa-popelina-m",
+        "variant_id": "var-camisa-popelina-m",
+        "product_id": "prod-camisa-popelina",
+        "delta": 5,
+        "stock_after": 5,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-camisa-popelina-g",
+        "variant_id": "var-camisa-popelina-g",
+        "product_id": "prod-camisa-popelina",
+        "delta": 3,
+        "stock_after": 3,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vestido-midi-ch",
+        "variant_id": "var-vestido-midi-ch",
+        "product_id": "prod-vestido-midi",
+        "delta": 2,
+        "stock_after": 2,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vestido-midi-m",
+        "variant_id": "var-vestido-midi-m",
+        "product_id": "prod-vestido-midi",
+        "delta": 4,
+        "stock_after": 4,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vestido-midi-g",
+        "variant_id": "var-vestido-midi-g",
+        "product_id": "prod-vestido-midi",
+        "delta": 3,
+        "stock_after": 3,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vestido-tirantes-ch",
+        "variant_id": "var-vestido-tirantes-ch",
+        "product_id": "prod-vestido-tirantes",
+        "delta": 1,
+        "stock_after": 1,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vestido-tirantes-m",
+        "variant_id": "var-vestido-tirantes-m",
+        "product_id": "prod-vestido-tirantes",
+        "delta": 2,
+        "stock_after": 2,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vestido-camisero-ch",
+        "variant_id": "var-vestido-camisero-ch",
+        "product_id": "prod-vestido-camisero",
+        "delta": 2,
+        "stock_after": 2,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vestido-camisero-m",
+        "variant_id": "var-vestido-camisero-m",
+        "product_id": "prod-vestido-camisero",
+        "delta": 3,
+        "stock_after": 3,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vestido-camisero-g",
+        "variant_id": "var-vestido-camisero-g",
+        "product_id": "prod-vestido-camisero",
+        "delta": 2,
+        "stock_after": 2,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-pantalon-recto-26",
+        "variant_id": "var-pantalon-recto-26",
+        "product_id": "prod-pantalon-recto",
+        "delta": 5,
+        "stock_after": 5,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-pantalon-recto-28",
+        "variant_id": "var-pantalon-recto-28",
+        "product_id": "prod-pantalon-recto",
+        "delta": 8,
+        "stock_after": 8,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-pantalon-recto-30",
+        "variant_id": "var-pantalon-recto-30",
+        "product_id": "prod-pantalon-recto",
+        "delta": 6,
+        "stock_after": 6,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-pantalon-recto-32",
+        "variant_id": "var-pantalon-recto-32",
+        "product_id": "prod-pantalon-recto",
+        "delta": 3,
+        "stock_after": 3,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-pantalon-lino-26",
+        "variant_id": "var-pantalon-lino-26",
+        "product_id": "prod-pantalon-lino",
+        "delta": 4,
+        "stock_after": 4,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-pantalon-lino-28",
+        "variant_id": "var-pantalon-lino-28",
+        "product_id": "prod-pantalon-lino",
+        "delta": 6,
+        "stock_after": 6,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-pantalon-lino-32",
+        "variant_id": "var-pantalon-lino-32",
+        "product_id": "prod-pantalon-lino",
+        "delta": 2,
+        "stock_after": 2,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-short-mezclilla-26",
+        "variant_id": "var-short-mezclilla-26",
+        "product_id": "prod-short-mezclilla",
+        "delta": 3,
+        "stock_after": 3,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-short-mezclilla-28",
+        "variant_id": "var-short-mezclilla-28",
+        "product_id": "prod-short-mezclilla",
+        "delta": 4,
+        "stock_after": 4,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-short-mezclilla-30",
+        "variant_id": "var-short-mezclilla-30",
+        "product_id": "prod-short-mezclilla",
+        "delta": 2,
+        "stock_after": 2,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-short-mezclilla-32",
+        "variant_id": "var-short-mezclilla-32",
+        "product_id": "prod-short-mezclilla",
+        "delta": 1,
+        "stock_after": 1,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-aretes-laton",
+        "variant_id": "var-aretes-laton",
+        "product_id": "prod-aretes-laton",
+        "delta": 18,
+        "stock_after": 18,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-bolsa-palma",
+        "variant_id": "var-bolsa-palma",
+        "product_id": "prod-bolsa-palma",
+        "delta": 9,
+        "stock_after": 9,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "467bd597-129d-4598-8415-c49db009fee9",
+        "variant_id": "var-aretes-laton",
+        "product_id": "prod-aretes-laton",
+        "delta": -2,
+        "stock_after": 16,
+        "reason": "sale",
+        "reference": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:31.863Z"
+      },
+      {
+        "id": "5084a377-7bd6-49c5-8cb7-be9a78ddac0b",
+        "variant_id": "var-pantalon-lino-26",
+        "product_id": "prod-pantalon-lino",
+        "delta": -1,
+        "stock_after": 3,
+        "reason": "sale",
+        "reference": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:31.863Z"
+      },
+      {
+        "id": "384ab002-1082-4dec-88ab-cbc65739d03e",
+        "variant_id": "var-blusa-lino-ch-arena",
+        "product_id": "prod-blusa-lino",
+        "delta": -1,
+        "stock_after": 5,
+        "reason": "sale",
+        "reference": "105e1c10-9098-4b4c-9097-bd6808b691df",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:31.922Z"
+      },
+      {
+        "id": "c70b10c6-dc00-4bf2-b48b-4de4b96941e8",
+        "variant_id": "var-blusa-manta-ch",
+        "product_id": "prod-blusa-manta",
+        "delta": -2,
+        "stock_after": 2,
+        "reason": "sale",
+        "reference": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:31.967Z"
+      },
+      {
+        "id": "e82ab428-1132-460a-abf4-1d38b61bb3c3",
+        "variant_id": "var-short-mezclilla-26",
+        "product_id": "prod-short-mezclilla",
+        "delta": -2,
+        "stock_after": 1,
+        "reason": "sale",
+        "reference": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:31.967Z"
+      },
+      {
+        "id": "64d4c29a-68d4-420e-af55-07662b0f1794",
+        "variant_id": "var-vestido-camisero-ch",
+        "product_id": "prod-vestido-camisero",
+        "delta": -1,
+        "stock_after": 1,
+        "reason": "sale",
+        "reference": "d9b77833-786d-41cc-bbe0-442590b4669e",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:32.079Z"
+      },
+      {
+        "id": "0489ceb0-0e73-46ca-8e03-12047e55efca",
+        "variant_id": "var-bolsa-palma",
+        "product_id": "prod-bolsa-palma",
+        "delta": -3,
+        "stock_after": 6,
+        "reason": "sale",
+        "reference": "915fb3ff-f2ef-4daf-b846-5becc5dccd34",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:32.103Z"
+      },
+      {
+        "id": "90fea4f7-55c6-4d61-9abc-b771eec6d0d7",
+        "variant_id": "var-vestido-midi-ch",
+        "product_id": "prod-vestido-midi",
+        "delta": -1,
+        "stock_after": 1,
+        "reason": "sale",
+        "reference": "46f5d43a-2e14-4325-9904-03e102f8440f",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:32.144Z"
+      },
+      {
+        "id": "57cbc1ba-0480-442a-a81f-2f011df26755",
+        "variant_id": "var-vestido-midi-ch",
+        "product_id": "prod-vestido-midi",
+        "delta": 1,
+        "stock_after": 2,
+        "reason": "cancel_restore",
+        "reference": "46f5d43a-2e14-4325-9904-03e102f8440f",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:32.156Z"
+      }
+    ],
+    "orders": [
+      {
+        "id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "number": 1001,
+        "access_key_hash": "a099ddfc65edb6db8e4b9e5faf8e291a18ffd651f9435ddf1e347fb7132125e5",
+        "status": "delivered",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 95000,
+        "tax_minor": 13104,
+        "shipping_minor": 0,
+        "total_minor": 95000,
+        "customer_name": "Camila Torres",
+        "customer_email": "camila.torres@example.com",
+        "customer_phone": "+57 300 555 0101",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Recoger en el taller",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": "CO123456789",
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T12:49:31.863Z",
+        "paid_at": "2026-10-29T12:49:31.884Z",
+        "created_at": "2026-10-29T12:49:31.863Z",
+        "updated_at": "2026-10-29T12:49:31.905Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "105e1c10-9098-4b4c-9097-bd6808b691df",
+        "number": 1002,
+        "access_key_hash": "dcf8236cf49ecd98c3e254c019f9e6c52f76cfe822e24b21f8ddb5683c5f3df5",
+        "status": "shipped",
+        "payment_method": "cash_on_delivery",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 42000,
+        "tax_minor": 5793,
+        "shipping_minor": 9900,
+        "total_minor": 51900,
+        "customer_name": "Andrés Gómez",
+        "customer_email": "andres.gomez@example.com",
+        "customer_phone": "+57 311 555 0102",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Standard shipping",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": "CO123456789",
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T12:49:31.922Z",
+        "paid_at": "2026-10-29T12:49:31.936Z",
+        "created_at": "2026-10-29T12:49:31.922Z",
+        "updated_at": "2026-10-29T12:49:31.951Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "number": 1003,
+        "access_key_hash": "023b19c7aa50649d21dc730c775331ca43e74e0e04960cf5f517240aeaacc90e",
+        "status": "processing",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 166000,
+        "tax_minor": 22897,
+        "shipping_minor": 0,
+        "total_minor": 166000,
+        "customer_name": "Laura Martínez",
+        "customer_email": "laura.martinez@example.com",
+        "customer_phone": "+57 312 555 0103",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Envío estándar",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T12:49:31.967Z",
+        "paid_at": "2026-10-29T12:49:32.051Z",
+        "created_at": "2026-10-29T12:49:31.967Z",
+        "updated_at": "2026-10-29T12:49:32.061Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "d9b77833-786d-41cc-bbe0-442590b4669e",
+        "number": 1004,
+        "access_key_hash": "99a4b0692edb19c553e3920ebbeb4ec15d9edf11dad316c0e0b1025068af7427",
+        "status": "pending_payment",
+        "payment_method": "whatsapp",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 85000,
+        "tax_minor": 11724,
+        "shipping_minor": 0,
+        "total_minor": 85000,
+        "customer_name": "Sofía Herrera",
+        "customer_email": "sofia.herrera@example.com",
+        "customer_phone": "+57 313 555 0104",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Workshop pickup",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T12:49:32.079Z",
+        "paid_at": null,
+        "created_at": "2026-10-29T12:49:32.079Z",
+        "updated_at": "2026-10-29T12:49:32.079Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "915fb3ff-f2ef-4daf-b846-5becc5dccd34",
+        "number": 1005,
+        "access_key_hash": "06b15798edd1b56422ce5a24f288ead9e5def96dbf964942aee873228e578cfa",
+        "status": "paid",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 162000,
+        "tax_minor": 22345,
+        "shipping_minor": 0,
+        "total_minor": 162000,
+        "customer_name": "Daniel Pérez",
+        "customer_email": "daniel.perez@example.com",
+        "customer_phone": "+57 314 555 0105",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Envío estándar",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T12:49:32.103Z",
+        "paid_at": "2026-10-29T12:49:32.117Z",
+        "created_at": "2026-10-29T12:49:32.103Z",
+        "updated_at": "2026-10-29T12:49:32.117Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "46f5d43a-2e14-4325-9904-03e102f8440f",
+        "number": 1006,
+        "access_key_hash": "8cb7eef60fe68d40277ad9f40b105ae26646bc0d9e11388c023890aefd76555b",
+        "status": "cancelled",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 78000,
+        "tax_minor": 10759,
+        "shipping_minor": 0,
+        "total_minor": 78000,
+        "customer_name": "Valentina Cruz",
+        "customer_email": "valentina.cruz@example.com",
+        "customer_phone": "+57 315 555 0106",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Workshop pickup",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 1,
+        "expires_at": "2026-11-01T12:49:32.144Z",
+        "paid_at": null,
+        "created_at": "2026-10-29T12:49:32.144Z",
+        "updated_at": "2026-10-29T12:49:32.156Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      }
+    ],
+    "order_items": [
+      {
+        "id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433:0",
+        "order_id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "product_id": "prod-aretes-laton",
+        "variant_id": "var-aretes-laton",
+        "product_name": "Aretes de latón",
+        "variant_label": "",
+        "sku": "ARELAT-U",
+        "image_media_id": null,
+        "unit_price_minor": 18000,
+        "unit_cost_minor": 6000,
+        "quantity": 2,
+        "line_total_minor": 36000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 4966,
+        "stock_tracked": 1
+      },
+      {
+        "id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433:1",
+        "order_id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "product_id": "prod-pantalon-lino",
+        "variant_id": "var-pantalon-lino-26",
+        "product_name": "Pantalón de lino",
+        "variant_label": "26",
+        "sku": "PANTALONLINO-26",
+        "image_media_id": null,
+        "unit_price_minor": 59000,
+        "unit_cost_minor": 23000,
+        "quantity": 1,
+        "line_total_minor": 59000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 8138,
+        "stock_tracked": 1
+      },
+      {
+        "id": "105e1c10-9098-4b4c-9097-bd6808b691df:0",
+        "order_id": "105e1c10-9098-4b4c-9097-bd6808b691df",
+        "product_id": "prod-blusa-lino",
+        "variant_id": "var-blusa-lino-ch-arena",
+        "product_name": "Linen blouse",
+        "variant_label": "S / Sand",
+        "sku": "BLULIN-CH-ARE",
+        "image_media_id": null,
+        "unit_price_minor": 42000,
+        "unit_cost_minor": 17000,
+        "quantity": 1,
+        "line_total_minor": 42000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 5793,
+        "stock_tracked": 1
+      },
+      {
+        "id": "04b193ac-d784-4285-ad23-407e43cfd8e7:0",
+        "order_id": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "product_id": "prod-blusa-manta",
+        "variant_id": "var-blusa-manta-ch",
+        "product_name": "Blusa de manta bordada",
+        "variant_label": "CH",
+        "sku": "BLUSAMANTA-CH",
+        "image_media_id": null,
+        "unit_price_minor": 38000,
+        "unit_cost_minor": 15000,
+        "quantity": 2,
+        "line_total_minor": 76000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 10483,
+        "stock_tracked": 1
+      },
+      {
+        "id": "04b193ac-d784-4285-ad23-407e43cfd8e7:1",
+        "order_id": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "product_id": "prod-short-mezclilla",
+        "variant_id": "var-short-mezclilla-26",
+        "product_name": "Short de mezclilla",
+        "variant_label": "26",
+        "sku": "SHORTMEZCLILLA-26",
+        "image_media_id": null,
+        "unit_price_minor": 45000,
+        "unit_cost_minor": 18000,
+        "quantity": 2,
+        "line_total_minor": 90000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 12414,
+        "stock_tracked": 1
+      },
+      {
+        "id": "d9b77833-786d-41cc-bbe0-442590b4669e:0",
+        "order_id": "d9b77833-786d-41cc-bbe0-442590b4669e",
+        "product_id": "prod-vestido-camisero",
+        "variant_id": "var-vestido-camisero-ch",
+        "product_name": "Shirt dress",
+        "variant_label": "S",
+        "sku": "VESTIDOCAMISERO-CH",
+        "image_media_id": null,
+        "unit_price_minor": 85000,
+        "unit_cost_minor": 34000,
+        "quantity": 1,
+        "line_total_minor": 85000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 11724,
+        "stock_tracked": 1
+      },
+      {
+        "id": "915fb3ff-f2ef-4daf-b846-5becc5dccd34:0",
+        "order_id": "915fb3ff-f2ef-4daf-b846-5becc5dccd34",
+        "product_id": "prod-bolsa-palma",
+        "variant_id": "var-bolsa-palma",
+        "product_name": "Bolsa de palma",
+        "variant_label": "",
+        "sku": "BOLPAL-U",
+        "image_media_id": null,
+        "unit_price_minor": 54000,
+        "unit_cost_minor": 22000,
+        "quantity": 3,
+        "line_total_minor": 162000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 22345,
+        "stock_tracked": 1
+      },
+      {
+        "id": "46f5d43a-2e14-4325-9904-03e102f8440f:0",
+        "order_id": "46f5d43a-2e14-4325-9904-03e102f8440f",
+        "product_id": "prod-vestido-midi",
+        "variant_id": "var-vestido-midi-ch",
+        "product_name": "Linen midi dress",
+        "variant_label": "S",
+        "sku": "VESTIDOMIDI-CH",
+        "image_media_id": null,
+        "unit_price_minor": 78000,
+        "unit_cost_minor": 31000,
+        "quantity": 1,
+        "line_total_minor": 78000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 10759,
+        "stock_tracked": 1
+      }
+    ],
+    "order_events": [
+      {
+        "id": "5a0b5b69-3c5b-4185-900c-86e36e75f2ff",
+        "order_id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:31.863Z"
+      },
+      {
+        "id": "1aa1db73-afbb-43dd-b6f9-5fda10194ee6",
+        "order_id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:31.884Z"
+      },
+      {
+        "id": "7ee23691-ef99-4414-9a8a-4ac7e8e2ee19",
+        "order_id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:31.892Z"
+      },
+      {
+        "id": "123ad95a-a2cb-4a7a-ba2a-ef8b6ff5d476",
+        "order_id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "type": "status_shipped",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:31.899Z"
+      },
+      {
+        "id": "96676ebb-1f23-4a87-ad9f-9dcef286f05d",
+        "order_id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "type": "status_delivered",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:31.905Z"
+      },
+      {
+        "id": "16357273-0bff-49db-8e6a-5ee67f6ec1be",
+        "order_id": "105e1c10-9098-4b4c-9097-bd6808b691df",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:31.922Z"
+      },
+      {
+        "id": "c40f484f-9db9-4430-a049-c689fcf84b36",
+        "order_id": "105e1c10-9098-4b4c-9097-bd6808b691df",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:31.936Z"
+      },
+      {
+        "id": "cde27e19-05d5-4e54-99d6-bb8a1446e3dd",
+        "order_id": "105e1c10-9098-4b4c-9097-bd6808b691df",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:31.943Z"
+      },
+      {
+        "id": "49dcc819-150f-4e5a-a3db-a10b80b1fa06",
+        "order_id": "105e1c10-9098-4b4c-9097-bd6808b691df",
+        "type": "status_shipped",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:31.951Z"
+      },
+      {
+        "id": "4fb3bc12-022f-4d07-8669-655cd31f0b8c",
+        "order_id": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:31.967Z"
+      },
+      {
+        "id": "94150808-497f-4881-a3d0-36f807b32498",
+        "order_id": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:32.051Z"
+      },
+      {
+        "id": "8d1f9b43-b958-460c-b5f6-746f6bc80271",
+        "order_id": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:32.061Z"
+      },
+      {
+        "id": "0ff86fc2-df69-4205-b226-2f8080a38269",
+        "order_id": "d9b77833-786d-41cc-bbe0-442590b4669e",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:32.079Z"
+      },
+      {
+        "id": "1b2d2e97-5c45-442e-ae3b-100f1ed1de37",
+        "order_id": "915fb3ff-f2ef-4daf-b846-5becc5dccd34",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:32.103Z"
+      },
+      {
+        "id": "a07de165-eb09-4a6b-aba1-30cae0bf7f00",
+        "order_id": "915fb3ff-f2ef-4daf-b846-5becc5dccd34",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:32.117Z"
+      },
+      {
+        "id": "1da988fd-2cca-47e2-924b-fea3a6937780",
+        "order_id": "46f5d43a-2e14-4325-9904-03e102f8440f",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T12:49:32.144Z"
+      },
+      {
+        "id": "128d914e-2bbf-48f0-8208-61c412bb81da",
+        "order_id": "46f5d43a-2e14-4325-9904-03e102f8440f",
+        "type": "status_cancelled",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T12:49:32.156Z"
+      }
+    ],
+    "order_counter": [
+      {
+        "id": 1,
+        "last_number": 1006
+      }
+    ],
+    "invoice_counters": [
+      {
+        "series": "A",
+        "last_number": 4
+      }
+    ],
+    "invoices": [
+      {
+        "id": "e4216b5c-975b-4bf0-ac38-a46f5e8e3446",
+        "order_id": "cb3e00d0-f247-4a7e-90f6-1f45ee9ce433",
+        "series": "A",
+        "number": 1,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 95000,
+        "tax_minor": 13104,
+        "shipping_minor": 0,
+        "total_minor": 95000,
+        "seller_json": "{\"legalName\":\"Casa Mina\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Libertad 100, Col. Americana, Guadalajara, Jal.\",\"phone\":\"+52 33 0000 0000\",\"email\":\"facturacion@casamina.mx\"}",
+        "buyer_json": "{\"name\":\"Camila Torres\",\"email\":\"camila.torres@example.com\",\"phone\":\"+57 300 555 0101\",\"taxId\":null,\"legalName\":null,\"address\":{}}",
+        "lines_json": "[{\"description\":\"Aretes de latón\",\"quantity\":2,\"unitPriceMinor\":18000,\"taxRateBp\":1600,\"taxMinor\":4966,\"lineTotalMinor\":36000},{\"description\":\"Pantalón de lino (26)\",\"quantity\":1,\"unitPriceMinor\":59000,\"taxRateBp\":1600,\"taxMinor\":8138,\"lineTotalMinor\":59000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":81896,\"taxMinor\":13104}]",
+        "pdf_key": "invoices/e4216b5c-975b-4bf0-ac38-a46f5e8e3446.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T12:49:32.000Z",
+        "updated_at": "2026-10-29T12:49:35.141Z"
+      },
+      {
+        "id": "ff51f40d-ce6d-41bb-8acd-b1c4fcbce0d0",
+        "order_id": "105e1c10-9098-4b4c-9097-bd6808b691df",
+        "series": "A",
+        "number": 2,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 42000,
+        "tax_minor": 5793,
+        "shipping_minor": 9900,
+        "total_minor": 51900,
+        "seller_json": "{\"legalName\":\"Casa Mina\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Libertad 100, Col. Americana, Guadalajara, Jal.\",\"phone\":\"+52 33 0000 0000\",\"email\":\"facturacion@casamina.mx\"}",
+        "buyer_json": "{\"name\":\"Andrés Gómez\",\"email\":\"andres.gomez@example.com\",\"phone\":\"+57 311 555 0102\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Linen blouse (S / Sand)\",\"quantity\":1,\"unitPriceMinor\":42000,\"taxRateBp\":1600,\"taxMinor\":5793,\"lineTotalMinor\":42000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":36207,\"taxMinor\":5793}]",
+        "pdf_key": "invoices/ff51f40d-ce6d-41bb-8acd-b1c4fcbce0d0.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T12:49:32.025Z",
+        "updated_at": "2026-10-29T12:49:35.742Z"
+      },
+      {
+        "id": "bc96a648-87a7-4c5b-ab50-b9527f3c1ff6",
+        "order_id": "04b193ac-d784-4285-ad23-407e43cfd8e7",
+        "series": "A",
+        "number": 3,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 166000,
+        "tax_minor": 22897,
+        "shipping_minor": 0,
+        "total_minor": 166000,
+        "seller_json": "{\"legalName\":\"Casa Mina\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Libertad 100, Col. Americana, Guadalajara, Jal.\",\"phone\":\"+52 33 0000 0000\",\"email\":\"facturacion@casamina.mx\"}",
+        "buyer_json": "{\"name\":\"Laura Martínez\",\"email\":\"laura.martinez@example.com\",\"phone\":\"+57 312 555 0103\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Blusa de manta bordada (CH)\",\"quantity\":2,\"unitPriceMinor\":38000,\"taxRateBp\":1600,\"taxMinor\":10483,\"lineTotalMinor\":76000},{\"description\":\"Short de mezclilla (26)\",\"quantity\":2,\"unitPriceMinor\":45000,\"taxRateBp\":1600,\"taxMinor\":12414,\"lineTotalMinor\":90000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":143103,\"taxMinor\":22897}]",
+        "pdf_key": "invoices/bc96a648-87a7-4c5b-ab50-b9527f3c1ff6.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T12:49:35.758Z",
+        "updated_at": "2026-10-29T12:49:41.923Z"
+      },
+      {
+        "id": "f97ac9da-4355-41a8-9ce1-ea77bb025ec3",
+        "order_id": "915fb3ff-f2ef-4daf-b846-5becc5dccd34",
+        "series": "A",
+        "number": 4,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 162000,
+        "tax_minor": 22345,
+        "shipping_minor": 0,
+        "total_minor": 162000,
+        "seller_json": "{\"legalName\":\"Casa Mina\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Libertad 100, Col. Americana, Guadalajara, Jal.\",\"phone\":\"+52 33 0000 0000\",\"email\":\"facturacion@casamina.mx\"}",
+        "buyer_json": "{\"name\":\"Daniel Pérez\",\"email\":\"daniel.perez@example.com\",\"phone\":\"+57 314 555 0105\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Bolsa de palma\",\"quantity\":3,\"unitPriceMinor\":54000,\"taxRateBp\":1600,\"taxMinor\":22345,\"lineTotalMinor\":162000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":139655,\"taxMinor\":22345}]",
+        "pdf_key": "invoices/f97ac9da-4355-41a8-9ce1-ea77bb025ec3.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T12:49:35.793Z",
+        "updated_at": "2026-10-29T12:49:42.816Z"
+      }
+    ],
+    "email_templates": [],
+    "pages": [
+      {
+        "id": "home",
+        "slug": "home",
+        "kind": "system",
+        "title_json": "{\"es\":\"Inicio\",\"en\":\"Home\"}",
+        "seo_title_json": "{\"es\":\"\",\"en\":\"\"}",
+        "seo_description_json": "{\"es\":\"\",\"en\":\"\"}",
+        "sections_json": "[{\"id\":\"home-hero\",\"type\":\"hero_carousel\",\"enabled\":true,\"config\":{\"slides\":[{\"image\":\"e34eb3cf-4569-4090-8232-2746ae4a56d3\",\"title\":{\"es\":\"Ropa de diario, bien hecha\",\"en\":\"Everyday clothes, properly made\"},\"subtitle\":{\"es\":\"Tiradas de 30 piezas hechas en Guadalajara.\",\"en\":\"Runs of 30 pieces, made in Guadalajara.\"},\"cta\":{\"href\":\"/shop\",\"label\":{\"es\":\"Ver el catálogo\",\"en\":\"See the catalogue\"}}},{\"image\":\"efcd1db3-3727-43fe-b47a-5ab35a2873ec\",\"title\":{\"es\":\"Look de otoño\",\"en\":\"The autumn look\"},\"subtitle\":{\"es\":\"Blusa de lino y pantalón recto.\",\"en\":\"Linen blouse and straight trousers.\"},\"cta\":{\"href\":\"/shop\",\"label\":{\"es\":\"Ver las piezas\",\"en\":\"See the pieces\"}}}],\"autoplaySeconds\":7,\"layout\":\"scene\"}},{\"id\":\"home-look\",\"type\":\"featured_products\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Las piezas de este look\",\"en\":\"The pieces of this look\"},\"source\":\"featured\",\"categoryIds\":[],\"productIds\":[],\"limit\":3,\"layout\":\"list\"}},{\"id\":\"home-new\",\"type\":\"featured_products\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Lo nuevo\",\"en\":\"New in\"},\"source\":\"newest\",\"categoryIds\":[],\"productIds\":[],\"limit\":8,\"layout\":\"gallery\"}},{\"id\":\"home-categories\",\"type\":\"category_grid\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Qué hay\",\"en\":\"What there is\"},\"categoryIds\":[],\"layout\":\"links\"}},{\"id\":\"home-badges\",\"type\":\"trust_badges\",\"enabled\":true,\"config\":{\"items\":[{\"icon\":\"truck\",\"text\":{\"es\":\"Envíos a todo México\",\"en\":\"Shipping across Mexico\"}},{\"icon\":\"return\",\"text\":{\"es\":\"Cambios en 10 días\",\"en\":\"Exchanges within 10 days\"}},{\"icon\":\"lock\",\"text\":{\"es\":\"Pago en OXXO o transferencia\",\"en\":\"Pay at OXXO or by transfer\"}},{\"icon\":\"chat\",\"text\":{\"es\":\"Guadalajara, desde 2019\",\"en\":\"Guadalajara, since 2019\"}}],\"layout\":\"line\"}},{\"id\":\"home-testimonials\",\"type\":\"testimonials\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Lo que nos escriben\",\"en\":\"What people write to us\"},\"includeGoogle\":false,\"includeManual\":true,\"limit\":3,\"layout\":\"quiet\"}},{\"id\":\"home-whatsapp\",\"type\":\"whatsapp_cta\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"¿Dudas con la talla?\",\"en\":\"Unsure about the size?\"},\"text\":{\"es\":\"Mándanos tus medidas y te decimos cuál pedir.\",\"en\":\"Send us your measurements and we will tell you which to order.\"},\"buttonLabel\":{\"es\":\"Escribir por WhatsApp\",\"en\":\"Chat on WhatsApp\"},\"layout\":\"line\"}}]",
+        "is_published": 1,
+        "updated_at": "2026-10-29T17:54:48.221Z"
+      }
+    ],
+    "testimonials": [
+      {
+        "id": "b2262bee-6770-4044-8a8d-671f5a90952a",
+        "author_name": "Camila T.",
+        "rating": 5,
+        "body": "Pedí la blusa de lino un martes y llegó el jueves. La tela es mejor de lo que esperaba.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 0,
+        "created_at": "2026-10-29T12:49:33.462Z"
+      },
+      {
+        "id": "c8ae16b2-45f6-4296-a65c-1818170b74e8",
+        "author_name": "Daniela R.",
+        "rating": 5,
+        "body": "No estaba mi talla y me la hicieron en diez días, sin cobrarme más.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 1,
+        "created_at": "2026-10-29T12:49:33.475Z"
+      },
+      {
+        "id": "0f793edf-e0d1-424c-93fc-7476f7dc986c",
+        "author_name": "Sofía M.",
+        "rating": 4,
+        "body": "El pantalón recto queda justo como en la foto. Me gustaría que hubiera más colores.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 2,
+        "created_at": "2026-10-29T12:49:33.489Z"
+      }
+    ],
+    "daily_metrics": []
+  },
+  "media": [
+    "media/e34eb3cf-4569-4090-8232-2746ae4a56d3/1024.jpg",
+    "media/efcd1db3-3727-43fe-b47a-5ab35a2873ec/1024.jpg",
+    "media/dd7296ad-dc09-433c-b76d-40af51115e3b/1024.jpg",
+    "media/0db48e4c-9383-4cb6-8a28-83ac4e66aeb7/1024.jpg",
+    "media/e093bb49-f49c-4ea6-b254-c991e0c9f409/1024.jpg",
+    "media/f35378c9-0fa1-49f5-b637-291cc44cde4c/1024.jpg",
+    "media/f1e0ce4b-e911-494a-9a76-dec242f9261e/1024.jpg",
+    "media/0171f214-84a1-40bf-a547-f82f927f0985/1024.jpg",
+    "media/d4f0ac68-10c3-435e-acad-839ee25ea60d/1024.jpg",
+    "media/e104181b-95c3-47c9-9f71-456abe3901d3/1024.jpg",
+    "media/35dfeed2-7ab5-4601-8f44-7334d4411f05/1024.jpg",
+    "media/a45e439a-3d49-4cdc-810d-8b7be824ca82/1024.jpg",
+    "media/e88c32ec-f23e-46d3-9355-0cc5b12c9f22/1024.jpg",
+    "media/fde61bc2-360c-4090-8faa-c7eb28878055/1024.jpg",
+    "media/52941597-c1de-40ce-b805-30bd701c30ca/1024.jpg",
+    "media/4c7e936e-50f5-4b6b-bbd5-852a3f05ec46/1024.jpg",
+    "media/10f3532a-0380-4ba6-a75a-c8397a21a2bc/1024.jpg",
+    "media/f0832c05-e9b5-46e8-a576-8267f83ec4a9/1024.jpg"
+  ]
+}

@@ -1115,3 +1115,11 @@ Measured on a copy of the demo database grown to 5,000 products (SQLite, so quer
 - **What still carries packaging on purpose:** the two coffee bags, which came back clean, because a bag of beans is what arrives and a shopper wants to see it.
 - **The prompts are one source.** `photos.mjs --prompts` prints them from the module; the generation call only transports them. A subject fixed in the module cannot regress on the next run.
 - **Only Comal has photographs.** Casa Mina and Raíz still carry the drawn placeholders: their prompt sets are not written yet. The work is mechanical now — write the subjects, generate, fetch, apply — but it is not done.
+
+## 2026-10-29 — All three demos have photographs, and three snapshots to prove it
+
+- **Thirty-five more pictures**, on the same terms as Comal's: generated with Workers AI on the owner's account, the subjects written into each vertical module so a later run cannot regress them.
+- **Garments were the risk, and the flat lay answered it.** A blouse described as worn comes back with one long sleeve and one short; folded flat on paper, stacked, or on a wooden hanger, it comes back right. That is also how a small workshop photographs its own stock, so the constraint and the look agree. Casa Mina's hero is its cutting table seen from above.
+- **Raíz needed no trick.** Plain amber and clear glass photograph cleanly, and the creams and balms are shown open — contents, not packaging — so nothing has a surface to invent a label on.
+- **Orphaned media would have travelled.** Every `--apply` uploads new assets and leaves the replaced ones behind; Comal's library had grown to 121 images for eighteen photographs, and all of them would have gone into the snapshot and been copied to R2 on every publish. `--apply` now deletes any asset nothing points at, checking the JSON columns too, because a hero lives inside a page's sections and the logo inside a settings group and neither is a foreign key. The three snapshots carry 18, 17 and 18 images, which is exactly what each store has.
+- **The snapshots are committed**: `46492d2d…` (Casa Mina, 271 rows), `08c8a039…` (Raíz, 187), `948ad92f…` (Comal, 197).

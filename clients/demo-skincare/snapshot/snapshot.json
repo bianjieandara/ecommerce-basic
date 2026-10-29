@@ -1,0 +1,2084 @@
+{
+  "version": "08c8a0398124e94d",
+  "takenAt": "2026-10-29T18:00:49.788Z",
+  "accountId": "demo-account",
+  "tables": {
+    "settings": [
+      {
+        "group_key": "general",
+        "value_json": "{\"storeName\":\"Raíz\",\"logoMediaId\":null,\"faviconMediaId\":null,\"defaultLocale\":\"es\",\"currency\":\"MXN\",\"country\":\"MX\",\"timezone\":\"America/Mexico_City\"}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "tax",
+        "value_json": "{\"pricesIncludeTax\":true,\"defaultRateBp\":1600,\"label\":{\"es\":\"IVA\",\"en\":\"VAT\"},\"taxShipping\":false,\"showBreakdown\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "catalog",
+        "value_json": "{\"pageSize\":24,\"newDays\":30,\"defaultSort\":\"featured\",\"showOutOfStock\":\"last\",\"showStockOnProduct\":\"low\",\"lowStockDisplayThreshold\":5}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "inventory",
+        "value_json": "{\"defaultLowStockThreshold\":3,\"lowStockAlerts\":true,\"lowStockAlertChannels\":[\"email\",\"whatsapp\"],\"backInStockEnabled\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "contact",
+        "value_json": "{\"email\":\"hola@raiz.mx\",\"phone\":\"+52 55 0000 0000\",\"whatsappNumber\":\"525500000000\",\"whatsappMessage\":{\"es\":\"Hola, quiero saber cuál producto me conviene para mi tipo de piel.\",\"en\":\"Hi, I would like to know which product suits my skin.\"},\"showWhatsappFloat\":true,\"address\":\"Calle Córdoba 50, Col. Roma Norte, Ciudad de México\",\"mapsEmbedUrl\":\"\",\"openingHours\":{\"es\":\"Pedidos en línea todos los días; taller de lunes a jueves\",\"en\":\"Online orders every day; workshop Monday to Thursday\"},\"social\":{}}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "checkout",
+        "value_json": "{\"enabledMethods\":[\"dlocalgo\",\"paypal\",\"whatsapp\",\"bank_transfer\"],\"bankTransferInstructions\":{\"es\":\"Transferencia SPEI a CLABE 000000000000000000, a nombre de Raíz. Manda el comprobante por WhatsApp.\",\"en\":\"SPEI transfer to CLABE 000000000000000000, in the name of Raíz. Send the receipt on WhatsApp.\"},\"cashOnDeliveryNote\":{\"es\":\"\",\"en\":\"\"},\"onlineHoldMinutes\":45,\"manualAutoCancelDays\":3,\"paypalSettlementCurrency\":null,\"paypalExchangeRate\":null,\"orderNotificationEmail\":\"pedidos@raiz.mx\",\"whatsappOptInDefault\":false}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "invoicing",
+        "value_json": "{\"enabled\":true,\"autoIssue\":\"on_paid\",\"series\":\"A\",\"legalName\":\"Raíz\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Córdoba 50, Col. Roma Norte, Ciudad de México\",\"phone\":\"+52 55 0000 0000\",\"email\":\"facturacion@raiz.mx\",\"footerNotes\":{\"es\":\"Cada lote lleva su fecha de elaboración en la etiqueta.\",\"en\":\"Every batch carries its making date on the label.\"},\"attachPdf\":true,\"askBuyerTaxId\":true,\"sendPdfByWhatsapp\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "seo",
+        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Raíz\",\"en\":\"%s | Raíz\"},\"defaultDescription\":{\"es\":\"Cosmética natural hecha en lotes de 40 piezas, con todos los ingredientes en la etiqueta. Envíos a todo México.\",\"en\":\"Natural skincare made in batches of 40, with every ingredient on the label. Shipping across Mexico.\"},\"ogImageMediaId\":null}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "theme",
+        "value_json": "{\"colorPrimary\":\"#1B1C18\",\"colorOnPrimary\":\"#FBFAF6\",\"colorAccent\":\"#4A5346\",\"colorBackground\":\"#FBFAF6\",\"colorSurface\":\"#EFEEE6\",\"colorText\":\"#1B1C18\",\"fontPreset\":\"editorial\",\"radius\":\"none\"}",
+        "updated_at": "2026-10-29T13:17:46.982Z"
+      },
+      {
+        "group_key": "marketing",
+        "value_json": "{\"metaPixelId\":\"\",\"metaCapiEnabled\":false,\"metaTestEventCode\":\"\",\"ga4MeasurementId\":\"\",\"feedEnabled\":true,\"feedBrand\":\"\",\"feedColorAttribute\":\"color\",\"feedSizeAttribute\":\"size\",\"consentBannerMode\":\"always\"}",
+        "updated_at": "2026-10-29T13:17:46.996Z"
+      }
+    ],
+    "shipping_methods": [
+      {
+        "id": "ship-flat",
+        "kind": "flat",
+        "name_json": "{\"es\":\"Envío estándar\",\"en\":\"Standard shipping\"}",
+        "description_json": "{\"es\":\"Entrega en 2 a 5 días hábiles\",\"en\":\"Delivered in 2 to 5 business days\"}",
+        "price_minor": 9900,
+        "free_over_minor": 99900,
+        "is_active": 1,
+        "position": 1
+      },
+      {
+        "id": "ship-pickup",
+        "kind": "pickup",
+        "name_json": "{\"es\":\"Recoger en el taller\",\"en\":\"Workshop pickup\"}",
+        "description_json": "{\"es\":\"Sin costo, de lunes a viernes\",\"en\":\"Free, Monday to Friday\"}",
+        "price_minor": 0,
+        "free_over_minor": null,
+        "is_active": 1,
+        "position": 2
+      }
+    ],
+    "media_assets": [
+      {
+        "id": "bbf420ca-7dfa-4a16-ae0c-1474fd600efa",
+        "original_name": "hero-0.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/bbf420ca-7dfa-4a16-ae0c-1474fd600efa/1024.jpg\",\"bytes\":437501}]",
+        "alt_json": "{}",
+        "bytes_total": 437501,
+        "created_at": "2026-10-29T17:55:52.384Z"
+      },
+      {
+        "id": "0dac4be4-5419-4395-ac50-41ac119d60d6",
+        "original_name": "cat-cuerpo.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/0dac4be4-5419-4395-ac50-41ac119d60d6/1024.jpg\",\"bytes\":305576}]",
+        "alt_json": "{}",
+        "bytes_total": 305576,
+        "created_at": "2026-10-29T17:55:52.403Z"
+      },
+      {
+        "id": "dbc74754-e71e-49d0-99d6-75140a5b59fd",
+        "original_name": "cat-kits.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/dbc74754-e71e-49d0-99d6-75140a5b59fd/1024.jpg\",\"bytes\":393853}]",
+        "alt_json": "{}",
+        "bytes_total": 393853,
+        "created_at": "2026-10-29T17:55:53.713Z"
+      },
+      {
+        "id": "2fb63095-a875-4a79-bbf8-86cdd0936701",
+        "original_name": "cat-labios.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/2fb63095-a875-4a79-bbf8-86cdd0936701/1024.jpg\",\"bytes\":284874}]",
+        "alt_json": "{}",
+        "bytes_total": 284874,
+        "created_at": "2026-10-29T17:55:55.031Z"
+      },
+      {
+        "id": "55125178-1d71-4d4d-b1e5-699220bf9dfa",
+        "original_name": "cat-rostro.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/55125178-1d71-4d4d-b1e5-699220bf9dfa/1024.jpg\",\"bytes\":320459}]",
+        "alt_json": "{}",
+        "bytes_total": 320459,
+        "created_at": "2026-10-29T17:55:56.341Z"
+      },
+      {
+        "id": "a8432925-d189-4ee6-b75a-db7ea80bcc6d",
+        "original_name": "prod-aceite-almendra.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/a8432925-d189-4ee6-b75a-db7ea80bcc6d/1024.jpg\",\"bytes\":357950}]",
+        "alt_json": "{}",
+        "bytes_total": 357950,
+        "created_at": "2026-10-29T17:55:57.675Z"
+      },
+      {
+        "id": "83628e51-e585-4eae-a34b-e5d7b45cb4d9",
+        "original_name": "prod-aceite-rosa.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/83628e51-e585-4eae-a34b-e5d7b45cb4d9/1024.jpg\",\"bytes\":234767}]",
+        "alt_json": "{}",
+        "bytes_total": 234767,
+        "created_at": "2026-10-29T17:56:00.296Z"
+      },
+      {
+        "id": "69574a1e-57d9-4f70-8429-1ddbccbfced1",
+        "original_name": "prod-balsamo-labios.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/69574a1e-57d9-4f70-8429-1ddbccbfced1/1024.jpg\",\"bytes\":270284}]",
+        "alt_json": "{}",
+        "bytes_total": 270284,
+        "created_at": "2026-10-29T17:56:02.867Z"
+      },
+      {
+        "id": "7d43e748-98a9-416e-b5c9-acfb38aca487",
+        "original_name": "prod-crema-nopal.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/7d43e748-98a9-416e-b5c9-acfb38aca487/1024.jpg\",\"bytes\":272300}]",
+        "alt_json": "{}",
+        "bytes_total": 272300,
+        "created_at": "2026-10-29T17:56:05.476Z"
+      },
+      {
+        "id": "fca3bd80-034f-410b-898b-9c22ffab39f8",
+        "original_name": "prod-exfoliante-cafe.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/fca3bd80-034f-410b-898b-9c22ffab39f8/1024.jpg\",\"bytes\":497154}]",
+        "alt_json": "{}",
+        "bytes_total": 497154,
+        "created_at": "2026-10-29T17:56:08.064Z"
+      },
+      {
+        "id": "30eddc1f-7fb2-4b7d-8ed7-2eceb95e432b",
+        "original_name": "prod-jabon-avena.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/30eddc1f-7fb2-4b7d-8ed7-2eceb95e432b/1024.jpg\",\"bytes\":351136}]",
+        "alt_json": "{}",
+        "bytes_total": 351136,
+        "created_at": "2026-10-29T17:56:10.644Z"
+      },
+      {
+        "id": "84d62166-8bf4-44bb-bb78-fd93d69813de",
+        "original_name": "prod-kit-esencial.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/84d62166-8bf4-44bb-bb78-fd93d69813de/1024.jpg\",\"bytes\":285409}]",
+        "alt_json": "{}",
+        "bytes_total": 285409,
+        "created_at": "2026-10-29T17:56:13.219Z"
+      },
+      {
+        "id": "26556527-6e9d-4db8-84c0-d9f392edcf05",
+        "original_name": "prod-kit-regalo.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/26556527-6e9d-4db8-84c0-d9f392edcf05/1024.jpg\",\"bytes\":500553}]",
+        "alt_json": "{}",
+        "bytes_total": 500553,
+        "created_at": "2026-10-29T17:56:15.833Z"
+      },
+      {
+        "id": "ef392306-07ed-457e-9fd5-58d46ff26c14",
+        "original_name": "prod-kit-viaje.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/ef392306-07ed-457e-9fd5-58d46ff26c14/1024.jpg\",\"bytes\":361368}]",
+        "alt_json": "{}",
+        "bytes_total": 361368,
+        "created_at": "2026-10-29T17:56:18.376Z"
+      },
+      {
+        "id": "9509b5a0-3a94-4425-b088-97f79c1bdf80",
+        "original_name": "prod-limpiador-avena.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/9509b5a0-3a94-4425-b088-97f79c1bdf80/1024.jpg\",\"bytes\":319382}]",
+        "alt_json": "{}",
+        "bytes_total": 319382,
+        "created_at": "2026-10-29T17:56:20.974Z"
+      },
+      {
+        "id": "40fdda14-9865-4f78-9449-7112dac1bc3e",
+        "original_name": "prod-manteca-cacao.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/40fdda14-9865-4f78-9449-7112dac1bc3e/1024.jpg\",\"bytes\":279453}]",
+        "alt_json": "{}",
+        "bytes_total": 279453,
+        "created_at": "2026-10-29T17:56:23.573Z"
+      },
+      {
+        "id": "b851179e-dcc5-4c2b-8216-8f2b7f1d955c",
+        "original_name": "prod-tonico-manzanilla.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/b851179e-dcc5-4c2b-8216-8f2b7f1d955c/1024.jpg\",\"bytes\":235614}]",
+        "alt_json": "{}",
+        "bytes_total": 235614,
+        "created_at": "2026-10-29T17:56:26.131Z"
+      }
+    ],
+    "attributes": [
+      {
+        "id": "attr-tamano",
+        "code": "size",
+        "name_json": "{\"es\":\"Tamaño\",\"en\":\"Size\"}",
+        "display": "buttons",
+        "is_filterable": 1,
+        "position": 1
+      }
+    ],
+    "attribute_values": [
+      {
+        "id": "val-tamano-30",
+        "attribute_id": "attr-tamano",
+        "code": "30ml",
+        "label_json": "{\"es\":\"30 ml\",\"en\":\"30 ml\"}",
+        "color_hex": null,
+        "position": 1
+      },
+      {
+        "id": "val-tamano-50",
+        "attribute_id": "attr-tamano",
+        "code": "50ml",
+        "label_json": "{\"es\":\"50 ml\",\"en\":\"50 ml\"}",
+        "color_hex": null,
+        "position": 2
+      },
+      {
+        "id": "val-tamano-100",
+        "attribute_id": "attr-tamano",
+        "code": "100ml",
+        "label_json": "{\"es\":\"100 ml\",\"en\":\"100 ml\"}",
+        "color_hex": null,
+        "position": 3
+      },
+      {
+        "id": "val-tamano-200",
+        "attribute_id": "attr-tamano",
+        "code": "200ml",
+        "label_json": "{\"es\":\"200 ml\",\"en\":\"200 ml\"}",
+        "color_hex": null,
+        "position": 4
+      }
+    ],
+    "categories": [
+      {
+        "id": "cat-rostro",
+        "parent_id": null,
+        "image_media_id": "55125178-1d71-4d4d-b1e5-699220bf9dfa",
+        "position": 1,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-cuerpo",
+        "parent_id": null,
+        "image_media_id": "0dac4be4-5419-4395-ac50-41ac119d60d6",
+        "position": 2,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-labios",
+        "parent_id": null,
+        "image_media_id": "2fb63095-a875-4a79-bbf8-86cdd0936701",
+        "position": 3,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-kits",
+        "parent_id": null,
+        "image_media_id": "dbc74754-e71e-49d0-99d6-75140a5b59fd",
+        "position": 4,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      }
+    ],
+    "category_translations": [
+      {
+        "category_id": "cat-rostro",
+        "locale": "es",
+        "name": "Rostro",
+        "slug": "rostro",
+        "description": "Limpieza, tónico, aceite y crema"
+      },
+      {
+        "category_id": "cat-rostro",
+        "locale": "en",
+        "name": "Face",
+        "slug": "face",
+        "description": "Cleanser, toner, oil and cream"
+      },
+      {
+        "category_id": "cat-cuerpo",
+        "locale": "es",
+        "name": "Cuerpo",
+        "slug": "cuerpo",
+        "description": "Jabón, aceite y exfoliante"
+      },
+      {
+        "category_id": "cat-cuerpo",
+        "locale": "en",
+        "name": "Body",
+        "slug": "body",
+        "description": "Soap, oil and scrub"
+      },
+      {
+        "category_id": "cat-labios",
+        "locale": "es",
+        "name": "Labios",
+        "slug": "labios",
+        "description": "Bálsamos de cera de abeja y cacao"
+      },
+      {
+        "category_id": "cat-labios",
+        "locale": "en",
+        "name": "Lips",
+        "slug": "lips",
+        "description": "Beeswax and cocoa balms"
+      },
+      {
+        "category_id": "cat-kits",
+        "locale": "es",
+        "name": "Kits",
+        "slug": "kits",
+        "description": "La rutina completa, más barata junta"
+      },
+      {
+        "category_id": "cat-kits",
+        "locale": "en",
+        "name": "Kits",
+        "slug": "kits",
+        "description": "The whole routine, cheaper together"
+      }
+    ],
+    "products": [
+      {
+        "id": "prod-aceite-rosa",
+        "status": "active",
+        "base_price_minor": 32000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 32000,
+        "max_price_minor": 32000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 41,
+        "created_at": "2026-09-04T10:00:00Z",
+        "updated_at": "2026-09-04T10:00:00Z"
+      },
+      {
+        "id": "prod-tonico-manzanilla",
+        "status": "active",
+        "base_price_minor": 24000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 24000,
+        "max_price_minor": 24000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 27,
+        "created_at": "2026-08-19T10:00:00Z",
+        "updated_at": "2026-08-19T10:00:00Z"
+      },
+      {
+        "id": "prod-crema-nopal",
+        "status": "active",
+        "base_price_minor": 39000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 39000,
+        "max_price_minor": 39000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 19,
+        "created_at": "2026-10-02T10:00:00Z",
+        "updated_at": "2026-10-02T10:00:00Z"
+      },
+      {
+        "id": "prod-limpiador-avena",
+        "status": "active",
+        "base_price_minor": 28000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 28000,
+        "max_price_minor": 28000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 15,
+        "created_at": "2026-07-08T10:00:00Z",
+        "updated_at": "2026-07-08T10:00:00Z"
+      },
+      {
+        "id": "prod-jabon-avena",
+        "status": "active",
+        "base_price_minor": 9500,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 9500,
+        "max_price_minor": 9500,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 63,
+        "created_at": "2026-06-12T10:00:00Z",
+        "updated_at": "2026-06-12T10:00:00Z"
+      },
+      {
+        "id": "prod-aceite-almendra",
+        "status": "active",
+        "base_price_minor": 31000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 31000,
+        "max_price_minor": 31000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 22,
+        "created_at": "2026-09-26T10:00:00Z",
+        "updated_at": "2026-09-26T10:00:00Z"
+      },
+      {
+        "id": "prod-exfoliante-cafe",
+        "status": "active",
+        "base_price_minor": 26000,
+        "compare_at_price_minor": 31000,
+        "tax_rate_bp": null,
+        "min_price_minor": 26000,
+        "max_price_minor": 26000,
+        "is_on_sale": 1,
+        "is_featured": 0,
+        "sales_count": 18,
+        "created_at": "2026-05-21T10:00:00Z",
+        "updated_at": "2026-05-21T10:00:00Z"
+      },
+      {
+        "id": "prod-balsamo-labios",
+        "status": "active",
+        "base_price_minor": 8500,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 8500,
+        "max_price_minor": 8500,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 87,
+        "created_at": "2026-04-30T10:00:00Z",
+        "updated_at": "2026-04-30T10:00:00Z"
+      },
+      {
+        "id": "prod-manteca-cacao",
+        "status": "active",
+        "base_price_minor": 11000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 11000,
+        "max_price_minor": 11000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 34,
+        "created_at": "2026-08-02T10:00:00Z",
+        "updated_at": "2026-08-02T10:00:00Z"
+      },
+      {
+        "id": "prod-kit-esencial",
+        "status": "active",
+        "base_price_minor": 65000,
+        "compare_at_price_minor": 75000,
+        "tax_rate_bp": null,
+        "min_price_minor": 65000,
+        "max_price_minor": 65000,
+        "is_on_sale": 1,
+        "is_featured": 1,
+        "sales_count": 29,
+        "created_at": "2026-09-15T10:00:00Z",
+        "updated_at": "2026-09-15T10:00:00Z"
+      },
+      {
+        "id": "prod-kit-viaje",
+        "status": "active",
+        "base_price_minor": 42000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 42000,
+        "max_price_minor": 42000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 12,
+        "created_at": "2026-10-10T10:00:00Z",
+        "updated_at": "2026-10-10T10:00:00Z"
+      },
+      {
+        "id": "prod-kit-regalo",
+        "status": "active",
+        "base_price_minor": 78000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 78000,
+        "max_price_minor": 78000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 5,
+        "created_at": "2026-10-20T10:00:00Z",
+        "updated_at": "2026-10-20T10:00:00Z"
+      }
+    ],
+    "product_translations": [
+      {
+        "product_id": "prod-aceite-rosa",
+        "locale": "es",
+        "name": "Aceite de rosa mosqueta",
+        "slug": "aceite-de-rosa-mosqueta",
+        "short_description": "Prensado en frío, un solo ingrediente.",
+        "description_md": "Aceite de rosa mosqueta prensado en frío, sin mezclar con nada más. Tres gotas en la noche, sobre la piel todavía húmeda.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-aceite-rosa",
+        "locale": "en",
+        "name": "Rosehip face oil",
+        "slug": "rosehip-face-oil",
+        "short_description": "Cold pressed, a single ingredient.",
+        "description_md": "Cold-pressed rosehip oil, mixed with nothing else. Three drops at night, on skin that is still damp.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-tonico-manzanilla",
+        "locale": "es",
+        "name": "Tónico de manzanilla",
+        "slug": "tonico-de-manzanilla",
+        "short_description": "Sin alcohol, para piel reactiva.",
+        "description_md": "Infusión de manzanilla y hamamelis, sin alcohol. Se aplica con algodón después de limpiar, mañana y noche.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-tonico-manzanilla",
+        "locale": "en",
+        "name": "Chamomile toner",
+        "slug": "chamomile-toner",
+        "short_description": "Alcohol free, for reactive skin.",
+        "description_md": "An infusion of chamomile and witch hazel, with no alcohol. Apply with cotton after cleansing, morning and night.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-crema-nopal",
+        "locale": "es",
+        "name": "Crema de nopal",
+        "slug": "crema-de-nopal",
+        "short_description": "Hidrata sin dejar la cara grasosa.",
+        "description_md": "Crema ligera de nopal y aceite de jojoba. Hidrata sin brillo, así que sirve de base para el maquillaje.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-crema-nopal",
+        "locale": "en",
+        "name": "Nopal cream",
+        "slug": "nopal-cream",
+        "short_description": "Hydrates without leaving skin greasy.",
+        "description_md": "A light cream of nopal and jojoba oil. It hydrates without shine, so it works under makeup.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-limpiador-avena",
+        "locale": "es",
+        "name": "Limpiador de avena",
+        "slug": "limpiador-de-avena",
+        "short_description": "No reseca, no hace espuma.",
+        "description_md": "Limpiador cremoso de avena coloidal. No hace espuma, que es justo lo que deja la cara tirante.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-limpiador-avena",
+        "locale": "en",
+        "name": "Oat cleanser",
+        "slug": "oat-cleanser",
+        "short_description": "No drying, no foam.",
+        "description_md": "A creamy colloidal oat cleanser. It does not foam, which is what leaves skin tight.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-jabon-avena",
+        "locale": "es",
+        "name": "Jabón de avena y miel",
+        "slug": "jabon-de-avena-y-miel",
+        "short_description": "Saponificado en frío, 90 g.",
+        "description_md": "Jabón saponificado en frío con avena molida y miel de Cuetzalan. Cura seis semanas antes de salir a la venta.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-jabon-avena",
+        "locale": "en",
+        "name": "Oat and honey soap",
+        "slug": "oat-and-honey-soap",
+        "short_description": "Cold saponified, 90 g.",
+        "description_md": "Cold-saponified soap with ground oats and honey from Cuetzalan. It cures for six weeks before going on sale.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-aceite-almendra",
+        "locale": "es",
+        "name": "Aceite corporal de almendra",
+        "slug": "aceite-corporal-de-almendra",
+        "short_description": "Con lavanda, para después del baño.",
+        "description_md": "Aceite de almendra dulce con unas gotas de lavanda. Se pone con la piel húmeda, al salir de bañarse.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-aceite-almendra",
+        "locale": "en",
+        "name": "Almond body oil",
+        "slug": "almond-body-oil",
+        "short_description": "With lavender, for after the shower.",
+        "description_md": "Sweet almond oil with a few drops of lavender. Apply to damp skin, straight out of the shower.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-exfoliante-cafe",
+        "locale": "es",
+        "name": "Exfoliante de café",
+        "slug": "exfoliante-de-cafe",
+        "short_description": "Café de Veracruz, precio de salida.",
+        "description_md": "Exfoliante de café molido de Veracruz con azúcar y aceite de coco. Se acaba el lote, por eso el precio.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-exfoliante-cafe",
+        "locale": "en",
+        "name": "Coffee scrub",
+        "slug": "coffee-scrub",
+        "short_description": "Veracruz coffee, reduced.",
+        "description_md": "A scrub of ground Veracruz coffee with sugar and coconut oil. The batch is ending, which is why the price dropped.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-balsamo-labios",
+        "locale": "es",
+        "name": "Bálsamo de labios",
+        "slug": "balsamo-de-labios",
+        "short_description": "Cera de abeja, sin sabor.",
+        "description_md": "Bálsamo de cera de abeja y aceite de ricino, sin sabor ni color. El más vendido, y el más barato de probar.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-balsamo-labios",
+        "locale": "en",
+        "name": "Lip balm",
+        "slug": "lip-balm",
+        "short_description": "Beeswax, unflavoured.",
+        "description_md": "A balm of beeswax and castor oil, with no flavour or colour. Our best seller, and the cheapest thing to try.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-manteca-cacao",
+        "locale": "es",
+        "name": "Manteca de cacao",
+        "slug": "manteca-de-cacao",
+        "short_description": "Cacao de Tabasco, huele a chocolate.",
+        "description_md": "Manteca de cacao de Tabasco sin refinar, por eso huele a chocolate. Sirve igual para labios y para cutículas.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-manteca-cacao",
+        "locale": "en",
+        "name": "Cocoa butter balm",
+        "slug": "cocoa-butter-balm",
+        "short_description": "Tabasco cocoa, smells of chocolate.",
+        "description_md": "Unrefined cocoa butter from Tabasco, which is why it smells of chocolate. Works on lips and cuticles alike.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-kit-esencial",
+        "locale": "es",
+        "name": "Kit rutina esencial",
+        "slug": "kit-rutina-esencial",
+        "short_description": "Limpiador, tónico y aceite.",
+        "description_md": "Los tres pasos que de verdad hacen falta: limpiador de avena, tónico de manzanilla y aceite de rosa mosqueta de 30 ml.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-kit-esencial",
+        "locale": "en",
+        "name": "Essential routine kit",
+        "slug": "essential-routine-kit",
+        "short_description": "Cleanser, toner and oil.",
+        "description_md": "The three steps that actually matter: oat cleanser, chamomile toner and the 30 ml rosehip oil.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-kit-viaje",
+        "locale": "es",
+        "name": "Kit de viaje",
+        "slug": "kit-de-viaje",
+        "short_description": "Tamaños de mano, en bolsa de algodón.",
+        "description_md": "Versiones chicas de los cuatro básicos, todas por debajo de 100 ml, en una bolsa de algodón que se lava.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-kit-viaje",
+        "locale": "en",
+        "name": "Travel kit",
+        "slug": "travel-kit",
+        "short_description": "Carry-on sizes, in a cotton pouch.",
+        "description_md": "Small versions of the four basics, all under 100 ml, in a washable cotton pouch.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-kit-regalo",
+        "locale": "es",
+        "name": "Kit de regalo",
+        "slug": "kit-de-regalo",
+        "short_description": "Envuelto en papel, con nota a mano.",
+        "description_md": "Cinco productos envueltos en papel de estraza, con una nota escrita a mano. Dinos qué poner en la nota al pagar.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-kit-regalo",
+        "locale": "en",
+        "name": "Gift kit",
+        "slug": "gift-kit",
+        "short_description": "Paper wrapped, handwritten note.",
+        "description_md": "Five products wrapped in kraft paper with a handwritten note. Tell us what it should say at checkout.",
+        "seo_title": "",
+        "seo_description": ""
+      }
+    ],
+    "product_categories": [
+      {
+        "product_id": "prod-aceite-rosa",
+        "category_id": "cat-rostro"
+      },
+      {
+        "product_id": "prod-tonico-manzanilla",
+        "category_id": "cat-rostro"
+      },
+      {
+        "product_id": "prod-crema-nopal",
+        "category_id": "cat-rostro"
+      },
+      {
+        "product_id": "prod-limpiador-avena",
+        "category_id": "cat-rostro"
+      },
+      {
+        "product_id": "prod-jabon-avena",
+        "category_id": "cat-cuerpo"
+      },
+      {
+        "product_id": "prod-aceite-almendra",
+        "category_id": "cat-cuerpo"
+      },
+      {
+        "product_id": "prod-exfoliante-cafe",
+        "category_id": "cat-cuerpo"
+      },
+      {
+        "product_id": "prod-balsamo-labios",
+        "category_id": "cat-labios"
+      },
+      {
+        "product_id": "prod-manteca-cacao",
+        "category_id": "cat-labios"
+      },
+      {
+        "product_id": "prod-kit-esencial",
+        "category_id": "cat-kits"
+      },
+      {
+        "product_id": "prod-kit-viaje",
+        "category_id": "cat-kits"
+      },
+      {
+        "product_id": "prod-kit-regalo",
+        "category_id": "cat-kits"
+      }
+    ],
+    "product_images": [
+      {
+        "product_id": "prod-aceite-almendra",
+        "media_id": "a8432925-d189-4ee6-b75a-db7ea80bcc6d",
+        "position": 0
+      },
+      {
+        "product_id": "prod-aceite-rosa",
+        "media_id": "83628e51-e585-4eae-a34b-e5d7b45cb4d9",
+        "position": 0
+      },
+      {
+        "product_id": "prod-balsamo-labios",
+        "media_id": "69574a1e-57d9-4f70-8429-1ddbccbfced1",
+        "position": 0
+      },
+      {
+        "product_id": "prod-crema-nopal",
+        "media_id": "7d43e748-98a9-416e-b5c9-acfb38aca487",
+        "position": 0
+      },
+      {
+        "product_id": "prod-exfoliante-cafe",
+        "media_id": "fca3bd80-034f-410b-898b-9c22ffab39f8",
+        "position": 0
+      },
+      {
+        "product_id": "prod-jabon-avena",
+        "media_id": "30eddc1f-7fb2-4b7d-8ed7-2eceb95e432b",
+        "position": 0
+      },
+      {
+        "product_id": "prod-kit-esencial",
+        "media_id": "84d62166-8bf4-44bb-bb78-fd93d69813de",
+        "position": 0
+      },
+      {
+        "product_id": "prod-kit-regalo",
+        "media_id": "26556527-6e9d-4db8-84c0-d9f392edcf05",
+        "position": 0
+      },
+      {
+        "product_id": "prod-kit-viaje",
+        "media_id": "ef392306-07ed-457e-9fd5-58d46ff26c14",
+        "position": 0
+      },
+      {
+        "product_id": "prod-limpiador-avena",
+        "media_id": "9509b5a0-3a94-4425-b088-97f79c1bdf80",
+        "position": 0
+      },
+      {
+        "product_id": "prod-manteca-cacao",
+        "media_id": "40fdda14-9865-4f78-9449-7112dac1bc3e",
+        "position": 0
+      },
+      {
+        "product_id": "prod-tonico-manzanilla",
+        "media_id": "b851179e-dcc5-4c2b-8216-8f2b7f1d955c",
+        "position": 0
+      }
+    ],
+    "product_variants": [
+      {
+        "id": "var-aceite-rosa-30",
+        "product_id": "prod-aceite-rosa",
+        "sku": "ACEROS-30",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 11000,
+        "stock": 13,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-aceite-rosa-50",
+        "product_id": "prod-aceite-rosa",
+        "sku": "ACEROS-50",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 17000,
+        "stock": 6,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-tonico-100",
+        "product_id": "prod-tonico-manzanilla",
+        "sku": "TONMAN-100",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 8000,
+        "stock": 22,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-crema-nopal-50",
+        "product_id": "prod-crema-nopal",
+        "sku": "CRENOP-50",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 14000,
+        "stock": 8,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-limpiador-150",
+        "product_id": "prod-limpiador-avena",
+        "sku": "LIMAVE-150",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 9000,
+        "stock": 0,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-jabon-avena",
+        "product_id": "prod-jabon-avena",
+        "sku": "JABONAVENA-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 3200,
+        "stock": 47,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-aceite-almendra-100",
+        "product_id": "prod-aceite-almendra",
+        "sku": "ACEALM-100",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 12000,
+        "stock": 7,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-exfoliante-200",
+        "product_id": "prod-exfoliante-cafe",
+        "sku": "EXFCAF-200",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 9000,
+        "stock": 4,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-balsamo-labios",
+        "product_id": "prod-balsamo-labios",
+        "sku": "BALSAMOLABIOS-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 2800,
+        "stock": 62,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-manteca-cacao",
+        "product_id": "prod-manteca-cacao",
+        "sku": "MANTECACACAO-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 3600,
+        "stock": 26,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-kit-esencial",
+        "product_id": "prod-kit-esencial",
+        "sku": "KITESENCIAL-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 29000,
+        "stock": 7,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-kit-viaje",
+        "product_id": "prod-kit-viaje",
+        "sku": "KITVIAJE-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 18000,
+        "stock": 8,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-kit-regalo",
+        "product_id": "prod-kit-regalo",
+        "sku": "KITREGALO-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 34000,
+        "stock": 0,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      }
+    ],
+    "variant_attribute_values": [
+      {
+        "variant_id": "var-aceite-rosa-30",
+        "attribute_value_id": "val-tamano-30"
+      },
+      {
+        "variant_id": "var-aceite-rosa-50",
+        "attribute_value_id": "val-tamano-50"
+      },
+      {
+        "variant_id": "var-tonico-100",
+        "attribute_value_id": "val-tamano-100"
+      },
+      {
+        "variant_id": "var-crema-nopal-50",
+        "attribute_value_id": "val-tamano-50"
+      },
+      {
+        "variant_id": "var-limpiador-150",
+        "attribute_value_id": "val-tamano-100"
+      },
+      {
+        "variant_id": "var-aceite-almendra-100",
+        "attribute_value_id": "val-tamano-100"
+      },
+      {
+        "variant_id": "var-exfoliante-200",
+        "attribute_value_id": "val-tamano-200"
+      }
+    ],
+    "inventory_movements": [
+      {
+        "id": "mov-var-aceite-rosa-30",
+        "variant_id": "var-aceite-rosa-30",
+        "product_id": "prod-aceite-rosa",
+        "delta": 14,
+        "stock_after": 14,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-aceite-rosa-50",
+        "variant_id": "var-aceite-rosa-50",
+        "product_id": "prod-aceite-rosa",
+        "delta": 6,
+        "stock_after": 6,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-tonico-100",
+        "variant_id": "var-tonico-100",
+        "product_id": "prod-tonico-manzanilla",
+        "delta": 22,
+        "stock_after": 22,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-crema-nopal-50",
+        "variant_id": "var-crema-nopal-50",
+        "product_id": "prod-crema-nopal",
+        "delta": 11,
+        "stock_after": 11,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-jabon-avena",
+        "variant_id": "var-jabon-avena",
+        "product_id": "prod-jabon-avena",
+        "delta": 48,
+        "stock_after": 48,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-aceite-almendra-100",
+        "variant_id": "var-aceite-almendra-100",
+        "product_id": "prod-aceite-almendra",
+        "delta": 9,
+        "stock_after": 9,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-exfoliante-200",
+        "variant_id": "var-exfoliante-200",
+        "product_id": "prod-exfoliante-cafe",
+        "delta": 4,
+        "stock_after": 4,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-balsamo-labios",
+        "variant_id": "var-balsamo-labios",
+        "product_id": "prod-balsamo-labios",
+        "delta": 64,
+        "stock_after": 64,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-manteca-cacao",
+        "variant_id": "var-manteca-cacao",
+        "product_id": "prod-manteca-cacao",
+        "delta": 27,
+        "stock_after": 27,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-kit-esencial",
+        "variant_id": "var-kit-esencial",
+        "product_id": "prod-kit-esencial",
+        "delta": 7,
+        "stock_after": 7,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-kit-viaje",
+        "variant_id": "var-kit-viaje",
+        "product_id": "prod-kit-viaje",
+        "delta": 10,
+        "stock_after": 10,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "052b1fad-4f1b-41b8-a240-6ef7f734ad74",
+        "variant_id": "var-aceite-almendra-100",
+        "product_id": "prod-aceite-almendra",
+        "delta": -2,
+        "stock_after": 7,
+        "reason": "sale",
+        "reference": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:16:52.421Z"
+      },
+      {
+        "id": "ff251856-ce35-4c12-bd45-8140fb2bf6d1",
+        "variant_id": "var-jabon-avena",
+        "product_id": "prod-jabon-avena",
+        "delta": -1,
+        "stock_after": 47,
+        "reason": "sale",
+        "reference": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:16:52.421Z"
+      },
+      {
+        "id": "9289d063-f699-4477-ad64-866b181e6c56",
+        "variant_id": "var-aceite-rosa-30",
+        "product_id": "prod-aceite-rosa",
+        "delta": -1,
+        "stock_after": 13,
+        "reason": "sale",
+        "reference": "c8a42371-422a-437a-978f-133d4b8d797c",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.124Z"
+      },
+      {
+        "id": "676d0b9b-71c9-4474-a4e5-52c1c8800a32",
+        "variant_id": "var-balsamo-labios",
+        "product_id": "prod-balsamo-labios",
+        "delta": -2,
+        "stock_after": 62,
+        "reason": "sale",
+        "reference": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.918Z"
+      },
+      {
+        "id": "0016dbae-a1df-4b7a-b50c-0b976a1736df",
+        "variant_id": "var-kit-viaje",
+        "product_id": "prod-kit-viaje",
+        "delta": -2,
+        "stock_after": 8,
+        "reason": "sale",
+        "reference": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.918Z"
+      },
+      {
+        "id": "cfac17e7-2533-4478-8772-1e7e5d951f09",
+        "variant_id": "var-manteca-cacao",
+        "product_id": "prod-manteca-cacao",
+        "delta": -1,
+        "stock_after": 26,
+        "reason": "sale",
+        "reference": "8b3bff42-bc7a-4331-b8a8-cdc322270924",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.954Z"
+      },
+      {
+        "id": "20efa141-3db8-4e86-a1b3-5b13b64b56b1",
+        "variant_id": "var-crema-nopal-50",
+        "product_id": "prod-crema-nopal",
+        "delta": -3,
+        "stock_after": 8,
+        "reason": "sale",
+        "reference": "6444d5d6-1869-4dfb-a428-0f77db19a585",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.975Z"
+      },
+      {
+        "id": "f87092d5-6461-4ed0-9d57-1291723ec039",
+        "variant_id": "var-tonico-100",
+        "product_id": "prod-tonico-manzanilla",
+        "delta": -1,
+        "stock_after": 21,
+        "reason": "sale",
+        "reference": "e38c9af6-3ea9-4df0-bb50-82a354fcf915",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:54.064Z"
+      },
+      {
+        "id": "289bd0e4-1efa-435f-a83a-f7f5a3ad48bd",
+        "variant_id": "var-tonico-100",
+        "product_id": "prod-tonico-manzanilla",
+        "delta": 1,
+        "stock_after": 22,
+        "reason": "cancel_restore",
+        "reference": "e38c9af6-3ea9-4df0-bb50-82a354fcf915",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:17:54.077Z"
+      }
+    ],
+    "orders": [
+      {
+        "id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "number": 1001,
+        "access_key_hash": "080d9b39986773aa3365ddce213b86f42e220cfa91bc200a5f5dd03545b2c72c",
+        "status": "delivered",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 71500,
+        "tax_minor": 9862,
+        "shipping_minor": 0,
+        "total_minor": 71500,
+        "customer_name": "Camila Torres",
+        "customer_email": "camila.torres@example.com",
+        "customer_phone": "+57 300 555 0101",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Recoger en el taller",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": "CO123456789",
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T13:16:52.421Z",
+        "paid_at": "2026-10-29T13:16:52.438Z",
+        "created_at": "2026-10-29T13:16:52.421Z",
+        "updated_at": "2026-10-29T13:16:52.461Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "c8a42371-422a-437a-978f-133d4b8d797c",
+        "number": 1002,
+        "access_key_hash": "8ea3afd33a6b034753eef5ae154e73154fe464f1b3ffb5bf356db7a88b868427",
+        "status": "shipped",
+        "payment_method": "dlocalgo",
+        "payment_reference": "DP-278060",
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 32000,
+        "tax_minor": 4414,
+        "shipping_minor": 9900,
+        "total_minor": 41900,
+        "customer_name": "Andrés Gómez",
+        "customer_email": "andres.gomez@example.com",
+        "customer_phone": "+57 311 555 0102",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Standard shipping",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": "CO123456789",
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-10-29T14:02:53.124Z",
+        "paid_at": "2026-10-29T13:17:53.885Z",
+        "created_at": "2026-10-29T13:17:53.124Z",
+        "updated_at": "2026-10-29T13:17:53.902Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "number": 1003,
+        "access_key_hash": "3a9ff6466e6e0982f77694e792066a2e64478c1fb0751faf7f7150c7ee051097",
+        "status": "processing",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 101000,
+        "tax_minor": 13931,
+        "shipping_minor": 0,
+        "total_minor": 101000,
+        "customer_name": "Laura Martínez",
+        "customer_email": "laura.martinez@example.com",
+        "customer_phone": "+57 312 555 0103",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Envío estándar",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T13:17:53.918Z",
+        "paid_at": "2026-10-29T13:17:53.931Z",
+        "created_at": "2026-10-29T13:17:53.918Z",
+        "updated_at": "2026-10-29T13:17:53.939Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "8b3bff42-bc7a-4331-b8a8-cdc322270924",
+        "number": 1004,
+        "access_key_hash": "2e36583d4aa7e68a0829e3d5a86620a3fa2914a2517662d51b440e5f4f2f0525",
+        "status": "pending_payment",
+        "payment_method": "whatsapp",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 11000,
+        "tax_minor": 1517,
+        "shipping_minor": 0,
+        "total_minor": 11000,
+        "customer_name": "Sofía Herrera",
+        "customer_email": "sofia.herrera@example.com",
+        "customer_phone": "+57 313 555 0104",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Workshop pickup",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T13:17:53.954Z",
+        "paid_at": null,
+        "created_at": "2026-10-29T13:17:53.954Z",
+        "updated_at": "2026-10-29T13:17:53.954Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "6444d5d6-1869-4dfb-a428-0f77db19a585",
+        "number": 1005,
+        "access_key_hash": "fa3c62296df353fc760d07a0cf52290a2189e6a14be30027c86b35393821fb24",
+        "status": "paid",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 117000,
+        "tax_minor": 16138,
+        "shipping_minor": 0,
+        "total_minor": 117000,
+        "customer_name": "Daniel Pérez",
+        "customer_email": "daniel.perez@example.com",
+        "customer_phone": "+57 314 555 0105",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Envío estándar",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-11-01T13:17:53.975Z",
+        "paid_at": "2026-10-29T13:17:54.049Z",
+        "created_at": "2026-10-29T13:17:53.975Z",
+        "updated_at": "2026-10-29T13:17:54.049Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "e38c9af6-3ea9-4df0-bb50-82a354fcf915",
+        "number": 1006,
+        "access_key_hash": "ffcc549ebdc052a0f86e28d32fcd296fc04435f3223191b0de4d8984077ffa0c",
+        "status": "cancelled",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 24000,
+        "tax_minor": 3310,
+        "shipping_minor": 0,
+        "total_minor": 24000,
+        "customer_name": "Valentina Cruz",
+        "customer_email": "valentina.cruz@example.com",
+        "customer_phone": "+57 315 555 0106",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Workshop pickup",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 1,
+        "expires_at": "2026-11-01T13:17:54.064Z",
+        "paid_at": null,
+        "created_at": "2026-10-29T13:17:54.064Z",
+        "updated_at": "2026-10-29T13:17:54.077Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      }
+    ],
+    "order_items": [
+      {
+        "id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5:0",
+        "order_id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "product_id": "prod-aceite-almendra",
+        "variant_id": "var-aceite-almendra-100",
+        "product_name": "Aceite corporal de almendra",
+        "variant_label": "100 ml",
+        "sku": "ACEALM-100",
+        "image_media_id": null,
+        "unit_price_minor": 31000,
+        "unit_cost_minor": 12000,
+        "quantity": 2,
+        "line_total_minor": 62000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 8552,
+        "stock_tracked": 1
+      },
+      {
+        "id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5:1",
+        "order_id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "product_id": "prod-jabon-avena",
+        "variant_id": "var-jabon-avena",
+        "product_name": "Jabón de avena y miel",
+        "variant_label": "",
+        "sku": "JABONAVENA-U",
+        "image_media_id": null,
+        "unit_price_minor": 9500,
+        "unit_cost_minor": 3200,
+        "quantity": 1,
+        "line_total_minor": 9500,
+        "tax_rate_bp": 1600,
+        "tax_minor": 1310,
+        "stock_tracked": 1
+      },
+      {
+        "id": "c8a42371-422a-437a-978f-133d4b8d797c:0",
+        "order_id": "c8a42371-422a-437a-978f-133d4b8d797c",
+        "product_id": "prod-aceite-rosa",
+        "variant_id": "var-aceite-rosa-30",
+        "product_name": "Rosehip face oil",
+        "variant_label": "30 ml",
+        "sku": "ACEROS-30",
+        "image_media_id": null,
+        "unit_price_minor": 32000,
+        "unit_cost_minor": 11000,
+        "quantity": 1,
+        "line_total_minor": 32000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 4414,
+        "stock_tracked": 1
+      },
+      {
+        "id": "0464c570-c5d4-4206-9d82-9956c4bf4355:0",
+        "order_id": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "product_id": "prod-balsamo-labios",
+        "variant_id": "var-balsamo-labios",
+        "product_name": "Bálsamo de labios",
+        "variant_label": "",
+        "sku": "BALSAMOLABIOS-U",
+        "image_media_id": null,
+        "unit_price_minor": 8500,
+        "unit_cost_minor": 2800,
+        "quantity": 2,
+        "line_total_minor": 17000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 2345,
+        "stock_tracked": 1
+      },
+      {
+        "id": "0464c570-c5d4-4206-9d82-9956c4bf4355:1",
+        "order_id": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "product_id": "prod-kit-viaje",
+        "variant_id": "var-kit-viaje",
+        "product_name": "Kit de viaje",
+        "variant_label": "",
+        "sku": "KITVIAJE-U",
+        "image_media_id": null,
+        "unit_price_minor": 42000,
+        "unit_cost_minor": 18000,
+        "quantity": 2,
+        "line_total_minor": 84000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 11586,
+        "stock_tracked": 1
+      },
+      {
+        "id": "8b3bff42-bc7a-4331-b8a8-cdc322270924:0",
+        "order_id": "8b3bff42-bc7a-4331-b8a8-cdc322270924",
+        "product_id": "prod-manteca-cacao",
+        "variant_id": "var-manteca-cacao",
+        "product_name": "Cocoa butter balm",
+        "variant_label": "",
+        "sku": "MANTECACACAO-U",
+        "image_media_id": null,
+        "unit_price_minor": 11000,
+        "unit_cost_minor": 3600,
+        "quantity": 1,
+        "line_total_minor": 11000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 1517,
+        "stock_tracked": 1
+      },
+      {
+        "id": "6444d5d6-1869-4dfb-a428-0f77db19a585:0",
+        "order_id": "6444d5d6-1869-4dfb-a428-0f77db19a585",
+        "product_id": "prod-crema-nopal",
+        "variant_id": "var-crema-nopal-50",
+        "product_name": "Crema de nopal",
+        "variant_label": "50 ml",
+        "sku": "CRENOP-50",
+        "image_media_id": null,
+        "unit_price_minor": 39000,
+        "unit_cost_minor": 14000,
+        "quantity": 3,
+        "line_total_minor": 117000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 16138,
+        "stock_tracked": 1
+      },
+      {
+        "id": "e38c9af6-3ea9-4df0-bb50-82a354fcf915:0",
+        "order_id": "e38c9af6-3ea9-4df0-bb50-82a354fcf915",
+        "product_id": "prod-tonico-manzanilla",
+        "variant_id": "var-tonico-100",
+        "product_name": "Chamomile toner",
+        "variant_label": "100 ml",
+        "sku": "TONMAN-100",
+        "image_media_id": null,
+        "unit_price_minor": 24000,
+        "unit_cost_minor": 8000,
+        "quantity": 1,
+        "line_total_minor": 24000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 3310,
+        "stock_tracked": 1
+      }
+    ],
+    "order_events": [
+      {
+        "id": "d093e2ff-8699-445f-a9c7-107e8acfe601",
+        "order_id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:16:52.421Z"
+      },
+      {
+        "id": "04a7345d-7818-4e06-8f34-4e939bb9b7a7",
+        "order_id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:16:52.438Z"
+      },
+      {
+        "id": "253265c4-8177-4fb2-a97b-34ee43b0d4e6",
+        "order_id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:16:52.446Z"
+      },
+      {
+        "id": "8c7da6df-9f5b-46bf-9e07-2f2daab265df",
+        "order_id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "type": "status_shipped",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:16:52.454Z"
+      },
+      {
+        "id": "dc739e16-3513-4f17-927e-7145b4e5d676",
+        "order_id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "type": "status_delivered",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:16:52.461Z"
+      },
+      {
+        "id": "97ce1a24-0bf5-4ece-8bf1-c9353dd1c812",
+        "order_id": "c8a42371-422a-437a-978f-133d4b8d797c",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.124Z"
+      },
+      {
+        "id": "ee3e440f-38e8-47d6-aa1f-e719c341d762",
+        "order_id": "c8a42371-422a-437a-978f-133d4b8d797c",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:17:53.885Z"
+      },
+      {
+        "id": "396c37ce-2e35-43fe-886f-f75f5ce3a6c3",
+        "order_id": "c8a42371-422a-437a-978f-133d4b8d797c",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:17:53.894Z"
+      },
+      {
+        "id": "b4cc229d-a2a6-4fb0-b346-3f61d4273023",
+        "order_id": "c8a42371-422a-437a-978f-133d4b8d797c",
+        "type": "status_shipped",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:17:53.902Z"
+      },
+      {
+        "id": "b49df877-2e01-4c99-8316-6a0d18877d45",
+        "order_id": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.918Z"
+      },
+      {
+        "id": "4b25a516-8914-4db5-91dd-c4743fcf4317",
+        "order_id": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:17:53.931Z"
+      },
+      {
+        "id": "5ebf227d-a2d0-4539-b097-ee93a11339b9",
+        "order_id": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:17:53.939Z"
+      },
+      {
+        "id": "51cb221d-8bf4-4798-9d0d-14c5889fa233",
+        "order_id": "8b3bff42-bc7a-4331-b8a8-cdc322270924",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.954Z"
+      },
+      {
+        "id": "b7e96b73-7b67-4207-b648-5641f229755d",
+        "order_id": "6444d5d6-1869-4dfb-a428-0f77db19a585",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:53.975Z"
+      },
+      {
+        "id": "23f56cbe-95c9-4e1d-875d-6a682b1fcaf5",
+        "order_id": "6444d5d6-1869-4dfb-a428-0f77db19a585",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:17:54.049Z"
+      },
+      {
+        "id": "546febd9-1c55-4ba0-a380-465c56b83f59",
+        "order_id": "e38c9af6-3ea9-4df0-bb50-82a354fcf915",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:17:54.064Z"
+      },
+      {
+        "id": "91c05ae6-7820-4e38-819d-aed8bdd9a76e",
+        "order_id": "e38c9af6-3ea9-4df0-bb50-82a354fcf915",
+        "type": "status_cancelled",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:17:54.077Z"
+      }
+    ],
+    "order_counter": [
+      {
+        "id": 1,
+        "last_number": 1006
+      }
+    ],
+    "invoice_counters": [
+      {
+        "series": "A",
+        "last_number": 4
+      }
+    ],
+    "invoices": [
+      {
+        "id": "ea65cb0e-6464-4f46-a43d-b5e41c6aa646",
+        "order_id": "d8ce9848-3ba0-4e63-9091-762ea7ec0cc5",
+        "series": "A",
+        "number": 1,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 71500,
+        "tax_minor": 9862,
+        "shipping_minor": 0,
+        "total_minor": 71500,
+        "seller_json": "{\"legalName\":\"Raíz\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Córdoba 50, Col. Roma Norte, Ciudad de México\",\"phone\":\"+52 55 0000 0000\",\"email\":\"facturacion@raiz.mx\"}",
+        "buyer_json": "{\"name\":\"Camila Torres\",\"email\":\"camila.torres@example.com\",\"phone\":\"+57 300 555 0101\",\"taxId\":null,\"legalName\":null,\"address\":{}}",
+        "lines_json": "[{\"description\":\"Aceite corporal de almendra (100 ml)\",\"quantity\":2,\"unitPriceMinor\":31000,\"taxRateBp\":1600,\"taxMinor\":8552,\"lineTotalMinor\":62000},{\"description\":\"Jabón de avena y miel\",\"quantity\":1,\"unitPriceMinor\":9500,\"taxRateBp\":1600,\"taxMinor\":1310,\"lineTotalMinor\":9500}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":61638,\"taxMinor\":9862}]",
+        "pdf_key": "invoices/ea65cb0e-6464-4f46-a43d-b5e41c6aa646.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T13:16:57.450Z",
+        "updated_at": "2026-10-29T13:17:04.383Z"
+      },
+      {
+        "id": "54b3c108-fd45-4bb7-873f-1965ab667125",
+        "order_id": "c8a42371-422a-437a-978f-133d4b8d797c",
+        "series": "A",
+        "number": 2,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 32000,
+        "tax_minor": 4414,
+        "shipping_minor": 9900,
+        "total_minor": 41900,
+        "seller_json": "{\"legalName\":\"Raíz\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Córdoba 50, Col. Roma Norte, Ciudad de México\",\"phone\":\"+52 55 0000 0000\",\"email\":\"facturacion@raiz.mx\"}",
+        "buyer_json": "{\"name\":\"Andrés Gómez\",\"email\":\"andres.gomez@example.com\",\"phone\":\"+57 311 555 0102\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Rosehip face oil (30 ml)\",\"quantity\":1,\"unitPriceMinor\":32000,\"taxRateBp\":1600,\"taxMinor\":4414,\"lineTotalMinor\":32000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":27586,\"taxMinor\":4414}]",
+        "pdf_key": "invoices/54b3c108-fd45-4bb7-873f-1965ab667125.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T13:17:53.997Z",
+        "updated_at": "2026-10-29T13:18:00.528Z"
+      },
+      {
+        "id": "f53a6181-43ac-4675-95df-32b4925a053a",
+        "order_id": "0464c570-c5d4-4206-9d82-9956c4bf4355",
+        "series": "A",
+        "number": 3,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 101000,
+        "tax_minor": 13931,
+        "shipping_minor": 0,
+        "total_minor": 101000,
+        "seller_json": "{\"legalName\":\"Raíz\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Córdoba 50, Col. Roma Norte, Ciudad de México\",\"phone\":\"+52 55 0000 0000\",\"email\":\"facturacion@raiz.mx\"}",
+        "buyer_json": "{\"name\":\"Laura Martínez\",\"email\":\"laura.martinez@example.com\",\"phone\":\"+57 312 555 0103\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Bálsamo de labios\",\"quantity\":2,\"unitPriceMinor\":8500,\"taxRateBp\":1600,\"taxMinor\":2345,\"lineTotalMinor\":17000},{\"description\":\"Kit de viaje\",\"quantity\":2,\"unitPriceMinor\":42000,\"taxRateBp\":1600,\"taxMinor\":11586,\"lineTotalMinor\":84000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":87069,\"taxMinor\":13931}]",
+        "pdf_key": "invoices/f53a6181-43ac-4675-95df-32b4925a053a.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T13:17:54.014Z",
+        "updated_at": "2026-10-29T13:18:01.494Z"
+      },
+      {
+        "id": "ddabce1d-f88f-47c8-8ae8-0edfe29afb0c",
+        "order_id": "6444d5d6-1869-4dfb-a428-0f77db19a585",
+        "series": "A",
+        "number": 4,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 117000,
+        "tax_minor": 16138,
+        "shipping_minor": 0,
+        "total_minor": 117000,
+        "seller_json": "{\"legalName\":\"Raíz\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Córdoba 50, Col. Roma Norte, Ciudad de México\",\"phone\":\"+52 55 0000 0000\",\"email\":\"facturacion@raiz.mx\"}",
+        "buyer_json": "{\"name\":\"Daniel Pérez\",\"email\":\"daniel.perez@example.com\",\"phone\":\"+57 314 555 0105\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Crema de nopal (50 ml)\",\"quantity\":3,\"unitPriceMinor\":39000,\"taxRateBp\":1600,\"taxMinor\":16138,\"lineTotalMinor\":117000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":100862,\"taxMinor\":16138}]",
+        "pdf_key": "invoices/ddabce1d-f88f-47c8-8ae8-0edfe29afb0c.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T13:18:01.503Z",
+        "updated_at": "2026-10-29T13:18:07.611Z"
+      }
+    ],
+    "email_templates": [],
+    "pages": [
+      {
+        "id": "home",
+        "slug": "home",
+        "kind": "system",
+        "title_json": "{\"es\":\"Inicio\",\"en\":\"Home\"}",
+        "seo_title_json": "{\"es\":\"\",\"en\":\"\"}",
+        "seo_description_json": "{\"es\":\"\",\"en\":\"\"}",
+        "sections_json": "[{\"id\":\"home-hero\",\"type\":\"hero_carousel\",\"enabled\":true,\"config\":{\"slides\":[{\"image\":\"bbf420ca-7dfa-4a16-ae0c-1474fd600efa\",\"title\":{\"es\":\"Seis ingredientes. Todos en la etiqueta.\",\"en\":\"Six ingredients. All on the label.\"},\"subtitle\":{\"es\":\"Cosmética hecha en lotes de 40 piezas, con fecha de elaboración.\",\"en\":\"Skincare made in batches of 40, each with its making date.\"},\"cta\":{\"href\":\"/shop\",\"label\":{\"es\":\"Ver la tienda\",\"en\":\"See the shop\"}}}],\"autoplaySeconds\":0,\"layout\":\"editorial\"}},{\"id\":\"home-categories\",\"type\":\"category_grid\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Para qué es\",\"en\":\"What it is for\"},\"categoryIds\":[],\"layout\":\"links\"}},{\"id\":\"home-featured\",\"type\":\"featured_products\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Lo esencial\",\"en\":\"The essentials\"},\"source\":\"featured\",\"categoryIds\":[],\"productIds\":[],\"limit\":6,\"layout\":\"gallery\"}},{\"id\":\"home-rutina\",\"type\":\"summary\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"La rutina\",\"en\":\"The routine\"},\"items\":[{\"text\":{\"es\":\"Limpia con el jabón de avena, mañana y noche.\",\"en\":\"Cleanse with the oat soap, morning and night.\"}},{\"text\":{\"es\":\"Equilibra con el tónico de manzanilla, en algodón.\",\"en\":\"Balance with the chamomile toner, on cotton.\"}},{\"text\":{\"es\":\"Nutre con tres gotas de aceite, sólo de noche.\",\"en\":\"Nourish with three drops of oil, at night only.\"}}]}},{\"id\":\"home-badges\",\"type\":\"trust_badges\",\"enabled\":true,\"config\":{\"items\":[{\"icon\":\"truck\",\"text\":{\"es\":\"Envíos a todo México\",\"en\":\"Shipping across Mexico\"}},{\"icon\":\"return\",\"text\":{\"es\":\"Lotes de 40 piezas\",\"en\":\"Batches of 40\"}},{\"icon\":\"lock\",\"text\":{\"es\":\"Pago en OXXO o transferencia\",\"en\":\"Pay at OXXO or by transfer\"}},{\"icon\":\"chat\",\"text\":{\"es\":\"Taller en la Roma, CDMX\",\"en\":\"Workshop in Roma, Mexico City\"}}],\"layout\":\"line\"}},{\"id\":\"home-testimonials\",\"type\":\"testimonials\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Lo que nos escriben\",\"en\":\"What people write to us\"},\"includeGoogle\":false,\"includeManual\":true,\"limit\":3,\"layout\":\"quiet\"}},{\"id\":\"home-whatsapp\",\"type\":\"whatsapp_cta\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"¿No sabes cuál te toca?\",\"en\":\"Not sure which one is for you?\"},\"text\":{\"es\":\"Cuéntanos cómo está tu piel y te decimos por dónde empezar.\",\"en\":\"Tell us how your skin is and we will say where to start.\"},\"buttonLabel\":{\"es\":\"Escribir por WhatsApp\",\"en\":\"Chat on WhatsApp\"},\"layout\":\"line\"}}]",
+        "is_published": 1,
+        "updated_at": "2026-10-29T17:56:29.946Z"
+      }
+    ],
+    "testimonials": [
+      {
+        "id": "bd056a98-8b8f-486c-8a41-bc09fbad3c11",
+        "author_name": "Mariana L.",
+        "rating": 5,
+        "body": "Llevo tres meses con el aceite de rosa mosqueta y es lo único que no me irritó.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 0,
+        "created_at": "2026-10-29T13:17:55.308Z"
+      },
+      {
+        "id": "2e1a77c5-c4b0-4ff6-b9e6-88cc81eee36d",
+        "author_name": "Paulina G.",
+        "rating": 5,
+        "body": "Me gusta que diga qué lleva y cuándo se hizo. Es lo que no encuentro en la farmacia.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 1,
+        "created_at": "2026-10-29T13:17:55.317Z"
+      },
+      {
+        "id": "dca65604-9f35-471b-b3ae-0b23339ac19a",
+        "author_name": "Andrea V.",
+        "rating": 4,
+        "body": "El bálsamo dura muchísimo. El frasco del tónico sí me gustaría más grande.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 2,
+        "created_at": "2026-10-29T13:17:55.325Z"
+      }
+    ],
+    "daily_metrics": []
+  },
+  "media": [
+    "media/bbf420ca-7dfa-4a16-ae0c-1474fd600efa/1024.jpg",
+    "media/0dac4be4-5419-4395-ac50-41ac119d60d6/1024.jpg",
+    "media/dbc74754-e71e-49d0-99d6-75140a5b59fd/1024.jpg",
+    "media/2fb63095-a875-4a79-bbf8-86cdd0936701/1024.jpg",
+    "media/55125178-1d71-4d4d-b1e5-699220bf9dfa/1024.jpg",
+    "media/a8432925-d189-4ee6-b75a-db7ea80bcc6d/1024.jpg",
+    "media/83628e51-e585-4eae-a34b-e5d7b45cb4d9/1024.jpg",
+    "media/69574a1e-57d9-4f70-8429-1ddbccbfced1/1024.jpg",
+    "media/7d43e748-98a9-416e-b5c9-acfb38aca487/1024.jpg",
+    "media/fca3bd80-034f-410b-898b-9c22ffab39f8/1024.jpg",
+    "media/30eddc1f-7fb2-4b7d-8ed7-2eceb95e432b/1024.jpg",
+    "media/84d62166-8bf4-44bb-bb78-fd93d69813de/1024.jpg",
+    "media/26556527-6e9d-4db8-84c0-d9f392edcf05/1024.jpg",
+    "media/ef392306-07ed-457e-9fd5-58d46ff26c14/1024.jpg",
+    "media/9509b5a0-3a94-4425-b088-97f79c1bdf80/1024.jpg",
+    "media/40fdda14-9865-4f78-9449-7112dac1bc3e/1024.jpg",
+    "media/b851179e-dcc5-4c2b-8216-8f2b7f1d955c/1024.jpg"
+  ]
+}

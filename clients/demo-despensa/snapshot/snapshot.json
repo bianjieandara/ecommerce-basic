@@ -1,0 +1,2190 @@
+{
+  "version": "948ad92f2cfe3cea",
+  "takenAt": "2026-10-29T18:01:21.992Z",
+  "accountId": "demo-account",
+  "tables": {
+    "settings": [
+      {
+        "group_key": "general",
+        "value_json": "{\"storeName\":\"Comal\",\"logoMediaId\":null,\"faviconMediaId\":null,\"defaultLocale\":\"es\",\"currency\":\"MXN\",\"country\":\"MX\",\"timezone\":\"America/Mexico_City\"}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "tax",
+        "value_json": "{\"pricesIncludeTax\":true,\"defaultRateBp\":1600,\"label\":{\"es\":\"IVA\",\"en\":\"VAT\"},\"taxShipping\":false,\"showBreakdown\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "catalog",
+        "value_json": "{\"pageSize\":24,\"newDays\":30,\"defaultSort\":\"featured\",\"showOutOfStock\":\"last\",\"showStockOnProduct\":\"low\",\"lowStockDisplayThreshold\":5}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "inventory",
+        "value_json": "{\"defaultLowStockThreshold\":3,\"lowStockAlerts\":true,\"lowStockAlertChannels\":[\"email\",\"whatsapp\"],\"backInStockEnabled\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "contact",
+        "value_json": "{\"email\":\"hola@comal.mx\",\"phone\":\"+52 228 000 0000\",\"whatsappNumber\":\"522280000000\",\"whatsappMessage\":{\"es\":\"Hola, quiero preguntar por el café y cuándo sale el siguiente tueste.\",\"en\":\"Hi, I want to ask about the coffee and the next roast.\"},\"showWhatsappFloat\":true,\"address\":\"Calle Xalapeños Ilustres 200, Xalapa, Ver.\",\"mapsEmbedUrl\":\"\",\"openingHours\":{\"es\":\"Tostamos los martes; los pedidos de ese día salen el miércoles\",\"en\":\"We roast on Tuesdays; that day’s orders ship on Wednesday\"},\"social\":{}}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "checkout",
+        "value_json": "{\"enabledMethods\":[\"dlocalgo\",\"paypal\",\"whatsapp\",\"bank_transfer\",\"cash_on_delivery\"],\"bankTransferInstructions\":{\"es\":\"Transferencia SPEI a CLABE 000000000000000000, a nombre de Comal. Manda el comprobante por WhatsApp.\",\"en\":\"SPEI transfer to CLABE 000000000000000000, in the name of Comal. Send the receipt on WhatsApp.\"},\"cashOnDeliveryNote\":{\"es\":\"Paga en efectivo al recibir, solo en Xalapa y Coatepec.\",\"en\":\"Pay in cash on delivery, in Xalapa and Coatepec only.\"},\"onlineHoldMinutes\":45,\"manualAutoCancelDays\":2,\"paypalSettlementCurrency\":null,\"paypalExchangeRate\":null,\"orderNotificationEmail\":\"pedidos@comal.mx\",\"whatsappOptInDefault\":false}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "invoicing",
+        "value_json": "{\"enabled\":true,\"autoIssue\":\"on_paid\",\"series\":\"A\",\"legalName\":\"Comal\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Xalapeños Ilustres 200, Xalapa, Ver.\",\"phone\":\"+52 228 000 0000\",\"email\":\"facturacion@comal.mx\",\"footerNotes\":{\"es\":\"Cada frasco lleva su lote y su fecha de envasado.\",\"en\":\"Every jar carries its batch and packing date.\"},\"attachPdf\":true,\"askBuyerTaxId\":true,\"sendPdfByWhatsapp\":true}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "seo",
+        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Comal\",\"en\":\"%s | Comal\"},\"defaultDescription\":{\"es\":\"Café, salsas y conservas de productores con nombre, en Veracruz, Oaxaca y Puebla. Envíos a todo México.\",\"en\":\"Coffee, salsas and preserves from named producers in Veracruz, Oaxaca and Puebla. Shipping across Mexico.\"},\"ogImageMediaId\":null}",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "group_key": "theme",
+        "value_json": "{\"colorPrimary\":\"#14110D\",\"colorOnPrimary\":\"#FFFDF8\",\"colorAccent\":\"#8A3B1C\",\"colorBackground\":\"#FFFDF8\",\"colorSurface\":\"#F2E7D6\",\"colorText\":\"#14110D\",\"fontPreset\":\"volt\",\"radius\":\"none\"}",
+        "updated_at": "2026-10-29T13:24:30.322Z"
+      },
+      {
+        "group_key": "marketing",
+        "value_json": "{\"metaPixelId\":\"\",\"metaCapiEnabled\":false,\"metaTestEventCode\":\"\",\"ga4MeasurementId\":\"\",\"feedEnabled\":true,\"feedBrand\":\"\",\"feedColorAttribute\":\"color\",\"feedSizeAttribute\":\"size\",\"consentBannerMode\":\"always\"}",
+        "updated_at": "2026-10-29T13:24:30.333Z"
+      }
+    ],
+    "shipping_methods": [
+      {
+        "id": "ship-flat",
+        "kind": "flat",
+        "name_json": "{\"es\":\"Envío estándar\",\"en\":\"Standard shipping\"}",
+        "description_json": "{\"es\":\"Entrega en 2 a 5 días hábiles\",\"en\":\"Delivered in 2 to 5 business days\"}",
+        "price_minor": 9900,
+        "free_over_minor": 99900,
+        "is_active": 1,
+        "position": 1
+      },
+      {
+        "id": "ship-pickup",
+        "kind": "pickup",
+        "name_json": "{\"es\":\"Recoger en el taller\",\"en\":\"Workshop pickup\"}",
+        "description_json": "{\"es\":\"Sin costo, de lunes a viernes\",\"en\":\"Free, Monday to Friday\"}",
+        "price_minor": 0,
+        "free_over_minor": null,
+        "is_active": 1,
+        "position": 2
+      }
+    ],
+    "media_assets": [
+      {
+        "id": "5b282974-864e-44cf-ac28-e1b6618a6275",
+        "original_name": "hero-0.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/5b282974-864e-44cf-ac28-e1b6618a6275/1024.jpg\",\"bytes\":946787}]",
+        "alt_json": "{}",
+        "bytes_total": 946787,
+        "created_at": "2026-10-29T13:45:54.013Z"
+      },
+      {
+        "id": "71d68dd5-267c-4019-b9a5-da2db4e6c251",
+        "original_name": "hero-1.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/71d68dd5-267c-4019-b9a5-da2db4e6c251/1024.jpg\",\"bytes\":571525}]",
+        "alt_json": "{}",
+        "bytes_total": 571525,
+        "created_at": "2026-10-29T13:45:54.034Z"
+      },
+      {
+        "id": "5daa9b0c-e03a-4b61-9ace-deae11e3e10d",
+        "original_name": "cat-cafe.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/5daa9b0c-e03a-4b61-9ace-deae11e3e10d/1024.jpg\",\"bytes\":619422}]",
+        "alt_json": "{}",
+        "bytes_total": 619422,
+        "created_at": "2026-10-29T13:45:54.053Z"
+      },
+      {
+        "id": "0dbcd225-a993-4c59-b79c-ff75659c5a5b",
+        "original_name": "cat-despensa.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/0dbcd225-a993-4c59-b79c-ff75659c5a5b/1024.jpg\",\"bytes\":591084}]",
+        "alt_json": "{}",
+        "bytes_total": 591084,
+        "created_at": "2026-10-29T13:45:55.321Z"
+      },
+      {
+        "id": "58edda4d-55bf-4442-81e3-a1246086a12e",
+        "original_name": "cat-dulce.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/58edda4d-55bf-4442-81e3-a1246086a12e/1024.jpg\",\"bytes\":566625}]",
+        "alt_json": "{}",
+        "bytes_total": 566625,
+        "created_at": "2026-10-29T13:45:56.608Z"
+      },
+      {
+        "id": "4a481ae2-e0fe-45b0-9519-4a349bd1fbff",
+        "original_name": "cat-salsas.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/4a481ae2-e0fe-45b0-9519-4a349bd1fbff/1024.jpg\",\"bytes\":506543}]",
+        "alt_json": "{}",
+        "bytes_total": 506543,
+        "created_at": "2026-10-29T13:45:57.892Z"
+      },
+      {
+        "id": "fc6d81a0-0be7-4943-8bb9-d7305b553309",
+        "original_name": "prod-cafe-altura.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/fc6d81a0-0be7-4943-8bb9-d7305b553309/1024.jpg\",\"bytes\":465154}]",
+        "alt_json": "{}",
+        "bytes_total": 465154,
+        "created_at": "2026-10-29T13:45:59.172Z"
+      },
+      {
+        "id": "26e75461-26f7-411c-8f4b-952ce94737bf",
+        "original_name": "prod-cafe-descafeinado.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/26e75461-26f7-411c-8f4b-952ce94737bf/1024.jpg\",\"bytes\":508573}]",
+        "alt_json": "{}",
+        "bytes_total": 508573,
+        "created_at": "2026-10-29T13:46:01.696Z"
+      },
+      {
+        "id": "d53e65f8-68a3-4829-8770-6b05b6453001",
+        "original_name": "prod-cafe-olla.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/d53e65f8-68a3-4829-8770-6b05b6453001/1024.jpg\",\"bytes\":547416}]",
+        "alt_json": "{}",
+        "bytes_total": 547416,
+        "created_at": "2026-10-29T13:46:04.260Z"
+      },
+      {
+        "id": "6516b030-752d-429f-8910-bb26c71ec614",
+        "original_name": "prod-cajeta.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/6516b030-752d-429f-8910-bb26c71ec614/1024.jpg\",\"bytes\":490851}]",
+        "alt_json": "{}",
+        "bytes_total": 490851,
+        "created_at": "2026-10-29T13:46:06.812Z"
+      },
+      {
+        "id": "10f2dd93-d6db-4efd-a6ca-0391a688c890",
+        "original_name": "prod-frijol-bayo.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/10f2dd93-d6db-4efd-a6ca-0391a688c890/1024.jpg\",\"bytes\":620755}]",
+        "alt_json": "{}",
+        "bytes_total": 620755,
+        "created_at": "2026-10-29T13:46:09.388Z"
+      },
+      {
+        "id": "d79f2d95-6781-4c42-9cfe-ab88c1621522",
+        "original_name": "prod-mermelada-higo.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/d79f2d95-6781-4c42-9cfe-ab88c1621522/1024.jpg\",\"bytes\":534325}]",
+        "alt_json": "{}",
+        "bytes_total": 534325,
+        "created_at": "2026-10-29T13:46:11.888Z"
+      },
+      {
+        "id": "ecd38541-667c-4f31-b8ea-88c425b016ee",
+        "original_name": "prod-miel-abeja.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/ecd38541-667c-4f31-b8ea-88c425b016ee/1024.jpg\",\"bytes\":558200}]",
+        "alt_json": "{}",
+        "bytes_total": 558200,
+        "created_at": "2026-10-29T13:46:14.391Z"
+      },
+      {
+        "id": "da91302a-4f80-41d3-8a8b-c27bedb8d60b",
+        "original_name": "prod-mole-pasta.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/da91302a-4f80-41d3-8a8b-c27bedb8d60b/1024.jpg\",\"bytes\":574487}]",
+        "alt_json": "{}",
+        "bytes_total": 574487,
+        "created_at": "2026-10-29T13:46:16.872Z"
+      },
+      {
+        "id": "42e78380-b82e-43b3-b595-d9df4145b47d",
+        "original_name": "prod-pinole.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/42e78380-b82e-43b3-b595-d9df4145b47d/1024.jpg\",\"bytes\":609098}]",
+        "alt_json": "{}",
+        "bytes_total": 609098,
+        "created_at": "2026-10-29T13:46:19.389Z"
+      },
+      {
+        "id": "e22af413-5df9-407d-8f6b-c3b4d2eac50c",
+        "original_name": "prod-salsa-macha.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/e22af413-5df9-407d-8f6b-c3b4d2eac50c/1024.jpg\",\"bytes\":618442}]",
+        "alt_json": "{}",
+        "bytes_total": 618442,
+        "created_at": "2026-10-29T13:46:21.904Z"
+      },
+      {
+        "id": "f076f590-0d6b-4c82-8fd8-d0a3d7141503",
+        "original_name": "prod-salsa-morita.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/f076f590-0d6b-4c82-8fd8-d0a3d7141503/1024.jpg\",\"bytes\":502931}]",
+        "alt_json": "{}",
+        "bytes_total": 502931,
+        "created_at": "2026-10-29T13:46:24.400Z"
+      },
+      {
+        "id": "da1c142a-0f90-496a-ba71-15ea5466b440",
+        "original_name": "prod-vainilla.jpg",
+        "mime_type": "image/jpeg",
+        "width": 1024,
+        "height": 1024,
+        "variants_json": "[{\"width\":1024,\"key\":\"media/da1c142a-0f90-496a-ba71-15ea5466b440/1024.jpg\",\"bytes\":581606}]",
+        "alt_json": "{}",
+        "bytes_total": 581606,
+        "created_at": "2026-10-29T13:46:26.919Z"
+      }
+    ],
+    "attributes": [
+      {
+        "id": "attr-molido",
+        "code": "grind",
+        "name_json": "{\"es\":\"Molienda\",\"en\":\"Grind\"}",
+        "display": "buttons",
+        "is_filterable": 1,
+        "position": 1
+      },
+      {
+        "id": "attr-peso",
+        "code": "weight",
+        "name_json": "{\"es\":\"Peso\",\"en\":\"Weight\"}",
+        "display": "buttons",
+        "is_filterable": 1,
+        "position": 2
+      }
+    ],
+    "attribute_values": [
+      {
+        "id": "val-molido-grano",
+        "attribute_id": "attr-molido",
+        "code": "grano",
+        "label_json": "{\"es\":\"En grano\",\"en\":\"Whole bean\"}",
+        "color_hex": null,
+        "position": 1
+      },
+      {
+        "id": "val-molido-fino",
+        "attribute_id": "attr-molido",
+        "code": "fino",
+        "label_json": "{\"es\":\"Molido fino\",\"en\":\"Fine ground\"}",
+        "color_hex": null,
+        "position": 2
+      },
+      {
+        "id": "val-molido-medio",
+        "attribute_id": "attr-molido",
+        "code": "medio",
+        "label_json": "{\"es\":\"Molido medio\",\"en\":\"Medium ground\"}",
+        "color_hex": null,
+        "position": 3
+      },
+      {
+        "id": "val-peso-250",
+        "attribute_id": "attr-peso",
+        "code": "250g",
+        "label_json": "{\"es\":\"250 g\",\"en\":\"250 g\"}",
+        "color_hex": null,
+        "position": 1
+      },
+      {
+        "id": "val-peso-500",
+        "attribute_id": "attr-peso",
+        "code": "500g",
+        "label_json": "{\"es\":\"500 g\",\"en\":\"500 g\"}",
+        "color_hex": null,
+        "position": 2
+      },
+      {
+        "id": "val-peso-1k",
+        "attribute_id": "attr-peso",
+        "code": "1kg",
+        "label_json": "{\"es\":\"1 kg\",\"en\":\"1 kg\"}",
+        "color_hex": null,
+        "position": 3
+      }
+    ],
+    "categories": [
+      {
+        "id": "cat-cafe",
+        "parent_id": null,
+        "image_media_id": "5daa9b0c-e03a-4b61-9ace-deae11e3e10d",
+        "position": 1,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-salsas",
+        "parent_id": null,
+        "image_media_id": "4a481ae2-e0fe-45b0-9519-4a349bd1fbff",
+        "position": 2,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-dulce",
+        "parent_id": null,
+        "image_media_id": "58edda4d-55bf-4442-81e3-a1246086a12e",
+        "position": 3,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "cat-despensa",
+        "parent_id": null,
+        "image_media_id": "0dbcd225-a993-4c59-b79c-ff75659c5a5b",
+        "position": 4,
+        "is_active": 1,
+        "created_at": "2026-10-01T00:00:00Z",
+        "updated_at": "2026-10-01T00:00:00Z"
+      }
+    ],
+    "category_translations": [
+      {
+        "category_id": "cat-cafe",
+        "locale": "es",
+        "name": "Café",
+        "slug": "cafe",
+        "description": "Tostado los martes en Xalapa"
+      },
+      {
+        "category_id": "cat-cafe",
+        "locale": "en",
+        "name": "Coffee",
+        "slug": "coffee",
+        "description": "Roasted on Tuesdays in Xalapa"
+      },
+      {
+        "category_id": "cat-salsas",
+        "locale": "es",
+        "name": "Salsas",
+        "slug": "salsas",
+        "description": "Macha, morita y mole en pasta"
+      },
+      {
+        "category_id": "cat-salsas",
+        "locale": "en",
+        "name": "Salsas",
+        "slug": "salsas",
+        "description": "Macha, morita and mole paste"
+      },
+      {
+        "category_id": "cat-dulce",
+        "locale": "es",
+        "name": "Dulce",
+        "slug": "dulce",
+        "description": "Miel, mermelada y cajeta"
+      },
+      {
+        "category_id": "cat-dulce",
+        "locale": "en",
+        "name": "Sweet",
+        "slug": "sweet",
+        "description": "Honey, jam and cajeta"
+      },
+      {
+        "category_id": "cat-despensa",
+        "locale": "es",
+        "name": "Despensa",
+        "slug": "despensa",
+        "description": "Frijol, pinole y vainilla"
+      },
+      {
+        "category_id": "cat-despensa",
+        "locale": "en",
+        "name": "Pantry",
+        "slug": "pantry",
+        "description": "Beans, pinole and vanilla"
+      }
+    ],
+    "products": [
+      {
+        "id": "prod-cafe-altura",
+        "status": "active",
+        "base_price_minor": 23000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 23000,
+        "max_price_minor": 23000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 54,
+        "created_at": "2026-10-06T10:00:00Z",
+        "updated_at": "2026-10-06T10:00:00Z"
+      },
+      {
+        "id": "prod-cafe-olla",
+        "status": "active",
+        "base_price_minor": 16000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 16000,
+        "max_price_minor": 16000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 31,
+        "created_at": "2026-08-22T10:00:00Z",
+        "updated_at": "2026-08-22T10:00:00Z"
+      },
+      {
+        "id": "prod-cafe-descafeinado",
+        "status": "active",
+        "base_price_minor": 26000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 26000,
+        "max_price_minor": 26000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 8,
+        "created_at": "2026-09-30T10:00:00Z",
+        "updated_at": "2026-09-30T10:00:00Z"
+      },
+      {
+        "id": "prod-salsa-macha",
+        "status": "active",
+        "base_price_minor": 12000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 12000,
+        "max_price_minor": 12000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 76,
+        "created_at": "2026-09-11T10:00:00Z",
+        "updated_at": "2026-09-11T10:00:00Z"
+      },
+      {
+        "id": "prod-salsa-morita",
+        "status": "active",
+        "base_price_minor": 11000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 11000,
+        "max_price_minor": 11000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 44,
+        "created_at": "2026-07-19T10:00:00Z",
+        "updated_at": "2026-07-19T10:00:00Z"
+      },
+      {
+        "id": "prod-mole-pasta",
+        "status": "active",
+        "base_price_minor": 18000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 18000,
+        "max_price_minor": 18000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 23,
+        "created_at": "2026-06-25T10:00:00Z",
+        "updated_at": "2026-06-25T10:00:00Z"
+      },
+      {
+        "id": "prod-miel-abeja",
+        "status": "active",
+        "base_price_minor": 16000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 16000,
+        "max_price_minor": 16000,
+        "is_on_sale": 0,
+        "is_featured": 1,
+        "sales_count": 51,
+        "created_at": "2026-08-07T10:00:00Z",
+        "updated_at": "2026-08-07T10:00:00Z"
+      },
+      {
+        "id": "prod-mermelada-higo",
+        "status": "active",
+        "base_price_minor": 9500,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 9500,
+        "max_price_minor": 9500,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 17,
+        "created_at": "2026-05-14T10:00:00Z",
+        "updated_at": "2026-05-14T10:00:00Z"
+      },
+      {
+        "id": "prod-cajeta",
+        "status": "active",
+        "base_price_minor": 13000,
+        "compare_at_price_minor": 15000,
+        "tax_rate_bp": null,
+        "min_price_minor": 13000,
+        "max_price_minor": 13000,
+        "is_on_sale": 1,
+        "is_featured": 0,
+        "sales_count": 26,
+        "created_at": "2026-04-09T10:00:00Z",
+        "updated_at": "2026-04-09T10:00:00Z"
+      },
+      {
+        "id": "prod-frijol-bayo",
+        "status": "active",
+        "base_price_minor": 8500,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 8500,
+        "max_price_minor": 8500,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 39,
+        "created_at": "2026-07-02T10:00:00Z",
+        "updated_at": "2026-07-02T10:00:00Z"
+      },
+      {
+        "id": "prod-pinole",
+        "status": "active",
+        "base_price_minor": 9000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 9000,
+        "max_price_minor": 9000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 12,
+        "created_at": "2026-09-18T10:00:00Z",
+        "updated_at": "2026-09-18T10:00:00Z"
+      },
+      {
+        "id": "prod-vainilla",
+        "status": "active",
+        "base_price_minor": 24000,
+        "compare_at_price_minor": null,
+        "tax_rate_bp": null,
+        "min_price_minor": 24000,
+        "max_price_minor": 24000,
+        "is_on_sale": 0,
+        "is_featured": 0,
+        "sales_count": 6,
+        "created_at": "2026-10-14T10:00:00Z",
+        "updated_at": "2026-10-14T10:00:00Z"
+      }
+    ],
+    "product_translations": [
+      {
+        "product_id": "prod-cafe-altura",
+        "locale": "es",
+        "name": "Café de altura de Coatepec",
+        "slug": "cafe-de-altura-de-coatepec",
+        "short_description": "340 g, tueste medio, de don Refugio.",
+        "description_md": "Arábica de altura de la finca de don Refugio Hernández, en Coatepec. Tueste medio, tostado el martes anterior al envío.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-cafe-altura",
+        "locale": "en",
+        "name": "Coatepec highland coffee",
+        "slug": "coatepec-highland-coffee",
+        "short_description": "340 g, medium roast, from don Refugio.",
+        "description_md": "Highland arabica from don Refugio Hernández’s farm in Coatepec. Medium roast, roasted the Tuesday before it ships.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-cafe-olla",
+        "locale": "es",
+        "name": "Café de olla molido",
+        "slug": "cafe-de-olla-molido",
+        "short_description": "500 g, con canela molida.",
+        "description_md": "Mezcla para café de olla, con canela ya molida. Una cucharada por taza, con piloncillo al gusto.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-cafe-olla",
+        "locale": "en",
+        "name": "Café de olla, ground",
+        "slug": "cafe-de-olla-ground",
+        "short_description": "500 g, with ground cinnamon.",
+        "description_md": "A café de olla blend with the cinnamon already ground. One spoon per cup, with piloncillo to taste.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-cafe-descafeinado",
+        "locale": "es",
+        "name": "Descafeinado al agua",
+        "slug": "descafeinado-al-agua",
+        "short_description": "250 g, sin disolventes.",
+        "description_md": "Descafeinado por el método de agua, sin disolventes químicos. Sabe a café, que es lo raro en un descafeinado.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-cafe-descafeinado",
+        "locale": "en",
+        "name": "Water-process decaf",
+        "slug": "water-process-decaf",
+        "short_description": "250 g, no solvents.",
+        "description_md": "Decaffeinated by the water process, with no chemical solvents. It tastes of coffee, which is the rare part.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-salsa-macha",
+        "locale": "es",
+        "name": "Salsa macha",
+        "slug": "salsa-macha",
+        "short_description": "200 g, con cacahuate y ajonjolí.",
+        "description_md": "Chile morita y de árbol en aceite, con cacahuate y ajonjolí. Pica, pero deja probar la comida.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-salsa-macha",
+        "locale": "en",
+        "name": "Salsa macha",
+        "slug": "salsa-macha",
+        "short_description": "200 g, with peanut and sesame.",
+        "description_md": "Morita and árbol chillies in oil, with peanut and sesame. It bites, but lets you still taste the food.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-salsa-morita",
+        "locale": "es",
+        "name": "Salsa de chile morita",
+        "slug": "salsa-de-chile-morita",
+        "short_description": "200 g, ahumada, pica medio.",
+        "description_md": "Morita tatemado con tomate y ajo. Ahumada y de picor medio; la que más se repite en los pedidos.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-salsa-morita",
+        "locale": "en",
+        "name": "Morita chilli salsa",
+        "slug": "morita-chilli-salsa",
+        "short_description": "200 g, smoky, medium heat.",
+        "description_md": "Charred morita with tomato and garlic. Smoky, medium heat, and the one that comes back most in reorders.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-mole-pasta",
+        "locale": "es",
+        "name": "Mole en pasta",
+        "slug": "mole-en-pasta",
+        "short_description": "250 g de Oaxaca, rinde 8 porciones.",
+        "description_md": "Pasta de mole negro de una familia de Oaxaca. Se disuelve en caldo: 250 g rinden para unas ocho porciones.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-mole-pasta",
+        "locale": "en",
+        "name": "Mole paste",
+        "slug": "mole-paste",
+        "short_description": "250 g from Oaxaca, serves 8.",
+        "description_md": "Black mole paste from a family in Oaxaca. Dissolve it in stock: 250 g serves about eight.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-miel-abeja",
+        "locale": "es",
+        "name": "Miel de abeja de Cuetzalan",
+        "slug": "miel-de-abeja-de-cuetzalan",
+        "short_description": "Cruda, se cristaliza y está bien.",
+        "description_md": "Miel cruda de la sierra de Puebla, sin filtrar ni calentar. Se cristaliza con el frío: eso prueba que es miel de verdad.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-miel-abeja",
+        "locale": "en",
+        "name": "Cuetzalan honey",
+        "slug": "cuetzalan-honey",
+        "short_description": "Raw; it crystallises, and that is fine.",
+        "description_md": "Raw honey from the Puebla highlands, unfiltered and unheated. It crystallises in the cold, which is how you know it is real.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-mermelada-higo",
+        "locale": "es",
+        "name": "Mermelada de higo",
+        "slug": "mermelada-de-higo",
+        "short_description": "280 g, poca azúcar.",
+        "description_md": "Higo de temporada con la mitad del azúcar de una mermelada común. Por eso dura menos abierta: tres semanas en frío.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-mermelada-higo",
+        "locale": "en",
+        "name": "Fig jam",
+        "slug": "fig-jam",
+        "short_description": "280 g, low sugar.",
+        "description_md": "Seasonal figs with half the sugar of an ordinary jam. That is why it keeps less once open: three weeks refrigerated.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-cajeta",
+        "locale": "es",
+        "name": "Cajeta de Celaya",
+        "slug": "cajeta-de-celaya",
+        "short_description": "300 g de leche de cabra, quemada.",
+        "description_md": "Cajeta quemada de leche de cabra, hecha en cazo de cobre. Se acaba el lote de este productor, por eso el precio.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-cajeta",
+        "locale": "en",
+        "name": "Cajeta from Celaya",
+        "slug": "cajeta-from-celaya",
+        "short_description": "300 g goat milk, burnt style.",
+        "description_md": "Burnt goat-milk cajeta made in a copper pot. This producer’s batch is ending, which is why the price dropped.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-frijol-bayo",
+        "locale": "es",
+        "name": "Frijol bayo",
+        "slug": "frijol-bayo",
+        "short_description": "1 kg de la cosecha de este año.",
+        "description_md": "Frijol bayo de temporal, de la cosecha de este año. El frijol viejo no se ablanda; por eso decimos de cuándo es.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-frijol-bayo",
+        "locale": "en",
+        "name": "Bayo beans",
+        "slug": "bayo-beans",
+        "short_description": "1 kg from this year’s harvest.",
+        "description_md": "Rain-fed bayo beans from this year’s harvest. Old beans never soften, which is why we say when they were picked.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-pinole",
+        "locale": "es",
+        "name": "Pinole",
+        "slug": "pinole",
+        "short_description": "400 g de maíz tostado con canela.",
+        "description_md": "Maíz criollo tostado y molido con canela. Se toma con agua o leche, o se le pone al atole.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-pinole",
+        "locale": "en",
+        "name": "Pinole",
+        "slug": "pinole",
+        "short_description": "400 g toasted maize with cinnamon.",
+        "description_md": "Native maize, toasted and ground with cinnamon. Drink it with water or milk, or stir it into atole.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-vainilla",
+        "locale": "es",
+        "name": "Extracto de vainilla de Papantla",
+        "slug": "extracto-de-vainilla-de-papantla",
+        "short_description": "60 ml, de vaina, no de vainillina.",
+        "description_md": "Extracto hecho con vaina de Papantla macerada en alcohol de caña, nueve meses. Nada de vainillina de laboratorio.",
+        "seo_title": "",
+        "seo_description": ""
+      },
+      {
+        "product_id": "prod-vainilla",
+        "locale": "en",
+        "name": "Papantla vanilla extract",
+        "slug": "papantla-vanilla-extract",
+        "short_description": "60 ml, from pods, not vanillin.",
+        "description_md": "Extract made from Papantla pods macerated in cane alcohol for nine months. No laboratory vanillin.",
+        "seo_title": "",
+        "seo_description": ""
+      }
+    ],
+    "product_categories": [
+      {
+        "product_id": "prod-cafe-altura",
+        "category_id": "cat-cafe"
+      },
+      {
+        "product_id": "prod-cafe-olla",
+        "category_id": "cat-cafe"
+      },
+      {
+        "product_id": "prod-cafe-descafeinado",
+        "category_id": "cat-cafe"
+      },
+      {
+        "product_id": "prod-salsa-macha",
+        "category_id": "cat-salsas"
+      },
+      {
+        "product_id": "prod-salsa-morita",
+        "category_id": "cat-salsas"
+      },
+      {
+        "product_id": "prod-mole-pasta",
+        "category_id": "cat-salsas"
+      },
+      {
+        "product_id": "prod-miel-abeja",
+        "category_id": "cat-dulce"
+      },
+      {
+        "product_id": "prod-mermelada-higo",
+        "category_id": "cat-dulce"
+      },
+      {
+        "product_id": "prod-cajeta",
+        "category_id": "cat-dulce"
+      },
+      {
+        "product_id": "prod-frijol-bayo",
+        "category_id": "cat-despensa"
+      },
+      {
+        "product_id": "prod-pinole",
+        "category_id": "cat-despensa"
+      },
+      {
+        "product_id": "prod-vainilla",
+        "category_id": "cat-despensa"
+      }
+    ],
+    "product_images": [
+      {
+        "product_id": "prod-cafe-altura",
+        "media_id": "fc6d81a0-0be7-4943-8bb9-d7305b553309",
+        "position": 0
+      },
+      {
+        "product_id": "prod-cafe-descafeinado",
+        "media_id": "26e75461-26f7-411c-8f4b-952ce94737bf",
+        "position": 0
+      },
+      {
+        "product_id": "prod-cafe-olla",
+        "media_id": "d53e65f8-68a3-4829-8770-6b05b6453001",
+        "position": 0
+      },
+      {
+        "product_id": "prod-cajeta",
+        "media_id": "6516b030-752d-429f-8910-bb26c71ec614",
+        "position": 0
+      },
+      {
+        "product_id": "prod-frijol-bayo",
+        "media_id": "10f2dd93-d6db-4efd-a6ca-0391a688c890",
+        "position": 0
+      },
+      {
+        "product_id": "prod-mermelada-higo",
+        "media_id": "d79f2d95-6781-4c42-9cfe-ab88c1621522",
+        "position": 0
+      },
+      {
+        "product_id": "prod-miel-abeja",
+        "media_id": "ecd38541-667c-4f31-b8ea-88c425b016ee",
+        "position": 0
+      },
+      {
+        "product_id": "prod-mole-pasta",
+        "media_id": "da91302a-4f80-41d3-8a8b-c27bedb8d60b",
+        "position": 0
+      },
+      {
+        "product_id": "prod-pinole",
+        "media_id": "42e78380-b82e-43b3-b595-d9df4145b47d",
+        "position": 0
+      },
+      {
+        "product_id": "prod-salsa-macha",
+        "media_id": "e22af413-5df9-407d-8f6b-c3b4d2eac50c",
+        "position": 0
+      },
+      {
+        "product_id": "prod-salsa-morita",
+        "media_id": "f076f590-0d6b-4c82-8fd8-d0a3d7141503",
+        "position": 0
+      },
+      {
+        "product_id": "prod-vainilla",
+        "media_id": "da1c142a-0f90-496a-ba71-15ea5466b440",
+        "position": 0
+      }
+    ],
+    "product_variants": [
+      {
+        "id": "var-cafe-altura-grano",
+        "product_id": "prod-cafe-altura",
+        "sku": "CAFALT-GRA",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 11000,
+        "stock": 24,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-cafe-altura-fino",
+        "product_id": "prod-cafe-altura",
+        "sku": "CAFALT-FIN",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 11000,
+        "stock": 12,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-cafe-altura-medio",
+        "product_id": "prod-cafe-altura",
+        "sku": "CAFALT-MED",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 11000,
+        "stock": 18,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 3,
+        "is_active": 1
+      },
+      {
+        "id": "var-cafe-olla-500",
+        "product_id": "prod-cafe-olla",
+        "sku": "CAFOLL-500",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 7000,
+        "stock": 18,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-cafe-desc-250",
+        "product_id": "prod-cafe-descafeinado",
+        "sku": "CAFDES-250",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 13000,
+        "stock": 6,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-salsa-macha",
+        "product_id": "prod-salsa-macha",
+        "sku": "SALSAMACHA-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 4500,
+        "stock": 37,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-salsa-morita",
+        "product_id": "prod-salsa-morita",
+        "sku": "SALSAMORITA-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 4000,
+        "stock": 29,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-mole-pasta",
+        "product_id": "prod-mole-pasta",
+        "sku": "MOLEPASTA-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 7500,
+        "stock": 0,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-miel-500",
+        "product_id": "prod-miel-abeja",
+        "sku": "MIEABE-500",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 7000,
+        "stock": 24,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-miel-1k",
+        "product_id": "prod-miel-abeja",
+        "sku": "MIEABE-1K",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 13000,
+        "stock": 9,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 2,
+        "is_active": 1
+      },
+      {
+        "id": "var-mermelada-higo",
+        "product_id": "prod-mermelada-higo",
+        "sku": "MERMELADAHIGO-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 3500,
+        "stock": 15,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-cajeta",
+        "product_id": "prod-cajeta",
+        "sku": "CAJETA-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 5500,
+        "stock": 8,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-frijol-1k",
+        "product_id": "prod-frijol-bayo",
+        "sku": "FRIBAY-1K",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 4000,
+        "stock": 42,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-pinole",
+        "product_id": "prod-pinole",
+        "sku": "PINOLE-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 3500,
+        "stock": 17,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      },
+      {
+        "id": "var-vainilla",
+        "product_id": "prod-vainilla",
+        "sku": "VAINILLA-U",
+        "barcode": null,
+        "price_minor": null,
+        "compare_at_price_minor": null,
+        "cost_minor": 11000,
+        "stock": 5,
+        "track_inventory": 1,
+        "low_stock_threshold": null,
+        "image_media_id": null,
+        "position": 1,
+        "is_active": 1
+      }
+    ],
+    "variant_attribute_values": [
+      {
+        "variant_id": "var-cafe-altura-grano",
+        "attribute_value_id": "val-molido-grano"
+      },
+      {
+        "variant_id": "var-cafe-altura-fino",
+        "attribute_value_id": "val-molido-fino"
+      },
+      {
+        "variant_id": "var-cafe-altura-medio",
+        "attribute_value_id": "val-molido-medio"
+      },
+      {
+        "variant_id": "var-cafe-olla-500",
+        "attribute_value_id": "val-peso-500"
+      },
+      {
+        "variant_id": "var-cafe-desc-250",
+        "attribute_value_id": "val-peso-250"
+      },
+      {
+        "variant_id": "var-miel-500",
+        "attribute_value_id": "val-peso-500"
+      },
+      {
+        "variant_id": "var-miel-1k",
+        "attribute_value_id": "val-peso-1k"
+      },
+      {
+        "variant_id": "var-frijol-1k",
+        "attribute_value_id": "val-peso-1k"
+      }
+    ],
+    "inventory_movements": [
+      {
+        "id": "mov-var-cafe-altura-grano",
+        "variant_id": "var-cafe-altura-grano",
+        "product_id": "prod-cafe-altura",
+        "delta": 26,
+        "stock_after": 26,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-cafe-altura-fino",
+        "variant_id": "var-cafe-altura-fino",
+        "product_id": "prod-cafe-altura",
+        "delta": 12,
+        "stock_after": 12,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-cafe-altura-medio",
+        "variant_id": "var-cafe-altura-medio",
+        "product_id": "prod-cafe-altura",
+        "delta": 18,
+        "stock_after": 18,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-cafe-olla-500",
+        "variant_id": "var-cafe-olla-500",
+        "product_id": "prod-cafe-olla",
+        "delta": 20,
+        "stock_after": 20,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-cafe-desc-250",
+        "variant_id": "var-cafe-desc-250",
+        "product_id": "prod-cafe-descafeinado",
+        "delta": 7,
+        "stock_after": 7,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-salsa-macha",
+        "variant_id": "var-salsa-macha",
+        "product_id": "prod-salsa-macha",
+        "delta": 38,
+        "stock_after": 38,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-salsa-morita",
+        "variant_id": "var-salsa-morita",
+        "product_id": "prod-salsa-morita",
+        "delta": 29,
+        "stock_after": 29,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-miel-500",
+        "variant_id": "var-miel-500",
+        "product_id": "prod-miel-abeja",
+        "delta": 24,
+        "stock_after": 24,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-miel-1k",
+        "variant_id": "var-miel-1k",
+        "product_id": "prod-miel-abeja",
+        "delta": 9,
+        "stock_after": 9,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-mermelada-higo",
+        "variant_id": "var-mermelada-higo",
+        "product_id": "prod-mermelada-higo",
+        "delta": 16,
+        "stock_after": 16,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-cajeta",
+        "variant_id": "var-cajeta",
+        "product_id": "prod-cajeta",
+        "delta": 11,
+        "stock_after": 11,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-frijol-1k",
+        "variant_id": "var-frijol-1k",
+        "product_id": "prod-frijol-bayo",
+        "delta": 42,
+        "stock_after": 42,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-pinole",
+        "variant_id": "var-pinole",
+        "product_id": "prod-pinole",
+        "delta": 19,
+        "stock_after": 19,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "mov-var-vainilla",
+        "variant_id": "var-vainilla",
+        "product_id": "prod-vainilla",
+        "delta": 5,
+        "stock_after": 5,
+        "reason": "initial",
+        "reference": null,
+        "note": null,
+        "actor": "system",
+        "created_at": "2026-10-01T00:00:00Z"
+      },
+      {
+        "id": "776bc8b8-5797-46ac-9cdb-b8b26f9faeed",
+        "variant_id": "var-cafe-altura-grano",
+        "product_id": "prod-cafe-altura",
+        "delta": -2,
+        "stock_after": 24,
+        "reason": "sale",
+        "reference": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:33.953Z"
+      },
+      {
+        "id": "4f647620-a432-4a3d-9f32-41ccb479b798",
+        "variant_id": "var-mermelada-higo",
+        "product_id": "prod-mermelada-higo",
+        "delta": -1,
+        "stock_after": 15,
+        "reason": "sale",
+        "reference": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:33.953Z"
+      },
+      {
+        "id": "57e7ea35-4914-4e87-9445-de778070e01e",
+        "variant_id": "var-cafe-desc-250",
+        "product_id": "prod-cafe-descafeinado",
+        "delta": -1,
+        "stock_after": 6,
+        "reason": "sale",
+        "reference": "d72974e4-0ab7-4749-92df-d74a3230c410",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.010Z"
+      },
+      {
+        "id": "fbba5a2a-1b6d-413f-b11b-140ec44fa097",
+        "variant_id": "var-cafe-olla-500",
+        "product_id": "prod-cafe-olla",
+        "delta": -2,
+        "stock_after": 18,
+        "reason": "sale",
+        "reference": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.054Z"
+      },
+      {
+        "id": "11694733-3491-4758-bdf3-684c1c508747",
+        "variant_id": "var-pinole",
+        "product_id": "prod-pinole",
+        "delta": -2,
+        "stock_after": 17,
+        "reason": "sale",
+        "reference": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.054Z"
+      },
+      {
+        "id": "bd104beb-24ee-4007-b4c1-f55af3b48200",
+        "variant_id": "var-salsa-macha",
+        "product_id": "prod-salsa-macha",
+        "delta": -1,
+        "stock_after": 37,
+        "reason": "sale",
+        "reference": "1aa2eb30-c56c-4e5b-8c90-6619fde6b2cd",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.093Z"
+      },
+      {
+        "id": "a4eec180-9430-4b4e-853d-a004f6f4b480",
+        "variant_id": "var-cajeta",
+        "product_id": "prod-cajeta",
+        "delta": -3,
+        "stock_after": 8,
+        "reason": "sale",
+        "reference": "2959aaa6-b223-42f4-ab92-d935a7aeb300",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.188Z"
+      },
+      {
+        "id": "bf63c67f-eaf8-4ecd-b0b7-af88c6951cd3",
+        "variant_id": "var-salsa-morita",
+        "product_id": "prod-salsa-morita",
+        "delta": -1,
+        "stock_after": 28,
+        "reason": "sale",
+        "reference": "1add9bb1-b1e3-4999-89bd-253a99ca6c35",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.225Z"
+      },
+      {
+        "id": "29df774e-f44d-4e79-bfa6-d6156a3f6b32",
+        "variant_id": "var-salsa-morita",
+        "product_id": "prod-salsa-morita",
+        "delta": 1,
+        "stock_after": 29,
+        "reason": "cancel_restore",
+        "reference": "1add9bb1-b1e3-4999-89bd-253a99ca6c35",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:34.241Z"
+      }
+    ],
+    "orders": [
+      {
+        "id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "number": 1001,
+        "access_key_hash": "d47fe46ec1d6b810d64135d3a05167203d7cc2b3335945b4f0696fd19c7d14b0",
+        "status": "delivered",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 55500,
+        "tax_minor": 7655,
+        "shipping_minor": 0,
+        "total_minor": 55500,
+        "customer_name": "Camila Torres",
+        "customer_email": "camila.torres@example.com",
+        "customer_phone": "+57 300 555 0101",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Recoger en el taller",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": "CO123456789",
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-10-31T13:20:33.953Z",
+        "paid_at": "2026-10-29T13:20:33.971Z",
+        "created_at": "2026-10-29T13:20:33.953Z",
+        "updated_at": "2026-10-29T13:20:33.992Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "d72974e4-0ab7-4749-92df-d74a3230c410",
+        "number": 1002,
+        "access_key_hash": "bf049ebd140166754a62cda42958e59110925348aa6bee97064a31e09930661d",
+        "status": "shipped",
+        "payment_method": "cash_on_delivery",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 26000,
+        "tax_minor": 3586,
+        "shipping_minor": 9900,
+        "total_minor": 35900,
+        "customer_name": "Andrés Gómez",
+        "customer_email": "andres.gomez@example.com",
+        "customer_phone": "+57 311 555 0102",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Standard shipping",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": "CO123456789",
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-10-31T13:20:34.010Z",
+        "paid_at": "2026-10-29T13:20:34.023Z",
+        "created_at": "2026-10-29T13:20:34.010Z",
+        "updated_at": "2026-10-29T13:20:34.038Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "number": 1003,
+        "access_key_hash": "0a256c46dce968999b50f843a9284681cba851e3aef302ba0f6aa371b72fee6b",
+        "status": "processing",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 50000,
+        "tax_minor": 6897,
+        "shipping_minor": 9900,
+        "total_minor": 59900,
+        "customer_name": "Laura Martínez",
+        "customer_email": "laura.martinez@example.com",
+        "customer_phone": "+57 312 555 0103",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Envío estándar",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-10-31T13:20:34.054Z",
+        "paid_at": "2026-10-29T13:20:34.068Z",
+        "created_at": "2026-10-29T13:20:34.054Z",
+        "updated_at": "2026-10-29T13:20:34.075Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "1aa2eb30-c56c-4e5b-8c90-6619fde6b2cd",
+        "number": 1004,
+        "access_key_hash": "d793fd32c3bf291a1b1fb0e766fec196ee3c589a6298571fc47899b1f3067700",
+        "status": "pending_payment",
+        "payment_method": "whatsapp",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 12000,
+        "tax_minor": 1655,
+        "shipping_minor": 0,
+        "total_minor": 12000,
+        "customer_name": "Sofía Herrera",
+        "customer_email": "sofia.herrera@example.com",
+        "customer_phone": "+57 313 555 0104",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Workshop pickup",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-10-31T13:20:34.093Z",
+        "paid_at": null,
+        "created_at": "2026-10-29T13:20:34.093Z",
+        "updated_at": "2026-10-29T13:20:34.093Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "2959aaa6-b223-42f4-ab92-d935a7aeb300",
+        "number": 1005,
+        "access_key_hash": "0cfc4ab6047d12d317af1cbda498459e46c2f53902c751498fc158b40c733598",
+        "status": "paid",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 39000,
+        "tax_minor": 5379,
+        "shipping_minor": 9900,
+        "total_minor": 48900,
+        "customer_name": "Daniel Pérez",
+        "customer_email": "daniel.perez@example.com",
+        "customer_phone": "+57 314 555 0105",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-flat",
+        "shipping_method_name": "Envío estándar",
+        "shipping_address_json": "{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 0,
+        "expires_at": "2026-10-31T13:20:34.188Z",
+        "paid_at": "2026-10-29T13:20:34.204Z",
+        "created_at": "2026-10-29T13:20:34.188Z",
+        "updated_at": "2026-10-29T13:20:34.204Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      },
+      {
+        "id": "1add9bb1-b1e3-4999-89bd-253a99ca6c35",
+        "number": 1006,
+        "access_key_hash": "04db2edd02e7ef31f07cd7ae32d67558fe0f91388ff7b77dba5cfed79422228b",
+        "status": "cancelled",
+        "payment_method": "bank_transfer",
+        "payment_reference": null,
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 11000,
+        "tax_minor": 1517,
+        "shipping_minor": 0,
+        "total_minor": 11000,
+        "customer_name": "Valentina Cruz",
+        "customer_email": "valentina.cruz@example.com",
+        "customer_phone": "+57 315 555 0106",
+        "whatsapp_opt_in": 0,
+        "marketing_consent": 0,
+        "billing_json": "{}",
+        "shipping_method_id": "ship-pickup",
+        "shipping_method_name": "Workshop pickup",
+        "shipping_address_json": "{}",
+        "customer_note": "",
+        "tracking_code": null,
+        "attribution_json": "{}",
+        "stock_released": 1,
+        "expires_at": "2026-10-31T13:20:34.225Z",
+        "paid_at": null,
+        "created_at": "2026-10-29T13:20:34.225Z",
+        "updated_at": "2026-10-29T13:20:34.241Z",
+        "ga_client_id": null,
+        "ga_session_id": null,
+        "payment_receipt_key": null,
+        "payment_receipt_at": null
+      }
+    ],
+    "order_items": [
+      {
+        "id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e:0",
+        "order_id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "product_id": "prod-cafe-altura",
+        "variant_id": "var-cafe-altura-grano",
+        "product_name": "Café de altura de Coatepec",
+        "variant_label": "En grano",
+        "sku": "CAFALT-GRA",
+        "image_media_id": null,
+        "unit_price_minor": 23000,
+        "unit_cost_minor": 11000,
+        "quantity": 2,
+        "line_total_minor": 46000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 6345,
+        "stock_tracked": 1
+      },
+      {
+        "id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e:1",
+        "order_id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "product_id": "prod-mermelada-higo",
+        "variant_id": "var-mermelada-higo",
+        "product_name": "Mermelada de higo",
+        "variant_label": "",
+        "sku": "MERMELADAHIGO-U",
+        "image_media_id": null,
+        "unit_price_minor": 9500,
+        "unit_cost_minor": 3500,
+        "quantity": 1,
+        "line_total_minor": 9500,
+        "tax_rate_bp": 1600,
+        "tax_minor": 1310,
+        "stock_tracked": 1
+      },
+      {
+        "id": "d72974e4-0ab7-4749-92df-d74a3230c410:0",
+        "order_id": "d72974e4-0ab7-4749-92df-d74a3230c410",
+        "product_id": "prod-cafe-descafeinado",
+        "variant_id": "var-cafe-desc-250",
+        "product_name": "Water-process decaf",
+        "variant_label": "250 g",
+        "sku": "CAFDES-250",
+        "image_media_id": null,
+        "unit_price_minor": 26000,
+        "unit_cost_minor": 13000,
+        "quantity": 1,
+        "line_total_minor": 26000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 3586,
+        "stock_tracked": 1
+      },
+      {
+        "id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8:0",
+        "order_id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "product_id": "prod-cafe-olla",
+        "variant_id": "var-cafe-olla-500",
+        "product_name": "Café de olla molido",
+        "variant_label": "500 g",
+        "sku": "CAFOLL-500",
+        "image_media_id": null,
+        "unit_price_minor": 16000,
+        "unit_cost_minor": 7000,
+        "quantity": 2,
+        "line_total_minor": 32000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 4414,
+        "stock_tracked": 1
+      },
+      {
+        "id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8:1",
+        "order_id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "product_id": "prod-pinole",
+        "variant_id": "var-pinole",
+        "product_name": "Pinole",
+        "variant_label": "",
+        "sku": "PINOLE-U",
+        "image_media_id": null,
+        "unit_price_minor": 9000,
+        "unit_cost_minor": 3500,
+        "quantity": 2,
+        "line_total_minor": 18000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 2483,
+        "stock_tracked": 1
+      },
+      {
+        "id": "1aa2eb30-c56c-4e5b-8c90-6619fde6b2cd:0",
+        "order_id": "1aa2eb30-c56c-4e5b-8c90-6619fde6b2cd",
+        "product_id": "prod-salsa-macha",
+        "variant_id": "var-salsa-macha",
+        "product_name": "Salsa macha",
+        "variant_label": "",
+        "sku": "SALSAMACHA-U",
+        "image_media_id": null,
+        "unit_price_minor": 12000,
+        "unit_cost_minor": 4500,
+        "quantity": 1,
+        "line_total_minor": 12000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 1655,
+        "stock_tracked": 1
+      },
+      {
+        "id": "2959aaa6-b223-42f4-ab92-d935a7aeb300:0",
+        "order_id": "2959aaa6-b223-42f4-ab92-d935a7aeb300",
+        "product_id": "prod-cajeta",
+        "variant_id": "var-cajeta",
+        "product_name": "Cajeta de Celaya",
+        "variant_label": "",
+        "sku": "CAJETA-U",
+        "image_media_id": null,
+        "unit_price_minor": 13000,
+        "unit_cost_minor": 5500,
+        "quantity": 3,
+        "line_total_minor": 39000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 5379,
+        "stock_tracked": 1
+      },
+      {
+        "id": "1add9bb1-b1e3-4999-89bd-253a99ca6c35:0",
+        "order_id": "1add9bb1-b1e3-4999-89bd-253a99ca6c35",
+        "product_id": "prod-salsa-morita",
+        "variant_id": "var-salsa-morita",
+        "product_name": "Morita chilli salsa",
+        "variant_label": "",
+        "sku": "SALSAMORITA-U",
+        "image_media_id": null,
+        "unit_price_minor": 11000,
+        "unit_cost_minor": 4000,
+        "quantity": 1,
+        "line_total_minor": 11000,
+        "tax_rate_bp": 1600,
+        "tax_minor": 1517,
+        "stock_tracked": 1
+      }
+    ],
+    "order_events": [
+      {
+        "id": "70ed50b7-f8a2-4cd4-8af4-2acf8e845837",
+        "order_id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:33.953Z"
+      },
+      {
+        "id": "fb2d7f9c-7623-4e2a-8886-10e838e174d1",
+        "order_id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:33.971Z"
+      },
+      {
+        "id": "002eb25f-266f-4f51-9986-9badcb2711af",
+        "order_id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:33.978Z"
+      },
+      {
+        "id": "56a2fa71-4dfb-453c-9e8a-866874a1dc6c",
+        "order_id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "type": "status_shipped",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:33.985Z"
+      },
+      {
+        "id": "01df970d-51f9-447e-a69d-0548b6ffbf2f",
+        "order_id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "type": "status_delivered",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:33.992Z"
+      },
+      {
+        "id": "05e43ac8-5370-4f20-8253-9c190364b939",
+        "order_id": "d72974e4-0ab7-4749-92df-d74a3230c410",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.010Z"
+      },
+      {
+        "id": "50934850-43a7-4865-8067-87a1cef6c204",
+        "order_id": "d72974e4-0ab7-4749-92df-d74a3230c410",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:34.023Z"
+      },
+      {
+        "id": "b6fa7d71-da14-4d40-8dc6-f4ebe725d636",
+        "order_id": "d72974e4-0ab7-4749-92df-d74a3230c410",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:34.030Z"
+      },
+      {
+        "id": "34fe6632-adca-4a1c-a78e-edd8f61f134f",
+        "order_id": "d72974e4-0ab7-4749-92df-d74a3230c410",
+        "type": "status_shipped",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:34.038Z"
+      },
+      {
+        "id": "b5f05197-886e-442f-941b-7618e23ca16c",
+        "order_id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.054Z"
+      },
+      {
+        "id": "747cc525-40b4-451d-a4ee-63f6b957a922",
+        "order_id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:34.068Z"
+      },
+      {
+        "id": "c3825e15-9033-4f58-ac7d-40d5b2a38d3b",
+        "order_id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "type": "status_processing",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:34.075Z"
+      },
+      {
+        "id": "68af00f1-2836-4c62-9010-0c254be409bf",
+        "order_id": "1aa2eb30-c56c-4e5b-8c90-6619fde6b2cd",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.093Z"
+      },
+      {
+        "id": "67972873-f92a-402c-a257-aaf4cf257a39",
+        "order_id": "2959aaa6-b223-42f4-ab92-d935a7aeb300",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.188Z"
+      },
+      {
+        "id": "1bf1945d-2b60-44b0-a03d-37cd6ae13444",
+        "order_id": "2959aaa6-b223-42f4-ab92-d935a7aeb300",
+        "type": "payment_confirmed",
+        "note": null,
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:34.204Z"
+      },
+      {
+        "id": "3b51299a-cf27-4201-b536-91e92b4c9de3",
+        "order_id": "1add9bb1-b1e3-4999-89bd-253a99ca6c35",
+        "type": "placed",
+        "note": null,
+        "actor": "customer",
+        "created_at": "2026-10-29T13:20:34.225Z"
+      },
+      {
+        "id": "3841da5c-f18e-44b9-90de-6fb611eac714",
+        "order_id": "1add9bb1-b1e3-4999-89bd-253a99ca6c35",
+        "type": "status_cancelled",
+        "note": "",
+        "actor": "demo-account",
+        "created_at": "2026-10-29T13:20:34.241Z"
+      }
+    ],
+    "order_counter": [
+      {
+        "id": 1,
+        "last_number": 1006
+      }
+    ],
+    "invoice_counters": [
+      {
+        "series": "A",
+        "last_number": 4
+      }
+    ],
+    "invoices": [
+      {
+        "id": "3f84f053-5eeb-46e4-899f-484a3b1f18ee",
+        "order_id": "ff10d8ae-2b92-4b15-86f4-171c86ecb97e",
+        "series": "A",
+        "number": 1,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 55500,
+        "tax_minor": 7655,
+        "shipping_minor": 0,
+        "total_minor": 55500,
+        "seller_json": "{\"legalName\":\"Comal\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Xalapeños Ilustres 200, Xalapa, Ver.\",\"phone\":\"+52 228 000 0000\",\"email\":\"facturacion@comal.mx\"}",
+        "buyer_json": "{\"name\":\"Camila Torres\",\"email\":\"camila.torres@example.com\",\"phone\":\"+57 300 555 0101\",\"taxId\":null,\"legalName\":null,\"address\":{}}",
+        "lines_json": "[{\"description\":\"Café de altura de Coatepec (En grano)\",\"quantity\":2,\"unitPriceMinor\":23000,\"taxRateBp\":1600,\"taxMinor\":6345,\"lineTotalMinor\":46000},{\"description\":\"Mermelada de higo\",\"quantity\":1,\"unitPriceMinor\":9500,\"taxRateBp\":1600,\"taxMinor\":1310,\"lineTotalMinor\":9500}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":47845,\"taxMinor\":7655}]",
+        "pdf_key": "invoices/3f84f053-5eeb-46e4-899f-484a3b1f18ee.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T13:20:34.121Z",
+        "updated_at": "2026-10-29T13:20:40.599Z"
+      },
+      {
+        "id": "ccba62ec-2ac0-483e-b70c-cd74dc2d5191",
+        "order_id": "d72974e4-0ab7-4749-92df-d74a3230c410",
+        "series": "A",
+        "number": 2,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "en",
+        "prices_include_tax": 1,
+        "subtotal_minor": 26000,
+        "tax_minor": 3586,
+        "shipping_minor": 9900,
+        "total_minor": 35900,
+        "seller_json": "{\"legalName\":\"Comal\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Xalapeños Ilustres 200, Xalapa, Ver.\",\"phone\":\"+52 228 000 0000\",\"email\":\"facturacion@comal.mx\"}",
+        "buyer_json": "{\"name\":\"Andrés Gómez\",\"email\":\"andres.gomez@example.com\",\"phone\":\"+57 311 555 0102\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Water-process decaf (250 g)\",\"quantity\":1,\"unitPriceMinor\":26000,\"taxRateBp\":1600,\"taxMinor\":3586,\"lineTotalMinor\":26000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":22414,\"taxMinor\":3586}]",
+        "pdf_key": "invoices/ccba62ec-2ac0-483e-b70c-cd74dc2d5191.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T13:20:34.140Z",
+        "updated_at": "2026-10-29T13:20:41.772Z"
+      },
+      {
+        "id": "90c12a30-19b4-4fc0-ac09-ed41aaf47995",
+        "order_id": "fdee1e8b-596e-4bd0-b8b0-381c2a14aed8",
+        "series": "A",
+        "number": 3,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 50000,
+        "tax_minor": 6897,
+        "shipping_minor": 9900,
+        "total_minor": 59900,
+        "seller_json": "{\"legalName\":\"Comal\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Xalapeños Ilustres 200, Xalapa, Ver.\",\"phone\":\"+52 228 000 0000\",\"email\":\"facturacion@comal.mx\"}",
+        "buyer_json": "{\"name\":\"Laura Martínez\",\"email\":\"laura.martinez@example.com\",\"phone\":\"+57 312 555 0103\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Café de olla molido (500 g)\",\"quantity\":2,\"unitPriceMinor\":16000,\"taxRateBp\":1600,\"taxMinor\":4414,\"lineTotalMinor\":32000},{\"description\":\"Pinole\",\"quantity\":2,\"unitPriceMinor\":9000,\"taxRateBp\":1600,\"taxMinor\":2483,\"lineTotalMinor\":18000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":43103,\"taxMinor\":6897}]",
+        "pdf_key": "invoices/90c12a30-19b4-4fc0-ac09-ed41aaf47995.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T13:20:34.161Z",
+        "updated_at": "2026-10-29T13:20:43.736Z"
+      },
+      {
+        "id": "22a32966-9615-42be-92d5-7504d66dfa4a",
+        "order_id": "2959aaa6-b223-42f4-ab92-d935a7aeb300",
+        "series": "A",
+        "number": 4,
+        "status": "issued",
+        "currency": "MXN",
+        "locale": "es",
+        "prices_include_tax": 1,
+        "subtotal_minor": 39000,
+        "tax_minor": 5379,
+        "shipping_minor": 9900,
+        "total_minor": 48900,
+        "seller_json": "{\"legalName\":\"Comal\",\"taxId\":\"XAXX010101000\",\"taxIdType\":\"RFC\",\"taxRegime\":\"Régimen Simplificado de Confianza\",\"address\":\"Calle Xalapeños Ilustres 200, Xalapa, Ver.\",\"phone\":\"+52 228 000 0000\",\"email\":\"facturacion@comal.mx\"}",
+        "buyer_json": "{\"name\":\"Daniel Pérez\",\"email\":\"daniel.perez@example.com\",\"phone\":\"+57 314 555 0105\",\"taxId\":null,\"legalName\":null,\"address\":{\"line1\":\"Av. Insurgentes Sur 300\",\"line2\":\"Int. 4\",\"city\":\"Ciudad de México\",\"region\":\"CDMX\",\"postalCode\":\"06700\",\"country\":\"MX\"}}",
+        "lines_json": "[{\"description\":\"Cajeta de Celaya\",\"quantity\":3,\"unitPriceMinor\":13000,\"taxRateBp\":1600,\"taxMinor\":5379,\"lineTotalMinor\":39000}]",
+        "tax_breakdown_json": "[{\"rateBp\":1600,\"baseMinor\":33621,\"taxMinor\":5379}]",
+        "pdf_key": "invoices/22a32966-9615-42be-92d5-7504d66dfa4a.pdf",
+        "legal_provider": null,
+        "legal_reference": null,
+        "legal_status": "not_applicable",
+        "legal_message": null,
+        "void_reason": null,
+        "issued_at": "2026-10-29T13:20:43.757Z",
+        "updated_at": "2026-10-29T13:20:49.859Z"
+      }
+    ],
+    "email_templates": [],
+    "pages": [
+      {
+        "id": "home",
+        "slug": "home",
+        "kind": "system",
+        "title_json": "{\"es\":\"Inicio\",\"en\":\"Home\"}",
+        "seo_title_json": "{\"es\":\"\",\"en\":\"\"}",
+        "seo_description_json": "{\"es\":\"\",\"en\":\"\"}",
+        "sections_json": "[{\"id\":\"home-hero\",\"type\":\"hero_carousel\",\"enabled\":true,\"config\":{\"slides\":[{\"image\":\"5b282974-864e-44cf-ac28-e1b6618a6275\",\"title\":{\"es\":\"De productores que podemos nombrar\",\"en\":\"From producers we can name\"},\"subtitle\":{\"es\":\"Café, salsas y conservas de Veracruz, Oaxaca y Puebla.\",\"en\":\"Coffee, salsas and preserves from Veracruz, Oaxaca and Puebla.\"},\"cta\":{\"href\":\"/shop\",\"label\":{\"es\":\"Ver la despensa\",\"en\":\"See the pantry\"}}},{\"image\":\"71d68dd5-267c-4019-b9a5-da2db4e6c251\",\"title\":{\"es\":\"Tostamos los martes\",\"en\":\"We roast on Tuesdays\"},\"subtitle\":{\"es\":\"El café sale al día siguiente de tostarse, no antes.\",\"en\":\"The coffee ships the day after it is roasted, not before.\"},\"cta\":{\"href\":\"/shop\",\"label\":{\"es\":\"Ver el café\",\"en\":\"See the coffee\"}}}],\"autoplaySeconds\":7,\"layout\":\"bleed\"}},{\"id\":\"home-new\",\"type\":\"featured_products\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Lo que salió esta semana\",\"en\":\"Out of the kitchen this week\"},\"source\":\"newest\",\"categoryIds\":[],\"productIds\":[],\"limit\":8,\"layout\":\"flush\"}},{\"id\":\"home-categories\",\"type\":\"category_grid\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"La despensa\",\"en\":\"The pantry\"},\"categoryIds\":[],\"layout\":\"flush\"}},{\"id\":\"home-promo\",\"type\":\"promo_banner\",\"enabled\":true,\"config\":{\"image\":null,\"title\":{\"es\":\"Cada frasco lleva lote y fecha\",\"en\":\"Every jar carries its batch and date\"},\"text\":{\"es\":\"Si algo llega roto, se repone sin devolución y sin discutir.\",\"en\":\"If something arrives broken we replace it, with no return and no argument.\"},\"cta\":{\"href\":\"/shop\",\"label\":{\"es\":\"Ver la despensa\",\"en\":\"See the pantry\"}},\"align\":\"left\",\"layout\":\"plain\"}},{\"id\":\"home-badges\",\"type\":\"trust_badges\",\"enabled\":true,\"config\":{\"items\":[{\"icon\":\"truck\",\"text\":{\"es\":\"Envíos a todo México en 3 a 5 días\",\"en\":\"Across Mexico in 3 to 5 days\"}},{\"icon\":\"return\",\"text\":{\"es\":\"Se repone lo que llegue roto\",\"en\":\"Broken on arrival is replaced\"}},{\"icon\":\"lock\",\"text\":{\"es\":\"Pago en OXXO o transferencia\",\"en\":\"Pay at OXXO or by transfer\"}},{\"icon\":\"chat\",\"text\":{\"es\":\"Xalapa, Veracruz\",\"en\":\"Xalapa, Veracruz\"}}],\"layout\":\"line\"}},{\"id\":\"home-testimonials\",\"type\":\"testimonials\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"Lo que dicen\",\"en\":\"What people say\"},\"includeGoogle\":false,\"includeManual\":true,\"limit\":3,\"layout\":\"cards\"}},{\"id\":\"home-whatsapp\",\"type\":\"whatsapp_cta\",\"enabled\":true,\"config\":{\"title\":{\"es\":\"¿Quieres el café de otro tueste?\",\"en\":\"Want the coffee from another roast?\"},\"text\":{\"es\":\"Escríbenos antes del martes y lo apartamos del siguiente.\",\"en\":\"Write before Tuesday and we will set some aside from the next one.\"},\"buttonLabel\":{\"es\":\"Escribir por WhatsApp\",\"en\":\"Chat on WhatsApp\"},\"layout\":\"card\"}}]",
+        "is_published": 1,
+        "updated_at": "2026-10-29T13:46:30.656Z"
+      }
+    ],
+    "testimonials": [
+      {
+        "id": "7d7baf5a-2574-4ee6-9b01-0c950fff4aff",
+        "author_name": "Jorge M.",
+        "rating": 5,
+        "body": "El café llegó tostado hacía tres días. Se nota muchísimo contra el del súper.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 0,
+        "created_at": "2026-10-29T13:20:35.485Z"
+      },
+      {
+        "id": "599b0aec-26f0-4dae-8391-a4e6b0a52b5d",
+        "author_name": "Rocío H.",
+        "rating": 5,
+        "body": "La salsa macha se acabó en una semana en mi casa. Ya pedí dos más.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 1,
+        "created_at": "2026-10-29T13:20:35.494Z"
+      },
+      {
+        "id": "99c946d3-78c0-45b4-b4cd-56054f2f0633",
+        "author_name": "Luis A.",
+        "rating": 4,
+        "body": "La miel se cristalizó y pensé que estaba mal, hasta que leí la explicación. Buenísima.",
+        "locale": "es",
+        "avatar_media_id": null,
+        "is_visible": 1,
+        "position": 2,
+        "created_at": "2026-10-29T13:20:35.504Z"
+      }
+    ],
+    "daily_metrics": []
+  },
+  "media": [
+    "media/5b282974-864e-44cf-ac28-e1b6618a6275/1024.jpg",
+    "media/71d68dd5-267c-4019-b9a5-da2db4e6c251/1024.jpg",
+    "media/5daa9b0c-e03a-4b61-9ace-deae11e3e10d/1024.jpg",
+    "media/0dbcd225-a993-4c59-b79c-ff75659c5a5b/1024.jpg",
+    "media/58edda4d-55bf-4442-81e3-a1246086a12e/1024.jpg",
+    "media/4a481ae2-e0fe-45b0-9519-4a349bd1fbff/1024.jpg",
+    "media/fc6d81a0-0be7-4943-8bb9-d7305b553309/1024.jpg",
+    "media/26e75461-26f7-411c-8f4b-952ce94737bf/1024.jpg",
+    "media/d53e65f8-68a3-4829-8770-6b05b6453001/1024.jpg",
+    "media/6516b030-752d-429f-8910-bb26c71ec614/1024.jpg",
+    "media/10f2dd93-d6db-4efd-a6ca-0391a688c890/1024.jpg",
+    "media/d79f2d95-6781-4c42-9cfe-ab88c1621522/1024.jpg",
+    "media/ecd38541-667c-4f31-b8ea-88c425b016ee/1024.jpg",
+    "media/da91302a-4f80-41d3-8a8b-c27bedb8d60b/1024.jpg",
+    "media/42e78380-b82e-43b3-b595-d9df4145b47d/1024.jpg",
+    "media/e22af413-5df9-407d-8f6b-c3b4d2eac50c/1024.jpg",
+    "media/f076f590-0d6b-4c82-8fd8-d0a3d7141503/1024.jpg",
+    "media/da1c142a-0f90-496a-ba71-15ea5466b440/1024.jpg"
+  ]
+}

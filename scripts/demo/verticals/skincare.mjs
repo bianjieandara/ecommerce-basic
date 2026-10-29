@@ -477,9 +477,51 @@ const testimonials = [
   ['Andrea V.', 4, 'es', 'El bálsamo dura muchísimo. El frasco del tónico sí me gustaría más grande.'],
 ];
 
+/**
+ * What every photograph of this store has in common. Plain amber and clear glass photographs cleanly; a jar asked for by
+ * name comes back with an invented label, so the creams and balms are shown open, as contents rather than packaging.
+ */
+const photoStyle =
+  'on a pale grey-green stone surface, plain off-white background, soft diffused daylight, single subject centred, square composition, quiet minimal still life, muted natural colours, shallow depth of field';
+
+/** The subject of each picture. The key is the row it belongs to; `hero` is the banner. */
+const photos = {
+  hero: [
+    'a quiet arrangement of plain amber glass bottles of different heights, a bar of soap and sprigs of dried chamomile, seen from above on stone',
+  ],
+  categories: {
+    'cat-rostro': 'a plain amber glass dropper bottle and an open ceramic jar of pale cream grouped together',
+    'cat-cuerpo': 'a rough cut bar of soap and a tall plain glass bottle of golden oil on a stone slab',
+    'cat-labios': 'two small open round tins of pale balm on a pale stone dish',
+    'cat-kits': 'a group of five plain amber glass bottles of different sizes on kraft paper',
+  },
+  products: {
+    'prod-aceite-rosa': 'a small plain amber glass dropper bottle of face oil standing upright',
+    'prod-tonico-manzanilla':
+      'a tall plain clear glass bottle of pale golden toner with dried chamomile flowers beside it',
+    'prod-crema-nopal': 'an open ceramic jar of pale green cream with a smooth dollop on a stone spatula',
+    'prod-limpiador-avena':
+      'a shallow ceramic bowl of creamy oat cleanser with whole oats scattered beside it',
+    'prod-jabon-avena':
+      'a rough cut bar of oat and honey soap on a stone dish, loose oats scattered around it',
+    'prod-aceite-almendra':
+      'a slim plain clear glass bottle of golden body oil with sprigs of dried lavender beside it',
+    'prod-exfoliante-cafe':
+      'a ceramic bowl of coffee grounds scrub with a wooden spoon and loose coffee beans beside it',
+    'prod-balsamo-labios':
+      'a small open round tin of pale balm on a stone dish with pieces of beeswax beside it',
+    'prod-manteca-cacao': 'a small open round tin of cocoa butter balm with cocoa beans beside it',
+    'prod-kit-esencial': 'three plain amber glass bottles of different heights grouped close together',
+    'prod-kit-viaje': 'four small plain amber glass bottles standing in a row on a folded cotton pouch',
+    'prod-kit-regalo': 'five plain amber glass bottles and a bar of soap arranged on kraft paper with twine',
+  },
+};
+
 export default {
   slug: 'demo-skincare',
   storeName: 'Raíz',
+  photoStyle,
+  photos,
   theme,
   home,
   testimonials,
