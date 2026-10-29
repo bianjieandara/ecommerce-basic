@@ -62,7 +62,7 @@ jobs:
         run: |
           raw="$CF_CREDENTIAL"
           trimmed="$(printf '%s' "$raw" | tr -d '[:space:]')"
-          echo "length: ${#raw} raw, ${#trimmed} trimmed  (API token 40, Global API Key 37)"
+          echo "length: ${#raw} raw, ${#trimmed} trimmed  (API token 53 with the CFUT_ prefix, or 40 without; Global API Key 37)"
           printf '%s' "$trimmed" | grep -qE '^[0-9a-f]{37}$' && echo "looks like: a Global API Key" || echo "looks like: not a Global API Key"
           others="$(printf '%s' "$trimmed" | tr -d '[:alnum:]' | fold -w1 | sort -u | while read -r c; do printf '%s ' "$(printf '%s' "$c" | od -An -tx1 | tr -d ' ')"; done)"
           echo "non-alphanumeric bytes: ${others:-none}  (an API token allows only 5f _ 2d - 2e .)"
