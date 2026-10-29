@@ -367,6 +367,10 @@ const products = [
 export default {
   slug: 'demo-ropa',
   storeName: 'Casa Mina',
+  seoDescription: {
+    es: 'Ropa de diario hecha en Guadalajara en tiradas de 30 piezas. Envíos a todo México y cambios en 10 días.',
+    en: 'Everyday clothing made in Guadalajara in runs of 30. Shipping across Mexico, exchanges within 10 days.',
+  },
   settings,
   attributes,
   categories,

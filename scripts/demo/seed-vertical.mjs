@@ -35,7 +35,9 @@ export async function loadVertical(slug) {
   return module.default;
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+// process.argv[1] is undefined under `node -e`, so the guard checks it before building a file URL: another script must be
+// able to import loadVertical without running the CLI.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const argv = process.argv.slice(2);
   const slug = argv.find((argument) => !argument.startsWith('--'));
   if (!slug) throw new Error('Usage: node scripts/demo/seed-vertical.mjs <slug> [--out <file>] [--apply]');

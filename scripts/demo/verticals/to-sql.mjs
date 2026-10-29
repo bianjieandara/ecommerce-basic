@@ -111,6 +111,17 @@ function perLocale(text) {
 export function verticalToSql(vertical) {
   const settings = { ...MEXICO_SETTINGS, ...vertical.settings };
   settings.general = { ...MEXICO_SETTINGS.general, ...vertical.settings.general };
+  // Without a saved seo group every page but the home reads "… | Tienda": the shipped default template says that literally
+  // (seoSettings in settings-schemas.ts), not the store's name. Deriving it here means no demo can forget it.
+  settings.seo = {
+    titleTemplate: {
+      es: `%s | ${vertical.storeName}`,
+      en: `%s | ${vertical.storeName}`,
+    },
+    defaultDescription: vertical.seoDescription,
+    ogImageMediaId: null,
+    ...vertical.settings.seo,
+  };
   const shipping = vertical.shipping ?? MEXICO_SHIPPING;
   const parts = [
     `-- ${vertical.storeName}: the catalogue of the "${vertical.slug}" demo store.`,
