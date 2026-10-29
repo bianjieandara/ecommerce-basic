@@ -1017,3 +1017,11 @@ Measured on a copy of the demo database grown to 5,000 products (SQLite, so quer
 - **`TESTIMONIAL_LAYOUTS`**: `cards` (unchanged default) and `quiet` — no card, no background, no stars; the quote set in the display face above its author, parted by a rule.
 - **`quiet` gives up the rating, on purpose.** The stars are what make a quote read as a widget; without them the words have to carry it, which is the point. A store that wants the rating on the home page keeps `cards`. Nothing is lost elsewhere: the ratings still reach search engines through the product structured data, and the seller card on the product page carries the Google rating.
 - **Checked.** `npm run check` and `npm run build` pass. The local preview page renders all four: one icon row and one text line, then three carded quotes with their star groups and three quiet ones with none, each with the blockquote class its layout asks for.
+
+## 2026-10-28 — The promotion and the WhatsApp block finish the set
+
+- **Why.** With everything else able to change shape, these two were the last sections that always arrived the same: a dark rounded card with a button, and a grey rounded band with a black pill. On a page where nothing else is a card any more, they were the two that still looked bought.
+- **`PROMO_LAYOUTS`**: `card` (unchanged default), `bleed` (the same band with square corners, reaching both edges) and `plain` — no picture and no fill, the offer set as type between two rules. `plain` ignores the chosen picture rather than hiding the chooser, so turning the layout back restores the banner as it was.
+- **`CTA_LAYOUTS`**: `card` (unchanged default) and `line` — a rule, the question on the left and a text link on the right. A store that answers on WhatsApp all day does not need to sell the idea with a pill.
+- **Every home section now carries a Layout choice**: hero, products, categories, benefits, quotes, promotion and WhatsApp. Every default is what the storefront already drew, so no deployed store changes by itself.
+- **Checked.** `npm run check` and `npm run build` pass; the local preview page renders all five new arrangements with the frame each layout asks for.

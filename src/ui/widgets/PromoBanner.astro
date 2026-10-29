@@ -1,7 +1,9 @@
 ---
-// Promo banner: one wide picture with a headline, a line of text and a button, for an offer or a campaign.
+// Promo banner: one wide picture with a headline, a line of text and a button, for an offer or a campaign. "plain"
+// ignores the picture and sets the offer as type between two rules, for a store that does not shout.
 import CtaLink from '@/ui/components/CtaLink.astro';
 import SectionPicture from '@/ui/components/SectionPicture.astro';
+import { promoLayoutOf } from '@/domain/content/section-layouts';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { localizedHref } from '@/ui/lib/localized-href';
 import type { WidgetProps } from './types';
@@ -13,34 +15,45 @@ const config = section.config as {
   text?: LocalizedText;
   cta?: { href: string; label: LocalizedText } | null;
   align?: 'left' | 'center';
+  layout?: string;
 };
-const image = config.image ? data.media?.[config.image] : undefined;
+const layout = promoLayoutOf(config.layout);
+const image = layout === 'plain' || !config.image ? undefined : data.media?.[config.image];
 const centered = config.align === 'center';
+// The two picture layouts share everything but their frame; "plain" keeps the page's own colours and no fill at all.
+const FRAMES = {
+  card: 'relative flex min-h-80 items-center overflow-hidden rounded-card md:min-h-112',
+  bleed: 'full-bleed relative flex min-h-80 items-center overflow-hidden md:min-h-112',
+  plain: 'border-y border-text/15 py-12 md:py-16',
+};
+const fill = layout === 'plain' ? '' : image ? 'bg-text text-white' : 'bg-primary text-on-primary';
 ---
 
-<section
-  data-reveal
-  class={`relative flex min-h-80 items-center overflow-hidden rounded-card md:min-h-112 ${image ? 'bg-text text-white' : 'bg-primary text-on-primary'}`}
->
+<section data-reveal class={`${FRAMES[layout]} ${fill}`}>
   {image && (
     <>
       <SectionPicture
         image={image}
-        sizes="(min-width: 1152px) 1152px, 100vw"
+        sizes={layout === 'bleed' ? '100vw' : '(min-width: 1152px) 1152px, 100vw'}
         class="absolute inset-0 h-full w-full object-cover"
       />
       <div class="absolute inset-0 bg-black/45" />
     </>
   )}
   <div
-    class={`relative flex w-full flex-col gap-5 p-8 md:p-16 ${centered ? 'items-center text-center' : 'items-start'}`}
+    class={`relative flex w-full flex-col gap-5 ${layout === 'plain' ? '' : 'p-8 md:p-16'} ${centered ? 'items-center text-center' : 'items-start'}`}
   >
     <h2 class="max-w-2xl text-2xl tracking-[-0.035em] md:text-4xl">
       {pickText(config.title, view.locale, 'es')}
     </h2>
-    <p class="max-w-lg text-base opacity-85 md:text-lg">{pickText(config.text, view.locale, 'es')}</p>
+    <p class={`max-w-lg text-base md:text-lg ${layout === 'plain' ? 'text-text/70' : 'opacity-85'}`}>
+      {pickText(config.text, view.locale, 'es')}
+    </p>
     {config.cta && (
-      <CtaLink href={localizedHref(view.locale, config.cta.href)} tone="light">
+      <CtaLink
+        href={localizedHref(view.locale, config.cta.href)}
+        tone={layout === 'plain' ? 'dark' : 'light'}
+      >
         {pickText(config.cta.label, view.locale, 'es')}
       </CtaLink>
     )}

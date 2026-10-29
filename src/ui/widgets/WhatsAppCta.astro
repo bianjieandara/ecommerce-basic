@@ -1,31 +1,52 @@
 ---
-// Call-to-action block that opens a WhatsApp chat with a prefilled message.
+// Call-to-action block that opens a WhatsApp chat with a prefilled message. "line" drops the filled band and the pill
+// for a rule and a text link, so the block asks rather than sells.
 import Icon from '@/ui/components/Icon.astro';
+import { ctaLayoutOf } from '@/domain/content/section-layouts';
 import { pickText, type LocalizedText } from '@/domain/shared/localized-text';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import type { WidgetProps } from './types';
 
 const { section, view, whatsapp } = Astro.props as WidgetProps;
-const config = section.config as { title?: LocalizedText; text?: LocalizedText; buttonLabel?: LocalizedText };
+const config = section.config as {
+  title?: LocalizedText;
+  text?: LocalizedText;
+  buttonLabel?: LocalizedText;
+  layout?: string;
+};
 const href = whatsappLink(whatsapp.number, whatsapp.message);
+const layout = ctaLayoutOf(config.layout);
+const carded = layout === 'card';
 ---
 
 {href && (
   <section
-    class="flex flex-col gap-5 rounded-card bg-surface p-6 md:flex-row md:items-center md:justify-between md:p-14"
+    class={
+      carded
+        ? 'flex flex-col gap-5 rounded-card bg-surface p-6 md:flex-row md:items-center md:justify-between md:p-14'
+        : 'flex flex-col gap-4 border-t border-text/15 pt-6 md:flex-row md:items-baseline md:justify-between'
+    }
     data-reveal
   >
     <div class="flex max-w-xl flex-col gap-3">
-      <h2 class="text-xl md:text-2xl">{pickText(config.title, view.locale, 'es')}</h2>
-      <p class="text-text/70 md:text-lg">{pickText(config.text, view.locale, 'es')}</p>
+      <h2 class={carded ? 'text-xl md:text-2xl' : 'text-lg md:text-xl'}>
+        {pickText(config.title, view.locale, 'es')}
+      </h2>
+      <p class={`text-text/70 ${carded ? 'md:text-lg' : 'text-sm md:text-base'}`}>
+        {pickText(config.text, view.locale, 'es')}
+      </p>
     </div>
     <a
       href={href}
       target="_blank"
       rel="noopener"
-      class="inline-flex min-h-14 w-full shrink-0 items-center justify-center gap-2 md:w-fit rounded-full bg-primary px-8 font-semibold text-on-primary transition hover:opacity-90"
+      class={
+        carded
+          ? 'inline-flex min-h-14 w-full shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-8 font-semibold text-on-primary transition hover:opacity-90 md:w-fit'
+          : 'inline-flex min-h-11 shrink-0 items-center gap-2 font-medium underline-offset-4 hover:underline'
+      }
     >
-      <Icon name="chat" size={20} />
+      <Icon name="chat" size={carded ? 20 : 18} />
       {pickText(config.buttonLabel, view.locale, 'es')}
     </a>
   </section>

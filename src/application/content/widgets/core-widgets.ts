@@ -3,18 +3,24 @@ import { bilingual as text, type LocalizedText } from '@/domain/shared/localized
 import {
   BADGE_LAYOUTS,
   CATEGORY_LAYOUTS,
+  CTA_LAYOUTS,
   DEFAULT_BADGE_LAYOUT,
   DEFAULT_CATEGORY_LAYOUT,
+  DEFAULT_CTA_LAYOUT,
   DEFAULT_HERO_LAYOUT,
   DEFAULT_PRODUCT_LAYOUT,
+  DEFAULT_PROMO_LAYOUT,
   DEFAULT_TESTIMONIAL_LAYOUT,
   HERO_LAYOUTS,
   PRODUCT_LAYOUTS,
+  PROMO_LAYOUTS,
   TESTIMONIAL_LAYOUTS,
   type BadgeLayout,
   type CategoryLayout,
+  type CtaLayout,
   type HeroLayout,
   type ProductLayout,
+  type PromoLayout,
   type TestimonialLayout,
 } from '@/domain/content/section-layouts';
 import type { WidgetDefinition } from './widget-types';
@@ -39,6 +45,19 @@ const HERO_LAYOUT_LABELS: Record<HeroLayout, LocalizedText> = {
   bleed: text('A sangre', 'Full bleed'),
   scene: text('Escena', 'Scene'),
   editorial: text('Editorial', 'Editorial'),
+};
+
+/** What each promotion layout is called in the page builder. */
+const PROMO_LAYOUT_LABELS: Record<PromoLayout, LocalizedText> = {
+  card: text('En tarjeta', 'Card'),
+  bleed: text('A sangre', 'Full bleed'),
+  plain: text('Solo texto', 'Text only'),
+};
+
+/** What each call-to-action layout is called in the page builder. */
+const CTA_LAYOUT_LABELS: Record<CtaLayout, LocalizedText> = {
+  card: text('En tarjeta', 'Card'),
+  line: text('Una línea', 'One line'),
 };
 
 /** What each benefits layout is called in the page builder. */
@@ -179,8 +198,14 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
           { value: 'center', label: text('Centro', 'Center') },
         ],
       },
+      {
+        name: 'layout',
+        kind: 'select',
+        label: text('Diseño', 'Layout'),
+        options: layoutOptions(PROMO_LAYOUTS, PROMO_LAYOUT_LABELS),
+      },
     ],
-    defaults: { align: 'left' },
+    defaults: { align: 'left', layout: DEFAULT_PROMO_LAYOUT },
   },
   {
     type: 'rich_text',
@@ -265,11 +290,18 @@ export const CORE_WIDGETS: WidgetDefinition[] = [
       { name: 'title', kind: 'localizedText', label: text('Título', 'Title'), max: 80 },
       { name: 'text', kind: 'localizedText', label: text('Texto', 'Text'), max: 200 },
       { name: 'buttonLabel', kind: 'localizedText', label: text('Botón', 'Button'), max: 40 },
+      {
+        name: 'layout',
+        kind: 'select',
+        label: text('Diseño', 'Layout'),
+        options: layoutOptions(CTA_LAYOUTS, CTA_LAYOUT_LABELS),
+      },
     ],
     defaults: {
       title: { es: '¿Tienes dudas?', en: 'Have questions?' },
       text: { es: 'Escríbenos y te respondemos rápido.', en: 'Message us and we will reply quickly.' },
       buttonLabel: { es: 'Escribir por WhatsApp', en: 'Chat on WhatsApp' },
+      layout: DEFAULT_CTA_LAYOUT,
     },
   },
   {

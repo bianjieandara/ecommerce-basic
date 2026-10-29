@@ -84,6 +84,36 @@ export type TestimonialLayout = (typeof TESTIMONIAL_LAYOUTS)[number];
 /** The testimonials layout used when a block says nothing. */
 export const DEFAULT_TESTIMONIAL_LAYOUT: TestimonialLayout = 'cards';
 
+/** How a promotion is drawn. */
+export const PROMO_LAYOUTS = [
+  /** A rounded card: the picture darkened under the headline and the button. */
+  'card',
+  /** The same band with square corners, reaching both edges of the window. */
+  'bleed',
+  /** No picture and no fill: the offer is a headline and a link between two rules. */
+  'plain',
+] as const;
+
+/** One promotion layout. */
+export type PromoLayout = (typeof PROMO_LAYOUTS)[number];
+
+/** The promotion layout used when a block says nothing. */
+export const DEFAULT_PROMO_LAYOUT: PromoLayout = 'card';
+
+/** How the WhatsApp block is drawn. */
+export const CTA_LAYOUTS = [
+  /** A filled band with a pill button. */
+  'card',
+  /** A line under a rule: the question on the left, a text link on the right. */
+  'line',
+] as const;
+
+/** One call-to-action layout. */
+export type CtaLayout = (typeof CTA_LAYOUTS)[number];
+
+/** The call-to-action layout used when a block says nothing. */
+export const DEFAULT_CTA_LAYOUT: CtaLayout = 'card';
+
 /**
  * Narrows a stored value to a hero layout, falling back when a page holds an older or unknown value.
  * @param value Value read from a section's config.
@@ -91,6 +121,26 @@ export const DEFAULT_TESTIMONIAL_LAYOUT: TestimonialLayout = 'cards';
  */
 export function heroLayoutOf(value: unknown): HeroLayout {
   return (HERO_LAYOUTS as readonly unknown[]).includes(value) ? (value as HeroLayout) : DEFAULT_HERO_LAYOUT;
+}
+
+/**
+ * Narrows a stored value to a promotion layout, falling back when a page holds an older or unknown value.
+ * @param value Value read from a section's config.
+ * @returns A valid promotion layout.
+ */
+export function promoLayoutOf(value: unknown): PromoLayout {
+  return (PROMO_LAYOUTS as readonly unknown[]).includes(value)
+    ? (value as PromoLayout)
+    : DEFAULT_PROMO_LAYOUT;
+}
+
+/**
+ * Narrows a stored value to a call-to-action layout, falling back when a page holds an older or unknown value.
+ * @param value Value read from a section's config.
+ * @returns A valid call-to-action layout.
+ */
+export function ctaLayoutOf(value: unknown): CtaLayout {
+  return (CTA_LAYOUTS as readonly unknown[]).includes(value) ? (value as CtaLayout) : DEFAULT_CTA_LAYOUT;
 }
 
 /**
