@@ -6,12 +6,14 @@ import { isLocale } from '@/domain/shared/locale';
 import { pickText } from '@/domain/shared/localized-text';
 import { money } from '@/domain/shared/money';
 import { PATHS } from '@/domain/shared/paths';
-import { pickNamespace, t } from '@/ui/i18n';
+import { pickNamespace, t, type DotPath } from '@/ui/i18n';
 import { renderMarkdown } from '@/ui/lib/markdown';
 import { orderEventLabel } from '@/ui/lib/order-event-label';
 import { purchaseAttribute } from '@/ui/lib/track-order';
 import { whatsappLink } from '@/ui/lib/whatsapp';
 import { loadStoreContext } from '@/http/store-context';
+import { paymentInstructions } from '@/application/ordering/order-sections';
+import type { InstructedMethod } from '@/application/ports/payments';
 import { buildTitle, contactFor, storeViewFor } from '@/http/storefront';
 import { themeToCss } from '@/ui/lib/theme-css';
 
@@ -40,6 +42,13 @@ const orderEmails = app.demo.enabled && found ? await app.demo.orderEmails.list(
 const checkoutMethods = pickNamespace(lang, 'checkout').methods;
 
 const pending = found?.order.status === 'pending_payment';
+// Methods the buyer pays by hand: one block shows the store's instructions, with the notice that belongs to each.
+const HELP_OF: Record<InstructedMethod, DotPath> = {
+  bank_transfer: 'order.bankHelp',
+  deuna: 'order.deunaHelp',
+};
+const method = found?.order.paymentMethod ?? '';
+const instructions = paymentInstructions(checkout, method);
 // The browser reports the purchase from this attribute, only while the order is paid and recent (see ui/lib/track-order.ts).
 const purchase = found ? purchaseAttribute(found.order, Date.now()) : null;
 const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsappMessage} #${number}`) : '';
@@ -68,10 +77,10 @@ const storeChat = found ? whatsappLink(contact.whatsappNumber, `${contact.whatsa
         </p>
       </header>
 
-      {pending && found.order.paymentMethod === 'bank_transfer' && (
+      {pending && instructions && (
         <div class="rounded-brand bg-surface flex flex-col gap-2 p-4 text-sm">
-          <p>{t(lang, 'order.bankHelp')}</p>
-          <div set:html={renderMarkdown(pickText(checkout.bankTransferInstructions, lang, 'es'))} />
+          <p>{t(lang, HELP_OF[method as InstructedMethod])}</p>
+          <div set:html={renderMarkdown(pickText(instructions, lang, 'es'))} />
         </div>
       )}
       {pending && found.order.paymentMethod === 'cash_on_delivery' && (

@@ -123,6 +123,7 @@ export const en = {
       whatsapp: 'Order via WhatsApp',
       bank_transfer: 'Bank transfer',
       cash_on_delivery: 'Cash on delivery',
+      deuna: 'Deuna!',
     },
   },
   trust: {
@@ -146,6 +147,7 @@ export const en = {
     notFound: 'We could not find this order. Check the link from your confirmation.',
     whatsappAction: 'Chat with the store on WhatsApp',
     bankHelp: 'Transfer the total to the account in your confirmation email and keep the receipt.',
+    deunaHelp: 'Send the total with Deuna! to the details below and keep the receipt.',
     codHelp: 'Pay the courier when the order arrives.',
     statuses: {
       pending_payment: 'Waiting for payment',
@@ -930,6 +932,7 @@ export const en = {
         whatsapp: 'WhatsApp',
         bank_transfer: 'Bank transfer',
         cash_on_delivery: 'Cash on delivery',
+        deuna: 'Deuna!',
       },
     },
     invoices: {

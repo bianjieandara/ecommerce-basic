@@ -14,10 +14,20 @@ export const PAYMENT_METHODS = [
   'whatsapp',
   'bank_transfer',
   'cash_on_delivery',
+  'deuna',
 ] as const;
 
 /** One payment method. */
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+/**
+ * Methods the buyer completes by hand, so the store has to tell them where to send the money. The instructions are shown on
+ * the order page and in the order email, and a method with none is not offered at checkout.
+ */
+export const INSTRUCTED_METHODS = ['bank_transfer', 'deuna'] as const satisfies readonly PaymentMethod[];
+
+/** One method that is paid by hand against instructions. */
+export type InstructedMethod = (typeof INSTRUCTED_METHODS)[number];
 
 /** Payment methods whose money the store can send back through the provider. The others are refunded by hand, outside the store. */
 export const REFUNDABLE_METHODS = ['dlocalgo', 'paypal'] as const satisfies readonly PaymentMethod[];

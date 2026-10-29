@@ -32,6 +32,7 @@ import { BrowserRunPdfRenderer, NoopLegalInvoiceIssuer } from '@/infrastructure/
 import {
   BankTransferGateway,
   CashOnDeliveryGateway,
+  DeunaGateway,
   WhatsAppGateway,
 } from '@/infrastructure/payments/manual-gateways';
 import { PayPalGateway } from '@/infrastructure/payments/paypal-gateway';
@@ -124,6 +125,7 @@ export function createOrdering(env: Env, deps: OrderingDeps): OrderingServices {
     whatsapp: new WhatsAppGateway(),
     bank_transfer: new BankTransferGateway(),
     cash_on_delivery: new CashOnDeliveryGateway(),
+    deuna: new DeunaGateway(),
   };
   const confirmPayment = new ConfirmPayment({
     orders,

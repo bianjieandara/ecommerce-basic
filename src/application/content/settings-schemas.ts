@@ -136,6 +136,8 @@ export const inventorySettings = z.object({
 export const checkoutSettings = z.object({
   enabledMethods: z.array(z.enum(PAYMENT_METHODS)).default(['whatsapp']),
   bankTransferInstructions: localized('', '', 1000),
+  // Deuna! is a wallet: the instructions are the number or the alias the buyer sends the money to from the app.
+  deunaInstructions: localized('', '', 1000),
   cashOnDeliveryNote: localized('', '', 500),
   onlineHoldMinutes: z.number().int().min(15).max(1440).default(45),
   manualAutoCancelDays: z.number().int().min(0).max(60).default(0),

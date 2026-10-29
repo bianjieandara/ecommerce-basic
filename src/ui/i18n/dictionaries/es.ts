@@ -124,6 +124,7 @@ export const es: Dictionary = {
       whatsapp: 'Pedido por WhatsApp',
       bank_transfer: 'Transferencia bancaria',
       cash_on_delivery: 'Pago contra entrega',
+      deuna: 'Deuna!',
     },
   },
   trust: {
@@ -147,6 +148,7 @@ export const es: Dictionary = {
     notFound: 'No encontramos este pedido. Revisa el enlace de tu confirmación.',
     whatsappAction: 'Escribir a la tienda por WhatsApp',
     bankHelp: 'Transfiere el total a la cuenta del correo de confirmación y guarda el comprobante.',
+    deunaHelp: 'Envía el total con Deuna! a los datos de abajo y guarda el comprobante.',
     codHelp: 'Paga al mensajero cuando llegue el pedido.',
     statuses: {
       pending_payment: 'Pendiente de pago',
@@ -938,6 +940,7 @@ export const es: Dictionary = {
         whatsapp: 'WhatsApp',
         bank_transfer: 'Transferencia bancaria',
         cash_on_delivery: 'Contra entrega',
+        deuna: 'Deuna!',
       },
     },
     invoices: {

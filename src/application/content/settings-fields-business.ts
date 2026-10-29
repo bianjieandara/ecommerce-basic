@@ -15,6 +15,7 @@ const METHOD_LABELS: Record<PaymentMethod, [string, string]> = {
   whatsapp: ['WhatsApp', 'WhatsApp'],
   bank_transfer: ['Transferencia bancaria', 'Bank transfer'],
   cash_on_delivery: ['Pago contra entrega', 'Cash on delivery'],
+  deuna: ['Deuna!', 'Deuna!'],
 };
 
 /** Form definitions of the business groups, checked against their schemas. */
@@ -28,6 +29,11 @@ export const businessFieldDefinitions = {
     bankTransferInstructions: {
       kind: 'localizedTextarea',
       label: bilingual('Datos para la transferencia', 'Bank transfer details'),
+      max: 1000,
+    },
+    deunaInstructions: {
+      kind: 'localizedTextarea',
+      label: bilingual('Datos para cobrar con Deuna!', 'Deuna! payment details'),
       max: 1000,
     },
     cashOnDeliveryNote: {

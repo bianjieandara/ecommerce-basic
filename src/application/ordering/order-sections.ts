@@ -11,7 +11,12 @@ import type { Order } from '../dto/order-dto';
 import type { CheckoutSettings, GeneralSettings, TaxSettings } from '../dto/settings-dto';
 import type { NotificationSections } from '../notifications/context';
 import type { SettingsRepository } from '../ports/content';
-import { PAYMENT_METHODS, type PaymentMethod } from '../ports/payments';
+import {
+  INSTRUCTED_METHODS,
+  PAYMENT_METHODS,
+  type InstructedMethod,
+  type PaymentMethod,
+} from '../ports/payments';
 
 /** Payment method names as customers read them. */
 const METHOD_NAMES: Record<PaymentMethod, Record<Locale, string>> = {
@@ -20,7 +25,33 @@ const METHOD_NAMES: Record<PaymentMethod, Record<Locale, string>> = {
   whatsapp: { es: 'Pedido por WhatsApp', en: 'Order via WhatsApp' },
   bank_transfer: { es: 'Transferencia bancaria', en: 'Bank transfer' },
   cash_on_delivery: { es: 'Pago contra entrega', en: 'Cash on delivery' },
+  deuna: { es: 'Deuna!', en: 'Deuna!' },
 };
+
+/** The settings text that tells the buyer where to send the money, per method. A new manual method adds one line here. */
+const INSTRUCTIONS_OF: Record<InstructedMethod, (checkout: CheckoutSettings) => LocalizedText> = {
+  bank_transfer: (checkout) => checkout.bankTransferInstructions,
+  deuna: (checkout) => checkout.deunaInstructions,
+};
+
+/**
+ * Whether a stored method is one the buyer pays by hand against instructions.
+ * @param method Method as stored on the order.
+ * @returns True for the methods that show instructions.
+ */
+export function isInstructedMethod(method: string): method is InstructedMethod {
+  return (INSTRUCTED_METHODS as readonly string[]).includes(method);
+}
+
+/**
+ * Where the buyer sends the money for this method, or null when the method charges by itself.
+ * @param checkout Checkout settings.
+ * @param method Method as stored on the order.
+ * @returns The instructions, or null.
+ */
+export function paymentInstructions(checkout: CheckoutSettings, method: string): LocalizedText | null {
+  return isInstructedMethod(method) ? INSTRUCTIONS_OF[method](checkout) : null;
+}
 
 /** Whether a stored value is a payment method this version knows. */
 function isPaymentMethod(value: string): value is PaymentMethod {
@@ -42,7 +73,8 @@ function methodName(method: string, locale: Locale): string {
 export interface OrderPresentation {
   country: string;
   taxLabel: LocalizedText;
-  bankInstructions: LocalizedText;
+  /** Where to send the money, per method the buyer pays by hand. */
+  instructions: Record<InstructedMethod, LocalizedText>;
 }
 
 /**
@@ -60,7 +92,9 @@ export function orderPresentation(
   return {
     country: general.country,
     taxLabel: tax.label,
-    bankInstructions: checkout.bankTransferInstructions,
+    instructions: Object.fromEntries(
+      INSTRUCTED_METHODS.map((method) => [method, INSTRUCTIONS_OF[method](checkout)]),
+    ) as Record<InstructedMethod, LocalizedText>,
   };
 }
 
@@ -128,8 +162,11 @@ export function orderSections(
       url: link,
       trackingCode: order.trackingCode ?? '',
       note: order.note,
-      bankInstructions:
-        order.paymentMethod === 'bank_transfer' ? pickText(presentation.bankInstructions, locale, 'es') : '',
+      // The name is kept because stored email templates write {{block:bankInstructions}}; it now carries the instructions of
+      // whichever method the buyer pays by hand.
+      bankInstructions: isInstructedMethod(order.paymentMethod)
+        ? pickText(presentation.instructions[order.paymentMethod], locale, 'es')
+        : '',
       items: order.items.map((item) => ({
         name: item.productName,
         variant: item.variantLabel,
