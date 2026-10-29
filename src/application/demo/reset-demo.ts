@@ -58,6 +58,17 @@ export class ResetDemo {
    * @throws DomainError INVALID_STATE outside demo mode, FORBIDDEN for a user who may not change settings, VALIDATION_FAILED
    *   when the published snapshot does not match the format.
    */
+  /**
+   * Whether this store has ever restored its snapshot. The scheduler asks before deciding that a reset must wait for the
+   * small hours: a store that never has is empty, and the record is only written after a restore actually succeeds.
+   * The record is kept for a month, so a store whose cron has been stopped longer than that restores on its next tick,
+   * which is what it should do anyway.
+   * @returns True once a reset has recorded a successful restore.
+   */
+  async hasRestored(): Promise<boolean> {
+    return (await this.deps.cache.getJson<{ version?: string }>(LAST_RESET_KEY)) !== null;
+  }
+
   async execute(actor: AdminUser | null): Promise<ResetDemoOutcome> {
     if (!this.deps.enabled) throw new DomainError('INVALID_STATE', 'Demo mode is off for this store.');
     if (!this.deps.account.email || !this.deps.account.password) {

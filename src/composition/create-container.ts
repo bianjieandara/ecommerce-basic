@@ -259,7 +259,15 @@ export function createContainer(env: Env, ctx: ExecutionContext | null): Contain
     failedJobs,
     jobQueue,
     jobs: new JobDispatcher({ failedJobs, handlers, log: logEvent }),
-    scheduler: new JobScheduler({ jobs: jobQueue, cache, clock, settings, demoEnabled: demo.enabled }),
+    scheduler: new JobScheduler({
+      jobs: jobQueue,
+      cache,
+      clock,
+      settings,
+      demoEnabled: demo.enabled,
+      // The scheduler asks the question; only the reset knows where its own record of the last restore is kept.
+      demoHasRestored: () => demo.resetDemo.hasRestored(),
+    }),
     reports,
     notifications,
     emailTemplates,

@@ -6,9 +6,6 @@ import type { SettingsRepository } from '../ports/content';
 import { weeklySummaryDue } from '../reports/jobs/weekly-due';
 import { demoResetDue } from '@/domain/demo/reset-schedule';
 
-/** How long the once-a-day marker of the demo reset lives: a day and an hour, so the day's ticks all see it. */
-const DAY_MARKER_SECONDS = 25 * 3600;
-
 /** A periodic job: how often it runs (in hours) and what it is called in the markers. */
 interface PeriodicJob {
   type: JobType;
@@ -37,8 +34,10 @@ export class JobScheduler {
       cache: CacheStore;
       clock: Clock;
       settings: SettingsRepository;
-      /** True only for the demo store: its sample data is restored once a day. */
+      /** True only for a demo store: its sample data is restored from a published snapshot. */
       demoEnabled: boolean;
+      /** Whether that store has ever restored. Asked only on a demo store; the rule decides what it means. */
+      demoHasRestored: () => Promise<boolean>;
     },
   ) {}
 
@@ -79,10 +78,11 @@ export class JobScheduler {
       return { job, marker: `cron:${job.type}:${period}` };
     });
     await attempt(async () => {
-      const [done, general, reports] = await Promise.all([
+      const [done, general, reports, restored] = await Promise.all([
         Promise.all(due.map(({ marker }) => this.deps.cache.getJson<boolean>(marker))),
         this.deps.settings.get('general'),
         this.deps.settings.get('reports'),
+        this.deps.demoEnabled ? this.deps.demoHasRestored() : Promise.resolve(true),
       ]);
       for (const [index, { job, marker }] of due.entries()) {
         if (done[index]) continue;
@@ -100,12 +100,13 @@ export class JobScheduler {
         );
       }
 
-      // The demo reset runs once per store-local day, after its hour; the marker keeps the day's later ticks from repeating it.
-      const resetKey = demoResetDue(now.toISOString(), general.timezone, this.deps.demoEnabled);
-      if (resetKey && !(await this.deps.cache.getJson<boolean>(resetKey))) {
+      // The demo reset runs on the next tick while the store is still empty and once per store-local day after that;
+      // the marker it comes with keeps the period's later ticks from repeating it.
+      const reset = demoResetDue(now.toISOString(), general.timezone, this.deps.demoEnabled, restored);
+      if (reset && !(await this.deps.cache.getJson<boolean>(reset.key))) {
         await attempt(async () => {
-          await this.deps.jobs.enqueue('demo.reset', {}, { idempotencyKey: resetKey });
-          await this.deps.cache.putJson(resetKey, true, DAY_MARKER_SECONDS);
+          await this.deps.jobs.enqueue('demo.reset', {}, { idempotencyKey: reset.key });
+          await this.deps.cache.putJson(reset.key, true, reset.markerSeconds);
         });
       }
     });
