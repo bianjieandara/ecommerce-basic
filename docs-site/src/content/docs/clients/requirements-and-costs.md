@@ -37,8 +37,12 @@ de datos, almacenamiento de imágenes, cola de tareas y analítica, así que mov
 
 ## Cuánto cuesta mantenerla
 
-La plataforma es barata de mantener porque usa servicios que se pagan por uso. Las cifras salen del plan del proyecto; comprueba los
-precios actuales de Cloudflare antes de cotizar a un cliente.
+Lo que pagas tú es el **plan de cuidado**, que se te cotiza junto al proyecto y empieza el primer mes: mantiene la tienda prendida,
+con respaldos diarios, el certificado de seguridad al día y tu dominio renovado a tu nombre. El precio de tu país está en
+[e-baq.com](https://e-baq.com) y en tu cotización.
+
+Lo de abajo es lo que cuesta la plataforma por dentro. Te sirve si prefieres correr la tienda en tu propia cuenta de Cloudflare, y
+explica por qué no hay comisión por venta. Comprueba los precios actuales de Cloudflare antes de cotizar.
 
 | Costo                               | Habitual                                                                                              |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------- |

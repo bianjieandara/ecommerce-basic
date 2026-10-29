@@ -26,12 +26,16 @@ storage, task queue and analytics, so moving one to another account is possible.
 
 ## What it costs to run
 
-The platform is deliberately cheap to run because it uses pay-for-what-you-use services. Figures below come from the project plan;
-check Cloudflare's current pricing before quoting a client.
+What you pay is the **care plan**, quoted with your project and starting in the first month: it keeps the store up, with daily
+backups, the security certificate current and your domain renewed in your name. Your country's price is on
+[e-baq.com](https://e-baq.com) and in your quote.
+
+The table below is what the platform costs underneath. It matters if you would rather run the store on your own Cloudflare account,
+and it is why there is no commission per sale. Check Cloudflare's current pricing before quoting.
 
 | Cost                          | Typical                                                                                                  |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Cloudflare Workers plan**   | About **US$5 per month per account**. On the agency account one plan covers many stores.                  |
+| **Cloudflare Workers plan**   | About **US$5 per month per account**, which is what the platform costs underneath, not what you pay. On the agency account one plan covers many stores. |
 | **Included usage**            | Database reads and writes, 3,000 emails a month and 10 browser-hours a month (for invoice PDFs) are included per account and shared by its stores; beyond that, usage is a few cents per thousand. |
 | **Picture storage**           | 10 GB free, and no charge for downloads.                                                                 |
 | **Domain**                    | Your registrar's yearly price.                                                                           |
