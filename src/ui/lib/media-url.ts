@@ -37,6 +37,21 @@ export function mediaUrl(key: string, publicBase = configuredBase): string {
 }
 
 /**
+ * URL of the largest stored variant, for a sharing card. A scraper takes one picture and no srcset: WhatsApp, Facebook
+ * and X crop it to around 1200x630 and ignore anything small, so the widest size is always the right one to hand over.
+ * @param variants Stored sizes of one image; an empty list means there is no picture to share.
+ * @param publicBase Public base URL; defaults to the store's setting.
+ * @returns URL of the widest variant, or null when there is none.
+ */
+export function largestVariantUrl(
+  variants: Pick<MediaVariant, 'width' | 'key'>[],
+  publicBase = configuredBase,
+): string | null {
+  const widest = [...variants].sort((a, b) => b.width - a.width)[0];
+  return widest ? mediaUrl(widest.key, publicBase) : null;
+}
+
+/**
  * Builds a srcset value from stored variants, for responsive images.
  * @param variants Stored sizes of one image.
  * @param publicBase Public base URL; defaults to the store's setting.

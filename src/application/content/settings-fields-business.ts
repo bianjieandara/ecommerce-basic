@@ -240,7 +240,11 @@ export const businessFieldDefinitions = {
   seo: {
     titleTemplate: {
       kind: 'localizedText',
-      label: bilingual('Plantilla del título (%s = nombre de la página)', 'Title template (%s = page name)'),
+      // The field ships empty, so the label has to say what empty does; there is no help text in a field descriptor.
+      label: bilingual(
+        'Plantilla del título (%s = nombre de la página; vacía: «página | nombre de la tienda»)',
+        'Title template (%s = page name; empty: "page | store name")',
+      ),
       max: 120,
     },
     defaultDescription: {

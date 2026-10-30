@@ -1,5 +1,5 @@
 {
-  "version": "08c8a0398124e94d",
+  "version": "9adc5c7ce0bc8970",
   "takenAt": "2026-10-29T18:00:49.788Z",
   "accountId": "demo-account",
   "tables": {
@@ -41,7 +41,7 @@
       },
       {
         "group_key": "seo",
-        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Raíz\",\"en\":\"%s | Raíz\"},\"defaultDescription\":{\"es\":\"Cosmética natural hecha en lotes de 40 piezas, con todos los ingredientes en la etiqueta. Envíos a todo México.\",\"en\":\"Natural skincare made in batches of 40, with every ingredient on the label. Shipping across Mexico.\"},\"ogImageMediaId\":null}",
+        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Raíz\",\"en\":\"%s | Raíz\"},\"defaultDescription\":{\"es\":\"Cosmética natural hecha en lotes de 40 piezas, con todos los ingredientes en la etiqueta. Envíos a todo México.\",\"en\":\"Natural skincare made in batches of 40, with every ingredient on the label. Shipping across Mexico.\"},\"ogImageMediaId\":\"bbf420ca-7dfa-4a16-ae0c-1474fd600efa\"}",
         "updated_at": "2026-10-01T00:00:00Z"
       },
       {

@@ -1,5 +1,5 @@
 {
-  "version": "948ad92f2cfe3cea",
+  "version": "afa471dd2403bb0e",
   "takenAt": "2026-10-29T18:01:21.992Z",
   "accountId": "demo-account",
   "tables": {
@@ -41,7 +41,7 @@
       },
       {
         "group_key": "seo",
-        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Comal\",\"en\":\"%s | Comal\"},\"defaultDescription\":{\"es\":\"Café, salsas y conservas de productores con nombre, en Veracruz, Oaxaca y Puebla. Envíos a todo México.\",\"en\":\"Coffee, salsas and preserves from named producers in Veracruz, Oaxaca and Puebla. Shipping across Mexico.\"},\"ogImageMediaId\":null}",
+        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Comal\",\"en\":\"%s | Comal\"},\"defaultDescription\":{\"es\":\"Café, salsas y conservas de productores con nombre, en Veracruz, Oaxaca y Puebla. Envíos a todo México.\",\"en\":\"Coffee, salsas and preserves from named producers in Veracruz, Oaxaca and Puebla. Shipping across Mexico.\"},\"ogImageMediaId\":\"5b282974-864e-44cf-ac28-e1b6618a6275\"}",
         "updated_at": "2026-10-01T00:00:00Z"
       },
       {

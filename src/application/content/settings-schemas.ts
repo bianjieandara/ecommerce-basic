@@ -217,7 +217,9 @@ export const reportsSettings = z.object({
 
 /** Search-engine title template, default description and social sharing image. */
 export const seoSettings = z.object({
-  titleTemplate: localized('%s | Tienda', '%s | Store', 120),
+  // Empty on purpose. A default of "%s | Tienda" put that literal word in the title of every page of every store that
+  // never opened this screen; the store's own name is not knowable from here, so buildTitle composes it instead.
+  titleTemplate: localized('', '', 120),
   defaultDescription: localized('', '', 300),
   ogImageMediaId: z.uuid().nullable().default(null),
 });

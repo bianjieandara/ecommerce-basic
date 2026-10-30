@@ -1,5 +1,5 @@
 {
-  "version": "46492d2de7462469",
+  "version": "1d5e06811ff739d9",
   "takenAt": "2026-10-29T18:00:17.185Z",
   "accountId": "demo-account",
   "tables": {
@@ -41,7 +41,7 @@
       },
       {
         "group_key": "seo",
-        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Casa Mina\",\"en\":\"%s | Casa Mina\"},\"defaultDescription\":{\"es\":\"Ropa de diario hecha en Guadalajara en tiradas de 30 piezas. Envíos a todo México y cambios en 10 días.\",\"en\":\"Everyday clothing made in Guadalajara in runs of 30. Shipping across Mexico, exchanges within 10 days.\"},\"ogImageMediaId\":null}",
+        "value_json": "{\"titleTemplate\":{\"es\":\"%s | Casa Mina\",\"en\":\"%s | Casa Mina\"},\"defaultDescription\":{\"es\":\"Ropa de diario hecha en Guadalajara en tiradas de 30 piezas. Envíos a todo México y cambios en 10 días.\",\"en\":\"Everyday clothing made in Guadalajara in runs of 30. Shipping across Mexico, exchanges within 10 days.\"},\"ogImageMediaId\":\"e34eb3cf-4569-4090-8232-2746ae4a56d3\"}",
         "updated_at": "2026-10-01T00:00:00Z"
       },
       {

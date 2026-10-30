@@ -115,6 +115,13 @@ async function applyPictures(slug, vertical) {
     if (!saved.json?.ok)
       throw new Error(`Could not save the home page: ${JSON.stringify(saved.json?.error)}`);
   }
+  // A demo is shown by sending its link, and a link with no sharing image is a grey rectangle on WhatsApp. The picture
+  // the home page opens with is the best one-image summary a store has, so the sharing image follows the hero.
+  if (hero.length > 0) {
+    sql(
+      `UPDATE settings SET value_json = json_set(value_json, '$.ogImageMediaId', '${hero[0]}') WHERE group_key = 'seo'`,
+    );
+  }
   // Every run uploads new assets, and the ones it replaced stay behind. They would travel in the snapshot and be copied
   // to R2 on every publish, so anything nothing points at any more goes. The JSON columns are checked too: a hero lives
   // inside a page's sections and the logo inside a settings group, and neither is a foreign key.

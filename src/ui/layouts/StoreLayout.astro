@@ -12,6 +12,7 @@ import type { JsonLd } from '@/ui/lib/structured-data';
 import type { CurrencyCode } from '@/domain/shared/currency';
 import { t } from '@/ui/i18n';
 import { routes } from '@/ui/lib/routes';
+import { largestVariantUrl } from '@/ui/lib/media-url';
 import { isMarketingToolEnabled } from '@/domain/consent/consent';
 import CartDrawer from '../store/CartDrawer.tsx';
 import ConsentBanner from '../store/ConsentBanner.tsx';
@@ -70,10 +71,19 @@ const demo = Astro.locals.app.demo;
 // The marketing group is not in the page's store context. The settings table is read once per request, and the pages
 // have already read it, so this costs no extra query. Nothing here depends on the visitor's cookies: the page cache keys
 // on the path only, so the HTML must be the same for every visitor. The banner reads its choice in the browser.
-const [marketing, general] = await Promise.all([
+const [marketing, general, seo] = await Promise.all([
   Astro.locals.app.settings.get('marketing'),
   Astro.locals.app.settings.get('general'),
+  Astro.locals.app.settings.get('seo'),
 ]);
+// The sharing image chosen in Settings > SEO is a media id, and nothing outside the admin turned it into a URL: every
+// page but a product's was shared without a picture, which on WhatsApp is a bare grey link. Resolved here rather than
+// in each page, and only for a store that chose one, so a store with no sharing image reads nothing extra. A page that
+// has a better picture of its own (a product) still wins.
+const sharedAsset = seo.ogImageMediaId
+  ? (await Astro.locals.app.mediaLibrary.getMany([seo.ogImageMediaId]))[0]
+  : undefined;
+const shareImage = ogImage ?? largestVariantUrl(sharedAsset?.variants ?? []) ?? undefined;
 const marketingToolEnabled = isMarketingToolEnabled(
   marketing.metaPixelId,
   marketing.metaCapiEnabled,
@@ -96,7 +106,7 @@ const consentLabels = {
   noindex={noindex}
   defaultLocale={defaultLocale}
   siteName={storeName}
-  ogImage={ogImage}
+  ogImage={shareImage}
   ogType={ogType}
   jsonLd={jsonLd}
   themeCss={themeCss}

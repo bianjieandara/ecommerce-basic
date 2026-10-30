@@ -73,7 +73,9 @@ export function metaDescription(store: StoreContext, locale: Locale, ...candidat
 }
 
 /**
- * Page title from the SEO title template ("%s | Store"), or the store name alone on the home page.
+ * Page title from the SEO title template ("%s | Store"), or the store name alone on the home page. A store that never
+ * set a template gets "<page> | <store name>": the template ships empty because no fixed default can know the store's
+ * name, and a placeholder word there would be read by search engines as the store's name on every page.
  * @param store Settings snapshot.
  * @param locale Page language.
  * @param pageTitle Title of the page; empty for the home page.
@@ -81,5 +83,8 @@ export function metaDescription(store: StoreContext, locale: Locale, ...candidat
  */
 export function buildTitle(store: StoreContext, locale: Locale, pageTitle: string): string {
   if (!pageTitle) return store.general.storeName;
-  return pickText(store.seo.titleTemplate, locale, 'es').replace('%s', pageTitle);
+  const template = pickText(store.seo.titleTemplate, locale, 'es').trim();
+  // A template without %s would drop the page's own title, which is the one thing the tag must carry.
+  if (!template.includes('%s')) return `${pageTitle} | ${store.general.storeName}`;
+  return template.replace('%s', pageTitle);
 }
