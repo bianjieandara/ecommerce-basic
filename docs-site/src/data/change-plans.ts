@@ -1,5 +1,7 @@
-// Prices for the "changes we make for you" service, per region, and the helpers that turn them into table rows.
-// Edit the numbers here only: the guide pages and the tables read from this file. Prices are final: they already include VAT (IVA).
+// Shape of the "changes we make for you" service and the helpers that turn it into table rows.
+// The amounts are NOT here: they come from e-baq.com/precios.json through precios.ts, so a price is edited in one place.
+// What stays here is product shape — how many credits a pack carries, how many a plan gives — which is not a price.
+import { cargarPrecios, CLAVE_REGION, type TablaPrecios } from './precios';
 import type { REGIONS } from './regions.mjs';
 
 /** One of the regions in regions.mjs. */
@@ -46,41 +48,43 @@ export const YEARLY_CHECKUPS = { basic: 0, grow: 4, pro: 12 } as const;
 /** Response time of each plan, in business days; 0 means the same business day. Shared by all regions. */
 export const PLAN_RESPONSE_DAYS = { basic: 5, grow: 3, pro: 2 } as const;
 
-/** Prices in US dollars, for the default region and for Ecuador, which uses dollars and pays the same. */
-const USD_PRICES: RegionPrices = {
-  currency: 'USD',
-  credit: 9,
-  packs: [
-    { credits: 5, price: 40 },
-    { credits: 10, price: 72 },
-    { credits: 20, price: 126 },
-  ],
-  plans: [
-    { id: 'basic', creditsPerMonth: 4, monthly: 27 },
-    { id: 'grow', creditsPerMonth: 10, monthly: 63 },
-    { id: 'pro', creditsPerMonth: 25, monthly: 145 },
-  ],
-};
+/** Credits each prepaid pack carries. How many credits a pack buys is product shape; what it costs is a price. */
+const PACK_CREDITS = [5, 10, 20] as const;
 
-/** Pack and plan credit counts are the same everywhere; only the price changes, so the shape of each offer stays comparable. */
-export const PRICES: Record<Region, RegionPrices> = {
-  intl: USD_PRICES,
-  mx: {
-    currency: 'MXN',
-    credit: 149,
-    packs: [
-      { credits: 5, price: 670 },
-      { credits: 10, price: 1190 },
-      { credits: 20, price: 2090 },
-    ],
-    plans: [
-      { id: 'basic', creditsPerMonth: 4, monthly: 449 },
-      { id: 'grow', creditsPerMonth: 10, monthly: 1049 },
-      { id: 'pro', creditsPerMonth: 25, monthly: 2390 },
-    ],
-  },
-  ec: USD_PRICES,
-};
+/** Credits each subscription gives per month. The same everywhere, so the three offers stay comparable between regions. */
+const PLAN_CREDITS = { basic: 4, grow: 10, pro: 25 } as const;
+
+/** The currency each region pays in. Not a price, so it does not travel in the price table. */
+const CURRENCY: Record<Region, 'USD' | 'MXN'> = { intl: 'USD', mx: 'MXN', ec: 'USD' };
+
+/**
+ * One product's amount for one region. It throws instead of returning a default because a missing price would render as "$NaN"
+ * on a page a client reads: a build that fails loudly is cheaper than a quote built on a number nobody wrote.
+ */
+function monto(tabla: TablaPrecios, producto: string, region: Region): number {
+  const precio = tabla[producto]?.[CLAVE_REGION[region]];
+  if (!precio) throw new Error(`precios.json no trae "${producto}" para ${CLAVE_REGION[region]}`);
+  return precio.monto;
+}
+
+/** The change-service prices of every region, read from the published table. Pack and plan keys are derived from their shape. */
+export async function cargarPreciosCambios(): Promise<Record<Region, RegionPrices>> {
+  const tabla = await cargarPrecios();
+  const forRegion = (region: Region): RegionPrices => ({
+    currency: CURRENCY[region],
+    credit: monto(tabla, 'cambio-suelto', region),
+    packs: PACK_CREDITS.map((credits) => ({
+      credits,
+      price: monto(tabla, `paquete-${credits}`, region),
+    })),
+    plans: (Object.keys(PLAN_CREDITS) as Plan['id'][]).map((id) => ({
+      id,
+      creditsPerMonth: PLAN_CREDITS[id],
+      monthly: monto(tabla, `plan-cambios-${id}`, region),
+    })),
+  });
+  return { intl: forRegion('intl'), mx: forRegion('mx'), ec: forRegion('ec') };
+}
 
 /** Number format used to write amounts: Mexican readers expect "1,190", Ecuadorian ones "1.190", and everyone else a US-style one. */
 const LOCALES: Record<Lang, Record<Region, string>> = {
@@ -95,14 +99,14 @@ const LOCALES: Record<Lang, Record<Region, string>> = {
 export function formatMoney(amount: number, region: Region, lang: Lang, decimals = 0): string {
   return new Intl.NumberFormat(LOCALES[lang][region], {
     style: 'currency',
-    currency: PRICES[region].currency,
+    currency: CURRENCY[region],
     currencyDisplay: 'code',
     useGrouping: 'always',
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   })
     .format(amount)
-    .replace(/ /g, ' ');
+    .replace(/ /g, ' ');
 }
 
 /** Share saved by buying `credits` credits as a pack instead of one by one, as a whole percentage. */

@@ -13,5 +13,50 @@
     "EC": { "monto": 799, "moneda": "USD", "iva_incluido": true },
     "MX": { "monto": 29599, "moneda": "MXN", "iva_incluido": true },
     "INTL": { "monto": 959, "moneda": "USD", "iva_incluido": true }
+  },
+  "cuidado": {
+    "EC": { "monto": 29, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 200, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 29, "moneda": "USD", "iva_incluido": true }
+  },
+  "cuidado-tienda": {
+    "EC": { "monto": 49, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 340, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 49, "moneda": "USD", "iva_incluido": true }
+  },
+  "cambio-suelto": {
+    "EC": { "monto": 9, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 149, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 9, "moneda": "USD", "iva_incluido": true }
+  },
+  "paquete-5": {
+    "EC": { "monto": 40, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 670, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 40, "moneda": "USD", "iva_incluido": true }
+  },
+  "paquete-10": {
+    "EC": { "monto": 72, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 1190, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 72, "moneda": "USD", "iva_incluido": true }
+  },
+  "paquete-20": {
+    "EC": { "monto": 126, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 2090, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 126, "moneda": "USD", "iva_incluido": true }
+  },
+  "plan-cambios-basic": {
+    "EC": { "monto": 27, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 449, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 27, "moneda": "USD", "iva_incluido": true }
+  },
+  "plan-cambios-grow": {
+    "EC": { "monto": 63, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 1049, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 63, "moneda": "USD", "iva_incluido": true }
+  },
+  "plan-cambios-pro": {
+    "EC": { "monto": 145, "moneda": "USD", "iva_incluido": true },
+    "MX": { "monto": 2390, "moneda": "MXN", "iva_incluido": true },
+    "INTL": { "monto": 145, "moneda": "USD", "iva_incluido": true }
   }
 }

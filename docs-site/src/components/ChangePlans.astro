@@ -1,14 +1,14 @@
 ---
 // One price block of the "changes we make for you" service: a table for per-change prices and credit packs, cards for the monthly
 // and yearly plans. It renders the block for every region and the CSS shows the visitor's one, so the page stays static. Numbers
-// come from data/change-plans.ts.
+// come from data/change-plans.ts, which reads the amounts from the price table e-baq.com publishes.
 import PriceTable from './PriceTable.astro';
 import PlanCards from './PlanCards.astro';
 import { REGIONS } from '../data/regions.mjs';
 import {
   CHANGE_SIZES,
   PLAN_RESPONSE_DAYS,
-  PRICES,
+  cargarPreciosCambios,
   YEARLY_CHECKUPS,
   YEARLY_MONTHS,
   formatMoney,
@@ -23,6 +23,7 @@ interface Props {
 }
 const { lang, part } = Astro.props;
 const copy = COPY[lang];
+const PRICES = await cargarPreciosCambios();
 
 /** Rows of a plan table as cards: the name is the first cell, `price` and `sub` say which cells hold the price lines, the rest are listed. */
 function cardsFor(table: { head: string[]; rows: string[][] }, price: number, sub?: number) {

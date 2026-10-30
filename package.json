@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "astro check && eslint . && prettier --check .",
+    "check": "astro check && eslint . && prettier --check . && node scripts/docs/guardia-precios.mjs",
     "format": "prettier --write .",
     "lint": "eslint .",
     "cf-typegen": "wrangler types --env-file .dev.vars.example",
@@ -46,7 +46,8 @@
     "docs:build": "npm --prefix docs-site run build",
     "db:seed:local": "wrangler d1 execute DB --local --file=db/seed/dev.sql",
     "demo:snapshot": "node scripts/demo/snapshot.mjs",
-    "demo:publish": "node scripts/demo/publish.mjs"
+    "demo:publish": "node scripts/demo/publish.mjs",
+    "docs:precios": "node scripts/docs/guardia-precios.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.2",
