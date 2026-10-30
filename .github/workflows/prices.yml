@@ -1,0 +1,32 @@
+# Fails if a price is written by hand in the guide. The amounts belong to e-baq.com/precios.json, which
+# docs-site reads at build time; nothing under docs-site/src should state one itself.
+#
+# It runs the guard alone rather than the whole `npm run check`: the guard needs no dependencies and no
+# generated Worker types, so it cannot fail for reasons that have nothing to do with prices. A check that
+# flakes gets ignored, and this one only earns its place by being believed.
+name: Prices
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs-site/src/**'
+      - 'scripts/docs/guardia-precios.mjs'
+      - '.github/workflows/prices.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prices:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: No price written by hand in the guide
+        run: node scripts/docs/guardia-precios.mjs
