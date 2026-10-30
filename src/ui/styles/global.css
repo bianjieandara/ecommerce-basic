@@ -30,6 +30,15 @@
   margin-inline: calc(50% - 50vw);
 }
 
+/* Darkening under a caption that sits on a photograph. Most of the work is in the middle stops: the text sits about a
+   third of the way up, which is where a photo's subject tends to be brightest, and a plain fade to transparent leaves
+   that band too light to read white type on. */
+@utility photo-scrim {
+  position: absolute;
+  inset: 0;
+  background-image: var(--photo-scrim);
+}
+
 /* Small uppercase label above a title or in a footer column. */
 @utility eyebrow {
   font-size: var(--eyebrow-size);
@@ -57,6 +66,15 @@
   --eyebrow-weight: 500;
   --eyebrow-tracking: 0.16em;
   --brand-text-muted: color-mix(in srgb, var(--brand-text) 62%, transparent);
+  /* Used by the hero and the category tiles, so a caption reads the same wherever it falls on a photograph. It is not a
+     brand colour: it darkens the photograph itself, and every store needs the same amount of it. */
+  --photo-scrim: linear-gradient(
+    to top,
+    rgb(0 0 0 / 0.82) 0%,
+    rgb(0 0 0 / 0.58) 32%,
+    rgb(0 0 0 / 0.18) 68%,
+    rgb(0 0 0 / 0) 100%
+  );
   /* The arrow drawn inside a select of the admin. It is an image, so it cannot take the text colour: the stroke is a mid grey. */
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   --select-chevron-size: 1rem;

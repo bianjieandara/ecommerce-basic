@@ -9,7 +9,7 @@ const { tone = 'neutral', class: className = '' } = Astro.props;
 
 const tones: Record<NonNullable<Props['tone']>, string> = {
   neutral: 'bg-surface text-text',
-  success: 'bg-emerald-100 text-emerald-900',
+  success: 'bg-text text-background',
   warning: 'bg-amber-100 text-amber-900',
   danger: 'bg-accent text-on-primary',
 };

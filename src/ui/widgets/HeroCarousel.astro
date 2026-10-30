@@ -114,9 +114,7 @@ const onPicture = layout !== 'editorial';
                       eager={eager}
                       class="absolute inset-0 h-full w-full object-cover object-[70%_50%]"
                     />
-                    {style.scrim && (
-                      <div class="absolute inset-0 bg-linear-to-t from-black/75 via-black/25 to-transparent" />
-                    )}
+                    {style.scrim && <div class="photo-scrim" />}
                   </>
                 )
               : null}

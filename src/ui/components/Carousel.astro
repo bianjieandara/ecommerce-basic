@@ -59,9 +59,12 @@ const arrowFace =
         : 'mt-4 flex items-center gap-2'
     }
   >
+    <!-- On a phone the dots take only their own width, so the arrows follow them on the left: the bottom-right corner
+         belongs to the floating WhatsApp button, which covered the "next" arrow completely. From md the dots stretch
+         again and the arrows go back to the right, where there is no floating button over them. -->
     <div
       data-carousel-dots
-      class={`min-w-0 flex-1 items-center justify-start overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden ${overlay ? 'hidden px-1 md:flex' : 'flex'}`}
+      class={`min-w-0 items-center justify-start overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden ${overlay ? 'hidden flex-1 px-1 md:flex' : 'flex flex-initial md:flex-1'}`}
     ></div>
     <button type="button" data-carousel-prev class={arrow} aria-label={previousLabel}>
       <span class={arrowFace}>

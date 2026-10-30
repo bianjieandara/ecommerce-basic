@@ -57,7 +57,7 @@ const tile = layout === 'links' ? null : TILES[layout];
                     decoding="async"
                     class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
-                  <span class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+                  <span class="photo-scrim" />
                 </>
               )}
               <span class={`relative ${category.imageKey ? 'text-white' : ''}`}>{category.name}</span>
@@ -78,7 +78,7 @@ const tile = layout === 'links' ? null : TILES[layout];
           <li>
             <a
               href={routes.category(view.locale, category.slug)}
-              class="inline-flex min-h-11 items-center font-display text-lg tracking-tight underline-offset-4 hover:underline md:text-xl"
+              class="inline-flex min-h-11 items-center font-display text-lg tracking-tight underline decoration-text/25 underline-offset-4 transition-colors hover:decoration-text md:text-xl"
             >
               {category.name}
             </a>
